@@ -12,6 +12,7 @@ from synaps import log as logging
 from synaps import wsgi
 from synaps import context
 from synaps import utils
+from synaps import exception
 from synaps.api.cloudwatch import faults
 from synaps.api.cloudwatch import apirequest
 from synaps.openstack.common import cfg
@@ -155,7 +156,7 @@ class Authorizer(wsgi.Middleware):
         super(Authorizer, self).__init__(application)
         self.action_roles = {
             'MonitorController': {
-                 'PutMetricData': ['all'],
+                 'PutMetricData': ['all'], #'netadmin'],
                  'GetMetricStatistics': ['all'],
                  'ListMetrics':['all'],
 #                'DescribeAvailabilityZones': ['all'],
@@ -232,6 +233,34 @@ class Executor(wsgi.Application):
     def __call__(self, req):
         api_request = req.environ['cloudwatch.request']
         context = req.environ['synaps.context']
+        result = None
+        
+        try:
+            result = api_request.invoke(context)
+        except exception.CloudwatchAPIError as ex:
+            LOG.exception(_('CloudwatchApiError raised: %s'), unicode(ex),
+                          context=context)
+            if ex.code:
+                return self._error(req, context, ex.code, unicode(ex))
+            else:
+                return self._error(req, context, type(ex).__name__,
+                                   unicode(ex))
+        else:
+            resp = webob.Response()
+            resp.status = 200
+            resp.headers['Content-Type'] = 'text/xml'
+            resp.body = str(result)
+            return resp                            
 
-        return api_request.invoke(context)
-
+    def _error(self, req, context, code, message):
+        LOG.error("%s: %s", code, message, context=context)
+        resp = webob.Response()
+        resp.status = 400
+        resp.headers['Content-Type'] = 'text/xml'
+        resp.body = str('<?xml version="1.0"?>\n'
+                         '<Response><Errors><Error><Code>%s</Code>'
+                         '<Message>%s</Message></Error></Errors>'
+                         '<RequestID>%s</RequestID></Response>' % 
+                         (utils.utf8(code), utils.utf8(message),
+                         utils.utf8(context.request_id)))
+        return resp

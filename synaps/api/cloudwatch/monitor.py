@@ -1,16 +1,27 @@
+# Copyright 2012 Samsung SDS
+# All Rights Reserved
+
+from synaps import log as logging
+from synaps import monitor
+from synaps import exception
+
+LOG = logging.getLogger(__name__)
+
+
 class MonitorController(object):
     """ MonitorController provides the critical dispatch between
  inbound API calls through the endpoint and messages
  sent to the other nodes.
 """
     def __init__(self):
-        pass
+        self.monitor_api = monitor.API()
 
     def __str__(self):
         return 'MonitorController'
 
-    def put_metric_data(self, context, **kwargs):
-        return {}
+    def put_metric_data(self, context, namespace, metric_data, **kwargs):
+        ret = self.monitor_api.put_metric_data(context, namespace, metric_data)
+        return ret
 
     def get_metric_statistics(self, context, **kwargs):
         return {}

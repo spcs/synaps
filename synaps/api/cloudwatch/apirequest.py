@@ -80,7 +80,9 @@ class APIRequest(object):
                     args[key] = [v for k, v in s]
 
         result = method(context, **args)
-        return self._render_response(result, context.request_id)
+        rendered_result = self._render_response(result, context.request_id)
+        LOG.info("rendered result: %s" % rendered_result) #TODO: DeleteMe
+        return rendered_result
 
     def _render_response(self, response_data, request_id):
         xml = minidom.Document()
@@ -88,9 +90,12 @@ class APIRequest(object):
         response_el = xml.createElement(self.action + 'Response')
         response_el.setAttribute('xmlns',
             'http://monitoring.amazonaws.com/doc/%s/' % self.version)
-        request_id_el = xml.createElement('requestId')
+        request_id_el = xml.createElement('RequestId')
         request_id_el.appendChild(xml.createTextNode(request_id))
-        response_el.appendChild(request_id_el)
+        response_metadata_el = xml.createElement('ResponseMetadata')
+        response_metadata_el.appendChild(request_id_el)
+        response_el.appendChild(response_metadata_el)
+        
         if response_data is True:
             self._render_dict(xml, response_el, {'return': 'true'})
         else:
@@ -100,12 +105,6 @@ class APIRequest(object):
 
         response = xml.toxml()
         xml.unlink()
-
-        # Don't write private key to log
-        if self.action != "CreateKeyPair":
-            LOG.debug(response)
-        else:
-            LOG.debug("CreateKeyPair: Return Private Key")
 
         return response
 

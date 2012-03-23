@@ -23,8 +23,27 @@ class ApiCloudwatchTestCase(unittest.TestCase):
         pass
         
     def test_put_metric_data(self):
-#        self.cloudwatch.put_metric_data()
-        pass
+#        cloudwatch_ret = self.cloudwatch.put_metric_data(
+#            namespace="SPCS/NOVA",
+#            name="cpuutilization",
+#            value=10.2,
+#            unit="Percent",
+#            dimensions={'member1':'value1'},
+#            statistics={'maximum': 30, 'minimum': 1, 'samplecount': 100, 
+#                        'sum': 10000}
+#        )
+        
+        synaps_ret = self.synaps.put_metric_data(
+            namespace="SPCS/NOVA",
+            name="cpuutilization",
+            value=10.2,
+            unit="Percent",
+            dimensions={'member1':'value1', 'member2':'value2'},
+#            statistics={'maximum': 30, 'minimum': 1, 'samplecount': 100, 
+#                        'sum': 10000}
+        )
+
+#        self.assertEqual(cloudwatch_ret, synaps_ret)
         
     def test_get_metric_statistics(self):
         end_time = datetime.datetime.now()
