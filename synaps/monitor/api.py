@@ -54,10 +54,9 @@ class API(object):
         for metric in extract_member_list(metric_data):
             dimensions = extract_member_dict(metric.get('dimensions'))
             metric_name = metric.get('metric_name')
-            unit = metric.get('unit', 'None')
+            unit = metric.get('unit', None)
             value = metric.get('value')
             timestamp = metric.get('timestamp', time.time())
-            cass.put_metric(project_id, namespace, metric_name, dimensions,
-                            value, timestamp, unit)
-
+            cass.put_metric_data(project_id, namespace, metric_name,
+                                 dimensions, value, unit, timestamp)
         return {}

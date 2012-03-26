@@ -20,7 +20,8 @@ class MonitorController(object):
         return 'MonitorController'
 
     def put_metric_data(self, context, namespace, metric_data, **kwargs):
-        ret = self.monitor_api.put_metric_data(context, namespace, metric_data)
+        ret = self.monitor_api.put_metric_data(context, namespace,
+                                               metric_data)
         return ret
 
     def get_metric_statistics(self, context, **kwargs):
@@ -51,7 +52,7 @@ class MonitorController(object):
             "list_metrics_result": {
                 "Metrics": [
                     {
-                        'dimensions':{
+                        'Dimensions':{
                             'member':{
                                 'name': 'InstanceId',
                                 'value': 'i-d8a598ba'
@@ -60,7 +61,7 @@ class MonitorController(object):
                         'metric_name': 'NetworkOut',
                         'namespace': 'AWS/EC2'
                     }, {
-                        'dimensions':{
+                        'Dimensions':{
                             'member':{
                                 'name': 'InstanceId',
                                 'value': 'i-d8a598ba'

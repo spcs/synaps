@@ -1,11 +1,37 @@
+import time
 import uuid
 import pycassa
+from pycassa import types
+import struct
 
 from synaps import flags
 from synaps import log as logging
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
+
+class MetricValueType(types.DoubleType):
+    @staticmethod
+    def pack(v, *args, **kwargs):
+        return struct.pack(">d", v)
+    
+    @staticmethod
+    def unpack(v):
+        return struct.unpack(">d", v)[0]
+
+class MetricIdType(types.LexicalUUIDType):
+    @staticmethod
+    def new():
+        return MetricIdType.pack(uuid.uuid4())
+    
+    @staticmethod
+    def pack(v, *args, **kwargs):
+        assert(isinstance(v, uuid.UUID))
+        return v.get_bytes()
+    
+    @staticmethod
+    def unpack(v):        
+        return uuid.UUID(bytes=v)
 
 class Cassandra(object):
     TWOWEEK = 60 * 60 * 24 * 14 # 2weeks in sec
@@ -34,17 +60,16 @@ class Cassandra(object):
         # initialize database scheme
         try:
             manager.create_keyspace(keyspace,
-                                    strategy_options={'replication_factor': '1'})
+                                    strategy_options={'replication_factor':
+                                                      '1'})
             manager.create_column_family(keyspace=keyspace,
                                          name='MetricLookup',
                                          super=True)
-            manager.create_column_family(keyspace=keyspace,
-                                         name='Metric',
-                                         comparator_type='TimeUUIDType',
-                                         super=True)
+            manager.create_column_family(keyspace=keyspace, super=True,
+                                         name='Metric')
             manager.create_column_family(keyspace=keyspace,
                                          name='MetricArchive',
-                                         comparator_type='DateType')
+                                         comparator_type="DateType")
             LOG.info(_("cassandra column families are generated"))
         except:
             LOG.critical(_("failed to initialization"))        
@@ -61,28 +86,42 @@ class Cassandra(object):
     def _build_scn(self, project_id, namespace):
         return project_id + ":" + namespace
     
-    def _gen_uuid(self):
-        return uuid.uuid4()
+    def get_metric_data(self, project_id, namespace, metric_name, dimensions,
+                        start, end):
 
-    def put_metric(self, project_id, namespace, metric_name, dimensions, value,
-                   timestamp=None, unit=None):
+        metric_id = self._get_metric_id(project_id, namespace, metric_name,
+                                        dimensions)
+        return self.cf_metric_archive.get(metric_id, column_start=start,
+                                          column_finish=end)
+    
+    def _get_metric_id(self, project_id, namespace, metric_name, dimensions):
+        lookupkey = self._serialize_dimension(dimensions)
+        scn = self._build_scn(project_id, namespace)
+        
+        metric = self.scf_metric_lookup.get(key=lookupkey,
+                                            super_column=scn,
+                                            columns=[metric_name, ],
+                                            column_count=1)
+        return metric.get(metric_name)
+        
+
+    def put_metric_data(self, project_id, namespace, metric_name, dimensions,
+                        value, unit=None, timestamp=None):
         
         lookupkey = self._serialize_dimension(dimensions)
         scn = self._build_scn(project_id, namespace)
         
         try:
-            metric_id = self.scf_metric_lookup.get(key=lookupkey,
-                                                    super_column=scn,
-                                                    columns=[metric_name, ],
-                                                    column_count=1)
+            metric_id = self._get_metric_id(project_id, namespace, metric_name,
+                                            dimensions)
             
         except pycassa.NotFoundException:
             # create metric
-            metric_id = self._gen_uuid()
+            unit = unit if unit else "None"
+            metric_id = MetricIdType.new()
             columns = {scn: {'dimensions': lookupkey,
                              'metric_name': metric_name,
                              'unit': unit}}
-            LOG.info("metric_id: " + str(metric_id))
             self.scf_metric.insert(metric_id, columns)
             
             # create metric lookup index
@@ -90,7 +129,14 @@ class Cassandra(object):
             self.scf_metric_lookup.insert(lookupkey, columns)
             
         # put metric data
-        self.cf_metric_archive.insert(metric_id, {timestamp: value},
+        timestamp = timestamp if timestamp else time.time()
+        
+        self.cf_metric_archive.insert(metric_id,
+                                      {timestamp: MetricValueType.pack(value)},
                                       ttl=self.TWOWEEK)
         
-        return
+        return metric_id
+
+    def list_metrics(self, project_id, namespace, metric_name, dimensions):
+        #TODO: (june.yi) implement it
+        pass
