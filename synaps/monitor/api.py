@@ -1,9 +1,10 @@
 # Copyright 2012 Samsung SDS
 # All Rights Reserved
+import time
 
 from synaps import flags
 from synaps import log as logging
-from synaps.db import *
+from synaps.db import Cassandra
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
@@ -46,40 +47,17 @@ def extract_member_dict(aws_dict, key='member'):
 
 class API(object):
     def put_metric_data(self, context, namespace, metric_data):
-        db = DB()
-        metric_by_namespace = MetricLookup(db.pool)
+        cass = Cassandra()
         project_id = context.project_id
         namespace = namespace
         
         for metric in extract_member_list(metric_data):
-            dimensions = extract_member_dict(metric['dimensions'])
-            metric_name = metric['metric_name']
-            unit = metric['unit']
-            metric_by_namespace.get_metricid_or_create(project_id, namespace,
-                                                       metric_name, dimensions,
-                                                       unit)
-        
-        # TODO:(june.yi) put_metric_data here, MAKE TESTCASE 
-        import pprint
-        LOG.info("context:\n" + pprint.pformat(context.to_dict()))
-        LOG.info("namespace:\n" + pprint.pformat(namespace))
-        LOG.info("metric_data\n" + pprint.pformat(metric_data))
-        
-        metrics = extract_member_list(metric_data)
-        
-#context:
-#{'auth_token': None,
-# 'is_admin': True,
-# 'project_id': u'AKIAIUIUQBYNQ3G327RA',
-# 'read_deleted': 'no',
-# 'remote_address': '127.0.0.1',
-# 'request_id': 'req-e03f36e0-5956-4114-8e32-fb7f3112c35c',
-# 'roles': ['admin'],
-# 'strategy': 'noauth',
-# 'timestamp': '2012-03-23T06:34:40.320632',
-# 'user_id': u'AKIAIUIUQBYNQ3G327RA'}
-        
+            dimensions = extract_member_dict(metric.get('dimensions'))
+            metric_name = metric.get('metric_name')
+            unit = metric.get('unit', 'None')
+            value = metric.get('value')
+            timestamp = metric.get('timestamp', time.time())
+            cass.put_metric(project_id, namespace, metric_name, dimensions,
+                            value, timestamp, unit)
 
-        
         return {}
-        
