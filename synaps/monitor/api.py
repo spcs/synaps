@@ -1,5 +1,6 @@
 # Copyright 2012 Samsung SDS
 # All Rights Reserved
+
 import time
 
 from synaps import flags
@@ -46,8 +47,10 @@ def extract_member_dict(aws_dict, key='member'):
     return dict(member_list)
 
 class API(object):
+    def __init__(self):
+        self.cass = Cassandra()
+    
     def put_metric_data(self, context, namespace, metric_data):
-        cass = Cassandra()
         project_id = context.project_id
         namespace = namespace
         
@@ -57,6 +60,17 @@ class API(object):
             unit = metric.get('unit', None)
             value = metric.get('value')
             timestamp = metric.get('timestamp', time.time())
-            cass.put_metric_data(project_id, namespace, metric_name,
-                                 dimensions, value, unit, timestamp)
+            self.cass.put_metric_data(project_id, namespace, metric_name,
+                                      dimensions, value, unit, timestamp)
         return {}
+
+    def list_metrics(self, context, next_token=None, dimensions=None,
+                     metric_name=None, namespace=None):
+        project_id = context.project_id
+        dimensions = extract_member_dict(dimensions) if dimensions else None
+        
+        metrics = self.cass.list_metrics(project_id, namespace, metric_name,
+                                         dimensions, next_token)
+        
+        return metrics        
+        

@@ -1,8 +1,12 @@
+# Copyright 2012 Samsung SDS
+# All Rights Reserved
+
 import time
 import uuid
 import pycassa
 from pycassa import types
 import struct
+import json
 
 from synaps import flags
 from synaps import log as logging
@@ -19,20 +23,6 @@ class MetricValueType(types.DoubleType):
     def unpack(v):
         return struct.unpack(">d", v)[0]
 
-class MetricIdType(types.LexicalUUIDType):
-    @staticmethod
-    def new():
-        return MetricIdType.pack(uuid.uuid4())
-    
-    @staticmethod
-    def pack(v, *args, **kwargs):
-        assert(isinstance(v, uuid.UUID))
-        return v.get_bytes()
-    
-    @staticmethod
-    def unpack(v):        
-        return uuid.UUID(bytes=v)
-
 class Cassandra(object):
     TWOWEEK = 60 * 60 * 24 * 14 # 2weeks in sec
     
@@ -40,9 +30,7 @@ class Cassandra(object):
         keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
         self.pool = pycassa.ConnectionPool(keyspace)
         
-        self.scf_metric = pycassa.ColumnFamily(self.pool, 'Metric')
-        self.scf_metric_lookup = pycassa.ColumnFamily(self.pool,
-                                                      'MetricLookup')
+        self.cf_metric = pycassa.ColumnFamily(self.pool, 'Metric')
         self.cf_metric_archive = pycassa.ColumnFamily(self.pool,
                                                       'MetricArchive')
         
@@ -62,81 +50,112 @@ class Cassandra(object):
             manager.create_keyspace(keyspace,
                                     strategy_options={'replication_factor':
                                                       '1'})
-            manager.create_column_family(keyspace=keyspace,
-                                         name='MetricLookup',
-                                         super=True)
-            manager.create_column_family(keyspace=keyspace, super=True,
-                                         name='Metric')
+
+            manager.create_column_family(keyspace=keyspace, name='Metric')
+            manager.create_index(keyspace=keyspace, column_family='Metric',
+                                column='project_id',
+                                value_type=types.UTF8Type())
+            manager.create_index(keyspace=keyspace, column_family='Metric',
+                                 column='name',
+                                 value_type=types.UTF8Type())
+            manager.create_index(keyspace=keyspace, column_family='Metric',
+                                 column='namespace',
+                                 value_type=types.UTF8Type())
+
+
             manager.create_column_family(keyspace=keyspace,
                                          name='MetricArchive',
                                          comparator_type="DateType")
+
             LOG.info(_("cassandra column families are generated"))
-        except:
-            LOG.critical(_("failed to initialization"))        
-    
-    def _serialize_dimension(self, dimensions):
-        """
-          {'name1': 'value1', 'name2': 'value2'}
-        will be serialized to        
-          name1=value1,name2=value2
-        """
-        items = map("=".join, sorted(dimensions.items()))
-        return ",".join(items)
-    
-    def _build_scn(self, project_id, namespace):
-        return project_id + ":" + namespace
+        except Exception as ex:
+            LOG.critical(_("failed to initialization: %s") % ex)        
     
     def get_metric_data(self, project_id, namespace, metric_name, dimensions,
                         start, end):
 
-        metric_id = self._get_metric_id(project_id, namespace, metric_name,
-                                        dimensions)
-        return self.cf_metric_archive.get(metric_id, column_start=start,
+        key = self.get_metric_key(project_id, namespace, metric_name,
+                                  dimensions)
+        return self.cf_metric_archive.get(key, column_start=start,
                                           column_finish=end)
     
-    def _get_metric_id(self, project_id, namespace, metric_name, dimensions):
-        lookupkey = self._serialize_dimension(dimensions)
-        scn = self._build_scn(project_id, namespace)
         
-        metric = self.scf_metric_lookup.get(key=lookupkey,
-                                            super_column=scn,
-                                            columns=[metric_name, ],
-                                            column_count=1)
-        return metric.get(metric_name)
+    def get_metric_key(self, project_id, namespace, metric_name, dimensions):
+        expr_list = [
+            pycassa.create_index_expression("project_id", project_id),
+            pycassa.create_index_expression("name", metric_name),
+            pycassa.create_index_expression("namespace", namespace)             
+        ]
+
+        index_clause = pycassa.create_index_clause(expr_list)
         
+        items = self.cf_metric.get_indexed_slices(index_clause)
+
+        for k, v in items:
+            if json.loads(v['dimensions']) == dimensions: 
+                return k
+        return None
 
     def put_metric_data(self, project_id, namespace, metric_name, dimensions,
                         value, unit=None, timestamp=None):
         
-        lookupkey = self._serialize_dimension(dimensions)
-        scn = self._build_scn(project_id, namespace)
+        # get metric key
+        key = self.get_metric_key(project_id, namespace, metric_name,
+                                  dimensions)
         
-        try:
-            metric_id = self._get_metric_id(project_id, namespace, metric_name,
-                                            dimensions)
-            
-        except pycassa.NotFoundException:
-            # create metric
-            unit = unit if unit else "None"
-            metric_id = MetricIdType.new()
-            columns = {scn: {'dimensions': lookupkey,
-                             'metric_name': metric_name,
-                             'unit': unit}}
-            self.scf_metric.insert(metric_id, columns)
-            
-            # create metric lookup index
-            columns = {scn: {metric_name:metric_id}}
-            self.scf_metric_lookup.insert(lookupkey, columns)
-            
-        # put metric data
-        timestamp = timestamp if timestamp else time.time()
+        # or create metric 
+        if not key:
+            key = uuid.uuid1().get_bytes()
+            json_dim = json.dumps(dimensions)
+            columns = {'project_id': project_id, 'namespace': namespace,
+                       'name': metric_name, 'dimensions': json_dim}
         
-        self.cf_metric_archive.insert(metric_id,
-                                      {timestamp: MetricValueType.pack(value)},
-                                      ttl=self.TWOWEEK)
+            self.cf_metric.insert(key=key, columns=columns)
         
-        return metric_id
+        # and put metric
+        if not timestamp:
+            timestamp = time.time()
+        
+        metric_col = {timestamp: MetricValueType.pack(value)}
+        self.cf_metric_archive.insert(key=key, columns=metric_col)
+        LOG.debug("PUT metric id %s: %s" % (repr(key), metric_col))
+        
+        return key 
 
-    def list_metrics(self, project_id, namespace, metric_name, dimensions):
-        #TODO: (june.yi) implement it
-        pass
+    def list_metrics(self, project_id, namespace=None, metric_name=None,
+                     dimensions=None, next_token=""):
+        def to_dict(v):
+            return {'project_id': v['project_id'],
+                    'dimensions': json.loads(v['dimensions']),
+                    'name': v['name'],
+                    'namespace': v['namespace']}
+                    
+        
+        def check_dimension(item):
+            if isinstance(dimensions, dict): 
+                def to_set(d):
+                    return set(d.items())
+                    
+                l_set = to_set(dimensions)
+                r_set = to_set(json.loads(item['dimensions']))
+                print l_set, r_set, l_set.issubset(r_set)
+                return l_set.issubset(r_set)
+            return True
+        
+        expr_list = [pycassa.create_index_expression("project_id",
+                                                     project_id), ]
+        if namespace:
+            expr = pycassa.create_index_expression("namespace", namespace)
+            expr_list.append(expr)
+            
+        if metric_name:
+            expr = pycassa.create_index_expression("name", metric_name)
+            expr_list.append(expr)
+            
+        index_clause = pycassa.create_index_clause(expr_list)
+        items = self.cf_metric.get_indexed_slices(index_clause)
+        
+        metrics = [(k, to_dict(v)) for k, v in items if check_dimension(v)]
+        
+        return metrics
+            

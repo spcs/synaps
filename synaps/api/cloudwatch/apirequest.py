@@ -118,12 +118,12 @@ class APIRequest(object):
             raise
 
     def _render_data(self, xml, el_name, data):
-        el_name = _underscore_to_xmlcase(el_name)
+        el_name = 'member' if el_name == 'member' else _underscore_to_camelcase(el_name)
         data_el = xml.createElement(el_name)
 
         if isinstance(data, list):
             for item in data:
-                data_el.appendChild(self._render_data(xml, 'item', item))
+                data_el.appendChild(self._render_data(xml, 'member', item))
         elif isinstance(data, dict):
             self._render_dict(xml, data_el, data)
         elif hasattr(data, '__dict__'):

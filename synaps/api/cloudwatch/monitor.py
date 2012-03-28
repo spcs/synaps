@@ -27,52 +27,31 @@ class MonitorController(object):
     def get_metric_statistics(self, context, **kwargs):
         return {}
 
-    def list_metrics(self, context, **kwargs):
-        #<ListMetricsResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">
-        #  <ListMetricsResult>
-        #    <Metrics>
-        #      <member>
-        #        <Dimensions>
-        #          <member>
-        #            <Name>InstanceId</Name>
-        #            <Value>i-d8a598ba</Value>
-        #          </member>
-        #        </Dimensions>
-        #        <MetricName>NetworkOut</MetricName>
-        #        <Namespace>AWS/EC2</Namespace>
-        #      </member>
-        #    </Metrics>
-        #  </ListMetricsResult>
-        #  <ResponseMetadata>
-        #    <RequestId>613102e7-6bff-11e1-9ea2-0fd041a23246</RequestId>
-        #  </ResponseMetadata>
-        #</ListMetricsResponse>
-
-        return {
-            "list_metrics_result": {
-                "Metrics": [
-                    {
-                        'Dimensions':{
-                            'member':{
-                                'name': 'InstanceId',
-                                'value': 'i-d8a598ba'
-                            }
-                        },
-                        'metric_name': 'NetworkOut',
-                        'namespace': 'AWS/EC2'
-                    }, {
-                        'Dimensions':{
-                            'member':{
-                                'name': 'InstanceId',
-                                'value': 'i-d8a598ba'
-                            }
-                        },
-                        'metric_name': 'NetworkOut',
-                        'namespace': 'AWS/EC2'
-                    },
-                            
-                ]
-            }
-        }
-
-
+    def list_metrics(self, context, next_token=None, dimensions=None,
+                     metric_name=None, namespace=None):
+        
+        def to_aws_dimensions(dimensions):
+            """
+            convert dictionary 
+            
+            >>> dimensions = {'name1': 'value1', 'name2': 'value2'}
+            >>> to_aws_dimensions(dimensions)
+            [{'name1': 'value1'}, {'name2', 'value2'}]
+            """
+            return [{'name':k, 'value':v} for k, v in dimensions.items()]
+        
+        def to_aws_metric(metric):
+            k, v = metric
+            ret = {}
+            ret['dimensions'] = to_aws_dimensions(v['dimensions'])
+            ret['metric_name'] = v['name']
+            ret['namespace'] = v['namespace']
+            return ret
+        
+        metrics = self.monitor_api.list_metrics(context, next_token, dimensions,
+                                                metric_name, namespace)
+        
+        
+        metrics = map(to_aws_metric, metrics)
+        
+        return {'ListMetricsResult': {'Metrics': metrics} }

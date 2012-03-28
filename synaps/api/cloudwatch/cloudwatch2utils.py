@@ -177,10 +177,10 @@ def _try_convert(value):
 
 def dict_from_dotted_str(items):
     """parse multi dot-separated argument into dict.
-    EBS boot uses multi dot-separated arguments like
-    BlockDeviceMapping.1.DeviceName=snap-id
+    Dimensions uses multi dot-separated arguments like
+    Dimensions.1.Name=Value
     Convert the above into
-    {'block_device_mapping': {'1': {'device_name': snap-id}}}
+    {'dimensions': {'1': {'name': 'value'}}}
     """
     args = {}
     for key, value in items:
