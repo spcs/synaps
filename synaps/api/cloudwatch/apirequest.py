@@ -81,7 +81,7 @@ class APIRequest(object):
 
         result = method(context, **args)
         rendered_result = self._render_response(result, context.request_id)
-        LOG.info("rendered result: %s" % rendered_result) #TODO: DeleteMe
+        LOG.debug("rendered result: %s" % rendered_result)
         return rendered_result
 
     def _render_response(self, response_data, request_id):

@@ -5,6 +5,7 @@ from setuptools import find_packages
 from setuptools import setup
 from synaps import version
 
+synaps_cmdclass = {}
 
 def find_data_files(destdir, srcdir):
     package_data = []
@@ -18,6 +19,20 @@ def find_data_files(destdir, srcdir):
     package_data += [(destdir, files)]
     return package_data
 
+try:
+    from sphinx.setup_command import BuildDoc
+
+    class local_BuildDoc(BuildDoc):
+        def run(self):
+            for builder in ['html', 'man']:
+                self.builder = builder
+                self.finalize_options()
+                BuildDoc.run(self)
+    synaps_cmdclass['build_sphinx'] = local_BuildDoc
+
+except:
+    pass
+
 setup(
     name='synaps',
     version=version.canonical_version_string(),
@@ -25,8 +40,10 @@ setup(
     author='Samsung SDS',
     author_email='june.yi@samsung.com',
     url='http://www.sdscloud.co.kr/',
+    cmdclass=synaps_cmdclass,
     packages=find_packages(exclude=['bin']),
     include_package_data=True,
-    scripts=['bin/synaps-api-cloudwatch'],
+    scripts=['bin/synaps-api-cloudwatch',
+             'bin/synaps-db-initialsetup'],
     py_modules=[]
 )

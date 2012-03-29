@@ -284,7 +284,7 @@ class ConfigFilesNotFoundError(Error):
         self.config_files = config_files
 
     def __str__(self):
-        return ('Failed to read some config files: %s' %
+        return ('Failed to read some config files: %s' % 
                 string.join(self.config_files, ','))
 
 
@@ -351,7 +351,6 @@ def find_config_files(project=None, prog=None):
     if project:
         config_files.append(search_dirs(cfg_dirs, '%s.conf' % project))
     config_files.append(search_dirs(cfg_dirs, '%s.conf' % prog))
-
     return filter(bool, config_files)
 
 
@@ -745,7 +744,7 @@ class ConfigOpts(collections.Mapping, object):
                         help='Path to a config file to use. Multiple config '
                              'files can be specified, with values in later '
                              'files taking precedence. The default files used '
-                             'are: %s' % (self.default_config_files, )))
+                             'are: %s' % (self.default_config_files,)))
 
     def __call__(self, args=None):
         """Parse command line arguments and config files.

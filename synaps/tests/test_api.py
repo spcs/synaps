@@ -58,9 +58,9 @@ class ApiCloudwatchTestCase(unittest.TestCase):
                 dimensions={'test id':'synaps test2'},
             )
             self.assertTrue(synaps_ret)            
-            
+
         # 2. check if the metrics are created properly
-        # 2.1. fetch metrics using 1st dimensions    
+        # 2.1. fetch metrics using 1st dimensions 
         synaps_metrics = self.synaps.list_metrics(
             dimensions={'test id':'synaps test'},
             metric_name=metric_name,

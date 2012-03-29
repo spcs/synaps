@@ -171,9 +171,11 @@ def handle_flagfiles_managed(args):
 
     For use with the 'with' statement, i.e.
 
+    ..
         with handle_flagfiles_managed(args) as args:
              # Do stuff
         # Any temporary fils have been removed
+        
     '''
     tempdir = tempfile.mkdtemp(prefix='synaps-conf-')
     try:

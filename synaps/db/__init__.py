@@ -28,6 +28,7 @@ class Cassandra(object):
     
     def __init__(self):
         keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
+        
         self.pool = pycassa.ConnectionPool(keyspace)
         
         self.cf_metric = pycassa.ColumnFamily(self.pool, 'Metric')

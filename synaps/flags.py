@@ -44,7 +44,7 @@ class SynapsConfigOpts(cfg.CommonConfigOpts):
         with flagfile.handle_flagfiles_managed(argv[1:]) as args:
             return argv[:1] + super(SynapsConfigOpts, self).__call__(args)
 
-FLAGS = SynapsConfigOpts()
+FLAGS = SynapsConfigOpts(project="synaps")
 
 
 class UnrecognizedFlag(Exception):
@@ -96,8 +96,11 @@ core_opts = [
 #    cfg.StrOpt('sql_connection',
 #               default='sqlite:///$state_path/$sqlite_db',
 #               help='connection string for sql database'),
+    cfg.ListOpt('cassandra_server_list',
+                default=['localhost:9160', ],
+                help='cassandra cluster'),
     cfg.StrOpt('cassandra_keyspace',
-               default='synaps',
+               default='synaps_test',
                help='cassandra key space'),
     cfg.StrOpt('api_paste_config',
                default="api-paste.ini",

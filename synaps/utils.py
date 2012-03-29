@@ -7,10 +7,16 @@ import os
 import sys
 import uuid
 import datetime
+import shlex
 import pyclbr
+import random
 import inspect
 import socket
 import re
+import types
+
+from eventlet import greenthread
+from eventlet.green import subprocess
 
 from synaps import flags
 from synaps import exception
@@ -192,11 +198,11 @@ def cleanup_file_locks():
         if match is None:
             continue
         pid = match.group(1)
-        LOG.debug(_('Found sentinel %(filename)s for pid %(pid)s' %
+        LOG.debug(_('Found sentinel %(filename)s for pid %(pid)s' % 
                     {'filename': filename, 'pid': pid}))
         if not os.path.exists(os.path.join('/proc', pid)):
             delete_if_exists(os.path.join(FLAGS.lock_path, filename))
-            LOG.debug(_('Cleaned sentinel %(filename)s for pid %(pid)s' %
+            LOG.debug(_('Cleaned sentinel %(filename)s for pid %(pid)s' % 
                         {'filename': filename, 'pid': pid}))
 
     # cleanup lock files
@@ -211,12 +217,12 @@ def cleanup_file_locks():
                 continue
             else:
                 raise
-        msg = _('Found lockfile %(file)s with link count %(count)d' %
+        msg = _('Found lockfile %(file)s with link count %(count)d' % 
                 {'file': filename, 'count': stat_info.st_nlink})
         LOG.debug(msg)
         if stat_info.st_nlink == 1:
             delete_if_exists(os.path.join(FLAGS.lock_path, filename))
-            msg = _('Cleaned lockfile %(file)s with link count %(count)d' %
+            msg = _('Cleaned lockfile %(file)s with link count %(count)d' % 
                     {'file': filename, 'count': stat_info.st_nlink})
             LOG.debug(msg)
             
@@ -230,3 +236,76 @@ def delete_if_exists(pathname):
             return
         else:
             raise                       
+
+def execute(*cmd, **kwargs):
+    """
+    Helper method to execute command with optional retry.
+
+    :cmd                Passed to subprocess.Popen.
+    :process_input      Send to opened process.
+    :check_exit_code    Defaults to 0. Raise exception.ProcessExecutionError
+                        unless program exits with this code.
+    :delay_on_retry     True | False. Defaults to True. If set to True, wait a
+                        short amount of time before retrying.
+    :attempts           How many times to retry cmd.
+    :run_as_root        True | False. Defaults to False. If set to True,
+                        the command is prefixed by the command specified
+                        in the root_helper FLAG.
+
+    :raises exception.Error on receiving unknown arguments
+    :raises exception.ProcessExecutionError
+    """
+
+    process_input = kwargs.pop('process_input', None)
+    check_exit_code = kwargs.pop('check_exit_code', 0)
+    delay_on_retry = kwargs.pop('delay_on_retry', True)
+    attempts = kwargs.pop('attempts', 1)
+    run_as_root = kwargs.pop('run_as_root', False)
+    if len(kwargs):
+        raise exception.Error(_('Got unknown keyword args '
+                                'to utils.execute: %r') % kwargs)
+
+    if run_as_root:
+        cmd = shlex.split(FLAGS.root_helper) + list(cmd)
+    cmd = map(str, cmd)
+
+    while attempts > 0:
+        attempts -= 1
+        try:
+            LOG.debug(_('Running cmd (subprocess): %s'), ' '.join(cmd))
+            _PIPE = -1 #(subprocess.PIPE)  # pylint: disable=E1101
+            obj = subprocess.Popen(cmd,
+                                   stdin=_PIPE,
+                                   stdout=_PIPE,
+                                   stderr=_PIPE,
+                                   close_fds=True)
+            result = None
+            if process_input is not None:
+                result = obj.communicate(process_input)
+            else:
+                result = obj.communicate()
+            obj.stdin.close()  # pylint: disable=E1101
+            _returncode = obj.returncode  # pylint: disable=E1101
+            if _returncode:
+                LOG.debug(_('Result was %s') % _returncode)
+                if type(check_exit_code) == types.IntType \
+                        and _returncode != check_exit_code:
+                    (stdout, stderr) = result
+                    raise exception.ProcessExecutionError(
+                            exit_code=_returncode,
+                            stdout=stdout,
+                            stderr=stderr,
+                            cmd=' '.join(cmd))
+            return result
+        except exception.ProcessExecutionError:
+            if not attempts:
+                raise
+            else:
+                LOG.debug(_('%r failed. Retrying.'), cmd)
+                if delay_on_retry:
+                    greenthread.sleep(random.randint(20, 200) / 100.0)
+        finally:
+            # NOTE(termie): this appears to be necessary to let the subprocess
+            #               call clean something up in between calls, without
+            #               it two execute calls in a row hangs the second one
+            greenthread.sleep(0)

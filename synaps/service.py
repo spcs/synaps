@@ -4,6 +4,8 @@
 # Administrator of the National Aeronautics and Space Administration.
 # Copyright 2011 Justin Santa Barbara
 # All Rights Reserved.
+# Copyright 2012 Samsung SDS
+# All Rights Reserved
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -16,6 +18,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+#
 
 """Generic Node base class for all workers that run on hosts."""
 
@@ -378,13 +381,19 @@ def serve(*servers):
 
 
 def wait():
+    def is_credential(flag, flag_get):
+        b_passwd = "_password" in flag
+        b_key = (flag is not "cassandra_keyspace") and ("_key" in flag)
+        b_mysql = (flag == "sql_connection" and "mysql:" in flag_get)
+        
+        return b_passwd or b_key or b_mysql
+        
     LOG.debug(_('Full set of FLAGS:'))
     for flag in FLAGS:
         flag_get = FLAGS.get(flag, None)
         # hide flag contents from log if contains a password
         # should use secret flag when switch over to openstack-common
-        if ("_password" in flag or "_key" in flag or
-                (flag == "sql_connection" and "mysql:" in flag_get)):
+        if is_credential(flag, flag_get):
             LOG.debug(_('%(flag)s : FLAG SET ') % locals())
         else:
             LOG.debug('%(flag)s : %(flag_get)s' % locals())
@@ -392,4 +401,3 @@ def wait():
         _launcher.wait()
     except KeyboardInterrupt:
         _launcher.stop()
-#    rpc.cleanup()
