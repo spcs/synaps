@@ -19,28 +19,29 @@ class MonitorController(object):
     def __str__(self):
         return 'MonitorController'
 
-    def put_metric_data(self, context, namespace, metric_data, **kwargs):
-        ret = self.monitor_api.put_metric_data(context, namespace,
-                                               metric_data)
-        return ret
+    def put_metric_data(self, context, namespace, metric_data):
+        """
+        Publishes metric data points to Synaps. If specified metric does not
+        exist Synaps creates the metric.
+        """
+        self.monitor_api.put_metric_data(context, namespace, metric_data)
+        return {}
 
     def get_metric_statistics(self, context, **kwargs):
         return {}
 
     def list_metrics(self, context, next_token=None, dimensions=None,
                      metric_name=None, namespace=None):
-        
-        def to_aws_dimensions(dimensions):
-            """
-            convert dictionary 
-            
-            >>> dimensions = {'name1': 'value1', 'name2': 'value2'}
-            >>> to_aws_dimensions(dimensions)
-            [{'name1': 'value1'}, {'name2', 'value2'}]
-            """
-            return [{'name':k, 'value':v} for k, v in dimensions.items()]
-        
+        """
+        Returns a list of valid metrics stored for the Synaps account owner. 
+        Returned metrics can be used with get_metric_statics to obtain 
+        statistical data for a given metric.
+        """
+
         def to_aws_metric(metric):
+            def to_aws_dimensions(dimensions):
+                return [{'name':k, 'value':v} for k, v in dimensions.items()]
+            
             k, v = metric
             ret = {}
             ret['dimensions'] = to_aws_dimensions(v['dimensions'])
@@ -50,8 +51,6 @@ class MonitorController(object):
         
         metrics = self.monitor_api.list_metrics(context, next_token, dimensions,
                                                 metric_name, namespace)
-        
-        
         metrics = map(to_aws_metric, metrics)
         
-        return {'ListMetricsResult': {'Metrics': metrics} }
+        return {'ListMetricsResult': {'Metrics': metrics}}

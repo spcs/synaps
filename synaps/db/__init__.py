@@ -28,8 +28,8 @@ class Cassandra(object):
     
     def __init__(self):
         keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
-        
-        self.pool = pycassa.ConnectionPool(keyspace)
+        serverlist = FLAGS.get("cassandra_server_list")
+        self.pool = pycassa.ConnectionPool(keyspace, server_list=serverlist)
         
         self.cf_metric = pycassa.ColumnFamily(self.pool, 'Metric')
         self.cf_metric_archive = pycassa.ColumnFamily(self.pool,
@@ -38,11 +38,12 @@ class Cassandra(object):
     @staticmethod
     def reset():
         keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
-        manager = pycassa.SystemManager()
+        serverlist = FLAGS.get("cassandra_server_list")
+        manager = pycassa.SystemManager(server=serverlist[0])
         # drop keyspace
         try:
             manager.drop_keyspace(keyspace)
-            LOG.info(_("cassandra keyspace %s dropped") % keyspace)
+            LOG.info(_("cassandra keyspace, %s is dropped") % keyspace)
         except:
             LOG.critical(_("failed to drop cassandra keyspace, %s") % keyspace)
     
@@ -63,14 +64,13 @@ class Cassandra(object):
                                  column='namespace',
                                  value_type=types.UTF8Type())
 
-
             manager.create_column_family(keyspace=keyspace,
                                          name='MetricArchive',
                                          comparator_type="DateType")
 
             LOG.info(_("cassandra column families are generated"))
         except Exception as ex:
-            LOG.critical(_("failed to initialization: %s") % ex)        
+            LOG.critical(_("failed to initialize: %s") % ex)        
     
     def get_metric_data(self, project_id, namespace, metric_name, dimensions,
                         start, end):
@@ -130,7 +130,6 @@ class Cassandra(object):
                     'dimensions': json.loads(v['dimensions']),
                     'name': v['name'],
                     'namespace': v['namespace']}
-                    
         
         def check_dimension(item):
             if isinstance(dimensions, dict): 
@@ -139,7 +138,6 @@ class Cassandra(object):
                     
                 l_set = to_set(dimensions)
                 r_set = to_set(json.loads(item['dimensions']))
-                print l_set, r_set, l_set.issubset(r_set)
                 return l_set.issubset(r_set)
             return True
         
@@ -159,4 +157,3 @@ class Cassandra(object):
         metrics = [(k, to_dict(v)) for k, v in items if check_dimension(v)]
         
         return metrics
-            
