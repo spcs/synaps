@@ -14,6 +14,7 @@ import inspect
 import socket
 import re
 import types
+import time
 
 from eventlet import greenthread
 from eventlet.green import subprocess
@@ -41,6 +42,32 @@ def utcnow():
     return datetime.datetime.utcnow()
 
 utcnow.override_time = None
+
+def align_metrictime(timestamp, resolution=60):
+    """
+    Align timestamp of metric for statistics 
+    
+      >>> get_statpoint(150.0, 60.0)
+      120.0
+      >>> get_statpoint(150.1, 60.0)
+      180.0       
+    """
+    timestamp = int(timestamp)
+    mod = timestamp / resolution
+    rest2 = 2 * (timestamp % resolution)
+    
+    if rest2 < resolution:
+        return mod * resolution 
+    else: 
+        return (mod + 1) * resolution
+    
+
+def str_to_timestamp(timestr, fmt=PERFECT_TIME_FORMAT):
+    if isinstance(timestr, str):
+        at = parse_strtime(timestr, fmt)
+        return time.mktime(at.timetuple())
+    else:
+        return time.time()
 
 def parse_strtime(timestr, fmt=PERFECT_TIME_FORMAT):
     """Turn a formatted time back into a datetime."""

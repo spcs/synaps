@@ -10,6 +10,7 @@ import json
 
 from synaps import flags
 from synaps import log as logging
+from synaps import utils
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
@@ -29,11 +30,15 @@ class Cassandra(object):
     def __init__(self):
         keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
         serverlist = FLAGS.get("cassandra_server_list")
+        self.archives = [60, 60 * 5, 60 * 15, 60 * 60, 60 * 360, 60 * 1440]
+        
         self.pool = pycassa.ConnectionPool(keyspace, server_list=serverlist)
         
         self.cf_metric = pycassa.ColumnFamily(self.pool, 'Metric')
         self.cf_metric_archive = pycassa.ColumnFamily(self.pool,
                                                       'MetricArchive')
+        self.scf_stat_archive = pycassa.ColumnFamily(self.pool,
+                                                     'StatArchive')
         
     @staticmethod
     def reset():
@@ -68,6 +73,12 @@ class Cassandra(object):
                                          name='MetricArchive',
                                          comparator_type="DateType")
 
+            manager.create_column_family(keyspace=keyspace,
+                                         name='StatArchive',
+                                         super=True,
+                                         comparator_type="IntegerType",
+                                         subcomparator_type="DateType")
+
             LOG.info(_("cassandra column families are generated"))
         except Exception as ex:
             LOG.critical(_("failed to initialize: %s") % ex)        
@@ -99,7 +110,9 @@ class Cassandra(object):
 
     def put_metric_data(self, project_id, namespace, metric_name, dimensions,
                         value, unit=None, timestamp=None):
-        
+        # convert timestamp
+        timestamp = utils.str_to_timestamp(timestamp) 
+
         # get metric key
         key = self.get_metric_key(project_id, namespace, metric_name,
                                   dimensions)
@@ -114,12 +127,13 @@ class Cassandra(object):
             self.cf_metric.insert(key=key, columns=columns)
         
         # and put metric
-        if not timestamp:
-            timestamp = time.time()
         
         metric_col = {timestamp: MetricValueType.pack(value)}
-        self.cf_metric_archive.insert(key=key, columns=metric_col)
         LOG.debug("PUT metric id %s: %s" % (repr(key), metric_col))
+        self.cf_metric_archive.insert(key=key, columns=metric_col)
+        
+        # and build statistics data
+        # TODO: build statistics data
         
         return key 
 
