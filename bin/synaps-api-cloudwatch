@@ -29,5 +29,4 @@ if __name__ == "__main__":
 
     server = service.WSGIService('cloudwatch')
     service.serve(server)
-    service.wait()
-    
+    service.wait()   

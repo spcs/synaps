@@ -401,3 +401,7 @@ def wait():
         _launcher.wait()
     except KeyboardInterrupt:
         _launcher.stop()
+    else:
+        LOG.info("bye")
+        _launcher.stop()
+        

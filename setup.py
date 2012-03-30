@@ -43,7 +43,8 @@ setup(
     cmdclass=synaps_cmdclass,
     packages=find_packages(exclude=['bin']),
     include_package_data=True,
-    scripts=['bin/synaps-api-cloudwatch',
-             'bin/synaps-db-initialsetup'],
+    data_files=[('/etc/init.d', ['etc/init.d/synaps-api'])],
+    scripts=['bin/synaps-db-initialsetup',
+             'bin/synaps-api-cloudwatch', ],
     py_modules=[]
 )
