@@ -15,14 +15,8 @@ from synaps import utils
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
 
-class MetricValueType(types.DoubleType):
-    @staticmethod
-    def pack(v, *args, **kwargs):
-        return struct.pack(">d", v)
-    
-    @staticmethod
-    def unpack(v):
-        return struct.unpack(">d", v)[0]
+STAT_TYPE = types.CompositeType(types.IntegerType(), # statistics resolution
+                                types.AsciiType()) # Average | SampleCount ... 
 
 class Cassandra(object):
     TWOWEEK = 60 * 60 * 24 * 14 # 2weeks in sec
@@ -58,7 +52,10 @@ class Cassandra(object):
                                     strategy_options={'replication_factor':
                                                       '1'})
 
-            manager.create_column_family(keyspace=keyspace, name='Metric')
+            manager.create_column_family(
+                keyspace=keyspace, name='Metric',
+                key_validation_class=pycassa.LEXICAL_UUID_TYPE
+            )
             manager.create_index(keyspace=keyspace, column_family='Metric',
                                 column='project_id',
                                 value_type=types.UTF8Type())
@@ -69,15 +66,21 @@ class Cassandra(object):
                                  column='namespace',
                                  value_type=types.UTF8Type())
 
-            manager.create_column_family(keyspace=keyspace,
-                                         name='MetricArchive',
-                                         comparator_type="DateType")
+            manager.create_column_family(
+                keyspace=keyspace,
+                name='MetricArchive',
+                comparator_type="DateType",
+                key_validation_class=pycassa.LEXICAL_UUID_TYPE,
+                default_validation_class=pycassa.DOUBLE_TYPE
+            )
 
-            manager.create_column_family(keyspace=keyspace,
-                                         name='StatArchive',
-                                         super=True,
-                                         comparator_type="IntegerType",
-                                         subcomparator_type="DateType")
+            manager.create_column_family(
+                keyspace=keyspace, name='StatArchive', super=True,
+                key_validation_class=pycassa.LEXICAL_UUID_TYPE,
+                comparator_type=STAT_TYPE,
+                subcomparator_type=pycassa.DATE_TYPE,
+                default_validation_class=pycassa.DOUBLE_TYPE
+            )
 
             LOG.info(_("cassandra column families are generated"))
         except Exception as ex:
@@ -119,7 +122,7 @@ class Cassandra(object):
         
         # or create metric 
         if not key:
-            key = uuid.uuid1().get_bytes()
+            key = uuid.uuid4()
             json_dim = json.dumps(dimensions)
             columns = {'project_id': project_id, 'namespace': namespace,
                        'name': metric_name, 'dimensions': json_dim}
@@ -128,8 +131,8 @@ class Cassandra(object):
         
         # and put metric
         
-        metric_col = {timestamp: MetricValueType.pack(value)}
-        LOG.debug("PUT metric id %s: %s" % (repr(key), metric_col))
+        metric_col = {timestamp: value}
+        LOG.debug("PUT metric id %s: %s" % (key, metric_col))
         self.cf_metric_archive.insert(key=key, columns=metric_col)
         
         # and build statistics data

@@ -5,7 +5,7 @@ import unittest
 import time
 import pycassa
 
-from synaps.db import Cassandra, MetricValueType
+from synaps.db import Cassandra
 
 
 class TestCassandra(unittest.TestCase):
