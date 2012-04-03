@@ -4,6 +4,7 @@
 import time
 import uuid
 import pycassa
+import datetime
 from pycassa import types
 import struct
 import json
@@ -20,11 +21,11 @@ STAT_TYPE = types.CompositeType(types.IntegerType(), # statistics resolution
 
 class Cassandra(object):
     TWOWEEK = 60 * 60 * 24 * 14 # 2weeks in sec
+    ARCHIVE = map(lambda x: x * 60, [1, 5, 15, 60, 360, 1440])
     
     def __init__(self):
         keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
         serverlist = FLAGS.get("cassandra_server_list")
-        self.archives = [60, 60 * 5, 60 * 15, 60 * 60, 60 * 360, 60 * 1440]
         
         self.pool = pycassa.ConnectionPool(keyspace, server_list=serverlist)
         
@@ -53,7 +54,8 @@ class Cassandra(object):
                                                       '1'})
 
             manager.create_column_family(
-                keyspace=keyspace, name='Metric',
+                keyspace=keyspace,
+                name='Metric',
                 key_validation_class=pycassa.LEXICAL_UUID_TYPE
             )
             manager.create_index(keyspace=keyspace, column_family='Metric',
@@ -69,13 +71,14 @@ class Cassandra(object):
             manager.create_column_family(
                 keyspace=keyspace,
                 name='MetricArchive',
-                comparator_type="DateType",
                 key_validation_class=pycassa.LEXICAL_UUID_TYPE,
+                comparator_type=pycassa.DATE_TYPE,
                 default_validation_class=pycassa.DOUBLE_TYPE
             )
 
             manager.create_column_family(
-                keyspace=keyspace, name='StatArchive', super=True,
+                keyspace=keyspace,
+                name='StatArchive', super=True,
                 key_validation_class=pycassa.LEXICAL_UUID_TYPE,
                 comparator_type=STAT_TYPE,
                 subcomparator_type=pycassa.DATE_TYPE,
@@ -113,9 +116,50 @@ class Cassandra(object):
 
     def put_metric_data(self, project_id, namespace, metric_name, dimensions,
                         value, unit=None, timestamp=None):
-        # convert timestamp
-        timestamp = utils.str_to_timestamp(timestamp) 
+        def get_stat(metric_id, super_column, aligned_timestamp):
+            """
+            super_column: (60, 'Average')
+            """
+            resolution, statistic = super_column
+            try:
+                ret = self.scf_stat_archive.get(metric_id,
+                                                super_column=super_column,
+                                                columns=[aligned_timestamp])
+            except pycassa.NotFoundException:
+                if statistic in ("Minimum", "Maximum"):
+                    ret = {aligned_timestamp: None}
+                else:
+                    ret = {aligned_timestamp: 0.0}
+            return  ret.get(aligned_timestamp)
 
+        def put_stats(metric_id, resolution, timestamp, value):
+            stattime = datetime.datetime.utcfromtimestamp(
+                utils.align_metrictime(timestamp, resolution)
+            )
+            statistics = ["Sum", "SampleCount", "Average", "Minimum",
+                          "Maximum"]
+            super_column_names = [(resolution, s) for s in statistics]
+            (p_sum, p_n_samples, p_avg, p_min, p_max) = [
+                get_stat(metric_id, sc_name, stattime)
+                for sc_name in super_column_names
+            ]
+
+            cur_sum = p_sum + value
+            cur_n_samples = p_n_samples + 1
+            cur_avg = cur_sum / cur_n_samples
+            cur_min = p_min if p_min and p_min <= value else value
+            cur_max = p_max if p_max and p_max >= value else value
+            
+            values = {
+                (resolution, "Sum"): {stattime: cur_sum},
+                (resolution, "SampleCount"): {stattime: cur_n_samples},
+                (resolution, "Average"): {stattime: cur_avg},
+                (resolution, "Minimum"): {stattime: cur_min},
+                (resolution, "Maximum"): {stattime: cur_max}
+            }
+            
+            self.scf_stat_archive.insert(metric_id, values)
+        
         # get metric key
         key = self.get_metric_key(project_id, namespace, metric_name,
                                   dimensions)
@@ -129,14 +173,17 @@ class Cassandra(object):
         
             self.cf_metric.insert(key=key, columns=columns)
         
-        # and put metric
+        # if it doesn't hav a value to put, then return
+        if value is None: 
+            return key
         
         metric_col = {timestamp: value}
         LOG.debug("PUT metric id %s: %s" % (key, metric_col))
         self.cf_metric_archive.insert(key=key, columns=metric_col)
         
         # and build statistics data
-        # TODO: build statistics data
+        stats = map(lambda r: put_stats(key, r, timestamp, value),
+                    self.ARCHIVE)
         
         return key 
 

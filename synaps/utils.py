@@ -47,19 +47,17 @@ def align_metrictime(timestamp, resolution=60):
     """
     Align timestamp of metric for statistics 
     
-      >>> get_statpoint(150.0, 60.0)
+      >>> align_metrictime(35.0, 60.0)
+      60.0
+      >>> align_metrictime(60.0, 60.0)
       120.0
-      >>> get_statpoint(150.1, 60.0)
+      >>> align_metrictime(150.0, 60.0)
+      180.0
+      >>> align_metrictime(150.1, 60.0)
       180.0       
     """
-    timestamp = int(timestamp)
-    mod = timestamp / resolution
-    rest2 = 2 * (timestamp % resolution)
-    
-    if rest2 < resolution:
-        return mod * resolution 
-    else: 
-        return (mod + 1) * resolution
+    mod = int(timestamp) / resolution
+    return (mod + 1) * resolution
     
 
 def str_to_timestamp(timestr, fmt=PERFECT_TIME_FORMAT):
@@ -336,3 +334,40 @@ def execute(*cmd, **kwargs):
             #               call clean something up in between calls, without
             #               it two execute calls in a row hangs the second one
             greenthread.sleep(0)
+
+
+def extract_member_list(aws_dict, key='member'):
+    """
+    
+    ex) if key is 'member', it will convert from
+    
+    {'member': {'1': 'something1',
+                '2': 'something2',
+                '3': 'something3'}}
+    
+    to            
+    
+    ['something1', 'something2', 'something3']
+    """
+    
+    return aws_dict[key].values()
+
+def extract_member_dict(aws_dict, key='member'):
+    """
+    it will convert from
+    
+    {'member': {'1': {'name': {'1': u'member1'},
+                      'value': {'1': u'value1'}},
+                '2': {'name': {'1': u'member2'},
+                      'value': {'1': u'value2'}}}}    
+
+    to
+    
+    {u'member1': u'value1', u'member2': u'value2'}
+    
+    this is useful for processing dimension.
+    """
+    members = extract_member_list(aws_dict, key)
+    member_list = [(member['name']['1'], member['value']['1']) 
+                   for member in members]
+    return dict(member_list)

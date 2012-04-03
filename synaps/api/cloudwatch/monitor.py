@@ -1,6 +1,8 @@
 # Copyright 2012 Samsung SDS
 # All Rights Reserved
 
+import datetime
+
 from synaps import log as logging
 from synaps import monitor
 from synaps import exception
@@ -85,7 +87,7 @@ class MonitorController(object):
     <RequestId>84e4db0e-7a3d-11e1-9991-1b2df6a17f8d</RequestId>
   </ResponseMetadata>
 </GetMetricStatisticsResponse>"""        
-        import datetime
+        
         
         datapoints = [{'Timestamp':datetime.datetime.now(),
                        'Unit':'Percent',

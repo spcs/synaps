@@ -10,10 +10,10 @@ from boto.ec2.cloudwatch import CloudWatchConnection
 
 class ApiCloudwatchTestCase(unittest.TestCase):
     def setUp(self):
-        self.cloudwatch = CloudWatchConnection(
-            aws_access_key_id="AKIAIUIUQBYNQ3G327RA",
-            aws_secret_access_key="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"
-        )
+#        self.cloudwatch = CloudWatchConnection(
+#            aws_access_key_id="AKIAIUIUQBYNQ3G327RA",
+#            aws_secret_access_key="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"
+#        )
 
         self.synaps = CloudWatchConnection(
             aws_access_key_id='AKIAIUIUQBYNQ3G327RA',
