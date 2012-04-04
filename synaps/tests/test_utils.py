@@ -2,6 +2,7 @@
 # All Rights Reserved
 
 import unittest
+import datetime
 
 from synaps import utils
 
@@ -63,7 +64,7 @@ class TestUtils(unittest.TestCase):
         expected = ['something1', 'something2', 'something3']
         real = utils.extract_member_list(input)
         
-        self.assertEqual(real, expected)
+        self.assertEqual(sorted(real), sorted(expected))
     
         
         
@@ -77,7 +78,11 @@ class TestUtils(unittest.TestCase):
         
         real = utils.extract_member_dict(input)
         self.assertEqual(real, expected)
-                
+        
+    def test_datetime_to_timestamp(self):
+        epoch = datetime.datetime(1970, 1, 1, 0, 0, 0)
+        self.assertEqual(0, utils.datetime_to_timestamp(epoch)) 
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

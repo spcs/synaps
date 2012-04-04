@@ -39,8 +39,8 @@ class ApiCloudwatchTestCase(unittest.TestCase):
         # 1. create new metric and put N data into two different dimensions
         now = datetime.datetime.now()
         minute = datetime.timedelta(seconds=60)
-        start_time = now
-        end_time = start_time - 60 * minute
+        end_time = now
+        start_time = end_time - 60 * minute
         
         N_DATA = 60
         metric_name = uuid.uuid4().get_hex()
@@ -56,7 +56,7 @@ class ApiCloudwatchTestCase(unittest.TestCase):
                 value=i * 1.0,
                 unit="Percent",
                 dimensions=dimensions1,
-                timestamp=start_time - i * minute,
+                timestamp=end_time - i * minute,
             )
             self.assertTrue(synaps_ret)
 
@@ -67,7 +67,7 @@ class ApiCloudwatchTestCase(unittest.TestCase):
                 value=i * 1.0,
                 unit="Percent",
                 dimensions=dimensions2,
-                timestamp=start_time - i * minute,
+                timestamp=end_time - i * minute,
             )
             self.assertTrue(synaps_ret)            
 
@@ -102,34 +102,11 @@ class ApiCloudwatchTestCase(unittest.TestCase):
         statistics = ["Average", "Sum"]
         dimensions = dimensions1
         unit = "Percent"
-        
-        stats = self.synaps.get_metric_statistics(300, start_time, end_time,
+
+        stats = self.synaps.get_metric_statistics(60, start_time, end_time,
                                                   metric_name, namespace,
                                                   statistics, dimensions, unit)
-        self.assertEqual(len(stats), 20)
 
-#    def test_metric_scenario2(self):
-#        """
-#        hmm..
-#        """
-#        end_time = datetime.datetime.now()
-#        start_time = end_time - datetime.timedelta(hours=24 * 7)
-#        metric_name = u"CPUUtilization"
-#        namespace = u"AWS/EC2"
-#        statistics = [u"Average", "Sum"]
-#        dimensions = OrderedDict((("InstanceId", "i-0031ee62"),)) 
-#        #[{u'InstanceId': u'i-0031ee62'}]
-#        unit = "None"
-#        
-#        for m in self.cloudwatch.list_metrics(dimensions=dimensions):
-#            print m.name
-#            print m.dimensions
-#        
-#        ret = self.cloudwatch.get_metric_statistics(period=3600*24,
-#                  start_time=start_time, end_time=end_time,
-#                  metric_name=metric_name, namespace=namespace,
-#                  statistics=statistics, dimensions=dimensions, unit="Percent")
-#        print ret
         
 if __name__ == "__main__":
     unittest.main()

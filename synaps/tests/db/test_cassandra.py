@@ -13,7 +13,7 @@ class TestCassandra(unittest.TestCase):
     def setUp(self):
         Cassandra.reset()
         self.cass = Cassandra()
-    
+        
     def test_put_metric_data(self):
         project_id = "test_project"
         namespace = "synapstest"
@@ -73,7 +73,41 @@ class TestCassandra(unittest.TestCase):
             key, super_column=(60, 'Maximum'), columns=[utc_60]
         )
         self.assertEqual(maximum.popitem()[1], max(value1, value2))
+
+        st = datetime.datetime.utcfromtimestamp(0)
+        et = datetime.datetime.utcfromtimestamp(180)
+        stat = self.cass.get_metric_statistics(project_id, namespace,
+                                               metric_name,
+                                               start_time=st,
+                                               end_time=et,
+                                               period=60,
+                                               statistics=["Average", "Sum"],
+                                               unit=unit,
+                                               dimensions=dimensions)
+
+    def test_restructed_stats(self):
+        stats = {
+            'Average': 
+             OrderedDict([(datetime.datetime(1970, 1, 1, 0, 1), 11.0),
+                          (datetime.datetime(1970, 1, 1, 0, 2), 11.0),
+                          (datetime.datetime(1970, 1, 1, 0, 3), 11.0)]),
+            'Sum': 
+             OrderedDict([(datetime.datetime(1970, 1, 1, 0, 1), 44.0),
+                          (datetime.datetime(1970, 1, 1, 0, 2), 44.0),
+                          (datetime.datetime(1970, 1, 1, 0, 3), 44.0)])
+        }
         
+        expected = [
+            (datetime.datetime(1970, 1, 1, 0, 1),
+             {'Average': 11.0, 'Sum': 44.0}),
+            (datetime.datetime(1970, 1, 1, 0, 2),
+             {'Average': 11.0, 'Sum': 44.0}),
+            (datetime.datetime(1970, 1, 1, 0, 3),
+             {'Average': 11.0, 'Sum': 44.0}),
+        ]
+
+        self.assertEqual(expected, self.cass.restructed_stats(stats))
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

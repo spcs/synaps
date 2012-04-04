@@ -9,6 +9,7 @@ from pycassa import types
 import struct
 import json
 
+from collections import OrderedDict
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
@@ -20,8 +21,9 @@ STAT_TYPE = types.CompositeType(types.IntegerType(), # statistics resolution
                                 types.AsciiType()) # Average | SampleCount ... 
 
 class Cassandra(object):
-    TWOWEEK = 60 * 60 * 24 * 14 # 2weeks in sec
-    ARCHIVE = map(lambda x: x * 60, [1, 5, 15, 60, 360, 1440])
+    METRIC_TTL = FLAGS.get('metric_ttl')
+    STATISTICS_TTL = FLAGS.get('statistics_ttl')
+    ARCHIVE = map(lambda x: int(x) * 60, FLAGS.get('statistics_archives'))
     
     def __init__(self):
         keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
@@ -39,6 +41,7 @@ class Cassandra(object):
     def reset():
         keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
         serverlist = FLAGS.get("cassandra_server_list")
+        replication_factor = FLAGS.get("cassandra_replication_factor")
         manager = pycassa.SystemManager(server=serverlist[0])
         # drop keyspace
         try:
@@ -51,7 +54,7 @@ class Cassandra(object):
         try:
             manager.create_keyspace(keyspace,
                                     strategy_options={'replication_factor':
-                                                      '1'})
+                                                      replication_factor})
 
             manager.create_column_family(
                 keyspace=keyspace,
@@ -89,16 +92,16 @@ class Cassandra(object):
         except Exception as ex:
             LOG.critical(_("failed to initialize: %s") % ex)        
     
-    def get_metric_data(self, project_id, namespace, metric_name, dimensions,
+    def _get_metric_data(self, project_id, namespace, metric_name, dimensions,
                         start, end):
 
-        key = self.get_metric_key(project_id, namespace, metric_name,
+        key = self._get_metric_key(project_id, namespace, metric_name,
                                   dimensions)
         return self.cf_metric_archive.get(key, column_start=start,
                                           column_finish=end)
     
         
-    def get_metric_key(self, project_id, namespace, metric_name, dimensions):
+    def _get_metric_key(self, project_id, namespace, metric_name, dimensions):
         expr_list = [
             pycassa.create_index_expression("project_id", project_id),
             pycassa.create_index_expression("name", metric_name),
@@ -133,9 +136,8 @@ class Cassandra(object):
             return  ret.get(aligned_timestamp)
 
         def put_stats(metric_id, resolution, timestamp, value):
-            stattime = datetime.datetime.utcfromtimestamp(
-                utils.align_metrictime(timestamp, resolution)
-            )
+            stattime = utils.align_metrictime(timestamp, resolution)
+
             statistics = ["Sum", "SampleCount", "Average", "Minimum",
                           "Maximum"]
             super_column_names = [(resolution, s) for s in statistics]
@@ -158,10 +160,15 @@ class Cassandra(object):
                 (resolution, "Maximum"): {stattime: cur_max}
             }
             
-            self.scf_stat_archive.insert(metric_id, values)
+            self.scf_stat_archive.insert(metric_id, values,
+                                         ttl=self.STATISTICS_TTL)
+            LOG.info("statistics inserted for %s -> %s (%d) " % (str(timestamp),
+                                                                 str(stattime),
+                                                                 resolution))
+            LOG.info(values)
         
         # get metric key
-        key = self.get_metric_key(project_id, namespace, metric_name,
+        key = self._get_metric_key(project_id, namespace, metric_name,
                                   dimensions)
         
         # or create metric 
@@ -178,8 +185,11 @@ class Cassandra(object):
             return key
         
         metric_col = {timestamp: value}
-        LOG.debug("PUT metric id %s: %s" % (key, metric_col))
-        self.cf_metric_archive.insert(key=key, columns=metric_col)
+        
+        for k, v in metric_col.items():
+            LOG.debug("PUT metric id %s: %s %s" % (key, metric_col, str(k)))
+        self.cf_metric_archive.insert(key=key, columns=metric_col,
+                                      ttl=self.METRIC_TTL)
         
         # and build statistics data
         stats = map(lambda r: put_stats(key, r, timestamp, value),
@@ -221,3 +231,49 @@ class Cassandra(object):
         metrics = [(k, to_dict(v)) for k, v in items if check_dimension(v)]
         
         return metrics
+    
+    def get_metric_statistics(self, project_id, namespace, metric_name,
+                              start_time, end_time, period, statistics,
+                              unit=None, dimensions=None):
+        # get metric key
+        key = self._get_metric_key(project_id, namespace, metric_name,
+                                   dimensions)
+
+        # or return {}
+        if not key:
+            return {}
+        
+        stat_dict = {}
+        for statistic in statistics:
+            statistic = utils.to_ascii(statistic)
+            super_column = (period, statistic)
+            try:
+                stat = self.scf_stat_archive.get(key,
+                                                 super_column=super_column,
+                                                 column_start=start_time,
+                                                 column_finish=end_time)
+            except pycassa.NotFoundException:
+                LOG.debug("not found %s %s ~ %s" % (super_column, start_time,
+                                                   end_time))
+                stat = {}
+                
+            stat_dict[statistic] = stat
+
+        # build stat info
+        return self.restructed_stats(stat_dict)
+    
+    def restructed_stats(self, stat):
+        def get_stat(timestamp):
+            ret = {}
+            for key in stat.keys():
+                ret[key] = stat[key][timestamp]
+            return ret
+        
+        ret = []
+        timestamps = reduce(lambda x, y: x if x == y else None,
+                            map(lambda x: x.keys(), stat.values()))
+        
+        for timestamp in timestamps:
+            ret.append((timestamp, get_stat(timestamp)))
+
+        return ret

@@ -15,6 +15,8 @@ import socket
 import re
 import types
 import time
+import calendar
+from collections import OrderedDict
 
 from eventlet import greenthread
 from eventlet.green import subprocess
@@ -56,9 +58,8 @@ def align_metrictime(timestamp, resolution=60):
       >>> align_metrictime(150.1, 60.0)
       180.0       
     """
-    mod = int(timestamp) / resolution
-    return (mod + 1) * resolution
-    
+    mod = int(datetime_to_timestamp(timestamp)) / resolution
+    return datetime.datetime.utcfromtimestamp((mod + 1) * resolution)
 
 def str_to_timestamp(timestr, fmt=PERFECT_TIME_FORMAT):
     if isinstance(timestr, str):
@@ -76,6 +77,12 @@ def strtime(at=None, fmt=PERFECT_TIME_FORMAT):
     if not at:
         at = utcnow()
     return at.strftime(fmt)
+
+def to_ascii(utf8):
+    if isinstance(utf8, unicode):
+        return utf8.encode('ascii')
+    assert isinstance(utf8, str)
+    return utf8
 
 def utf8(value):
     """Try to turn a string into utf-8 if possible.
@@ -350,7 +357,7 @@ def extract_member_list(aws_dict, key='member'):
     ['something1', 'something2', 'something3']
     """
     
-    return aws_dict[key].values()
+    return OrderedDict(aws_dict[key]).values()
 
 def extract_member_dict(aws_dict, key='member'):
     """
@@ -371,3 +378,8 @@ def extract_member_dict(aws_dict, key='member'):
     member_list = [(member['name']['1'], member['value']['1']) 
                    for member in members]
     return dict(member_list)
+
+def datetime_to_timestamp(dt):
+    if isinstance(dt, datetime.datetime):
+        return calendar.timegm(dt.utctimetuple())
+    return dt
