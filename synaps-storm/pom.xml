@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>synapse</groupId>
+	<artifactId>synapse-start</artifactId>
+	<version>0.0.1f</version>
+
+	<repositories>
+		<repository>
+			<id>clojars.org</id>
+			<url>http://clojars.org/repo</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>storm</groupId>
+			<artifactId>storm</artifactId>
+			<version>0.7.0</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
+
+<plugin>
+	<artifactId>maven-assembly-plugin</artifactId>
+	<configuration>
+		<descriptorRefs>
+			<descriptorRef>jar-with-dependencies</descriptorRef>
+		</descriptorRefs>
+		<archive>
+			<manifest>
+				<mainClass>sdscloud.synapse.TestTopology</mainClass>
+			</manifest>
+		</archive>
+	</configuration>
+</plugin>
