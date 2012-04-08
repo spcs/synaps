@@ -2,9 +2,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>synapse</groupId>
-	<artifactId>synapse-start</artifactId>
-	<version>0.0.1f</version>
+	<groupId>synaps</groupId>
+	<artifactId>synaps-storm</artifactId>
+	<version>2010.04.06</version>
+	<packaging>jar</packaging>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 	<repositories>
 		<repository>
@@ -17,22 +22,19 @@
 		<dependency>
 			<groupId>storm</groupId>
 			<artifactId>storm</artifactId>
-			<version>0.7.0</version>
-			<scope>test</scope>
+			<version>0.7.1</version>
+			<!-- keep storm out of the jar-with-dependencies -->
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.clojure</groupId>
+			<artifactId>clojure</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.clojure</groupId>
+			<artifactId>clojure-contrib</artifactId>
+			<version>1.2.0</version>
 		</dependency>
 	</dependencies>
 </project>
-
-<plugin>
-	<artifactId>maven-assembly-plugin</artifactId>
-	<configuration>
-		<descriptorRefs>
-			<descriptorRef>jar-with-dependencies</descriptorRef>
-		</descriptorRefs>
-		<archive>
-			<manifest>
-				<mainClass>sdscloud.synapse.TestTopology</mainClass>
-			</manifest>
-		</archive>
-	</configuration>
-</plugin>

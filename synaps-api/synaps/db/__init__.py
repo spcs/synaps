@@ -24,6 +24,7 @@ class Cassandra(object):
     METRIC_TTL = FLAGS.get('metric_ttl')
     STATISTICS_TTL = FLAGS.get('statistics_ttl')
     ARCHIVE = map(lambda x: int(x) * 60, FLAGS.get('statistics_archives'))
+    STATISTICS = ["Sum", "SampleCount", "Average", "Minimum", "Maximum"]
     
     def __init__(self):
         keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
@@ -133,14 +134,12 @@ class Cassandra(object):
                     ret = {aligned_timestamp: None}
                 else:
                     ret = {aligned_timestamp: 0.0}
-            return  ret.get(aligned_timestamp)
+            return ret.get(aligned_timestamp)
 
         def put_stats(metric_id, resolution, timestamp, value):
             stattime = utils.align_metrictime(timestamp, resolution)
 
-            statistics = ["Sum", "SampleCount", "Average", "Minimum",
-                          "Maximum"]
-            super_column_names = [(resolution, s) for s in statistics]
+            super_column_names = [(resolution, s) for s in self.STATISTICS]
             (p_sum, p_n_samples, p_avg, p_min, p_max) = [
                 get_stat(metric_id, sc_name, stattime)
                 for sc_name in super_column_names
@@ -162,10 +161,6 @@ class Cassandra(object):
             
             self.scf_stat_archive.insert(metric_id, values,
                                          ttl=self.STATISTICS_TTL)
-            LOG.info("statistics inserted for %s -> %s (%d) " % (str(timestamp),
-                                                                 str(stattime),
-                                                                 resolution))
-            LOG.info(values)
         
         # get metric key
         key = self._get_metric_key(project_id, namespace, metric_name,
@@ -185,9 +180,6 @@ class Cassandra(object):
             return key
         
         metric_col = {timestamp: value}
-        
-        for k, v in metric_col.items():
-            LOG.debug("PUT metric id %s: %s %s" % (key, metric_col, str(k)))
         self.cf_metric_archive.insert(key=key, columns=metric_col,
                                       ttl=self.METRIC_TTL)
         
