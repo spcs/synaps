@@ -3,7 +3,6 @@
 	<name>synaps-api</name>
 	<comment></comment>
 	<projects>
-		<project>boto</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

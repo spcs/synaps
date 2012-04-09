@@ -148,15 +148,15 @@ class Cassandra(object):
             cur_sum = p_sum + value
             cur_n_samples = p_n_samples + 1
             cur_avg = cur_sum / cur_n_samples
-            cur_min = p_min if p_min and p_min <= value else value
-            cur_max = p_max if p_max and p_max >= value else value
+            cur_min = value if p_min is None or p_min > value else p_min
+            cur_max = value if p_max is None or p_max < value else p_max
             
             values = {
                 (resolution, "Sum"): {stattime: cur_sum},
                 (resolution, "SampleCount"): {stattime: cur_n_samples},
                 (resolution, "Average"): {stattime: cur_avg},
                 (resolution, "Minimum"): {stattime: cur_min},
-                (resolution, "Maximum"): {stattime: cur_max}
+                (resolution, "Maximum"): {stattime: cur_max},
             }
             
             self.scf_stat_archive.insert(metric_id, values,

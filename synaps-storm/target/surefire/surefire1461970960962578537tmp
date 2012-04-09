@@ -1,0 +1,5 @@
+#surefire
+#Fri Apr 06 13:09:19 KST 2012
+user.dir=/home/june/git/synaps/synaps-storm
+localRepository=/home/june/.m2/repository
+basedir=/home/june/git/synaps/synaps-storm
