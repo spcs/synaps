@@ -22,19 +22,22 @@ class MonitorController(object):
     def __str__(self):
         return 'MonitorController'
 
-    def put_metric_data(self, context, namespace, metric_data):
+    def put_metric_data(self, context, namespace, metric_data,
+                        project_id=None):
         """
         Publishes metric data points to Synaps. If specified metric does not
         exist, Synaps creates the metric.
         """
-        project_id = context.project_id
+        if not (project_id and context.is_admin):
+            project_id = context.project_id
+        
         self.monitor_api.put_metric_data(project_id, namespace,
                                          metric_data)
         return {}
 
     def get_metric_statistics(self, context, end_time, metric_name,
                               namespace, period, start_time, statistics,
-                              unit="None", dimensions=None):
+                              unit="None", dimensions=None, project_id=None):
         """
         Gets statistics for the specified metric.
         """
@@ -47,7 +50,8 @@ class MonitorController(object):
             ret['Unit'] = 'None'
             return ret
                 
-        project_id = context.project_id
+        if not (project_id and context.is_admin):
+            project_id = context.project_id
         end_time = utils.parse_strtime(end_time)
         start_time = utils.parse_strtime(start_time)
         dimensions = utils.extract_member_dict(dimensions) \
@@ -66,7 +70,7 @@ class MonitorController(object):
                                               'Label': label}}
 
     def list_metrics(self, context, next_token=None, dimensions=None,
-                     metric_name=None, namespace=None):
+                     metric_name=None, namespace=None, project_id=None):
         """
         Returns a list of valid metrics stored for the Synaps account owner. 
         Returned metrics can be used with get_metric_statics to obtain 
@@ -84,7 +88,8 @@ class MonitorController(object):
             ret['namespace'] = v['namespace']
             return ret
         
-        project_id = context.project_id
+        if not (project_id and context.is_admin):
+            project_id = context.project_id
         dimensions = utils.extract_member_dict(dimensions) \
                      if dimensions else None
         metrics = self.monitor_api.list_metrics(project_id, next_token,
