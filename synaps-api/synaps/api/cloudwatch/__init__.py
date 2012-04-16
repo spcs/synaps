@@ -15,6 +15,7 @@ from synaps import utils
 from synaps import exception
 from synaps.api.cloudwatch import faults
 from synaps.api.cloudwatch import apirequest
+from synaps.auth import manager
 from synaps.openstack.common import cfg
 
 LOG = logging.getLogger(__name__)
@@ -106,6 +107,59 @@ class NoAuth(wsgi.Middleware):
                                      remote_address=remote_address)
 
         req.environ['synaps.context'] = ctx
+        return self.application
+
+
+
+class Authenticate(wsgi.Middleware):
+    """Authenticate an CloudWatch request and add 'synaps.context' to
+    WSGI environ."""
+
+    @webob.dec.wsgify(RequestClass=webob.Request)
+    def __call__(self, req):
+        # Read request signature and access id.
+        try:
+            signature = req.params['Signature']
+            access = req.params['AWSAccessKeyId']
+        except KeyError:
+            raise webob.exc.HTTPBadRequest()
+
+        # Make a copy of args for authentication and signature verification.
+        auth_params = dict(req.params)
+        # Not part of authentication args
+        auth_params.pop('Signature')
+
+        # Authenticate the request.
+        authman = manager.AuthManager()
+        try:
+            (user, project) = authman.authenticate(
+                    access,
+                    signature,
+                    auth_params,
+                    req.method,
+                    req.host,
+                    req.path)
+        # Be explicit for what exceptions are 403, the rest bubble as 500
+        except (exception.NotFound, exception.NotAuthorized,
+                exception.InvalidSignature) as ex:
+            LOG.audit(_("Authentication Failure: %s"), unicode(ex))
+            raise webob.exc.HTTPForbidden()
+
+        # Authenticated!
+        remote_address = req.remote_addr
+        if FLAGS.use_forwarded_for:
+            remote_address = req.headers.get('X-Forwarded-For', remote_address)
+        roles = authman.get_active_roles(user, project)
+        ctxt = context.RequestContext(user_id=user.id,
+                                      project_id=project.id,
+                                      is_admin=user.is_admin(),
+                                      roles=roles,
+                                      remote_address=remote_address)
+        req.environ['nova.context'] = ctxt
+        uname = user.name
+        pname = project.name
+        msg = _('Authenticated Request For %(uname)s:%(pname)s)') % locals()
+        LOG.audit(msg, context=req.environ['nova.context'])
         return self.application
 
 class Requestify(wsgi.Middleware):

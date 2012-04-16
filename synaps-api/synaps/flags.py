@@ -30,6 +30,8 @@ import os
 import socket
 import sys
 
+import gflags
+
 from synaps.compat import flagfile
 from synaps.openstack.common import cfg
 
@@ -44,8 +46,18 @@ class SynapsConfigOpts(cfg.CommonConfigOpts):
         with flagfile.handle_flagfiles_managed(argv[1:]) as args:
             return argv[:1] + super(SynapsConfigOpts, self).__call__(args)
 
-FLAGS = SynapsConfigOpts(project="synaps")
+def _wrapper(func):
+    def _wrapped(*args, **kw):
+        kw.setdefault('flag_values', FLAGS)
+        func(*args, **kw)
+    _wrapped.func_name = func.func_name
+    return _wrapped
 
+FLAGS = SynapsConfigOpts(project="synaps")
+DEFINE_string = _wrapper(gflags.DEFINE_string)
+DEFINE_list = _wrapper(gflags.DEFINE_list)
+DEFINE_bool = _wrapper(gflags.DEFINE_bool)
+DEFINE_boolean = _wrapper(gflags.DEFINE_boolean)
 
 class UnrecognizedFlag(Exception):
     pass

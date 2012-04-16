@@ -20,6 +20,23 @@ FLAGS = flags.FLAGS
 STAT_TYPE = types.CompositeType(types.IntegerType(), # statistics resolution
                                 types.AsciiType()) # Average | SampleCount ... 
 
+def certificate_create(admin, cert):
+    # TBD: implement here
+    pass
+
+def certificate_get_all_by_user_and_project(admin, user_id, project_id):
+    # TBD: implement here
+    pass
+
+def certificate_get_all_by_project(admin, project_id):
+    # TBD: implement here
+    pass
+
+def certificate_get_all_by_user(admin, user_id):
+    # TBD: implement here
+    pass
+
+
 class Cassandra(object):
     METRIC_TTL = FLAGS.get('metric_ttl')
     STATISTICS_TTL = FLAGS.get('statistics_ttl')

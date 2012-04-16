@@ -16,6 +16,7 @@ import re
 import types
 import time
 import calendar
+import netaddr
 from collections import OrderedDict
 
 from eventlet import greenthread
@@ -27,6 +28,7 @@ from synaps import log as logging
 from synaps.openstack.common import cfg
 
 LOG = logging.getLogger(__name__)
+ISO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 PERFECT_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 FLAGS = flags.FLAGS
 
@@ -383,3 +385,52 @@ def datetime_to_timestamp(dt):
     if isinstance(dt, datetime.datetime):
         return calendar.timegm(dt.utctimetuple())
     return dt
+
+def abspath(s):
+    return os.path.join(os.path.dirname(__file__), s)
+
+def parse_server_string(server_str):
+    """
+    Parses the given server_string and returns a list of host and port.
+    If it's not a combination of host part and port, the port element
+    is a null string. If the input is invalid expression, return a null
+    list.
+    """
+    try:
+        # First of all, exclude pure IPv6 address (w/o port).
+        if netaddr.valid_ipv6(server_str):
+            return (server_str, '')
+
+        # Next, check if this is IPv6 address with a port number combination.
+        if server_str.find("]:") != -1:
+            (address, port) = server_str.replace('[', '', 1).split(']:')
+            return (address, port)
+
+        # Third, check if this is a combination of an address and a port
+        if server_str.find(':') == -1:
+            return (server_str, '')
+
+        # This must be a combination of an address and a port
+        (address, port) = server_str.split(':')
+        return (address, port)
+
+    except Exception:
+        LOG.debug(_('Invalid server_string: %s' % server_str))
+        return ('', '')
+    
+def import_object(import_str):
+    """Returns an object including a module or module and class."""
+    try:
+        __import__(import_str)
+        return sys.modules[import_str]
+    except ImportError:
+        cls = import_class(import_str)
+        return cls()
+
+def utcnow_ts():
+    """Timestamp version of our utcnow function."""
+    return time.mktime(utcnow().timetuple())    
+
+def isotime(at=None):
+    """Returns iso formatted utcnow."""
+    return strtime(at, ISO_TIME_FORMAT)
