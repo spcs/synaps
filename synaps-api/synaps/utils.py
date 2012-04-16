@@ -3,8 +3,10 @@
 # Copyright 2012 Samsung SDS
 # All Rights Reserved.
 
+import contextlib
 import os
 import sys
+import tempfile
 import uuid
 import datetime
 import shlex
@@ -17,6 +19,7 @@ import types
 import time
 import calendar
 import netaddr
+import shutil
 from collections import OrderedDict
 
 from eventlet import greenthread
@@ -434,3 +437,33 @@ def utcnow_ts():
 def isotime(at=None):
     """Returns iso formatted utcnow."""
     return strtime(at, ISO_TIME_FORMAT)
+
+@contextlib.contextmanager
+def tempdir(**kwargs):
+    tmpdir = tempfile.mkdtemp(**kwargs)
+    try:
+        yield tmpdir
+    finally:
+        try:
+            shutil.rmtree(tmpdir)
+        except OSError, e:
+            LOG.debug(_('Could not remove tmpdir: %s'), str(e))
+            
+def strcmp_const_time(s1, s2):
+    """Constant-time string comparison.
+
+    :params s1: the first string
+    :params s2: the second string
+
+    :return: True if the strings are equal.
+
+    This function takes two strings and compares them.  It is intended to be
+    used when doing a comparison for authentication purposes to help guard
+    against timing attacks.
+    """
+    if len(s1) != len(s2):
+        return False
+    result = 0
+    for (a, b) in zip(s1, s2):
+        result |= ord(a) ^ ord(b)
+    return result == 0            

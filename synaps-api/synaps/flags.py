@@ -54,10 +54,6 @@ def _wrapper(func):
     return _wrapped
 
 FLAGS = SynapsConfigOpts(project="synaps")
-DEFINE_string = _wrapper(gflags.DEFINE_string)
-DEFINE_list = _wrapper(gflags.DEFINE_list)
-DEFINE_bool = _wrapper(gflags.DEFINE_bool)
-DEFINE_boolean = _wrapper(gflags.DEFINE_boolean)
 
 class UnrecognizedFlag(Exception):
     pass
@@ -129,9 +125,13 @@ core_opts = [
     cfg.StrOpt('api_paste_config',
                default="api-paste.ini",
                help='File name for the paste.deploy config for synaps-api'),
+    cfg.StrOpt('pybasedir',
+               default=os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                    '../')),
+               help='Directory where the nova python module is installed'),
     cfg.StrOpt('state_path',
                default=os.path.join(os.path.dirname(__file__), '../'),
-               help="Top-level directory for maintaining nova's state"),
+               help="Top-level directory for maintaining synaps's state"),
     cfg.StrOpt('lock_path',
                default=os.path.join(os.path.dirname(__file__), '../'),
                help='Directory for lock files'),
@@ -241,21 +241,21 @@ global_opts = [
 #    cfg.ListOpt('enabled_apis',
 #                default=['ec2', 'osapi_compute', 'osapi_volume', 'metadata'],
 #                help='list of APIs to enable by default'),
-#    cfg.StrOpt('ec2_host',
-#               default='$my_ip',
-#               help='ip of api server'),
-#    cfg.StrOpt('ec2_dmz_host',
-#               default='$my_ip',
-#               help='internal ip of api server'),
-#    cfg.IntOpt('ec2_port',
-#               default=8773,
-#               help='cloud controller port'),
-#    cfg.StrOpt('ec2_scheme',
-#               default='http',
-#               help='prefix for ec2'),
-#    cfg.StrOpt('ec2_path',
-#               default='/services/Cloud',
-#               help='suffix for ec2'),
+    cfg.StrOpt('cloudwatch_host',
+               default='$my_ip',
+               help='ip of api server'),
+    cfg.StrOpt('cloudwatch_dmz_host',
+               default='$my_ip',
+               help='internal ip of api server'),
+    cfg.IntOpt('cloudwatch_port',
+               default=8773,
+               help='cloud controller port'),
+    cfg.StrOpt('cloudwatch_scheme',
+               default='http',
+               help='prefix for cloudwatch'),
+    cfg.StrOpt('cloudwatch_path',
+               default='/monitor',
+               help='suffix for cloudwatch'),
 #    cfg.ListOpt('osapi_compute_ext_list',
 #                default=[],
 #                help='Specify list of extensions to load when using osapi_'
@@ -397,9 +397,9 @@ global_opts = [
 #    cfg.StrOpt('notification_driver',
 #               default='nova.notifier.no_op_notifier',
 #               help='Default driver for sending notifications'),
-#    cfg.ListOpt('memcached_servers',
-#                default=None,
-#                help='Memcached servers or None for in process cache.'),
+    cfg.ListOpt('memcached_servers',
+                default=None,
+                help='Memcached servers or None for in process cache.'),
 #    cfg.StrOpt('instance_usage_audit_period',
 #               default='month',
 #               help='time period to generate instance usages for.'),

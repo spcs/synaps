@@ -53,11 +53,11 @@ import boto
 # NOTE(vish): for old boto
 import boto.utils
 
-from nova import log as logging
-from nova.exception import Error
+from synaps import log as logging
+from synaps.exception import Error
 
 
-LOG = logging.getLogger('nova.signer')
+LOG = logging.getLogger(__name__)
 
 
 class Signer(object):

@@ -22,58 +22,59 @@ Includes root and intermediate CAs, SSH key_pairs and x509 certificates.
 
 """
 
+from __future__ import absolute_import
+
 import base64
-import gettext
 import hashlib
 import os
-import shutil
 import string
-import struct
-import tempfile
-import time
-import utils
 
-import M2Crypto
-
-gettext.install('synaps', unicode=1)
+import Crypto.Cipher.AES
 
 from synaps import context
 from synaps import db
+from synaps import exception
 from synaps import flags
 from synaps import log as logging
+from synaps.openstack.common import cfg
+from synaps import utils
 
 
 LOG = logging.getLogger(__name__)
 
+crypto_opts = [
+    cfg.StrOpt('ca_file',
+               default='cacert.pem',
+               help=_('Filename of root CA')),
+    cfg.StrOpt('key_file',
+               default=os.path.join('private', 'cakey.pem'),
+               help=_('Filename of private key')),
+    cfg.StrOpt('crl_file',
+               default='crl.pem',
+               help=_('Filename of root Certificate Revocation List')),
+    cfg.StrOpt('keys_path',
+               default='$state_path/keys',
+               help=_('Where we keep our keys')),
+    cfg.StrOpt('ca_path',
+               default='$state_path/CA',
+               help=_('Where we keep our root CA')),
+    cfg.BoolOpt('use_project_ca',
+                default=False,
+                help=_('Should we use a CA for each project?')),
+    cfg.StrOpt('user_cert_subject',
+               default='/C=US/ST=California/O=OpenStack/'
+                       'OU=NovaDev/CN=%.16s-%.16s-%s',
+               help=_('Subject for certificate for users, %s for '
+                      'project, user, timestamp')),
+    cfg.StrOpt('project_cert_subject',
+               default='/C=US/ST=California/O=OpenStack/'
+                       'OU=NovaDev/CN=project-ca-%.16s-%s',
+               help=_('Subject for certificate for projects, %s for '
+                      'project, timestamp')),
+    ]
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string('ca_file', 'cacert.pem', _('Filename of root CA'))
-flags.DEFINE_string('key_file',
-                    os.path.join('private', 'cakey.pem'),
-                    _('Filename of private key'))
-flags.DEFINE_string('crl_file', 'crl.pem',
-                    _('Filename of root Certificate Revokation List'))
-flags.DEFINE_string('keys_path', '$state_path/keys',
-                    _('Where we keep our keys'))
-flags.DEFINE_string('ca_path', '$state_path/CA',
-                    _('Where we keep our root CA'))
-flags.DEFINE_boolean('use_project_ca', False,
-                     _('Should we use a CA for each project?'))
-flags.DEFINE_string('user_cert_subject',
-                    '/C=US/ST=California/L=MountainView/O=AnsoLabs/'
-                    'OU=NovaDev/CN=%s-%s-%s',
-                    _('Subject for certificate for users, '
-                    '%s for project, user, timestamp'))
-flags.DEFINE_string('project_cert_subject',
-                    '/C=US/ST=California/L=MountainView/O=AnsoLabs/'
-                    'OU=NovaDev/CN=project-ca-%s-%s',
-                    _('Subject for certificate for projects, '
-                    '%s for project, timestamp'))
-flags.DEFINE_string('vpn_cert_subject',
-                    '/C=US/ST=California/L=MountainView/O=AnsoLabs/'
-                    'OU=NovaDev/CN=project-vpn-%s-%s',
-                    _('Subject for certificate for vpns, '
-                    '%s for project, timestamp'))
+FLAGS.register_opts(crypto_opts)
 
 
 def ca_folder(project_id=None):
@@ -90,63 +91,85 @@ def key_path(project_id=None):
     return os.path.join(ca_folder(project_id), FLAGS.key_file)
 
 
-def fetch_ca(project_id=None, chain=True):
+def crl_path(project_id=None):
+    return os.path.join(ca_folder(project_id), FLAGS.crl_file)
+
+
+def fetch_ca(project_id=None):
     if not FLAGS.use_project_ca:
         project_id = None
-    buffer = ''
-    if project_id:
-        with open(ca_path(project_id), 'r') as cafile:
-            buffer += cafile.read()
-        if not chain:
-            return buffer
-    with open(ca_path(None), 'r') as cafile:
-        buffer += cafile.read()
-    return buffer
+    with open(ca_path(project_id), 'r') as cafile:
+        return cafile.read()
+
+
+def ensure_ca_filesystem():
+    """Ensure the CA filesystem exists."""
+    ca_dir = ca_folder()
+    if not os.path.exists(ca_path()):
+        genrootca_sh_path = os.path.join(os.path.dirname(__file__),
+                                         'CA',
+                                         'genrootca.sh')
+
+        start = os.getcwd()
+        if not os.path.exists(ca_dir):
+            os.makedirs(ca_dir)
+        os.chdir(ca_dir)
+        utils.execute("sh", genrootca_sh_path)
+        os.chdir(start)
+
+
+def _generate_fingerprint(public_key_file):
+    (out, err) = utils.execute('ssh-keygen', '-q', '-l', '-f', public_key_file)
+    fingerprint = out.split(' ')[1]
+    return fingerprint
 
 
 def generate_fingerprint(public_key):
-    (out, err) = utils.execute('ssh-keygen', '-q', '-l', '-f', public_key)
-    fingerprint = out.split(' ')[1]
-    return fingerprint
+    with utils.tempdir() as tmpdir:
+        try:
+            pubfile = os.path.join(tmpdir, 'temp.pub')
+            with open(pubfile, 'w') as f:
+                f.write(public_key)
+            return _generate_fingerprint(pubfile)
+        except exception.ProcessExecutionError:
+            raise exception.InvalidKeypair()
 
 
 def generate_key_pair(bits=1024):
     # what is the magic 65537?
 
-    tmpdir = tempfile.mkdtemp()
-    keyfile = os.path.join(tmpdir, 'temp')
-    utils.execute('ssh-keygen', '-q', '-b', bits, '-N', '',
-                  '-f', keyfile)
-    fingerprint = generate_fingerprint('%s.pub' % (keyfile))
-    private_key = open(keyfile).read()
-    public_key = open(keyfile + '.pub').read()
-
-    shutil.rmtree(tmpdir)
-    # code below returns public key in pem format
-    # key = M2Crypto.RSA.gen_key(bits, 65537, callback=lambda: None)
-    # private_key = key.as_pem(cipher=None)
-    # bio = M2Crypto.BIO.MemoryBuffer()
-    # key.save_pub_key_bio(bio)
-    # public_key = bio.read()
-    # public_key, err = execute('ssh-keygen', '-y', '-f',
-    #                           '/dev/stdin', private_key)
+    with utils.tempdir() as tmpdir:
+        keyfile = os.path.join(tmpdir, 'temp')
+        utils.execute('ssh-keygen', '-q', '-b', bits, '-N', '',
+                      '-t', 'rsa', '-f', keyfile)
+        fingerprint = _generate_fingerprint('%s.pub' % (keyfile))
+        private_key = open(keyfile).read()
+        public_key = open(keyfile + '.pub').read()
 
     return (private_key, public_key, fingerprint)
 
 
-def ssl_pub_to_ssh_pub(ssl_public_key, name='root', suffix='nova'):
-    buf = M2Crypto.BIO.MemoryBuffer(ssl_public_key)
-    rsa_key = M2Crypto.RSA.load_pub_key_bio(buf)
-    e, n = rsa_key.pub()
+def fetch_crl(project_id):
+    """Get crl file for project."""
+    if not FLAGS.use_project_ca:
+        project_id = None
+    with open(crl_path(project_id), 'r') as crlfile:
+        return crlfile.read()
 
-    key_type = 'ssh-rsa'
 
-    key_data = struct.pack('>I', len(key_type))
-    key_data += key_type
-    key_data += '%s%s' % (e, n)
-
-    b64_blob = base64.b64encode(key_data)
-    return '%s %s %s@%s\n' % (key_type, b64_blob, name, suffix)
+def decrypt_text(project_id, text):
+    private_key = key_path(project_id)
+    if not os.path.exists(private_key):
+        raise exception.ProjectNotFound(project_id=project_id)
+    try:
+        dec, _err = utils.execute('openssl',
+                                 'rsautl',
+                                 '-decrypt',
+                                 '-inkey', '%s' % private_key,
+                                 process_input=text)
+        return dec
+    except exception.ProcessExecutionError:
+        raise exception.DecryptionFailure()
 
 
 def revoke_cert(project_id, file_name):
@@ -190,11 +213,6 @@ def _project_cert_subject(project_id):
     return FLAGS.project_cert_subject % (project_id, utils.isotime())
 
 
-def _vpn_cert_subject(project_id):
-    """Helper to generate user cert subject."""
-    return FLAGS.vpn_cert_subject % (project_id, utils.isotime())
-
-
 def _user_cert_subject(user_id, project_id):
     """Helper to generate user cert subject."""
     return FLAGS.user_cert_subject % (project_id, user_id, utils.isotime())
@@ -203,15 +221,16 @@ def _user_cert_subject(user_id, project_id):
 def generate_x509_cert(user_id, project_id, bits=1024):
     """Generate and sign a cert for user in project."""
     subject = _user_cert_subject(user_id, project_id)
-    tmpdir = tempfile.mkdtemp()
-    keyfile = os.path.abspath(os.path.join(tmpdir, 'temp.key'))
-    csrfile = os.path.join(tmpdir, 'temp.csr')
-    utils.execute('openssl', 'genrsa', '-out', keyfile, str(bits))
-    utils.execute('openssl', 'req', '-new', '-key', keyfile, '-out', csrfile,
-                  '-batch', '-subj', subject)
-    private_key = open(keyfile).read()
-    csr = open(csrfile).read()
-    shutil.rmtree(tmpdir)
+
+    with utils.tempdir() as tmpdir:
+        keyfile = os.path.abspath(os.path.join(tmpdir, 'temp.key'))
+        csrfile = os.path.join(tmpdir, 'temp.csr')
+        utils.execute('openssl', 'genrsa', '-out', keyfile, str(bits))
+        utils.execute('openssl', 'req', '-new', '-key', keyfile, '-out',
+                      csrfile, '-batch', '-subj', subject)
+        private_key = open(keyfile).read()
+        csr = open(csrfile).read()
+
     (serial, signed_csr) = sign_csr(csr, project_id)
     fname = os.path.join(ca_folder(project_id), 'newcerts/%s.pem' % serial)
     cert = {'user_id': user_id,
@@ -235,26 +254,21 @@ def _ensure_project_folder(project_id):
 
 def generate_vpn_files(project_id):
     project_folder = ca_folder(project_id)
-    csr_fn = os.path.join(project_folder, 'server.csr')
+    key_fn = os.path.join(project_folder, 'server.key')
     crt_fn = os.path.join(project_folder, 'server.crt')
 
-    genvpn_sh_path = os.path.join(os.path.dirname(__file__),
-                                  'CA',
-                                  'genvpn.sh')
     if os.path.exists(crt_fn):
         return
-    _ensure_project_folder(project_id)
-    start = os.getcwd()
-    os.chdir(ca_folder())
-    # TODO(vish): the shell scripts could all be done in python
-    utils.execute('sh', genvpn_sh_path,
-                  project_id, _vpn_cert_subject(project_id))
-    with open(csr_fn, 'r') as csrfile:
-        csr_text = csrfile.read()
-    (serial, signed_csr) = sign_csr(csr_text, project_id)
+    # NOTE(vish): The 2048 is to maintain compatibility with the old script.
+    #             We are using "project-vpn" as the user_id for the cert
+    #             even though that user may not really exist. Ultimately
+    #             this will be changed to be launched by a real user.  At
+    #             that point we will can delete this helper method.
+    key, csr = generate_x509_cert('project-vpn', project_id, 2048)
+    with open(key_fn, 'w') as keyfile:
+        keyfile.write(key)
     with open(crt_fn, 'w') as crtfile:
-        crtfile.write(signed_csr)
-    os.chdir(start)
+        crtfile.write(csr)
 
 
 def sign_csr(csr_text, project_id=None):
@@ -268,94 +282,48 @@ def sign_csr(csr_text, project_id=None):
 
 
 def _sign_csr(csr_text, ca_folder):
-    tmpfolder = tempfile.mkdtemp()
-    inbound = os.path.join(tmpfolder, 'inbound.csr')
-    outbound = os.path.join(tmpfolder, 'outbound.csr')
-    csrfile = open(inbound, 'w')
-    csrfile.write(csr_text)
-    csrfile.close()
-    LOG.debug(_('Flags path: %s'), ca_folder)
-    start = os.getcwd()
-    # Change working dir to CA
-    if not os.path.exists(ca_folder):
-        os.makedirs(ca_folder)
-    os.chdir(ca_folder)
-    utils.execute('openssl', 'ca', '-batch', '-out', outbound, '-config',
-                  './openssl.cnf', '-infiles', inbound)
-    out, _err = utils.execute('openssl', 'x509', '-in', outbound,
-                              '-serial', '-noout')
-    serial = string.strip(out.rpartition('=')[2])
-    os.chdir(start)
-    with open(outbound, 'r') as crtfile:
-        return (serial, crtfile.read())
+    with utils.tempdir() as tmpdir:
+        inbound = os.path.join(tmpdir, 'inbound.csr')
+        outbound = os.path.join(tmpdir, 'outbound.csr')
+
+        with open(inbound, 'w') as csrfile:
+            csrfile.write(csr_text)
+
+        LOG.debug(_('Flags path: %s'), ca_folder)
+        start = os.getcwd()
+
+        # Change working dir to CA
+        if not os.path.exists(ca_folder):
+            os.makedirs(ca_folder)
+
+        os.chdir(ca_folder)
+        utils.execute('openssl', 'ca', '-batch', '-out', outbound, '-config',
+                      './openssl.cnf', '-infiles', inbound)
+        out, _err = utils.execute('openssl', 'x509', '-in', outbound,
+                                  '-serial', '-noout')
+        serial = string.strip(out.rpartition('=')[2])
+        os.chdir(start)
+
+        with open(outbound, 'r') as crtfile:
+            return (serial, crtfile.read())
 
 
-def mkreq(bits, subject='foo', ca=0):
-    pk = M2Crypto.EVP.PKey()
-    req = M2Crypto.X509.Request()
-    rsa = M2Crypto.RSA.gen_key(bits, 65537, callback=lambda: None)
-    pk.assign_rsa(rsa)
-    rsa = None  # should not be freed here
-    req.set_pubkey(pk)
-    req.set_subject(subject)
-    req.sign(pk, 'sha512')
-    assert req.verify(pk)
-    pk2 = req.get_pubkey()
-    assert req.verify(pk2)
-    return req, pk
-
-
-def mkcacert(subject='nova', years=1):
-    req, pk = mkreq(2048, subject, ca=1)
-    pkey = req.get_pubkey()
-    sub = req.get_subject()
-    cert = M2Crypto.X509.X509()
-    cert.set_serial_number(1)
-    cert.set_version(2)
-    # FIXME subject is not set in mkreq yet
-    cert.set_subject(sub)
-    t = long(time.time()) + time.timezone
-    now = M2Crypto.ASN1.ASN1_UTCTIME()
-    now.set_time(t)
-    nowPlusYear = M2Crypto.ASN1.ASN1_UTCTIME()
-    nowPlusYear.set_time(t + (years * 60 * 60 * 24 * 365))
-    cert.set_not_before(now)
-    cert.set_not_after(nowPlusYear)
-    issuer = M2Crypto.X509.X509_Name()
-    issuer.C = 'US'
-    issuer.CN = subject
-    cert.set_issuer(issuer)
-    cert.set_pubkey(pkey)
-    ext = M2Crypto.X509.new_extension('basicConstraints', 'CA:TRUE')
-    cert.add_ext(ext)
-    cert.sign(pk, 'sha512')
-
-    # print 'cert', dir(cert)
-    print cert.as_pem()
-    print pk.get_rsa().as_pem()
-
-    return cert, pk, pkey
-
-
-def _build_cipher(key, iv, encode=True):
+def _build_cipher(key, iv):
     """Make a 128bit AES CBC encode/decode Cipher object.
        Padding is handled internally."""
-    operation = 1 if encode else 0
-    return M2Crypto.EVP.Cipher(alg='aes_128_cbc', key=key, iv=iv, op=operation)
+    return Crypto.Cipher.AES.new(key, IV=iv)
 
 
-def encryptor(key, iv=None):
+def encryptor(key):
     """Simple symmetric key encryption."""
     key = base64.b64decode(key)
-    if iv is None:
-        iv = '\0' * 16
-    else:
-        iv = base64.b64decode(iv)
+    iv = '\0' * 16
 
     def encrypt(data):
-        cipher = _build_cipher(key, iv, encode=True)
-        v = cipher.update(data)
-        v = v + cipher.final()
+        cipher = _build_cipher(key, iv)
+        # Must pad string to multiple of 16 chars
+        padding = (16 - len(data) % 16) * " "
+        v = cipher.encrypt(data + padding)
         del cipher
         v = base64.b64encode(v)
         return v
@@ -363,19 +331,15 @@ def encryptor(key, iv=None):
     return encrypt
 
 
-def decryptor(key, iv=None):
+def decryptor(key):
     """Simple symmetric key decryption."""
     key = base64.b64decode(key)
-    if iv is None:
-        iv = '\0' * 16
-    else:
-        iv = base64.b64decode(iv)
+    iv = '\0' * 16
 
     def decrypt(data):
         data = base64.b64decode(data)
-        cipher = _build_cipher(key, iv, encode=False)
-        v = cipher.update(data)
-        v = v + cipher.final()
+        cipher = _build_cipher(key, iv)
+        v = cipher.decrypt(data).rstrip()
         del cipher
         return v
 

@@ -155,11 +155,11 @@ class Authenticate(wsgi.Middleware):
                                       is_admin=user.is_admin(),
                                       roles=roles,
                                       remote_address=remote_address)
-        req.environ['nova.context'] = ctxt
+        req.environ['synaps.context'] = ctxt
         uname = user.name
         pname = project.name
         msg = _('Authenticated Request For %(uname)s:%(pname)s)') % locals()
-        LOG.audit(msg, context=req.environ['nova.context'])
+        LOG.audit(msg, context=req.environ['synaps.context'])
         return self.application
 
 class Requestify(wsgi.Middleware):

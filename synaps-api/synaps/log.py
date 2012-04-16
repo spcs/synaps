@@ -160,7 +160,7 @@ class SynapsContextAdapter(logging.LoggerAdapter):
             instance_extra = FLAGS.instance_format % instance
         extra.update({'instance': instance_extra})
 
-        extra.update({"nova_version": version.version_string_with_vcs()})
+        extra.update({"synaps_version": version.version_string_with_vcs()})
         extra['extra'] = extra.copy()
         return msg, kwargs
 
@@ -212,7 +212,7 @@ class JSONFormatter(logging.Formatter):
 
 
 class LegacyNovaFormatter(logging.Formatter):
-    """A nova.context.RequestContext aware formatter configured through flags.
+    """A synaps.context.RequestContext aware formatter configured through flags.
 
     The flags used to set format strings are: logging_context_format_string
     and logging_default_format_string.  You can also specify
@@ -315,20 +315,20 @@ def _find_facility_from_flags():
 
 
 def _setup_logging_from_flags():
-    nova_root = getLogger().logger
-    for handler in nova_root.handlers:
-        nova_root.removeHandler(handler)
+    synaps_root = getLogger().logger
+    for handler in synaps_root.handlers:
+        synaps_root.removeHandler(handler)
 
     if FLAGS.use_syslog:
         facility = _find_facility_from_flags()
         syslog = logging.handlers.SysLogHandler(address='/dev/log',
                                                 facility=facility)
-        nova_root.addHandler(syslog)
+        synaps_root.addHandler(syslog)
 
     logpath = _get_log_file_path()
     if logpath:
         filelog = logging.handlers.WatchedFileHandler(logpath)
-        nova_root.addHandler(filelog)
+        synaps_root.addHandler(filelog)
 
         mode = int(FLAGS.logfile_mode, 8)
         st = os.stat(logpath)
@@ -337,16 +337,16 @@ def _setup_logging_from_flags():
 
     if FLAGS.use_stderr:
         streamlog = logging.StreamHandler()
-        nova_root.addHandler(streamlog)
+        synaps_root.addHandler(streamlog)
 
     elif not FLAGS.log_file:
         streamlog = logging.StreamHandler(stream=sys.stdout)
-        nova_root.addHandler(streamlog)
+        synaps_root.addHandler(streamlog)
 
     if FLAGS.publish_errors:
-        nova_root.addHandler(PublishErrorsHandler(logging.ERROR))
+        synaps_root.addHandler(PublishErrorsHandler(logging.ERROR))
 
-    for handler in nova_root.handlers:
+    for handler in synaps_root.handlers:
         datefmt = FLAGS.log_date_format
         if FLAGS.log_format:
             handler.setFormatter(logging.Formatter(fmt=FLAGS.log_format,
@@ -354,9 +354,9 @@ def _setup_logging_from_flags():
         handler.setFormatter(LegacyNovaFormatter(datefmt=datefmt))
 
     if FLAGS.verbose or FLAGS.debug:
-        nova_root.setLevel(logging.DEBUG)
+        synaps_root.setLevel(logging.DEBUG)
     else:
-        nova_root.setLevel(logging.INFO)
+        synaps_root.setLevel(logging.INFO)
 
     level = logging.NOTSET
     for pair in FLAGS.default_log_levels:
@@ -366,7 +366,7 @@ def _setup_logging_from_flags():
         logger.setLevel(level)
 
     # NOTE(jkoelker) Clear the handlers for the root logger that was setup
-    #                by basicConfig in nova/__init__.py and install the
+    #                by basicConfig in synaps/__init__.py and install the
     #                NullHandler.
     root = logging.getLogger()
     for handler in root.handlers:

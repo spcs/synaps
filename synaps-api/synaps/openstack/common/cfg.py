@@ -31,7 +31,7 @@ The schema for each option is defined using the Opt sub-classes e.g.
 Options can be strings, integers, floats, booleans, lists or 'multi strings':
 
     enabled_apis_opt = cfg.ListOpt('enabled_apis',
-                                   default=['ec2', 'osapi_compute'],
+                                   default=['cloudwatch', 'osapi_compute'],
                                    help='List of APIs to enable by default')
 
     DEFAULT_EXTENSIONS = [
