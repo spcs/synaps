@@ -137,9 +137,10 @@ class User(AuthBase):
       The 'password' for EC2 authenticatoin
     ``admin``
       ???
+    ``project``
     """
 
-    def __init__(self, id, name, access, secret, admin):
+    def __init__(self, id, name, access, secret, admin, project):
         AuthBase.__init__(self)
         assert isinstance(id, basestring)
         self.id = id
@@ -147,6 +148,7 @@ class User(AuthBase):
         self.access = access
         self.secret = secret
         self.admin = admin
+        self.project = project
 
     def is_superuser(self):
         return AuthManager().is_superuser(self)
@@ -247,7 +249,6 @@ class AuthManager(object):
         __init__ is run every time AuthManager() is called, so we only
         reset the driver if it is not set or a new driver is specified.
         """
-        self.network_manager = utils.import_object(FLAGS.network_manager)
         if driver or not getattr(self, 'driver', None):
             self.driver = utils.import_class(driver or FLAGS.auth_driver)
         if AuthManager.mc is None:
@@ -281,20 +282,15 @@ class AuthManager(object):
         :param path: Web request path.
 
         :type check_type: str
-        :param check_type: Type of signature to check. 'ec2' for EC2, 's3' for
-                           S3. Any other value will cause signature not to be
+        :param check_type: Type of signature to check. It'll be 'cloudwatch'. 
+                           Any other value will cause signature not to be 
                            checked.
-
-        :type headers: list
-        :param headers: HTTP headers passed with the request (only needed for
-                        s3 signature checks)
 
         :rtype: tuple (User, Project)
         :return: User and project that the request represents.
         """
         # TODO(vish): check for valid timestamp
         (access_key, _sep, project_id) = access.partition(':')
-
         LOG.debug(_('Looking up user: %r'), access_key)
         user = self.get_user_from_access_key(access_key)
         LOG.debug('user: %r', user)
@@ -306,7 +302,7 @@ class AuthManager(object):
         #             logic to find a default project for user
         if project_id == '':
             LOG.debug(_("Using project name = user name (%s)"), user.name)
-            project_id = user.name
+            project_id = user.project
 
         project = self.get_project(project_id)
         if project is None:
@@ -325,17 +321,7 @@ class AuthManager(object):
                     " and not member of project %(pjname)s") % locals())
             raise exception.ProjectMembershipNotFound(project_id=pjid,
                                                       user_id=uid)
-        if check_type == 's3':
-            sign = signer.Signer(user.secret.encode())
-            expected_signature = sign.s3_authorization(headers, verb, path)
-            LOG.debug(_('user.secret: %s'), user.secret)
-            LOG.debug(_('expected_signature: %s'), expected_signature)
-            LOG.debug(_('signature: %s'), signature)
-            if not utils.strcmp_const_time(signature, expected_signature):
-                LOG.audit(_("Invalid signature for user %s"), user.name)
-                raise exception.InvalidSignature(signature=signature,
-                                                 user=user)
-        elif check_type == 'cloudwatch':
+        if check_type == 'cloudwatch':
             # NOTE(vish): hmac can't handle unicode, so encode ensures that
             #             secret isn't unicode
             expected_signature = signer.Signer(user.secret.encode()).generate(
