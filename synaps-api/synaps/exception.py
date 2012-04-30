@@ -1002,3 +1002,7 @@ class InstanceNotFound(NotFound):
 
 class InvalidInstanceIDMalformed(Invalid):
     message = _("Invalid id: %(val) (expecting \"i-...\").")
+
+# Synaps custom exceptions 
+class RpcInvokeException(SynapsException):
+    message = _("Unable to invoke RPC")

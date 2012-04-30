@@ -20,7 +20,7 @@
 WARNING: This code is deprecated and will be removed.
 Keystone is the recommended solution for auth management.
 
-Nova authentication management
+Synaps authentication management
 """
 
 import os

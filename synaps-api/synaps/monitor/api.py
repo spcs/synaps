@@ -6,7 +6,9 @@ import time
 from synaps import flags
 from synaps import log as logging
 from synaps.db import Cassandra
+from synaps.rpc import RemoteProcedureCall
 from synaps import utils
+from synaps.exception import RpcInvokeException
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
@@ -14,6 +16,7 @@ FLAGS = flags.FLAGS
 class API(object):
     def __init__(self):
         self.cass = Cassandra()
+        self.rpc = RemoteProcedureCall()
     
     def put_metric_data(self, project_id, namespace, metric_data):
         for metric in utils.extract_member_list(metric_data):
@@ -24,9 +27,14 @@ class API(object):
             req_timestamp = metric.get('timestamp')
             timestamp = utils.parse_strtime(req_timestamp) \
                         if req_timestamp else utils.utcnow() 
-            LOG.debug("TIMESTAMP %s -> %s" % (str(req_timestamp), str(timestamp)))
-            self.cass.put_metric_data(project_id, namespace, metric_name,
-                                      dimensions, value, unit, timestamp)
+            
+            try:
+                self.rpc.put_metric_data(project_id, namespace, metric_name,
+                                         dimensions, value, unit, timestamp)
+            except RpcInvokeException:
+                LOG.warn(_("Access to the DB directly."))
+                self.cass.put_metric_data(project_id, namespace, metric_name,
+                                          dimensions, value, unit, timestamp)
         return {}
 
     def list_metrics(self, project_id, next_token=None, dimensions=None,

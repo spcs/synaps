@@ -89,7 +89,7 @@ class LDAPWrapper(object):
         except self.ldap.SERVER_DOWN:
             self.conn = None
             raise
- 
+    
     def __wrap_reconnect(f):
         def inner(self, *args, **kwargs):
             if self.conn is None:
