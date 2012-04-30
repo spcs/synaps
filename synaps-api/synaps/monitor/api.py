@@ -32,7 +32,7 @@ class API(object):
                 self.rpc.put_metric_data(project_id, namespace, metric_name,
                                          dimensions, value, unit, timestamp)
             except RpcInvokeException:
-                LOG.warn(_("Access to the DB directly."))
+                LOG.warn(_("RPC has failed. Access to the DB directly."))
                 self.cass.put_metric_data(project_id, namespace, metric_name,
                                           dimensions, value, unit, timestamp)
         return {}
