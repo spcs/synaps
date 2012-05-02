@@ -65,7 +65,6 @@ public class PutMetricTopology {
 		public Map<String, Object> getComponentConfiguration() {
 			return null;
 		}
-
 	}
 
 	/**

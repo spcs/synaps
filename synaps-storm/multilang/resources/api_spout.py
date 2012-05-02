@@ -13,7 +13,6 @@ if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
-from synaps.db import Cassandra
 
 from storm import Spout, emit, log
 from time import sleep
