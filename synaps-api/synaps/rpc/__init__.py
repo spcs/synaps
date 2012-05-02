@@ -5,11 +5,14 @@ from synaps import flags
 from synaps.utils import strtime
 from synaps import log as logging
 from synaps.exception import RpcInvokeException
+
 import socket
 import pika, json
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS
+
+PUT_METRIC_DATA_MSG_ID = 0x0001
 
 class RemoteProcedureCall(object):
     def __init__(self):
@@ -36,7 +39,8 @@ class RemoteProcedureCall(object):
 
         message = {'project_id': project_id, 'namespace':namespace,
                    'metric_name': metric_name, 'dimensions': dimensions,
-                   'value':value, 'unit':unit, 'timestamp':timestamp}
+                   'value':value, 'unit':unit, 'timestamp':timestamp,
+                   'message_id': PUT_METRIC_DATA_MSG_ID}
         
         self.channel.basic_publish(
             exchange='', routing_key='metric_queue', body=json.dumps(message),

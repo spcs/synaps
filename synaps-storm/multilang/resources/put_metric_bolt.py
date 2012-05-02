@@ -13,13 +13,28 @@ if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
+from synaps.db import Cassandra
 
 import storm
 import json
-from synaps_constants import PUT_METRIC_DATA_MSG_ID
 
 class PutMetricBolt(storm.BasicBolt):
+    def initialize(self, stormconf, context):
+        self.cass = Cassandra()
+    
     def process(self, tup):
-        storm.log(str(tup.values))
+        metric_key = tup.values[0]
+        message = tup.values[1]
+        
+        self.cass.put_metric_data(
+             project_id=message['project_id'],
+             namespace=message['namespace'],
+             metric_name=message['metric_name'],
+             dimensions=message['dimensions'],
+             value=message['value'],
+             unit=message['unit'],
+             timestamp=utils.parse_strtime(message['timestamp']),
+             metric_key=metric_key
+        )
 
 PutMetricBolt().run()

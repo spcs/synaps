@@ -134,9 +134,26 @@ class Cassandra(object):
             if json.loads(v['dimensions']) == dimensions: 
                 return k
         return None
+    
+    def get_metric_key_or_create(self, project_id, namespace, metric_name,
+                                 dimensions):
+        # get metric key
+        key = self._get_metric_key(project_id, namespace, metric_name,
+                                  dimensions)
+        
+        # or create metric 
+        if not key:
+            key = uuid.uuid4()
+            json_dim = json.dumps(dimensions)
+            columns = {'project_id': project_id, 'namespace': namespace,
+                       'name': metric_name, 'dimensions': json_dim}
+        
+            self.cf_metric.insert(key=key, columns=columns)
+        
+        return key
 
     def put_metric_data(self, project_id, namespace, metric_name, dimensions,
-                        value, unit=None, timestamp=None):
+                        value, unit=None, timestamp=None, metric_key=None):
         def get_stat(metric_id, super_column, aligned_timestamp):
             """
             super_column: (60, 'Average')
@@ -179,19 +196,11 @@ class Cassandra(object):
             self.scf_stat_archive.insert(metric_id, values,
                                          ttl=self.STATISTICS_TTL)
         
-        # get metric key
-        key = self._get_metric_key(project_id, namespace, metric_name,
-                                  dimensions)
         
-        # or create metric 
-        if not key:
-            key = uuid.uuid4()
-            json_dim = json.dumps(dimensions)
-            columns = {'project_id': project_id, 'namespace': namespace,
-                       'name': metric_name, 'dimensions': json_dim}
-        
-            self.cf_metric.insert(key=key, columns=columns)
-        
+        key = uuid.UUID(metric_key) if metric_key \
+              else self.get_metric_key_or_create(project_id, namespace,
+                                                 metric_name, dimensions)
+
         # if it doesn't hav a value to put, then return
         if value is None: 
             return key

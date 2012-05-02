@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # Copyright 2012 Samsung SDS
 
-import pycassa
 import os
 import sys
 
@@ -13,21 +12,28 @@ if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
+from synaps.db import Cassandra
 
 import storm
 import json
 from synaps_constants import PUT_METRIC_DATA_MSG_ID
 
 class UnpackMessageBolt(storm.BasicBolt):
-    def get_metric_id(self, message):
-        return "metric_id"
+    def initialize(self, stormconf, context):
+        self.cass = Cassandra()
+    
+    def get_metric_key(self, message):
+        return self.cass.get_metric_key_or_create(message['project_id'],
+                                                  message['namespace'],
+                                                  message['metric_name'],
+                                                  message['dimensions'])
     
     def process(self, tup):
         message_buf = tup.values[0]
         message = json.loads(message_buf)
-
-        if message['msg_id'] == PUT_METRIC_DATA_MSG_ID:
-            metric_id = self.get_metric_id(message)
-            storm.emit([metric_id, message_buf])
+        
+        if message['message_id'] == PUT_METRIC_DATA_MSG_ID:
+            metric_key = str(self.get_metric_key(message))
+            storm.emit([metric_key, message_buf])
 
 UnpackMessageBolt().run()

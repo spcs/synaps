@@ -45,7 +45,7 @@ public class PutMetricTopology {
 		}
 
 		public void declareOutputFields(OutputFieldsDeclarer declarer) {
-			declarer.declare(new Fields("metric_id", "message"));
+			declarer.declare(new Fields("metric_key", "message"));
 		}
 
 		public Map<String, Object> getComponentConfiguration() {
@@ -77,7 +77,7 @@ public class PutMetricTopology {
 		builder.setBolt("unpack_message_bolt", new UnpackMessageBolt(), 2)
 				.shuffleGrouping("api_spout");
 		builder.setBolt("putmetric_bolt", new PutMetricBolt(), 2)
-				.fieldsGrouping("unpack_message_bolt", new Fields("metric_id"));
+				.fieldsGrouping("unpack_message_bolt", new Fields("metric_key"));
 
 		Config conf = new Config();
 		conf.setDebug(true);
