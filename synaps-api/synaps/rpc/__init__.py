@@ -6,7 +6,6 @@ from synaps.utils import strtime
 from synaps import log as logging
 from synaps.exception import RpcInvokeException
 
-import socket
 import pika, json
 
 LOG = logging.getLogger(__name__)
@@ -26,7 +25,7 @@ class RemoteProcedureCall(object):
             
             self.channel = self.conn.channel()
             self.channel.queue_declare(queue='metric_queue', durable=True)
-        except socket.error:
+        except:
             raise RpcInvokeException()
         
     def put_metric_data(self, project_id, namespace, metric_name, dimensions,

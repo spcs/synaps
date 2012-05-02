@@ -36,5 +36,7 @@ class PutMetricBolt(storm.BasicBolt):
              timestamp=utils.parse_strtime(message['timestamp']),
              metric_key=metric_key
         )
+        
+        storm.log("write metric into database")
 
 PutMetricBolt().run()
