@@ -3,7 +3,6 @@
 
 import os
 import sys
-
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir, os.pardir))
 if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
@@ -12,16 +11,18 @@ if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
-from synaps.db import Cassandra
+from synaps import service
 
 import md5
-import storm
 import json
+import storm
+from synaps.db import Cassandra
 from synaps.rpc import PUT_METRIC_DATA_MSG_ID
 
-FLAGS = flags.FLAGS
-
-threshhold = FLAGS.get("memory_key_threshold", 10000)
+threshhold = 10000
+flags.FLAGS(sys.argv)
+utils.default_flagfile()
+logging.setup()
 
 class UnpackMessageBolt(storm.BasicBolt):
     def initialize(self, stormconf, context):
@@ -49,8 +50,11 @@ class UnpackMessageBolt(storm.BasicBolt):
         message_buf = tup.values[0]
         message = json.loads(message_buf)
         
-        if message['message_id'] == PUT_METRIC_DATA_MSG_ID:
-            metric_key = str(self.get_metric_key(message))
-            storm.emit([metric_key, message_buf])
+        try:
+            if message.get('message_id') == PUT_METRIC_DATA_MSG_ID:
+                metric_key = str(self.get_metric_key(message))
+                storm.emit([metric_key, message_buf])
+        except Exception as e:
+            storm.log(str(e))
 
 UnpackMessageBolt().run()

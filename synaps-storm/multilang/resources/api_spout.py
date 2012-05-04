@@ -17,7 +17,6 @@ from storm import Spout, emit, log
 from time import sleep
 from uuid import uuid4
 import json
-from synaps.exception import RpcInvokeException
 
 FLAGS = flags.FLAGS
 
@@ -34,20 +33,16 @@ class ApiSpout(Spout):
         self.channel.queue_declare(queue='metric_queue', durable=True)
     
     def nextTuple(self):
-        while not self.conn.is_open:
-            self.connect()
-            sleep(1)
-
         (method_frame, header_frame, body) = self.channel.basic_get(
             queue="metric_queue"
         )
 
-        if method_frame.NAME == 'Basic.GetEmpty':
-            return 
 
-        else:
+        if not method_frame.NAME == 'Basic.GetEmpty':
+            log("rabbitmq - get %s" % body)
             self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)
             emit([body], id=str(uuid4()))
+        
 
 if __name__ == "__main__":
     flags.FLAGS(sys.argv)

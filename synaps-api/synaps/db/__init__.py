@@ -197,9 +197,9 @@ class Cassandra(object):
                                          ttl=self.STATISTICS_TTL)
         
         
-        key = uuid.UUID(metric_key) if metric_key \
-              else self.get_metric_key_or_create(project_id, namespace,
-                                                 metric_name, dimensions)
+        key = metric_key if metric_key else self.get_metric_key_or_create(
+            project_id, namespace, metric_name, dimensions
+        )
 
         # if it doesn't hav a value to put, then return
         if value is None: 
