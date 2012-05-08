@@ -35,6 +35,10 @@ synaps는 웹서버에서 Storm으로 메시지를 넘겨주기 위해 RabbitMQ_
 .. _RabbitMQ: http://www.rabbitmq.com/
 .. _`데비안 설치문서`: http://www.rabbitmq.com/install-debian.html
 
-synaps-api 설치 및 설정
------------------------
-다음 :ref:`install.synaps.api` 를 참고해서 설치한다. 
+synaps-api 빌드, 설치 및 실행
+------------------------------
+:ref:`install.synaps.api` 참고
+
+synaps-storm 빌드 및 실행
+-------------------------
+TBD

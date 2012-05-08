@@ -9,6 +9,7 @@
     :maxdepth: 3
 
     development.environment
+    service.environment
     install.synaps.api
     
 API References
