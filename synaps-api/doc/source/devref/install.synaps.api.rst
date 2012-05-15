@@ -16,7 +16,7 @@ Ubuntu(11.04)상에서 synaps-api를 설치 및 설정 방법에 대해 설명�
 
   $ sudo apt-get install build-essential python-dev
   $ sudo apt-get install python-setuptools python-eventlet python-pastedeploy python-webob
-  $ sudo apt-get install git
+  $ sudo apt-get install git python-gflags python-netaddr
 
 thrift 설치
 -----------

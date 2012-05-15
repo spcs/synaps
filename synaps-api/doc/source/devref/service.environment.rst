@@ -16,7 +16,6 @@ synaps-api 클러스터 구축
 :ref:`install.synaps.api` 를 참고하여 각각의 웹서버 노드를 구축하고
 로드밸런서를 두어 synaps-api 클러스터를 구축한다.
 
-TBD
 
 synaps-mq 구축
 --------------
