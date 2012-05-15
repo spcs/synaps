@@ -37,7 +37,6 @@ class ApiSpout(Spout):
             queue="metric_queue"
         )
 
-
         if not method_frame.NAME == 'Basic.GetEmpty':
             log("rabbitmq - get %s" % body)
             self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)

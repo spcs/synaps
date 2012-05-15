@@ -11,6 +11,9 @@ synaps 는 다음과 같이 네가지 클러스터 그룹으로 구성된다.
 #. synaps-storm - 실시간 분산 처리
 #. synaps-database - 카산드라 데이터베이스
 
+.. image:: /images/synaps-deployment.jpg
+   :width: 100%
+
 synaps-api 클러스터 구축
 ------------------------
 :ref:`install.synaps.api` 를 참고하여 각각의 웹서버 노드를 구축하고

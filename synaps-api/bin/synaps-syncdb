@@ -20,5 +20,5 @@ if __name__ == "__main__":
     utils.default_flagfile()
     logging.setup()
 
-    Cassandra.reset()
+    Cassandra.syncdb()
 

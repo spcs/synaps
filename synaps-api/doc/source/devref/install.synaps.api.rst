@@ -84,10 +84,12 @@ synaps-database 초기화
   설정된 DB의 키스페이스를 drop 시킨후 키스페이스 및 컬럼패밀리를 재생성함. 
   실수로 실행한 경우, 모든 데이터를 유실하게 됨.
 
-synaps-api 실행
----------------
-아래와 같이 synaps-api 를 실행시킬 수 있다. 로그는 /var/log/synaps 에 위치한다.
+synaps-api 실행 및 정지
+-----------------------
+아래와 같이 synaps-api 를 실행 및 정지시킬 수 있다. 로그는 /var/log/synaps 에 
+위치한다.
 
 .. code-block:: bash
 
   $ sudo /etc/init.d/synaps-api start
+  $ sudo /etc/init.d/synaps-api stop 

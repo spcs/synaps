@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 # Copyright 2012 Samsung SDS
 # All Rights Reserved
 
@@ -54,26 +55,40 @@ class Cassandra(object):
                                                       'MetricArchive')
         self.scf_stat_archive = pycassa.ColumnFamily(self.pool,
                                                      'StatArchive')
-        
+    
     @staticmethod
-    def reset():
+    def syncdb():
+        """
+        카산드라 database schema 를 체크, 
+        필요한 KEYSPACE, CF, SCF 가 없으면 새로 생성.
+        """
         keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
         serverlist = FLAGS.get("cassandra_server_list")
         replication_factor = FLAGS.get("cassandra_replication_factor")
         manager = pycassa.SystemManager(server=serverlist[0])
-        # drop keyspace
-        try:
-            manager.drop_keyspace(keyspace)
-            LOG.info(_("cassandra keyspace, %s is dropped") % keyspace)
-        except:
-            LOG.critical(_("failed to drop cassandra keyspace, %s") % keyspace)
-    
-        # initialize database scheme
-        try:
-            manager.create_keyspace(keyspace,
-                                    strategy_options={'replication_factor':
-                                                      replication_factor})
+        strategy_options = {'replication_factor':replication_factor}
+        
 
+        # keyspace 체크, keyspace 가 없으면 새로 생성
+        LOG.info(_("cassandra syncdb is started for keyspace(%s)" % keyspace))
+        if keyspace not in manager.list_keyspaces():
+            LOG.info(_("cassandra keyspace %s does not exist.") % keyspace)
+            manager.create_keyspace(keyspace, strategy_options=strategy_options)
+            LOG.info(_("cassandra keyspace %s is created.") % keyspace)
+        else:
+            property = manager.get_keyspace_properties(keyspace)
+            
+            # strategy_option 체크, option 이 다르면 수정
+            if not (strategy_options == property.get('strategy_options')):
+                manager.alter_keyspace(keyspace,
+                                       strategy_options=strategy_options)
+                LOG.info(_("cassandra keyspace strategy options is updated - %s" 
+                           % str(strategy_options)))
+        
+        # CF 체크
+        column_families = manager.get_keyspace_column_families(keyspace)        
+        
+        if 'Metric' not in column_families.keys():
             manager.create_column_family(
                 keyspace=keyspace,
                 name='Metric',
@@ -88,7 +103,8 @@ class Cassandra(object):
             manager.create_index(keyspace=keyspace, column_family='Metric',
                                  column='namespace',
                                  value_type=types.UTF8Type())
-
+        
+        if 'MetricArchive' not in column_families.keys():
             manager.create_column_family(
                 keyspace=keyspace,
                 name='MetricArchive',
@@ -97,6 +113,7 @@ class Cassandra(object):
                 default_validation_class=pycassa.DOUBLE_TYPE
             )
 
+        if 'StatArchive' not in column_families.keys():
             manager.create_column_family(
                 keyspace=keyspace,
                 name='StatArchive', super=True,
@@ -106,9 +123,27 @@ class Cassandra(object):
                 default_validation_class=pycassa.DOUBLE_TYPE
             )
 
-            LOG.info(_("cassandra column families are generated"))
-        except Exception as ex:
-            LOG.critical(_("failed to initialize: %s") % ex)        
+        if 'Alarm' not in column_families.keys():
+            manager.create_column_family(
+                keyspace=keyspace,
+                name='Alarm',
+                key_validation_class=pycassa.LEXICAL_UUID_TYPE
+            )
+            
+            manager.create_index(keyspace=keyspace, column_family='Alarm',
+                                 column='metric_id',
+                                 value_type=types.LexicalUUIDType())
+            manager.create_index(keyspace=keyspace, column_family='Alarm',
+                                 column='name',
+                                 value_type=types.UTF8Type())
+            manager.create_index(keyspace=keyspace, column_family='Alarm',
+                                 column='state_updated_timestamp',
+                                 value_type=types.DateType())
+            manager.create_index(keyspace=keyspace, column_family='Alarm',
+                                 column='state_value',
+                                 value_type=types.UTF8Type())
+        
+        LOG.info(_("cassandra syncdb has finished"))
     
     def _get_metric_data(self, project_id, namespace, metric_name, dimensions,
                         start, end):
