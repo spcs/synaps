@@ -77,13 +77,13 @@ synaps-database 초기화
 
 .. code-block:: bash
 
-  $ sudo synaps-db-initialsetup
+  $ sudo synaps-syncdb
 
 .. DANGER::
   위 명령이 무엇을 하는지 정확히 파악한 후 실행할 것. /etc/synaps/synaps.conf에 
-  설정된 DB의 키스페이스를 drop 시킨후 키스페이스 및 컬럼패밀리를 재생성함. 
-  실수로 실행한 경우, 모든 데이터를 유실하게 됨.
-
+  설정된 DB의 키스페이스 및 컬럼패밀리의 유무 여부 및 정합성을 체크하고, 
+  이에 대해 조치함. 
+  
 synaps-api 실행 및 정지
 -----------------------
 아래와 같이 synaps-api 를 실행 및 정지시킬 수 있다. 로그는 /var/log/synaps 에 
