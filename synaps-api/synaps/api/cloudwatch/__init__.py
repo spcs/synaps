@@ -213,6 +213,7 @@ class Authorizer(wsgi.Middleware):
                  'PutMetricData': ['all'], #'netadmin'],
                  'GetMetricStatistics': ['all'],
                  'ListMetrics':['all'],
+                 'PutMetricAlarm':['all'],
 #                'DescribeAvailabilityZones': ['all'],
 #                'DescribeRegions': ['all'],
 #                'DescribeSnapshots': ['all'],

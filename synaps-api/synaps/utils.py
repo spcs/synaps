@@ -348,7 +348,7 @@ def execute(*cmd, **kwargs):
             greenthread.sleep(0)
 
 
-def extract_member_list(aws_dict, key='member'):
+def extract_member_list(aws_list, key='member'):
     """
     
     ex) if key is 'member', it will convert from
@@ -362,7 +362,7 @@ def extract_member_list(aws_dict, key='member'):
     ['something1', 'something2', 'something3']
     """
     
-    return OrderedDict(aws_dict[key]).values()
+    return OrderedDict(aws_list[key]).values()
 
 def extract_member_dict(aws_dict, key='member'):
     """

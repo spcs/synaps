@@ -20,6 +20,13 @@ class TestCassandra(unittest.TestCase):
     def setUp(self):
         Cassandra.syncdb()
         self.cass = Cassandra()
+        self.keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
+        self.serverlist = FLAGS.get("cassandra_server_list")
+    
+    def _connect(self):
+        conn = pycassa.ConnectionPool(self.keyspace,
+                                      server_list=self.serverlist)
+        return conn
     
     def test_syncdb(self):
         """
@@ -28,17 +35,30 @@ class TestCassandra(unittest.TestCase):
         """
         self.cass.syncdb()
         
-        keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
-        serverlist = FLAGS.get("cassandra_server_list")
-        manager = pycassa.SystemManager(server=serverlist[0])
+        manager = pycassa.SystemManager(server=self.serverlist[0])
         
         keyspaces = manager.list_keyspaces()
-        column_families = manager.get_keyspace_column_families(keyspace)
+        column_families = manager.get_keyspace_column_families(self.keyspace)
         
-        self.assertTrue(keyspace in keyspaces)
+        self.assertTrue(self.keyspace in keyspaces)
         self.assertEqual(set(column_families.keys()),
                          set(['Metric', 'MetricArchive', 'StatArchive',
                               'Alarm']))
+    
+    def test_put_metric_alarm(self):
+        """
+        """
+        conn = self._connect()
+        cf_alarm = pycassa.ColumnFamily(conn, 'Alarm')
+
+        
+        
+        before_count = cf_alarm.get_count()
+        self.cass.put_metric_alarm()
+        after_count = cf_alarm.get_count()
+        
+        self.assertEqual(before_count, after_count - 1)
+        
         
     def test_put_metric_data(self):
         """

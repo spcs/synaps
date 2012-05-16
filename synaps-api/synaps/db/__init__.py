@@ -55,6 +55,8 @@ class Cassandra(object):
                                                       'MetricArchive')
         self.scf_stat_archive = pycassa.ColumnFamily(self.pool,
                                                      'StatArchive')
+        self.cf_alarm = pycassa.ColumnFamily(self.pool, 'Alarm')
+        
     
     @staticmethod
     def syncdb():
@@ -186,6 +188,9 @@ class Cassandra(object):
             self.cf_metric.insert(key=key, columns=columns)
         
         return key
+
+    def put_metric_alarm(self):
+        return None
 
     def put_metric_data(self, project_id, namespace, metric_name, dimensions,
                         value, unit=None, timestamp=None, metric_key=None):
