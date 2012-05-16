@@ -30,7 +30,8 @@ class ApiSpout(Spout):
         )
         
         self.channel = self.conn.channel()
-        self.channel.queue_declare(queue='metric_queue', durable=True)
+        queue_args = {"x-ha-policy" : "all" }
+        self.channel.queue_declare(queue='metric_queue', durable=True, arguments=queue_args)   
     
     def nextTuple(self):
         (method_frame, header_frame, body) = self.channel.basic_get(
