@@ -25,7 +25,8 @@ class RemoteProcedureCall(object):
             )
             
             self.channel = self.conn.channel()
-            self.channel.queue_declare(queue='metric_queue', durable=True)
+            queue_args = {"x-ha-policy" : "all" }
+            self.channel.queue_declare(queue='metric_queue', durable=True, arguments=queue_args)
         except:
             raise RpcInvokeException()
     
