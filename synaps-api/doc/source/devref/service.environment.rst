@@ -20,19 +20,73 @@ synaps-api 클러스터 구축
 로드밸런서를 두어 synaps-api 클러스터를 구축한다.
 
 
-synaps-mq 구축
---------------
-1. RabbitMQ 설치
+synaps-mq 구축 및 이중화 구성
+------------------------
+
+rabbit mq 2중화 구성
+
+1. 필요조건
+
+* rabbit mq 설치
 
   .. code-block:: bash
 
-    $ apt-get install erlang
-    $ apt-get install rabbitmq
-  
-  
-2. RabbitMQ 이중화 구성
+   $ dpkg -i rabbitmq-server_2.8.2-1_all.deb
 
-TBD
+
+* rabbit mq 중지
+
+  .. code-block:: bash
+
+   $ rabbitmqctl stop
+
+
+* rabbit mq database 삭제
+
+  .. code-block:: bash
+
+   $ rm -rf /var/lib/rabbitmq/mnesia
+
+
+* erlang_cookie 파일 동기화 ::
+
+   한 노드의 /var/lib/rabbitmq/.erlang_cookie 파일을 다른 노드에 overwrite
+
+
+2. 클러스터링
+
+* 클러스터링 정보 설정
+
+  .. code-block:: bash
+
+   $ vi /etc/rabbitmq/rabbitmq.config
+
+
+* 아래 내용 저장 ::
+
+   [{rabbit, [{cluster_nodes, ['rabbit@synaps-mq01', 'rabbit@synaps-mq02']}]}].
+
+
+* Rabbit mq 실행
+
+  .. code-block:: bash
+
+   $ rabbitmq-server -detached
+
+
+* 이중화 확인
+
+  .. code-block:: bash
+
+   $ rabbitmqctl cluster_status
+
+
+  ::
+
+   Cluster status of node 'rabbit@synaps-mq02' ...
+   [{nodes,[{disc,['rabbit@rabbit@synaps-mq02','rabbit@rabbit@synaps-mq01']}]},
+   {running_nodes,['rabbit@rabbit@synaps-mq01','rabbit@rabbit@synaps-mq02']}]
+   ...done.
 
 synaps-storm 클러스터 구축
 --------------------------
