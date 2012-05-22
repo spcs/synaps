@@ -22,15 +22,15 @@ class MonitorController(object):
     def __str__(self):
         return 'MonitorController'
     
-    def put_metric_alarm(self, context, name, operator, evaluation_period, 
-                         metric_name, namespace, period, statistic, threshold,                          
-                         alarm_actions=None, insufficient_action=None,
-                         ok_action=None, action_enabled=None, 
-                         description=None, dimensions=None, unit=None, 
-                         project_id=None):
+    def put_metric_alarm(self, context, alarm_name, comparison_operator,
+                         evaluation_periods, metric_name, namespace, period,
+                         statistic, threshold, alarm_actions=[],
+                         insufficient_actions=[], ok_actions=[],
+                         action_enabled=False, alarm_description="",
+                         dimensions={}, unit=None, project_id=None):
         """
         Create or updates an alarm and associates it with the specified
-        SPCS Synaps metric. 
+        SPCS Synaps metric.
         
         When this operation creates an alarm, the alarm state is immediately 
         set to INSUFFICIENT_DATA. The alarm is evaluated and its StateVale is 
@@ -39,13 +39,27 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         
-        metric = None
-        alarm = None
-            
-        self.monitor_api.put_metric_alarm(metric, alarm)
+        metricalarm = monitor.MetricAlarm(
+            alarm_name=alarm_name,
+            comparison_operator=comparison_operator,
+            evaluation_periods=evaluation_periods,
+            metric_name=metric_name,
+            namespace=namespace,
+            period=period,
+            statistic=statistic,
+            threshold=threshold,
+            action_enabled=action_enabled,
+            alarm_actions=alarm_actions,
+            alarm_description=alarm_description,
+            dimensions=dimensions,
+            insufficient_data_actions=insufficient_actions,
+            ok_actions=ok_actions,
+            unit=unit
+        )
+
+        self.monitor_api.put_metric_alarm(project_id, metricalarm)
         
         return {}
-
 
     def put_metric_data(self, context, namespace, metric_data,
                         project_id=None):

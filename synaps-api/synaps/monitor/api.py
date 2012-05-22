@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 # Copyright 2012 Samsung SDS
 # All Rights Reserved
 
@@ -8,32 +9,39 @@ from synaps import log as logging
 from synaps.db import Cassandra
 from synaps import rpc
 from synaps import utils
-from synaps.exception import RpcInvokeException
+from synaps.exception import RpcInvokeException, Invalid
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
-
-class Metric(object):
-    pass
-
-class Alarm(object):
-    pass
 
 class API(object):
     def __init__(self):
         self.cass = Cassandra()
         self.rpc = rpc.RemoteProcedureCall()
     
-    def put_metric_alarm(self, metric, alarm):
+    def put_metric_alarm(self, project_id, metricalarm):
         """
-        메시지를 MQ 에 넣고 값이 빈 dictionary 를 반환한다.
-        """
-        def pack(metric, alarm):
-            return {}
+        알람을 DB에 넣고 값이 빈 dictionary 를 반환한다.
         
-        message = pack(metric, alarm)
-        self.rpc.send_msg(rpc.PUT_METRIC_ALARM_MSG_ID, message)
-       
+        메트릭 유무 확인
+        
+        알람 히스토리 발생.
+        """
+        
+        # 메트릭 유무 확인
+        metric_key = self.cass.get_metric_key(
+            project_id=project_id,
+            namespace=metricalarm.namespace,
+            metric_name=metricalarm.metric_name,
+            dimensions=metricalarm.dimensions
+        )
+        
+        if not metric_key:
+            raise Invalid(_("invalid metric information"))
+
+        # 알람 저장
+        self.cass.put_metric_alarm(project_id, metric_key, metricalarm)
+        
         return {}
     
     def put_metric_data(self, project_id, namespace, metric_data):
@@ -47,7 +55,7 @@ class API(object):
             value = metric.get('value')
             req_timestamp = metric.get('timestamp')
             timestamp = req_timestamp if req_timestamp \
-                        else utils.parse_strtime(utils.utcnow()) 
+                        else utils.strtime(utils.utcnow()) 
             
             # pack message
             message = {'project_id': project_id, 'namespace':namespace,

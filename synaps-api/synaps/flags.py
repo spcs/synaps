@@ -98,12 +98,6 @@ log_opts = [
     ]
 
 core_opts = [
-#    cfg.StrOpt('connection_type',
-#               default=None,
-#               help='libvirt, xenapi or fake'),
-#    cfg.StrOpt('sql_connection',
-#               default='sqlite:///$state_path/$sqlite_db',
-#               help='connection string for sql database'),
     cfg.StrOpt('cassandra_replication_factor',
                default='1',
                help='cassandra replication factor'),
@@ -138,16 +132,15 @@ core_opts = [
     cfg.StrOpt('lock_path',
                default=os.path.join(os.path.dirname(__file__), '../'),
                help='Directory for lock files'),
+    cfg.StrOpt('spcs_access_key_id',
+               default='admin',
+               help='SPCS Access ID'),
+    cfg.StrOpt('spcs_secret_access_key',
+               default='admin',
+               help='SPCS Access Key'),
     ]
 
-debug_opts = [
-#    cfg.BoolOpt('fake_network',
-#                default=False,
-#                help='should we use fake network devices and addresses'),
-#    cfg.BoolOpt('fake_rabbit',
-#                default=False,
-#                help='use a fake rabbit'),
-]
+debug_opts = []
 
 FLAGS.register_cli_opts(log_opts)
 FLAGS.register_cli_opts(core_opts)

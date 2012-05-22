@@ -20,6 +20,8 @@ import time
 import calendar
 import netaddr
 import shutil
+import json
+import itertools
 from collections import OrderedDict
 
 from eventlet import greenthread
@@ -38,6 +40,89 @@ FLAGS = flags.FLAGS
 FLAGS.register_opt(
     cfg.BoolOpt('disable_process_locking', default=False,
                 help='Whether to disable inter-process locks'))
+
+
+def to_primitive(value, convert_instances=False, level=0):
+    """Convert a complex object into primitives.
+
+    Handy for JSON serialization. We can optionally handle instances,
+    but since this is a recursive function, we could have cyclical
+    data structures.
+
+    To handle cyclical data structures we could track the actual objects
+    visited in a set, but not all objects are hashable. Instead we just
+    track the depth of the object inspections and don't go too deep.
+
+    Therefore, convert_instances=True is lossy ... be aware.
+
+    """
+    nasty = [inspect.ismodule, inspect.isclass, inspect.ismethod,
+             inspect.isfunction, inspect.isgeneratorfunction,
+             inspect.isgenerator, inspect.istraceback, inspect.isframe,
+             inspect.iscode, inspect.isbuiltin, inspect.isroutine,
+             inspect.isabstract]
+    for test in nasty:
+        if test(value):
+            return unicode(value)
+
+    # value of itertools.count doesn't get caught by inspects
+    # above and results in infinite loop when list(value) is called.
+    if type(value) == itertools.count:
+        return unicode(value)
+
+    # FIXME(vish): Workaround for LP bug 852095. Without this workaround,
+    #              tests that raise an exception in a mocked method that
+    #              has a @wrap_exception with a notifier will fail. If
+    #              we up the dependency to 0.5.4 (when it is released) we
+    #              can remove this workaround.
+    if getattr(value, '__module__', None) == 'mox':
+        return 'mock'
+
+    if level > 3:
+        return '?'
+
+    # The try block may not be necessary after the class check above,
+    # but just in case ...
+    try:
+        if isinstance(value, (list, tuple)):
+            o = []
+            for v in value:
+                o.append(to_primitive(v, convert_instances=convert_instances,
+                                      level=level))
+            return o
+        elif isinstance(value, dict):
+            o = {}
+            for k, v in value.iteritems():
+                o[k] = to_primitive(v, convert_instances=convert_instances,
+                                    level=level)
+            return o
+        elif isinstance(value, datetime.datetime):
+            return str(value)
+        elif hasattr(value, 'iteritems'):
+            return to_primitive(dict(value.iteritems()),
+                                convert_instances=convert_instances,
+                                level=level)
+        elif hasattr(value, '__iter__'):
+            return to_primitive(list(value), level)
+        elif convert_instances and hasattr(value, '__dict__'):
+            # Likely an instance of something. Watch for cycles.
+            # Ignore class member vars.
+            return to_primitive(value.__dict__,
+                                convert_instances=convert_instances,
+                                level=level + 1)
+        else:
+            return value
+    except TypeError, e:
+        # Class objects are tricky since they may define something like
+        # __iter__ defined but it isn't callable as list().
+        return unicode(value)
+
+def dumps(value):
+    try:
+        return json.dumps(value)
+    except TypeError:
+        pass
+    return json.dumps(to_primitive(value))
 
 def gen_uuid():
     return uuid.uuid4()

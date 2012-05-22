@@ -19,7 +19,13 @@ LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
 
 STAT_TYPE = types.CompositeType(types.IntegerType(), # statistics resolution
-                                types.AsciiType()) # Average | SampleCount ... 
+                                types.AsciiType()) # Average | SampleCount ...
+
+RESOURCE_NUMBER_TYPE = types.CompositeType(
+    types.UTF8Type(), # project_id
+    types.UTF8Type(), # resource type (ex. 'alarm', 'alarm action')
+    types.UTF8Type(), # resource name (ex. 'CPUUtilization-Cold-i128932')
+) 
 
 def certificate_create(admin, cert):
     # TBD: implement here
@@ -53,11 +59,9 @@ class Cassandra(object):
         self.cf_metric = pycassa.ColumnFamily(self.pool, 'Metric')
         self.cf_metric_archive = pycassa.ColumnFamily(self.pool,
                                                       'MetricArchive')
-        self.scf_stat_archive = pycassa.ColumnFamily(self.pool,
-                                                     'StatArchive')
-        self.cf_alarm = pycassa.ColumnFamily(self.pool, 'Alarm')
-        
-    
+        self.scf_stat_archive = pycassa.ColumnFamily(self.pool, 'StatArchive')
+        self.cf_metricalarm = pycassa.ColumnFamily(self.pool, 'MetricAlarm')
+
     @staticmethod
     def syncdb():
         """
@@ -125,23 +129,60 @@ class Cassandra(object):
                 default_validation_class=pycassa.DOUBLE_TYPE
             )
 
-        if 'Alarm' not in column_families.keys():
+        if 'MetricAlarm' not in column_families.keys():
             manager.create_column_family(
                 keyspace=keyspace,
-                name='Alarm',
-                key_validation_class=pycassa.LEXICAL_UUID_TYPE
+                name='MetricAlarm',
+                key_validation_class=pycassa.LEXICAL_UUID_TYPE,
+                column_validation_classes={
+                    'project_id': pycassa.UTF8_TYPE,
+                    'metric_id': pycassa.LEXICAL_UUID_TYPE,
+                    'action_enabled': pycassa.BOOLEAN_TYPE,
+                    'alarm_actions': pycassa.UTF8_TYPE,
+                    'alarm_arn': pycassa.UTF8_TYPE,
+                    'alarm_configuration_updated_timestamp': pycassa.DATE_TYPE,
+                    'alarm_description': pycassa.UTF8_TYPE,
+                    'alarm_name': pycassa.UTF8_TYPE,
+                    'comparison_operator': pycassa.UTF8_TYPE,
+                    'dimensions':pycassa.UTF8_TYPE,
+                    'evaluation_period':pycassa.INT_TYPE,
+                    'insufficient_data_actions': pycassa.UTF8_TYPE,
+                    'metric_name':pycassa.UTF8_TYPE,
+                    'namespace':pycassa.UTF8_TYPE,
+                    'ok_actions':pycassa.UTF8_TYPE,
+                    'period':pycassa.INT_TYPE,
+                    'state_reason':pycassa.UTF8_TYPE,
+                    'state_reason_data':pycassa.UTF8_TYPE,
+                    'state_updated_timestamp':pycassa.DATE_TYPE,
+                    'state_value':pycassa.UTF8_TYPE,
+                    'statistic':pycassa.UTF8_TYPE,
+                    'threshold':pycassa.DOUBLE_TYPE,
+                    'unit':pycassa.UTF8_TYPE
+                }
             )
-            
-            manager.create_index(keyspace=keyspace, column_family='Alarm',
+
+            manager.create_index(keyspace=keyspace,
+                                 column_family='MetricAlarm',
+                                 column='project_id',
+                                 value_type=types.UTF8Type())            
+            manager.create_index(keyspace=keyspace,
+                                 column_family='MetricAlarm',
                                  column='metric_id',
                                  value_type=types.LexicalUUIDType())
-            manager.create_index(keyspace=keyspace, column_family='Alarm',
-                                 column='name',
+            manager.create_index(keyspace=keyspace,
+                                 column_family='MetricAlarm',
+                                 column='alarm_name',
                                  value_type=types.UTF8Type())
-            manager.create_index(keyspace=keyspace, column_family='Alarm',
+            manager.create_index(keyspace=keyspace,
+                                 column_family='MetricAlarm',
                                  column='state_updated_timestamp',
                                  value_type=types.DateType())
-            manager.create_index(keyspace=keyspace, column_family='Alarm',
+            manager.create_index(keyspace=keyspace,
+                                 column_family='MetricAlarm',
+                                 column='alarm_configuration_updated_timestamp',
+                                 value_type=types.DateType())
+            manager.create_index(keyspace=keyspace,
+                                 column_family='MetricAlarm',
                                  column='state_value',
                                  value_type=types.UTF8Type())
         
@@ -150,13 +191,13 @@ class Cassandra(object):
     def _get_metric_data(self, project_id, namespace, metric_name, dimensions,
                         start, end):
 
-        key = self._get_metric_key(project_id, namespace, metric_name,
+        key = self.get_metric_key(project_id, namespace, metric_name,
                                   dimensions)
         return self.cf_metric_archive.get(key, column_start=start,
                                           column_finish=end)
     
         
-    def _get_metric_key(self, project_id, namespace, metric_name, dimensions):
+    def get_metric_key(self, project_id, namespace, metric_name, dimensions):
         expr_list = [
             pycassa.create_index_expression("project_id", project_id),
             pycassa.create_index_expression("name", metric_name),
@@ -175,7 +216,7 @@ class Cassandra(object):
     def get_metric_key_or_create(self, project_id, namespace, metric_name,
                                  dimensions):
         # get metric key
-        key = self._get_metric_key(project_id, namespace, metric_name,
+        key = self.get_metric_key(project_id, namespace, metric_name,
                                   dimensions)
         
         # or create metric 
@@ -188,9 +229,54 @@ class Cassandra(object):
             self.cf_metric.insert(key=key, columns=columns)
         
         return key
-
-    def put_metric_alarm(self):
+    
+    def get_metric_alarm_key(self, project_id, metric_key, metricalarm):
+        """
+        
+        """
+        expr_list = [
+            pycassa.create_index_expression("project_id", project_id),
+            pycassa.create_index_expression("metric_key", metric_key),
+            pycassa.create_index_expression("alarm_name",
+                                            metricalarm.alarm_name)
+        ]
+        
+        index_clause = pycassa.create_index_clause(expr_list)
+        items = self.cf_metricalarm.get_indexed_slices(index_clause)
+        
+        for k, v in items:
+            return k
+        
         return None
+        
+
+    def put_metric_alarm(self, project_id, metric_key, metricalarm):
+        """
+        MetricAlarm 을 DB에 생성 또는 업데이트 함.
+        """
+        # 해당 알람이 DB에 있는지 확인
+        alarm_key = self.get_metric_alarm_key(project_id, metric_key,
+                                              metricalarm)
+        columns = metricalarm.to_columns()
+        columns['alarm_arn'] = "rn:spcs:suwon:%s:alarm:%s" % (
+            project_id, metricalarm.alarm_name
+        )
+        columns['alarm_configuration_updated_timestamp'] = utils.utcnow()
+        
+        if alarm_key:
+            # TODO: 알람 업데이트 관련 알람 히스토리 생성
+            pass
+        else:
+            # TODO: 알람 신규 관련 알람 히스토리 생성 
+            alarm_key = uuid.uuid4()
+            columns['state_updated_timestamp'] = utils.utcnow()
+            columns['state_reason'] = "alarm initial setup"
+            columns['state_reason_data'] = "{}"
+            columns['state_value'] = "INSUFFICIENT_DATA"
+            
+        self.cf_metricalarm.insert(key=alarm_key, columns=columns)
+        
+        return alarm_key
 
     def put_metric_data(self, project_id, namespace, metric_name, dimensions,
                         value, unit=None, timestamp=None, metric_key=None):
@@ -294,7 +380,7 @@ class Cassandra(object):
                               start_time, end_time, period, statistics,
                               unit=None, dimensions=None):
         # get metric key
-        key = self._get_metric_key(project_id, namespace, metric_name,
+        key = self.get_metric_key(project_id, namespace, metric_name,
                                    dimensions)
 
         # or return {}

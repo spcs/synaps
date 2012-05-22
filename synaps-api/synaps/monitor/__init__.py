@@ -133,6 +133,105 @@ class Metric(object):
         Type: String
         Length constraints: Minimum length of 1. Maximum length of 255.
     """
+    def __init__(self, project_id=None, namespace=None, name=None,
+                 dimensions=None):
+        self.project_id = project_id
+        self.name = name
+        self.dimensions = dimensions
+
+class MetricAlarm(object):
+    OP_MAP = {'>=':'GreaterThanOrEqualToThreshold',
+              '>':'GreaterThanThreshold',
+              '<':'LessThanThreshold',
+              '<=':'LessThanOrEqualToThreshold'}
+    STATISTICS = ('SampleCount', 'Average', 'Sum', 'Minimum', 'Maximum')
+    
+    def __init__(self, alarm_name, comparison_operator, evaluation_periods,
+                 metric_name, namespace, period, statistic, threshold,
+                 action_enabled=False, alarm_actions=[], alarm_description="",
+                 dimensions={}, insufficient_data_actions=[], ok_actions=[],
+                 unit=None):
+
+        assert (isinstance(action_enabled, bool))
+        self.action_enabled = action_enabled
+        
+        assert (isinstance(alarm_actions, list))
+        self.alarm_actions = alarm_actions
+        
+        assert (len(alarm_description) <= 255)
+        self.alarm_description = alarm_description
+        
+        assert (len(alarm_name) <= 255)
+        self.alarm_name = alarm_name
+        
+        assert (comparison_operator in self.OP_MAP.values())
+        self.comparison_operator = comparison_operator
+        
+        assert (isinstance(dimensions, dict))
+        self.dimensions = dimensions
+        
+        assert (isinstance(evaluation_periods, int))
+        self.evaluation_periods = evaluation_periods
+        
+        assert (isinstance(insufficient_data_actions, list))
+        self.insufficient_data_actions = insufficient_data_actions
+        
+        assert (len(metric_name) <= 255)
+        self.metric_name = metric_name 
+        
+        assert (len(namespace) <= 255)
+        self.namespace = namespace
+        
+        assert (isinstance(ok_actions, list))
+        self.ok_actions = ok_actions
+
+        assert (isinstance(period, int))
+        self.period = period
+        
+        assert (statistic in self.STATISTICS)
+        self.statistic = statistic
+        
+        self.threshold = threshold
+        self.unit = unit
+        
+        self.alarm_arn = None
+        self.alarm_configuration_updated_timestamp = None
+        self.state_reason = None
+        self.state_reason_data = None
+        self.state_updated_timestamp = None
+        self.state_value = None
+        
+    def to_columns(self):
+        ret = {
+            'action_enabled': self.action_enabled,
+            'alarm_actions': self.alarm_actions,
+            'alarm_arn': self.alarm_arn,
+            'alarm_configuration_updated_timestamp': 
+                self.alarm_configuration_updated_timestamp,
+            'alarm_description': self.alarm_description,
+            'alarm_name': self.alarm_name,
+            'comparison_operator': self.comparison_operator,
+            'dimensions':self.dimensions,
+            'evaluation_period':self.evaluation_periods,
+            'insufficient_data_actions': self.insufficient_data_actions,
+            'metric_name':self.metric_name,
+            'namespace':self.namespace,
+            'ok_actions':self.ok_actions,
+            'period':self.period,
+            'statistic':self.statistic,
+            'threshold':self.threshold,
+            'unit':self.unit               
+        }
+        
+        return ret
+        
+    def __repr__(self):
+        return "MetricAlarm:%s[%s(%s) %s %s]" % (self.alarm_name,
+                                                 self.metric_name,
+                                                 self.statistic,
+                                                 self.comparison_operator,
+                                                 self.threshold)
+    
 
 class MetricDatum(object):
     """

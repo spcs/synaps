@@ -39,6 +39,20 @@ FLAGS = flags.FLAGS
 FLAGS.register_opts(cloudwatch_opts)
 flags.DECLARE('use_forwarded_for', 'synaps.api.auth')
 
+def cloudwatch_error(req, request_id, code, message):
+    """Helper to send an cloudwatch_compatible error"""
+    LOG.error(_('%(code)s: %(message)s') % locals())
+    resp = webob.Response()
+    resp.status = 400
+    resp.headers['Content-Type'] = 'text/xml'
+    resp.body = str('<?xml version="1.0"?>\n'
+                     '<Response><Errors><Error><Code>%s</Code>'
+                     '<Message>%s</Message></Error></Errors>'
+                     '<RequestID>%s</RequestID></Response>' % 
+                     (utils.utf8(code), utils.utf8(message),
+                     utils.utf8(request_id)))
+    return resp
+
 ## Fault Wrapper around all CloudWatch requests ##
 class FaultWrapper(wsgi.Middleware):
     """Calls the middleware stack, captures any exceptions into faults."""
@@ -286,8 +300,9 @@ class Authorizer(wsgi.Middleware):
 class Executor(wsgi.Application):
     @webob.dec.wsgify(RequestClass=webob.Request)
     def __call__(self, req):
-        api_request = req.environ['cloudwatch.request']
         context = req.environ['synaps.context']
+        request_id = context.request_id
+        api_request = req.environ['cloudwatch.request']
         result = None
         
         try:
@@ -296,10 +311,36 @@ class Executor(wsgi.Application):
             LOG.exception(_('CloudwatchApiError raised: %s'), unicode(ex),
                           context=context)
             if ex.code:
-                return self._error(req, context, ex.code, unicode(ex))
+                return cloudwatch_error(req, request_id, ex.code, unicode(ex))
             else:
-                return self._error(req, context, type(ex).__name__,
-                                   unicode(ex))
+                return cloudwatch_error(req, request_id, type(ex).__name__,
+                                        unicode(ex))
+        except exception.NotAuthorized as ex:
+            LOG.info(_('NotAuthorized raised: %s'), unicode(ex),
+                    context=context)
+            return cloudwatch_error(req, request_id, type(ex).__name__,
+                                    unicode(ex))
+        except exception.InvalidRequest as ex:
+            LOG.debug(_('InvalidRequest raised: %s'), unicode(ex),
+                     context=context)
+            return cloudwatch_error(req, request_id, type(ex).__name__,
+                                    unicode(ex))
+        except exception.QuotaError as ex:
+            LOG.debug(_('QuotaError raised: %s'), unicode(ex),
+                      context=context)
+            return cloudwatch_error(req, request_id, type(ex).__name__,
+                                    unicode(ex))
+        except Exception as ex:
+            env = req.environ.copy()
+            for k in env.keys():
+                if not isinstance(env[k], basestring):
+                    env.pop(k)
+
+            LOG.exception(_('Unexpected error raised: %s'), unicode(ex))
+            LOG.error(_('Environment: %s') % utils.dumps(env))
+            return cloudwatch_error(req, request_id, 'UnknownError',
+                                    _('An unknown error has occurred. '
+                                      'Please try your request again.'))                        
         else:
             resp = webob.Response()
             resp.status = 200

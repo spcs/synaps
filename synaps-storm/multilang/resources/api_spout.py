@@ -34,15 +34,17 @@ class ApiSpout(Spout):
         self.channel.queue_declare(queue='metric_queue', durable=True, arguments=queue_args)   
     
     def nextTuple(self):
-        (method_frame, header_frame, body) = self.channel.basic_get(
-            queue="metric_queue"
-        )
-
-        if not method_frame.NAME == 'Basic.GetEmpty':
-            log("rabbitmq - get %s" % body)
-            self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)
-            emit([body], id=str(uuid4()))
-        
+        try:
+            (method_frame, header_frame, body) = self.channel.basic_get(
+                queue="metric_queue"
+            )
+    
+            if not method_frame.NAME == 'Basic.GetEmpty':
+                log("rabbitmq - get %s" % body)
+                self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+                emit([body], id=str(uuid4()))
+        except Exception:
+            log("failed...")
 
 if __name__ == "__main__":
     flags.FLAGS(sys.argv)

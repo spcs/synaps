@@ -88,6 +88,7 @@ class LDAPWrapper(object):
             self.conn.simple_bind_s(self.user, self.password)
         except self.ldap.SERVER_DOWN:
             self.conn = None
+            LOG.info("LDAP SERVER DOWN")
             raise
     
     def __wrap_reconnect(f):
@@ -370,7 +371,7 @@ class SDSLdapDriver(object):
         """Convert ldap attributes to Project object"""
         if attr is None:
             return None
-        LOG.debug("project from ldap: %s"%str(attr))
+        LOG.debug("project from ldap: %s" % str(attr))
         return {
             'id': attr['project_name'],
             'name': attr['project_name'],

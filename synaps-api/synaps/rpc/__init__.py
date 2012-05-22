@@ -20,13 +20,15 @@ class RemoteProcedureCall(object):
     
     def connect(self):
         try:
+            LOG.info(_("connecting to rabbitmq_server"))
             self.conn = pika.BlockingConnection(
                 pika.ConnectionParameters(host=FLAGS.get('rabbitmq_server'))
             )
             
             self.channel = self.conn.channel()
             queue_args = {"x-ha-policy" : "all" }
-            self.channel.queue_declare(queue='metric_queue', durable=True, arguments=queue_args)
+            self.channel.queue_declare(queue='metric_queue', durable=True,
+                                       arguments=queue_args)
         except:
             raise RpcInvokeException()
     
