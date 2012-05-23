@@ -47,4 +47,5 @@ class RemoteProcedureCall(object):
             properties=pika.BasicProperties(delivery_mode=2)
         )
         
-        LOG.info(_("message id(%03d) is sent") % message_id)
+        LOG.info(_("send_msg - id(%03d)") % message_id)
+        LOG.debug(_("send_msg - body(%s)") % str(body))

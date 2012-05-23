@@ -27,7 +27,7 @@ class MonitorController(object):
                          statistic, threshold, alarm_actions=[],
                          insufficient_actions=[], ok_actions=[],
                          action_enabled=False, alarm_description="",
-                         dimensions={}, unit=None, project_id=None):
+                         dimensions={}, unit="", project_id=None):
         """
         Create or updates an alarm and associates it with the specified
         SPCS Synaps metric.
@@ -51,7 +51,7 @@ class MonitorController(object):
             action_enabled=action_enabled,
             alarm_actions=alarm_actions,
             alarm_description=alarm_description,
-            dimensions=dimensions,
+            dimensions=utils.extract_member_dict(dimensions),
             insufficient_data_actions=insufficient_actions,
             ok_actions=ok_actions,
             unit=unit

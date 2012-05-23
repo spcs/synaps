@@ -2,6 +2,7 @@
 # All Rights Reserved
 
 from synaps.monitor.api import API
+import json
 
 class Datapoint(object):
     """
@@ -150,7 +151,7 @@ class MetricAlarm(object):
                  metric_name, namespace, period, statistic, threshold,
                  action_enabled=False, alarm_actions=[], alarm_description="",
                  dimensions={}, insufficient_data_actions=[], ok_actions=[],
-                 unit=None):
+                 unit=""):
 
         assert (isinstance(action_enabled, bool))
         self.action_enabled = action_enabled
@@ -204,19 +205,20 @@ class MetricAlarm(object):
     def to_columns(self):
         ret = {
             'action_enabled': self.action_enabled,
-            'alarm_actions': self.alarm_actions,
+            'alarm_actions': json.dumps(self.alarm_actions),
             'alarm_arn': self.alarm_arn,
             'alarm_configuration_updated_timestamp': 
                 self.alarm_configuration_updated_timestamp,
             'alarm_description': self.alarm_description,
             'alarm_name': self.alarm_name,
             'comparison_operator': self.comparison_operator,
-            'dimensions':self.dimensions,
+            'dimensions':json.dumps(self.dimensions),
             'evaluation_period':self.evaluation_periods,
-            'insufficient_data_actions': self.insufficient_data_actions,
+            'insufficient_data_actions': \
+                json.dumps(self.insufficient_data_actions),
             'metric_name':self.metric_name,
             'namespace':self.namespace,
-            'ok_actions':self.ok_actions,
+            'ok_actions':json.dumps(self.ok_actions),
             'period':self.period,
             'statistic':self.statistic,
             'threshold':self.threshold,

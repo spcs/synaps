@@ -9,6 +9,8 @@ import datetime
 from pycassa import types
 import struct
 import json
+import pickle
+
 
 from collections import OrderedDict
 from synaps import flags
@@ -26,6 +28,16 @@ RESOURCE_NUMBER_TYPE = types.CompositeType(
     types.UTF8Type(), # resource type (ex. 'alarm', 'alarm action')
     types.UTF8Type(), # resource name (ex. 'CPUUtilization-Cold-i128932')
 ) 
+
+class PickleType(types.CompositeType):
+    @staticmethod
+    def pack(v, *args, **kw):
+        return pickle.dumps(v)
+    
+    @staticmethod
+    def unpack(v):
+        return pickle.loads(v)
+    
 
 def certificate_create(admin, cert):
     # TBD: implement here
@@ -60,7 +72,7 @@ class Cassandra(object):
         self.cf_metric_archive = pycassa.ColumnFamily(self.pool,
                                                       'MetricArchive')
         self.scf_stat_archive = pycassa.ColumnFamily(self.pool, 'StatArchive')
-        self.cf_metricalarm = pycassa.ColumnFamily(self.pool, 'MetricAlarm')
+        self.cf_metric_alarm = pycassa.ColumnFamily(self.pool, 'MetricAlarm')
 
     @staticmethod
     def syncdb():
@@ -135,8 +147,8 @@ class Cassandra(object):
                 name='MetricAlarm',
                 key_validation_class=pycassa.LEXICAL_UUID_TYPE,
                 column_validation_classes={
+                    'metric_key': pycassa.LEXICAL_UUID_TYPE,
                     'project_id': pycassa.UTF8_TYPE,
-                    'metric_id': pycassa.LEXICAL_UUID_TYPE,
                     'action_enabled': pycassa.BOOLEAN_TYPE,
                     'alarm_actions': pycassa.UTF8_TYPE,
                     'alarm_arn': pycassa.UTF8_TYPE,
@@ -167,7 +179,7 @@ class Cassandra(object):
                                  value_type=types.UTF8Type())            
             manager.create_index(keyspace=keyspace,
                                  column_family='MetricAlarm',
-                                 column='metric_id',
+                                 column='metric_key',
                                  value_type=types.LexicalUUIDType())
             manager.create_index(keyspace=keyspace,
                                  column_family='MetricAlarm',
@@ -242,7 +254,7 @@ class Cassandra(object):
         ]
         
         index_clause = pycassa.create_index_clause(expr_list)
-        items = self.cf_metricalarm.get_indexed_slices(index_clause)
+        items = self.cf_metric_alarm.get_indexed_slices(index_clause)
         
         for k, v in items:
             return k
@@ -258,6 +270,8 @@ class Cassandra(object):
         alarm_key = self.get_metric_alarm_key(project_id, metric_key,
                                               metricalarm)
         columns = metricalarm.to_columns()
+        columns['project_id'] = project_id
+        columns['metric_key'] = metric_key
         columns['alarm_arn'] = "rn:spcs:suwon:%s:alarm:%s" % (
             project_id, metricalarm.alarm_name
         )
@@ -265,17 +279,18 @@ class Cassandra(object):
         
         if alarm_key:
             # TODO: 알람 업데이트 관련 알람 히스토리 생성
-            pass
+            LOG.debug("update alarm")
         else:
-            # TODO: 알람 신규 관련 알람 히스토리 생성 
+            # TODO: 알람 신규 관련 알람 히스토리 생성
+            LOG.debug("create new alarm") 
             alarm_key = uuid.uuid4()
             columns['state_updated_timestamp'] = utils.utcnow()
             columns['state_reason'] = "alarm initial setup"
             columns['state_reason_data'] = "{}"
             columns['state_value'] = "INSUFFICIENT_DATA"
-            
-        self.cf_metricalarm.insert(key=alarm_key, columns=columns)
-        
+
+        LOG.debug("insert metric_alarm (%s, %s)" % (alarm_key, columns)) 
+        self.cf_metric_alarm.insert(key=alarm_key, columns=columns)
         return alarm_key
 
     def put_metric_data(self, project_id, namespace, metric_name, dimensions,
