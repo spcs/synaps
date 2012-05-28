@@ -410,7 +410,8 @@ class Cassandra(object):
                 stat = self.scf_stat_archive.get(key,
                                                  super_column=super_column,
                                                  column_start=start_time,
-                                                 column_finish=end_time)
+                                                 column_finish=end_time,
+                                                 column_count=1440)
             except pycassa.NotFoundException:
                 LOG.debug("not found %s %s ~ %s" % (super_column, start_time,
                                                    end_time))

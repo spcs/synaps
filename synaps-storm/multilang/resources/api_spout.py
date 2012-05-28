@@ -31,7 +31,8 @@ class ApiSpout(Spout):
         
         self.channel = self.conn.channel()
         queue_args = {"x-ha-policy" : "all" }
-        self.channel.queue_declare(queue='metric_queue', durable=True, arguments=queue_args)   
+        self.channel.queue_declare(queue='metric_queue', durable=True,
+                                   arguments=queue_args)   
     
     def nextTuple(self):
         try:
@@ -43,8 +44,8 @@ class ApiSpout(Spout):
                 log("rabbitmq - get %s" % body)
                 self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)
                 emit([body], id=str(uuid4()))
-        except Exception:
-            log("failed...")
+        except Exception as e:
+            log(traceback.format_exc(e))
 
 if __name__ == "__main__":
     flags.FLAGS(sys.argv)
