@@ -120,7 +120,7 @@ def initComponent():
     sendpid(setupInfo['pidDir'])
     return [setupInfo['conf'], setupInfo['context']]
 
-class Tuple(object):
+class Tuple:
     def __init__(self, id, component, stream, task, values):
         self.id = id
         self.component = component
@@ -133,7 +133,7 @@ class Tuple(object):
                 self.__class__.__name__,
                 ''.join(' %s=%r' % (k, self.__dict__[k]) for k in sorted(self.__dict__.keys())))
 
-class Bolt(object):
+class Bolt:
     def initialize(self, stormconf, context):
         pass
 
@@ -152,7 +152,7 @@ class Bolt(object):
         except Exception, e:
             log(traceback.format_exc(e))
 
-class BasicBolt(object):
+class BasicBolt:
     def initialize(self, stormconf, context):
         pass
 
@@ -174,7 +174,7 @@ class BasicBolt(object):
         except Exception, e:
             log(traceback.format_exc(e))
 
-class Spout(object):
+class Spout:
     def initialize(self, conf, context):
         pass
 

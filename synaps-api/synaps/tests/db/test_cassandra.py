@@ -17,6 +17,10 @@ LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS
 
 class TestCassandra(unittest.TestCase):
+    """
+    카산드라 DB를 테스트함.
+    """
+    
     def setUp(self):
         Cassandra.syncdb()
         self.cass = Cassandra()
@@ -30,8 +34,8 @@ class TestCassandra(unittest.TestCase):
     
     def test_syncdb(self):
         """
-        syncdb 결과 설정값 대로 keyspace가 DB에 있는지, 
-        컬럼패밀리가 DB에 있는지 여부 확인.
+        syncdb 결과 설정값 대로 keyspace가 DB에 있는지, 컬럼패밀리가 DB에 
+        있는지 여부 확인.
         """
         self.cass.syncdb()
         
@@ -43,26 +47,23 @@ class TestCassandra(unittest.TestCase):
         self.assertTrue(self.keyspace in keyspaces)
         self.assertEqual(set(column_families.keys()),
                          set(['Metric', 'MetricArchive', 'StatArchive',
-                              'Alarm']))
+                              'MetricAlarm']))
     
     def test_put_metric_alarm(self):
         """
         """
         conn = self._connect()
-        cf_alarm = pycassa.ColumnFamily(conn, 'Alarm')
-
-        
-        
-        before_count = cf_alarm.get_count()
-        self.cass.put_metric_alarm()
-        after_count = cf_alarm.get_count()
-        
-        self.assertEqual(before_count, after_count - 1)
+        cf_alarm = pycassa.ColumnFamily(conn, 'MetricAlarm')
+        # TODO: implement it 
         
         
     def test_put_metric_data(self):
         """
         """
+        
+#        self.cass.put_metric_data(project_id, namespace, metric_name, 
+#                                  dimensions, value, unit, timestamp, 
+#                                  metric_key)
         # TODO: implement it 
 
 

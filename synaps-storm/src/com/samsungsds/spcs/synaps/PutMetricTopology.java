@@ -27,7 +27,7 @@ public class PutMetricTopology {
 
 		@Override
 		public Map<String, Object> getComponentConfiguration() {
-			return null;
+			return null; 
 		}
 	}
 
@@ -86,7 +86,7 @@ public class PutMetricTopology {
 		} else {
 			LocalCluster cluster = new LocalCluster();
 			cluster.submitTopology("metric", conf, builder.createTopology());
-			Utils.sleep(1000000);
+			Utils.sleep(10000);
 			cluster.killTopology("metric");
 			Utils.sleep(10000);
 			cluster.shutdown();

@@ -3,6 +3,7 @@
 	<name>synaps-storm</name>
 	<comment></comment>
 	<projects>
+		<project>synaps-api</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

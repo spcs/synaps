@@ -17,16 +17,37 @@ import uuid
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
-from synaps.db import Cassandra
+from synaps.db import Cassandra, STAT_TYPE
+from synaps.rpc import PUT_METRIC_DATA_MSG_ID
 
 class PutMetricBolt(storm.BasicBolt):
     def initialize(self, stormconf, context):
         self.cass = Cassandra()
-        self.metrics = {}
+        self.statistics = {}
     
-    def process(self, tup):
-        metric_key = uuid.UUID(tup.values[0])
-        message = json.loads(tup.values[1])
+    def update_statistics(self, metric_key, message):
+        pass
+    
+    def load_or_create_statistics(self, metric_key, message):
+        # TODO: load statistics data from cassandra
+        
+        
+        # if no statistics data in cassandra, make initial data
+        s = {}        
+        for archive in Cassandra.ARCHIVE:
+            for statistic in Cassandra.STATISTICS:
+                s[(archive, statistic)] = {} 
+    
+    def process_put_metric_data_msg(self, metric_key, message):
+        if self.statistics.has_key(metric_key):
+            self.update_statistics(metric_key, message)
+        else:
+            self.load_or_create_statistics(metric_key, message)
+            
+        
+        # update database
+        
+        
         
         self.cass.put_metric_data(
              project_id=message['project_id'],
@@ -40,6 +61,16 @@ class PutMetricBolt(storm.BasicBolt):
         )
         
         storm.log("write metric into database")
+        
+    def process(self, tup):
+        metric_key = uuid.UUID(tup.values[0])
+        message = json.loads(tup.values[1])
+        
+        if message == PUT_METRIC_DATA_MSG_ID:
+            self.process_put_metric_data_msg(metric_key, message)
+        else:
+            pass
+            
 
 if __name__ == "__main__":
     flags.FLAGS(sys.argv)

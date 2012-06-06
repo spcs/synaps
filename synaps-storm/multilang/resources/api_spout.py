@@ -3,6 +3,7 @@
 
 import os
 import sys
+import traceback
 import pika
 
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
