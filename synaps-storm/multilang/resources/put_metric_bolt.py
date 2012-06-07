@@ -20,6 +20,8 @@ from synaps import utils
 from synaps.db import Cassandra, STAT_TYPE
 from synaps.rpc import PUT_METRIC_DATA_MSG_ID
 
+LOG = logging.getLogger(__name__)
+
 class PutMetricBolt(storm.BasicBolt):
     def initialize(self, stormconf, context):
         self.cass = Cassandra()
@@ -39,6 +41,7 @@ class PutMetricBolt(storm.BasicBolt):
                 s[(archive, statistic)] = {} 
     
     def process_put_metric_data_msg(self, metric_key, message):
+        
         if self.statistics.has_key(metric_key):
             self.update_statistics(metric_key, message)
         else:
@@ -46,9 +49,6 @@ class PutMetricBolt(storm.BasicBolt):
             
         
         # update database
-        
-        
-        
         self.cass.put_metric_data(
              project_id=message['project_id'],
              namespace=message['namespace'],
@@ -65,10 +65,13 @@ class PutMetricBolt(storm.BasicBolt):
     def process(self, tup):
         metric_key = uuid.UUID(tup.values[0])
         message = json.loads(tup.values[1])
+        message_id = message.get('message_id')
         
-        if message == PUT_METRIC_DATA_MSG_ID:
+        if message_id == PUT_METRIC_DATA_MSG_ID:
+            storm.log("process put_metric_data_msg (%s)" % message)
             self.process_put_metric_data_msg(metric_key, message)
         else:
+            storm.log("unknown message")
             pass
             
 

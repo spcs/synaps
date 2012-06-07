@@ -1,4 +1,4 @@
-package com.samsungsds.spcs.synaps;
+package com.spcs.synaps;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
@@ -69,7 +69,6 @@ public class PutMetricTopology {
 	 */
 	public static void main(String[] args) throws Exception {
 		TopologyBuilder builder = new TopologyBuilder();
-
 		builder.setSpout("api_spout", new ApiSpout(), 2);
 		builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 5)
 		.shuffleGrouping("api_spout");

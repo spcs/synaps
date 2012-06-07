@@ -71,9 +71,9 @@ def emit(*args, **kwargs):
     __emit(*args, **kwargs)
     return readTaskIds()
 
-def emitDirect(task, *args, **kwargs):
-    kwargs[directTask] = task
-    __emit(*args, **kwargs)
+#def emitDirect(task, *args, **kwargs):
+#    kwargs[directTask] = task
+#    __emit(*args, **kwargs)
 
 def __emit(*args, **kwargs):
     global MODE
