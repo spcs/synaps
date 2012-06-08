@@ -347,14 +347,16 @@ class Cassandra(object):
             return key
         
         metric_col = {timestamp: value}
-        self.cf_metric_archive.insert(key=key, columns=metric_col,
-                                      ttl=self.METRIC_TTL)
+        self.insert_metric_data(key, metric_col)
         
         # and build statistics data
         stats = map(lambda r: put_stats(key, r, timestamp, value),
                     self.ARCHIVE)
         
         return key 
+
+    def insert_stat(self, metric_key, stat):
+        self.scf_stat_archive.insert(metric_key, stat)
 
     def list_metrics(self, project_id, namespace=None, metric_name=None,
                      dimensions=None, next_token=""):
@@ -390,6 +392,24 @@ class Cassandra(object):
         metrics = [(k, to_dict(v)) for k, v in items if check_dimension(v)]
         
         return metrics
+    
+    def insert_metric_data(self, metric_key, column):
+        self.cf_metric_archive.insert(key=metric_key, columns=column,
+                                      ttl=self.METRIC_TTL)        
+    
+    def load_metric_data(self, metric_key):
+        try:
+            data = self.cf_metric_archive.get(metric_key, column_count=1440)
+        except pycassa.NotFoundException:
+            data = {}
+        return data
+    
+    def load_statistics(self, metric_key):
+        try:
+            stat = self.scf_stat_archive.get(metric_key, column_count=1440)
+        except pycassa.NotFoundException:
+            stat = {}
+        return stat
     
     def get_metric_statistics(self, project_id, namespace, metric_name,
                               start_time, end_time, period, statistics,

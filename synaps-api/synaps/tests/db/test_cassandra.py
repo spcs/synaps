@@ -7,6 +7,7 @@ import time
 import datetime
 import json
 import pycassa
+import uuid
 from collections import OrderedDict
 
 from synaps import flags
@@ -54,8 +55,20 @@ class TestCassandra(unittest.TestCase):
         """
         conn = self._connect()
         cf_alarm = pycassa.ColumnFamily(conn, 'MetricAlarm')
-        # TODO: implement it 
+        # TODO: implement it
+
+    def test_load_metric_data(self):
+        """
+        """
+        metric_key = uuid.UUID("0e2a85c8-4375-4c6e-91a3-e89b4539f209")
+        print self.cass.load_metric_data(metric_key)
         
+    def test_load_statarchive(self):
+        """
+        """
+        metric_key = uuid.UUID("0e2a85c8-4375-4c6e-91a3-e89b4539f209")
+        stat = self.cass.load_statistics(metric_key)
+        self.assert_(isinstance(stat, OrderedDict))
         
     def test_put_metric_data(self):
         """
