@@ -346,33 +346,3 @@ synaps-database 클러스터 구축
 * 방화벽 설정 ::
 
    카산드라 사용 포트 : 7000, 7001, 9160
-
-
-pandas 설치(web server, storm server)
---------------------------------------------------
-
-1. 필요 패키지 설치
-
-* numpy 설치
-
-  .. code-block:: bash
-
-   $ apt-get install python-numpy
-   
-* python-dateutil 설치
-
-  .. code-block:: bash
-
-   $ wget http://labix.org/download/python-dateutil/python-dateutil-1.5.tar.gz
-   $ tar zxvf python-dateutil-1.5.tar.gz
-   $ python setup.py install
-   
-2. pandas 설치
-
-* pandas 설치
-
-  .. code-block:: bash
-
-   $ wget http://pypi.python.org/packages/source/p/pandas/pandas-0.7.3.tar.gz#md5=e4876ea5882accce15f6f37750f3ffec
-   $ tar zxvf pandas-0.7.3.tar.gz
-   $ python setup.py install
