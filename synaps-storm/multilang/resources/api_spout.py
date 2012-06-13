@@ -15,9 +15,7 @@ from synaps import flags
 from synaps import utils
 
 from storm import Spout, emit, log
-from time import sleep
 from uuid import uuid4
-import json
 
 FLAGS = flags.FLAGS
 
@@ -45,6 +43,7 @@ class ApiSpout(Spout):
                 log("rabbitmq - get %s" % body)
                 self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)
                 emit([body], id=str(uuid4()))
+                
         except Exception as e:
             log(traceback.format_exc(e))
 

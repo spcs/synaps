@@ -11,7 +11,6 @@ if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
-from synaps import service
 
 import md5
 import json

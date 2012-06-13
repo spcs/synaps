@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
 # Copyright 2012 Samsung SDS
 
-import pycassa
 import os
 import sys
-import datetime
 
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir, os.pardir))
 if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
     sys.path.insert(0, possible_topdir)
 
+import traceback
 import storm
 import json
 import uuid
@@ -42,7 +41,6 @@ class PutMetricBolt(storm.BasicBolt):
         # 메트릭 가져오기
         if metric_key not in self.metrics:
             self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
-            self.metrics[metric_key].load_statistics()
 
         timestamp = utils.parse_strtime(message['timestamp'])
 
@@ -59,7 +57,10 @@ class PutMetricBolt(storm.BasicBolt):
         
         if message_id == PUT_METRIC_DATA_MSG_ID:
             storm.log("process put_metric_data_msg (%s)" % message)
-            self.process_put_metric_data_msg(metric_key, message)
+            try:
+                self.process_put_metric_data_msg(metric_key, message)
+            except Exception as e:
+                storm.log(traceback.format_exc(e))
         else:
             storm.log("unknown message")
             pass
