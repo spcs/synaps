@@ -23,6 +23,7 @@ import shutil
 import json
 import itertools
 from collections import OrderedDict
+from numpy import isnan
 
 from eventlet import greenthread
 from eventlet.green import subprocess
@@ -40,7 +41,6 @@ FLAGS = flags.FLAGS
 FLAGS.register_opt(
     cfg.BoolOpt('disable_process_locking', default=False,
                 help='Whether to disable inter-process locks'))
-
 
 def to_primitive(value, convert_instances=False, level=0):
     """Convert a complex object into primitives.

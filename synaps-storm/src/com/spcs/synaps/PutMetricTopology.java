@@ -27,14 +27,14 @@ public class PutMetricTopology {
 
 		@Override
 		public Map<String, Object> getComponentConfiguration() {
-			return null; 
+			return null;
 		}
 	}
 
 	public static class UnpackMessageBolt extends ShellBolt implements
 			IRichBolt {
 		public UnpackMessageBolt() {
-			super("python", "unpack_message_bolt.py");
+			super("python", "unpack_bolt.py");
 		}
 
 		@Override
@@ -71,7 +71,7 @@ public class PutMetricTopology {
 		TopologyBuilder builder = new TopologyBuilder();
 		builder.setSpout("api_spout", new ApiSpout(), 2);
 		builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 5)
-		.shuffleGrouping("api_spout");
+				.shuffleGrouping("api_spout");
 		builder.setBolt("putmetric_bolt", new PutMetricBolt(), 10)
 				.fieldsGrouping("unpack_bolt", new Fields("metric_key"));
 
@@ -85,7 +85,7 @@ public class PutMetricTopology {
 		} else {
 			LocalCluster cluster = new LocalCluster();
 			cluster.submitTopology("metric", conf, builder.createTopology());
-			Utils.sleep(10000);
+			Utils.sleep(60000);
 			cluster.killTopology("metric");
 			Utils.sleep(10000);
 			cluster.shutdown();

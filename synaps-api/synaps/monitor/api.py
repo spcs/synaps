@@ -4,6 +4,11 @@
 
 import time
 
+from datetime import datetime, timedelta
+from pandas import TimeSeries, DataFrame, DateRange, datetools
+from pandas import rolling_sum, rolling_max, rolling_min, rolling_mean
+from numpy import isnan
+
 from synaps import flags
 from synaps import log as logging
 from synaps.db import Cassandra
@@ -13,6 +18,74 @@ from synaps.exception import RpcInvokeException, Invalid
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
+
+class MetricMonitor(object):
+    COLUMNS = Cassandra.STATISTICS
+    ROLLING_FUNC_MAP = Cassandra.ROLLING_FUNC_MAP
+
+    def __init__(self, metric_key, cass):
+        self.metric_key = metric_key
+        self.cass = cass
+        self.load_statistics()        
+
+    def _reindex(self):
+        self.df = self.df.reindex(index=self._get_range())
+
+    def _get_range(self):
+        now_idx = datetime.utcnow().replace(second=0, microsecond=0)
+        start = now_idx - timedelta(seconds=Cassandra.STATISTICS_TTL)
+        end = now_idx
+        daterange = DateRange(start, end, offset=datetools.Minute())
+        return daterange
+    
+    def load_statistics(self):
+        
+        stat = self.cass.load_statistics(self.metric_key)
+        if stat:
+            self.df = DataFrame(stat, index=self._get_range())
+        else:
+            self.df = DataFrame(columns=self.COLUMNS, index=self._get_range())
+
+    def get_metric_statistics(self, window, statistics, start=None,
+                              end=None, unit=None):
+        df = self.df.ix[start:end] if start and end else self.df
+        
+        ret_dict = {}
+        for statistic in statistics:
+            func = self.ROLLING_FUNC_MAP[statistic]
+            ret_dict[statistic] = func(df[statistic], window)
+        
+        return DataFrame(ret_dict)
+
+    def put_metric_data(self, timestamp, value, unit=None):
+        time_idx = timestamp.replace(second=0, microsecond=0)
+        self._reindex()
+
+        stat = self.df.ix[time_idx]
+        
+        stat['SampleCount'] = 1.0 if isnan(stat['SampleCount']) \
+                              else stat['SampleCount'] + 1.0
+        stat['Sum'] = value if isnan(stat['Sum'])  \
+                      else stat['Sum'] + value
+        stat['Average'] = stat['Sum'] / stat['SampleCount']
+        stat['Minimum'] = value \
+                          if isnan(stat['Minimum']) or stat['Minimum'] > value \
+                          else stat['Minimum']
+        stat['Maximum'] = value \
+                          if isnan(stat['Maximum']) or stat['Maximum'] < value \
+                          else stat['Maximum']
+
+        # insert into DB
+        stat_dict = {
+            'SampleCount':{time_idx: stat['SampleCount']},
+            'Sum':{time_idx: stat['Sum']},
+            'Average':{time_idx: stat['Average']},
+            'Minimum':{time_idx: stat['Minimum']},
+            'Maximum':{time_idx: stat['Maximum']}
+        }
+        
+        self.cass.insert_stat(self.metric_key, stat_dict)
+        
 
 class API(object):
     def __init__(self):

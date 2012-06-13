@@ -16,6 +16,7 @@ from synaps import service
 import md5
 import json
 import storm
+import traceback
 from synaps.db import Cassandra
 from synaps.rpc import PUT_METRIC_DATA_MSG_ID
 
@@ -49,12 +50,12 @@ class UnpackMessageBolt(storm.BasicBolt):
     def process(self, tup):
         message_buf = tup.values[0]
         message = json.loads(message_buf)
-        
+
         try:
             if message.get('message_id') == PUT_METRIC_DATA_MSG_ID:
                 metric_key = str(self.get_metric_key(message))
                 storm.emit([metric_key, message_buf])
         except Exception as e:
-            storm.log(str(e))
+            storm.log(traceback.format_exc(e))
 
 UnpackMessageBolt().run()

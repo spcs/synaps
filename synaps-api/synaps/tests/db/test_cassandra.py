@@ -23,15 +23,13 @@ class TestCassandra(unittest.TestCase):
     """
     
     def setUp(self):
-        Cassandra.syncdb()
-        self.cass = Cassandra()
-        self.keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
+        # initialize variables
+        self.keyspace = "unittest"
         self.serverlist = FLAGS.get("cassandra_server_list")
-    
-    def _connect(self):
-        conn = pycassa.ConnectionPool(self.keyspace,
-                                      server_list=self.serverlist)
-        return conn
+        
+        # initialize database
+        Cassandra.syncdb(self.keyspace)
+        self.cass = Cassandra(self.keyspace)
     
     def test_syncdb(self):
         """
@@ -47,39 +45,8 @@ class TestCassandra(unittest.TestCase):
         
         self.assertTrue(self.keyspace in keyspaces)
         self.assertEqual(set(column_families.keys()),
-                         set(['Metric', 'MetricArchive', 'StatArchive',
-                              'MetricAlarm']))
+                         set(['Metric', 'StatArchive', 'MetricAlarm']))
     
-    def test_put_metric_alarm(self):
-        """
-        """
-        conn = self._connect()
-        cf_alarm = pycassa.ColumnFamily(conn, 'MetricAlarm')
-        # TODO: implement it
-
-    def test_load_metric_data(self):
-        """
-        """
-        metric_key = uuid.UUID("0e2a85c8-4375-4c6e-91a3-e89b4539f209")
-        print self.cass.load_metric_data(metric_key)
-        
-    def test_load_statarchive(self):
-        """
-        """
-        metric_key = uuid.UUID("0e2a85c8-4375-4c6e-91a3-e89b4539f209")
-        stat = self.cass.load_statistics(metric_key)
-        self.assert_(isinstance(stat, OrderedDict))
-        
-    def test_put_metric_data(self):
-        """
-        """
-        
-#        self.cass.put_metric_data(project_id, namespace, metric_name, 
-#                                  dimensions, value, unit, timestamp, 
-#                                  metric_key)
-        # TODO: implement it 
-
-
     def test_restructed_stats(self):
         """
         """
@@ -104,6 +71,7 @@ class TestCassandra(unittest.TestCase):
         ]
 
         self.assertEqual(expected, self.cass.restructed_stats(stats))
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
