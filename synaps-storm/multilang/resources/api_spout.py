@@ -59,7 +59,7 @@ class ApiSpout(Spout):
                 message = "Start processing message in the queue - [%s] %s"
                 log(message % (id, body))
                 self.delivery_tags[id] = (method_frame.delivery_tag, 0)
-                emit([body], id)
+                emit([body], id=id)
                 
         except Exception as e:
             log(traceback.format_exc(e))
