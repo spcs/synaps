@@ -21,7 +21,14 @@ FLAGS = flags.FLAGS
 
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
-    ROLLING_FUNC_MAP = Cassandra.ROLLING_FUNC_MAP
+    STATISTICS_TTL = Cassandra.STATISTICS_TTL
+    ROLLING_FUNC_MAP = {
+        'Average': rolling_mean,
+        'Minimum': rolling_min,
+        'Maximum': rolling_max,
+        'SampleCount': rolling_sum,
+        'Sum': rolling_sum,
+    }
 
     def __init__(self, metric_key, cass):
         self.metric_key = metric_key
@@ -33,13 +40,12 @@ class MetricMonitor(object):
 
     def _get_range(self):
         now_idx = datetime.utcnow().replace(second=0, microsecond=0)
-        start = now_idx - timedelta(seconds=Cassandra.STATISTICS_TTL)
-        end = now_idx
+        start = now_idx - timedelta(seconds=self.STATISTICS_TTL)
+        end = now_idx + timedelta(seconds=self.STATISTICS_TTL * 0.1)
         daterange = DateRange(start, end, offset=datetools.Minute())
         return daterange
     
     def load_statistics(self):
-        
         stat = self.cass.load_statistics(self.metric_key)
         if stat:
             self.df = DataFrame(stat, index=self._get_range())
@@ -59,7 +65,8 @@ class MetricMonitor(object):
 
     def put_metric_data(self, timestamp, value, unit=None):
         time_idx = timestamp.replace(second=0, microsecond=0)
-        self._reindex()
+        if time_idx not in self.df.index:
+            self._reindex()
 
         stat = self.df.ix[time_idx]
         
@@ -88,6 +95,8 @@ class MetricMonitor(object):
         
 
 class API(object):
+    ROLLING_FUNC_MAP = MetricMonitor.ROLLING_FUNC_MAP
+    
     def __init__(self):
         self.cass = Cassandra()
         self.rpc = rpc.RemoteProcedureCall()
@@ -150,18 +159,34 @@ class API(object):
 
     def get_metric_statistics(self, project_id, end_time, metric_name,
                               namespace, period, start_time, statistics,
-                              unit="None", dimensions=None):
+                              unit="None", dimensions=None, rolling=False):
         """
         입력받은 조건에 일치하는 메트릭의 통계자료 리스트를 반환한다.
         """
-        stats = self.cass.get_metric_statistics(project_id=project_id,
-                                                namespace=namespace,
-                                                metric_name=metric_name,
-                                                start_time=start_time,
-                                                end_time=end_time,
-                                                period=period,
-                                                statistics=statistics,
-                                                unit=unit,
-                                                dimensions=dimensions)
-        return stats
+        end_idx = end_time.replace(second=0, microsecond=0)
+        start_idx = start_time.replace(second=0, microsecond=0)
+        daterange = DateRange(start_idx, end_idx, offset=datetools.Minute())
+
+        stats = self.cass.get_metric_statistics(
+            project_id=project_id, namespace=namespace,
+            metric_name=metric_name, start_time=start_time, end_time=end_time,
+            period=period, statistics=statistics, unit=unit,
+            dimensions=dimensions
+        )
+        
+        period = period / 60 # convert to min
+        
+        stat = DataFrame(index=daterange)
+        for statistic, series in zip(statistics, stats):
+            func = self.ROLLING_FUNC_MAP[statistic]
+            stat[statistic] = func(TimeSeries(series), period)
+
+        if not rolling:
+            reindex_daterange = DateRange(start_idx, end_idx,
+                                          offset=datetools.Minute() * period)            
+            stat = stat.reindex(index=reindex_daterange)
+
+        ret = ((i, stat.ix[i].to_dict()) for i in stat.index)
+        
+        return ret
         

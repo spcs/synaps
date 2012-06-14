@@ -22,6 +22,7 @@ FLAGS = flags.FLAGS
 class ApiSpout(Spout):
     def initialize(self, conf, context):
         self.connect()
+        self.delivery_tags = {}
     
     def connect(self):
         self.conn = pika.BlockingConnection(
@@ -33,16 +34,32 @@ class ApiSpout(Spout):
         self.channel.queue_declare(queue='metric_queue', durable=True,
                                    arguments=queue_args)   
     
+    def ack(self, id):
+        if id in self.delivery_tags:
+            tag, try_count = self.delivery_tags.pop(id)
+            self.channel.basic_ack(delivery_tag=tag)
+    
+    def fail(self, id):
+        if id in self.delivery_tags:
+            tag, try_count = self.delivery_tags.get(id)
+            if try_count < 10:
+                self.delivery_tags[id] = (tag, try_count + 1)
+            else:
+                self.channel.basic_ack(delivery_tag=tag)
+                self.log("message acked")
+    
     def nextTuple(self):
         try:
             (method_frame, header_frame, body) = self.channel.basic_get(
                 queue="metric_queue"
             )
     
-            if not method_frame.NAME == 'Basic.GetEmpty':
-                log("rabbitmq - get %s" % body)
-                self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)
-                emit([body], id=str(uuid4()))
+            if method_frame.NAME is not 'Basic.GetEmpty':
+                id = str(uuid4())
+                message = "Start processing message in the queue - [%s] %s"
+                log(message % (id, body))
+                self.delivery_tags[id] = (method_frame.delivery_tag, 0)
+                emit([body], id)
                 
         except Exception as e:
             log(traceback.format_exc(e))

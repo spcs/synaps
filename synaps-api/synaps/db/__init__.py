@@ -10,8 +10,6 @@ from pycassa import types
 import struct
 import json
 import pickle
-from pandas import TimeSeries, DataFrame, DateRange, datetools
-from pandas import rolling_sum, rolling_max, rolling_min, rolling_mean
 
 from collections import OrderedDict
 from synaps import flags
@@ -42,13 +40,6 @@ class Cassandra(object):
     STATISTICS_TTL = FLAGS.get('statistics_ttl')
     ARCHIVE = map(lambda x: int(x) * 60, FLAGS.get('statistics_archives'))
     STATISTICS = ["Sum", "SampleCount", "Average", "Minimum", "Maximum"]
-    ROLLING_FUNC_MAP = {
-        'Average': rolling_mean,
-        'Minimum': rolling_min,
-        'Maximum': rolling_max,
-        'SampleCount': rolling_sum,
-        'Sum': rolling_sum,
-    }
     
     def __init__(self, keyspace=None):
         if not keyspace:
@@ -228,9 +219,7 @@ class Cassandra(object):
         
         for k, v in items:
             return k
-        
         return None
-        
 
     def put_metric_alarm(self, project_id, metric_key, metricalarm):
         """
@@ -317,8 +306,7 @@ class Cassandra(object):
     
     def get_metric_statistics(self, project_id, namespace, metric_name,
                               start_time, end_time, period, statistics,
-                              unit=None, dimensions=None, reindex=True):
-        
+                              unit=None, dimensions=None):
         def get_stat(key, super_column, column_start, column_end):
             stat = {}
             try:
@@ -333,8 +321,6 @@ class Cassandra(object):
                                                            column_end))
             
             return stat
-    
-        
         
         # get metric key
         key = self.get_metric_key(project_id, namespace, metric_name,
@@ -344,51 +330,13 @@ class Cassandra(object):
         if not key:
             return {}
 
-        # align timestamp
-        end_idx = end_time.replace(second=0, microsecond=0)
-        start_idx = start_time.replace(second=0, microsecond=0)
-        daterange = DateRange(start_idx, end_idx, offset=datetools.Minute())
-
         statistics = map(utils.to_ascii, statistics)
         stats = map(lambda x: get_stat(key, x, start_time, end_time),
                     statistics)
         
-        period = period / 60 # convert to min
+        return stats
         
-        stat = DataFrame(index=daterange)
-        for statistic, series in zip(statistics, stats):
-            func = self.ROLLING_FUNC_MAP[statistic]
-            stat[statistic] = func(TimeSeries(series), period)
-
-        if reindex:
-            reindex_daterange = DateRange(start_idx, end_idx,
-                                          offset=datetools.Minute() * period)            
-            stat = stat.reindex(index=reindex_daterange)
-
-        ret = ((i, stat.ix[i].to_dict()) for i in stat.index)
-        LOG.info(str(ret))
-        return ret
         
-#        
-#        
-#        stat_dict = {}
-#        for statistic in statistics:
-#            statistic = utils.to_ascii(statistic)
-#            super_column = (statistic)
-#            try:
-#                stat = self.scf_stat_archive.get(key,
-#                                                 super_column=super_column,
-#                                                 column_start=start_time,
-#                                                 column_finish=end_time,
-#                                                 column_count=1440)
-#            except pycassa.NotFoundException:
-#                LOG.debug("not found %s %s ~ %s" % (super_column, start_time,
-#                                                   end_time))
-#                stat = {}
-#                
-#            stat_dict[statistic] = stat
-        
-        # build stat info
     
     def restructed_stats(self, stat):
         def get_stat(timestamp):
