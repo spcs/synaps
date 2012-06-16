@@ -118,27 +118,6 @@ class TestApi(unittest.TestCase):
         
         for key, metric in metrics:
             self.assertEqual(metric, expected)
-    
-#    def test_get_metric_statistics(self):
-#        """
-#        API.get_metric_statistic 의 결과가 list type 인 경우 PASS.
-#        """
-#        dim = {u'member1':u'value1'}
-#        unit = None
-#        statistics = ['Average', 'Sum']
-#        metric_name = u'cpuutilization'
-#        end_time = utils.utcnow() + timedelta(seconds=60)
-#        start_time = utils.utcnow() - timedelta(hours=2)
-#        period = 60
-#        
-#        ret = self.api.get_metric_statistics(
-#            self.project_id, end_time=end_time, metric_name=metric_name,
-#            namespace=self.namespace, period=period, start_time=start_time,
-#            statistics=statistics, unit=None, dimensions=dim
-#        )
-#        
-#        self.assertTrue(type(ret) is list)
-
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

@@ -6,8 +6,10 @@ import time
 
 from datetime import datetime, timedelta
 from pandas import TimeSeries, DataFrame, DateRange, datetools
-from pandas import rolling_sum, rolling_max, rolling_min, rolling_mean
+from pandas import (rolling_sum, rolling_max, rolling_min, rolling_mean)
 from numpy import isnan
+
+from pprint import pformat
 
 from synaps import flags
 from synaps import log as logging
@@ -19,9 +21,8 @@ from synaps.exception import RpcInvokeException, Invalid
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
 
-class MetricMonitor(object):
-    COLUMNS = Cassandra.STATISTICS
-    STATISTICS_TTL = Cassandra.STATISTICS_TTL
+
+class API(object):
     ROLLING_FUNC_MAP = {
         'Average': rolling_mean,
         'Minimum': rolling_min,
@@ -29,73 +30,6 @@ class MetricMonitor(object):
         'SampleCount': rolling_sum,
         'Sum': rolling_sum,
     }
-
-    def __init__(self, metric_key, cass):
-        self.metric_key = metric_key
-        self.cass = cass
-        self.load_statistics()        
-
-    def _reindex(self):
-        self.df = self.df.reindex(index=self._get_range())
-
-    def _get_range(self):
-        now_idx = datetime.utcnow().replace(second=0, microsecond=0)
-        start = now_idx - timedelta(seconds=self.STATISTICS_TTL)
-        end = now_idx + timedelta(seconds=self.STATISTICS_TTL * 0.1)
-        daterange = DateRange(start, end, offset=datetools.Minute())
-        return daterange
-    
-    def load_statistics(self):
-        stat = self.cass.load_statistics(self.metric_key)
-        if stat:
-            self.df = DataFrame(stat, index=self._get_range())
-        else:
-            self.df = DataFrame(columns=self.COLUMNS, index=self._get_range())
-
-    def get_metric_statistics(self, window, statistics, start=None,
-                              end=None, unit=None):
-        df = self.df.ix[start:end] if start and end else self.df
-        
-        ret_dict = {}
-        for statistic in statistics:
-            func = self.ROLLING_FUNC_MAP[statistic]
-            ret_dict[statistic] = func(df[statistic], window)
-        
-        return DataFrame(ret_dict)
-
-    def put_metric_data(self, timestamp, value, unit=None):
-        time_idx = timestamp.replace(second=0, microsecond=0)
-        if time_idx not in self.df.index:
-            self._reindex()
-
-        stat = self.df.ix[time_idx]
-        
-        stat['SampleCount'] = 1.0 if isnan(stat['SampleCount']) \
-                              else stat['SampleCount'] + 1.0
-        stat['Sum'] = value if isnan(stat['Sum'])  \
-                      else stat['Sum'] + value
-        stat['Average'] = stat['Sum'] / stat['SampleCount']
-        stat['Minimum'] = value \
-                          if isnan(stat['Minimum']) or stat['Minimum'] > value \
-                          else stat['Minimum']
-        stat['Maximum'] = value \
-                          if isnan(stat['Maximum']) or stat['Maximum'] < value \
-                          else stat['Maximum']
-
-        # insert into DB
-        stat_dict = {
-            'SampleCount':{time_idx: stat['SampleCount']},
-            'Sum':{time_idx: stat['Sum']},
-            'Average':{time_idx: stat['Average']},
-            'Minimum':{time_idx: stat['Minimum']},
-            'Maximum':{time_idx: stat['Maximum']}
-        }
-        
-        self.cass.insert_stat(self.metric_key, stat_dict)
-        
-
-class API(object):
-    ROLLING_FUNC_MAP = MetricMonitor.ROLLING_FUNC_MAP
     
     def __init__(self):
         self.cass = Cassandra()
@@ -159,7 +93,7 @@ class API(object):
 
     def get_metric_statistics(self, project_id, end_time, metric_name,
                               namespace, period, start_time, statistics,
-                              unit="None", dimensions=None, rolling=False):
+                              unit="None", dimensions=None):
         """
         입력받은 조건에 일치하는 메트릭의 통계자료 리스트를 반환한다.
         """
@@ -174,19 +108,13 @@ class API(object):
             dimensions=dimensions
         )
         
-        period = period / 60 # convert to min
-        
+        period = period / 60 # convert sec to min
         stat = DataFrame(index=daterange)
+        
         for statistic, series in zip(statistics, stats):
             func = self.ROLLING_FUNC_MAP[statistic]
-            stat[statistic] = func(TimeSeries(series), period)
+            stat[statistic] = func(TimeSeries(series), period, min_periods=0)
 
-        if not rolling:
-            reindex_daterange = DateRange(start_idx, end_idx,
-                                          offset=datetools.Minute() * period)            
-            stat = stat.reindex(index=reindex_daterange)
-
-        ret = ((i, stat.ix[i].to_dict()) for i in stat.index)
-        
+        stat = stat.dropna()
+        ret = [(i, stat.ix[i].to_dict()) for i in stat.index]
         return ret
-        

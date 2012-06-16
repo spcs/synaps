@@ -38,6 +38,7 @@ class ApiSpout(Spout):
         if id in self.delivery_tags:
             tag, try_count = self.delivery_tags.pop(id)
             self.channel.basic_ack(delivery_tag=tag)
+            log("[%s] message acked" % id)
     
     def fail(self, id):
         if id in self.delivery_tags:
@@ -46,7 +47,7 @@ class ApiSpout(Spout):
                 self.delivery_tags[id] = (tag, try_count + 1)
             else:
                 self.channel.basic_ack(delivery_tag=tag)
-                self.log("message acked")
+                log("[%s] message failed" % id)
     
     def nextTuple(self):
         try:
@@ -54,7 +55,7 @@ class ApiSpout(Spout):
                 queue="metric_queue"
             )
     
-            if method_frame.NAME is not 'Basic.GetEmpty':
+            if not method_frame.NAME == 'Basic.GetEmpty':
                 id = str(uuid4())
                 message = "Start processing message in the queue - [%s] %s"
                 log(message % (id, body))

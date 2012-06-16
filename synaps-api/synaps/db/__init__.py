@@ -303,6 +303,9 @@ class Cassandra(object):
         except pycassa.NotFoundException:
             stat = {}
         return stat
+
+    def load_alarms(self, metric_key):
+        pass
     
     def get_metric_statistics(self, project_id, namespace, metric_name,
                               start_time, end_time, period, statistics,

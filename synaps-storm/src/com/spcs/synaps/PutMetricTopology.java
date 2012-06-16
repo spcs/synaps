@@ -70,16 +70,16 @@ public class PutMetricTopology {
 	public static void main(String[] args) throws Exception {
 		TopologyBuilder builder = new TopologyBuilder();
 		builder.setSpout("api_spout", new ApiSpout(), 2);
-		builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 5)
+		builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 2)
 				.shuffleGrouping("api_spout");
-		builder.setBolt("putmetric_bolt", new PutMetricBolt(), 10)
+		builder.setBolt("putmetric_bolt", new PutMetricBolt(), 4)
 				.fieldsGrouping("unpack_bolt", new Fields("metric_key"));
 
 		Config conf = new Config();
 		conf.setDebug(true);
 
 		if (args != null && args.length > 0) {
-			conf.setNumWorkers(6);
+			conf.setNumWorkers(8);
 			StormSubmitter.submitTopology(args[0], conf,
 					builder.createTopology());
 		} else {
