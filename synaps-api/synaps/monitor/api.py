@@ -97,6 +97,14 @@ class API(object):
         """
         입력받은 조건에 일치하는 메트릭의 통계자료 리스트를 반환한다.
         """
+        
+        def to_datapoint(df, idx):
+            datapoint = ((k, v) for k, v in df.ix[idx].iteritems() \
+                         if not isnan(v))
+            datapoint = dict(datapoint)
+            if datapoint:
+                return idx, datapoint
+        
         end_idx = end_time.replace(second=0, microsecond=0)
         start_idx = start_time.replace(second=0, microsecond=0)
         daterange = DateRange(start_idx, end_idx, offset=datetools.Minute())
@@ -115,6 +123,6 @@ class API(object):
             func = self.ROLLING_FUNC_MAP[statistic]
             stat[statistic] = func(TimeSeries(series), period, min_periods=0)
 
-        stat = stat.dropna()
-        ret = [(i, stat.ix[i].to_dict()) for i in stat.index]
+        ret = filter(None, (to_datapoint(stat, i) for i in stat.index))
+        LOG.info(ret)
         return ret

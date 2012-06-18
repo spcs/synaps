@@ -84,7 +84,7 @@ class MonitorController(object):
             timestamp, values = stat
             ret = {}
             ret['Timestamp'] = timestamp
-            for statistic, value in values.items():
+            for statistic, value in values.iteritems():
                 ret[statistic] = value
             ret['Unit'] = 'None'
             return ret
