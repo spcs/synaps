@@ -78,7 +78,9 @@ class MetricMonitor(object):
         time_idx = timestamp.replace(second=0, microsecond=0)
         if time_idx not in self.df.index:
             self._reindex()
-
+        
+        value = utils.to_default_unit(value, unit)
+            
         stat = self.df.ix[time_idx]
         
         stat['SampleCount'] = 1.0 if isnan(stat['SampleCount']) \

@@ -67,7 +67,7 @@ class API(object):
         for metric in utils.extract_member_list(metric_data):
             dimensions = utils.extract_member_dict(metric.get('dimensions'))
             metric_name = metric.get('metric_name')
-            unit = metric.get('unit', None)
+            unit = metric.get('unit', 'None')
             value = metric.get('value')
             req_timestamp = metric.get('timestamp')
             timestamp = req_timestamp if req_timestamp \
@@ -93,7 +93,7 @@ class API(object):
 
     def get_metric_statistics(self, project_id, end_time, metric_name,
                               namespace, period, start_time, statistics,
-                              unit="None", dimensions=None):
+                              unit=None, dimensions=None):
         """
         입력받은 조건에 일치하는 메트릭의 통계자료 리스트를 반환한다.
         """
@@ -109,11 +109,23 @@ class API(object):
         start_idx = start_time.replace(second=0, microsecond=0)
         daterange = DateRange(start_idx, end_idx, offset=datetools.Minute())
 
+        # load default unit for metric from database
+        if unit == "None" or not unit:
+            metric_key = self.cass.get_metric_key(
+                project_id=project_id, namespace=namespace,
+                metric_name=metric_name, dimensions=dimensions
+            )
+            
+            if metric_key:
+                unit = self.cass.get_metric_unit(metric_key)
+            else:
+                unit = "None"
+        
+        # load statistics data from database
         stats = self.cass.get_metric_statistics(
             project_id=project_id, namespace=namespace,
             metric_name=metric_name, start_time=start_time, end_time=end_time,
-            period=period, statistics=statistics, unit=unit,
-            dimensions=dimensions
+            period=period, statistics=statistics, dimensions=dimensions
         )
         
         period = period / 60 # convert sec to min
@@ -124,5 +136,4 @@ class API(object):
             stat[statistic] = func(TimeSeries(series), period, min_periods=0)
 
         ret = filter(None, (to_datapoint(stat, i) for i in stat.index))
-        LOG.info(ret)
         return ret

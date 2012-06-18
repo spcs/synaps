@@ -186,8 +186,15 @@ class Cassandra(object):
                 return k
         return None
     
+    def get_metric_unit(self, metric_key):
+        try:
+            metric = self.cf_metric.get(key=metric_key)
+        except pycassa.NotFoundException:
+            return "None"
+        return metric.get('unit', "None")
+    
     def get_metric_key_or_create(self, project_id, namespace, metric_name,
-                                 dimensions):
+                                 dimensions, unit='None'):
         # get metric key
         key = self.get_metric_key(project_id, namespace, metric_name,
                                   dimensions)
@@ -197,7 +204,8 @@ class Cassandra(object):
             key = uuid.uuid4()
             json_dim = json.dumps(dimensions)
             columns = {'project_id': project_id, 'namespace': namespace,
-                       'name': metric_name, 'dimensions': json_dim}
+                       'name': metric_name, 'dimensions': json_dim,
+                       'unit': unit}
         
             self.cf_metric.insert(key=key, columns=columns)
         
@@ -309,7 +317,7 @@ class Cassandra(object):
     
     def get_metric_statistics(self, project_id, namespace, metric_name,
                               start_time, end_time, period, statistics,
-                              unit=None, dimensions=None):
+                              dimensions=None):
         def get_stat(key, super_column, column_start, column_end):
             stat = {}
             try:
@@ -327,7 +335,7 @@ class Cassandra(object):
         
         # get metric key
         key = self.get_metric_key(project_id, namespace, metric_name,
-                                   dimensions)
+                                  dimensions)
 
         # or return {}
         if not key:

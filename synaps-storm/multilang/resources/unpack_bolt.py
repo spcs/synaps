@@ -35,13 +35,14 @@ class UnpackMessageBolt(storm.BasicBolt):
                                   message['metric_name'],
                                   message['dimensions']))).digest()
         
-        if not self.key_dict.has_key(memory_key):
+        if memory_key not in self.key_dict:
             if len(self.key_dict) > threshhold:
                 self.key_dict.popitem()
             
             self.key_dict[memory_key] = self.cass.get_metric_key_or_create(
                  message['project_id'], message['namespace'],
-                 message['metric_name'], message['dimensions']
+                 message['metric_name'], message['dimensions'],
+                 message['unit']
             )
             
         return self.key_dict[memory_key]

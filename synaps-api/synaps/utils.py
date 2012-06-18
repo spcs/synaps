@@ -23,7 +23,7 @@ import shutil
 import json
 import itertools
 from collections import OrderedDict
-from numpy import isnan
+from numpy import isnan, nan
 
 from eventlet import greenthread
 from eventlet.green import subprocess
@@ -41,6 +41,46 @@ FLAGS = flags.FLAGS
 FLAGS.register_opt(
     cfg.BoolOpt('disable_process_locking', default=False,
                 help='Whether to disable inter-process locks'))
+
+UNIT_CONV_MAP = {
+    'None': 1.0,
+    'Seconds': 1.0,
+    'Bytes':1.0,
+    'Bytes/Second':1.0, # std: Bytes/Second
+    'Percent': 1.0,
+    'Count': 1.0,
+    'Count/Second': 1.0,
+    'Microseconds': 10.0 ** (-6), # std: Seconds
+    'Milliseconds': 10.0 ** (-3), # std: Seconds
+    'Kilobytes':2.0 ** 10, # std: Bytes
+    'Megabytes':2.0 ** 20, # std: Bytes
+    'Gigabytes':2.0 ** 30, # std: Bytes
+    'Terabytes':2.0 ** 40, # std: Bytes
+    'Bits':2.0 ** (-3), # std: Bytes
+    'Kilobits':2.0 ** 7, # std: Bytes
+    'Megabits':2.0 ** 17, # std: Bytes
+    'Gigabits':2.0 ** 27, # std: Bytes
+    'Terabits':2.0 ** 37, # std: Bytes
+    'Kilobytes/Second':10.0 ** 3, # std: Bytes/Second
+    'Megabytes/Second':10.0 ** 6, # std: Bytes/Second
+    'Gigabytes/Second':10.0 ** 9, # std: Bytes/Second
+    'Terabytes/Second':10.0 ** 12, # std: Bytes/Second
+    'Bits/Second':2.0 ** (-3), # std: Bytes/Second
+    'Kilobits/Second':2.0 ** 7, # std: Bytes/Second
+    'Megabits/Second':2.0 ** 17, # std: Bytes/Second
+    'Gigabits/Second':2.0 ** 27, # std: Bytes/Second
+    'Terabits/Second':2.0 ** 37, # std: Bytes/Second
+}
+
+def to_unit(value, unit):
+    if not unit:
+        unit = "None"
+    return value / UNIT_CONV_MAP[unit]
+
+def to_default_unit(value, unit):
+    if not unit:
+        unit = "None"
+    return value * UNIT_CONV_MAP[unit]
 
 def to_primitive(value, convert_instances=False, level=0):
     """Convert a complex object into primitives.
@@ -452,11 +492,9 @@ def extract_member_list(aws_list, key='member'):
 def extract_member_dict(aws_dict, key='member'):
     """
     it will convert from
-    
-    {'member': {'1': {'name': {'1': u'member1'},
-                      'value': {'1': u'value1'}},
-                '2': {'name': {'1': u'member2'},
-                      'value': {'1': u'value2'}}}}    
+
+    {'member': {'1': {'name': u'member1', 'value': u'value1'}},
+               {'2': {'name': u'member2', 'value': u'value2'}}}
 
     to
     
@@ -465,8 +503,7 @@ def extract_member_dict(aws_dict, key='member'):
     this is useful for processing dimension.
     """
     members = extract_member_list(aws_dict, key)
-    member_list = [(member['name']['1'], member['value']['1']) 
-                   for member in members]
+    member_list = [(member['name'], member['value']) for member in members]
     return dict(member_list)
 
 def datetime_to_timestamp(dt):

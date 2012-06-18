@@ -76,17 +76,23 @@ class MonitorController(object):
 
     def get_metric_statistics(self, context, end_time, metric_name,
                               namespace, period, start_time, statistics,
-                              unit="None", dimensions=None, project_id=None):
+                              unit=None, dimensions=None, project_id=None):
         """
         Gets statistics for the specified metric.
         """
         def stat_to_datapoint(stat):
+            """
+            단위 변경 및 형식 변경
+            """
             timestamp, values = stat
             ret = {}
             ret['Timestamp'] = timestamp
             for statistic, value in values.iteritems():
-                ret[statistic] = value
-            ret['Unit'] = 'None'
+                if statistic == "SampleCount":
+                    ret['Unit'] = "Count"
+                else:
+                    ret['Unit'] = unit
+                ret[statistic] = utils.to_unit(value, unit)
             return ret
                 
         if not (project_id and context.is_admin):
