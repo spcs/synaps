@@ -17,7 +17,7 @@ import json
 import storm
 import traceback
 from synaps.db import Cassandra
-from synaps.rpc import PUT_METRIC_DATA_MSG_ID
+from synaps.rpc import PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID
 
 threshhold = 10000
 flags.FLAGS(sys.argv)
@@ -52,9 +52,14 @@ class UnpackMessageBolt(storm.BasicBolt):
         message = json.loads(message_buf)
 
         try:
-            if message.get('message_id') == PUT_METRIC_DATA_MSG_ID:
+            message_id = message.get('message_id')
+            if message_id == PUT_METRIC_DATA_MSG_ID:
                 metric_key = str(self.get_metric_key(message))
                 storm.emit([metric_key, message_buf])
+            elif message_id == PUT_METRIC_ALARM_MSG_ID:
+                metric_key = message.get('metric_key')
+                storm.emit([metric_key, message_buf])
+            
         except Exception as e:
             storm.log(traceback.format_exc(e))
 

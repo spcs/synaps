@@ -55,8 +55,12 @@ class API(object):
         if not metric_key:
             raise Invalid(_("invalid metric information"))
 
+        message = {'project_id': project_id, 'metric_key': metric_key,
+                   'metricalarm': metricalarm.to_column}
+        self.rpc.send_msg(rpc.PUT_METRIC_ALARM_MSG_ID, message)
+
         # 알람 저장
-        self.cass.put_metric_alarm(project_id, metric_key, metricalarm)
+#        self.cass.put_metric_alarm(project_id, metric_key, metricalarm)
         
         return {}
     

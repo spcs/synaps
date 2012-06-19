@@ -206,7 +206,8 @@ class Cassandra(object):
             columns = {'project_id': project_id, 'namespace': namespace,
                        'name': metric_name, 'dimensions': json_dim,
                        'unit': unit}
-        
+            
+            LOG.debug("cf_metric.insert (%s, %s)" % (key, columns))
             self.cf_metric.insert(key=key, columns=columns)
         
         return key
@@ -219,7 +220,7 @@ class Cassandra(object):
             pycassa.create_index_expression("project_id", project_id),
             pycassa.create_index_expression("metric_key", metric_key),
             pycassa.create_index_expression("alarm_name",
-                                            metricalarm.alarm_name)
+                                            metricalarm['alarm_name'])
         ]
         
         index_clause = pycassa.create_index_clause(expr_list)
@@ -236,13 +237,12 @@ class Cassandra(object):
         # 해당 알람이 DB에 있는지 확인
         alarm_key = self.get_metric_alarm_key(project_id, metric_key,
                                               metricalarm)
-        columns = metricalarm.to_columns()
-        columns['project_id'] = project_id
-        columns['metric_key'] = metric_key
-        columns['alarm_arn'] = "rn:spcs:suwon:%s:alarm:%s" % (
-            project_id, metricalarm.alarm_name
+        metricalarm['project_id'] = project_id
+        metricalarm['metric_key'] = metric_key
+        metricalarm['alarm_arn'] = "rn:spcs:%s:alarm:%s" % (
+            project_id, metricalarm['alarm_name']
         )
-        columns['alarm_configuration_updated_timestamp'] = utils.utcnow()
+        metricalarm['alarm_configuration_updated_timestamp'] = utils.utcnow()
         
         if alarm_key:
             # TODO: 알람 업데이트 관련 알람 히스토리 생성
@@ -251,16 +251,17 @@ class Cassandra(object):
             # TODO: 알람 신규 관련 알람 히스토리 생성
             LOG.debug("create new alarm") 
             alarm_key = uuid.uuid4()
-            columns['state_updated_timestamp'] = utils.utcnow()
-            columns['state_reason'] = "alarm initial setup"
-            columns['state_reason_data'] = "{}"
-            columns['state_value'] = "INSUFFICIENT_DATA"
+            metricalarm['state_updated_timestamp'] = utils.utcnow()
+            metricalarm['state_reason'] = "alarm initial setup"
+            metricalarm['state_reason_data'] = "{}"
+            metricalarm['state_value'] = "INSUFFICIENT_DATA"
 
-        LOG.debug("insert metric_alarm (%s, %s)" % (alarm_key, columns)) 
-        self.cf_metric_alarm.insert(key=alarm_key, columns=columns)
+        LOG.debug("cf_metric_alarm.insert (%s, %s)" % (alarm_key, metricalarm)) 
+        self.cf_metric_alarm.insert(key=alarm_key, columns=metricalarm)
         return alarm_key
 
     def insert_stat(self, metric_key, stat):
+        LOG.debug("scf_stat_archive.insert (%s, %s)" % (metric_key, stat))
         self.scf_stat_archive.insert(metric_key, stat, ttl=self.STATISTICS_TTL)
 
     def list_metrics(self, project_id, namespace=None, metric_name=None,
@@ -347,8 +348,6 @@ class Cassandra(object):
         
         return stats
         
-        
-    
     def restructed_stats(self, stat):
         def get_stat(timestamp):
             ret = {}

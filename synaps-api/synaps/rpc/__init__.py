@@ -34,6 +34,15 @@ class RemoteProcedureCall(object):
     
     def send_msg(self, message_id, body):
         """
+        
+        
+        Args:
+            message_id: int
+                ex) PUT_METRIC_DATA_MSG_ID (0x0001)
+                    PUT_METRIC_ALARM_MSG_ID (0x0002)
+                    ...
+            body: dict object (will be converted into json format)
+            
         """
         if type(message_id) is not int:
             raise RpcInvokeException()

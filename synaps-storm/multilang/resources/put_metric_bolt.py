@@ -23,7 +23,7 @@ from synaps import flags
 from synaps import log as logging
 from synaps import utils
 from synaps.db import Cassandra
-from synaps.rpc import PUT_METRIC_DATA_MSG_ID
+from synaps.rpc import PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID
 
 
 class MetricMonitor(object):
@@ -134,21 +134,30 @@ class PutMetricBolt(storm.BasicBolt):
             timestamp=timestamp, value=message['value'], unit=message['unit']
         )
         
-        storm.log("write metric into database %s" % (metric_key))
+        storm.log("metric data inserted %s" % (metric_key))
+    
+    def process_put_metric_alarm_msg(self, metric_key, message):
+        project_id = message['project_id']
+        metricalarm = message['metricalarm']
+        self.cass.put_metric_alarm(project_id, metric_key, metricalarm)
+        storm.log("metric alarm inserted %s" % (metric_key))
         
     def process(self, tup):
         metric_key = uuid.UUID(tup.values[0])
         message = json.loads(tup.values[1])
         message_id = message.get('message_id')
         
-        if message_id == PUT_METRIC_DATA_MSG_ID:
-            storm.log("process put_metric_data_msg (%s)" % message)
-            try:
+        try:
+            if message_id == PUT_METRIC_DATA_MSG_ID:
+                storm.log("process put_metric_data_msg (%s)" % message)
                 self.process_put_metric_data_msg(metric_key, message)
-            except Exception as e:
-                storm.log(traceback.format_exc(e))
-        else:
-            storm.log("unknown message")
+            elif message_id == PUT_METRIC_ALARM_MSG_ID:
+                storm.log("process put_metric_alarm_msg (%s)" % message)
+                self.process_put_metric_alarm_msg(metric_key, message)
+            else:
+                storm.log("unknown message")
+        except Exception as e:
+            storm.log(traceback.format_exc(e))
             
 
 if __name__ == "__main__":
