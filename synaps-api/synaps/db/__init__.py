@@ -230,32 +230,10 @@ class Cassandra(object):
             return k
         return None
 
-    def put_metric_alarm(self, project_id, metric_key, metricalarm):
+    def put_metric_alarm(self, project_id, alarm_key, metricalarm):
         """
         MetricAlarm 을 DB에 생성 또는 업데이트 함.
         """
-        # 해당 알람이 DB에 있는지 확인
-        alarm_key = self.get_metric_alarm_key(project_id, metric_key,
-                                              metricalarm)
-        metricalarm['project_id'] = project_id
-        metricalarm['metric_key'] = metric_key
-        metricalarm['alarm_arn'] = "rn:spcs:%s:alarm:%s" % (
-            project_id, metricalarm['alarm_name']
-        )
-        metricalarm['alarm_configuration_updated_timestamp'] = utils.utcnow()
-        
-        if alarm_key:
-            # TODO: 알람 업데이트 관련 알람 히스토리 생성
-            LOG.debug("update alarm")
-        else:
-            # TODO: 알람 신규 관련 알람 히스토리 생성
-            LOG.debug("create new alarm") 
-            alarm_key = uuid.uuid4()
-            metricalarm['state_updated_timestamp'] = utils.utcnow()
-            metricalarm['state_reason'] = "alarm initial setup"
-            metricalarm['state_reason_data'] = "{}"
-            metricalarm['state_value'] = "INSUFFICIENT_DATA"
-
         LOG.debug("cf_metric_alarm.insert (%s, %s)" % (alarm_key, metricalarm)) 
         self.cf_metric_alarm.insert(key=alarm_key, columns=metricalarm)
         return alarm_key
@@ -314,7 +292,16 @@ class Cassandra(object):
         return stat
 
     def load_alarms(self, metric_key):
-        pass
+        expr_list = [
+            pycassa.create_index_expression("metric_key", metric_key),
+        ]
+        index_clause = pycassa.create_index_clause(expr_list)
+
+        try:
+            items = self.cf_metric_alarm.get_indexed_slices(index_clause)
+        except pycassa.NotFoundException:
+            items = {}
+        return items
     
     def get_metric_statistics(self, project_id, namespace, metric_name,
                               start_time, end_time, period, statistics,

@@ -40,8 +40,9 @@ class MetricMonitor(object):
     def __init__(self, metric_key, cass):
         self.metric_key = metric_key
         self.cass = cass
-        self.load_statistics()
-        self.load_alarms()        
+        self.df = self.load_statistics()
+        # (alarm, recently checked timestamp)
+        self.alarms = self.load_alarms()
 
     def _reindex(self):
         self.df = self.df.reindex(index=self._get_range())
@@ -56,15 +57,19 @@ class MetricMonitor(object):
     def load_statistics(self):
         stat = self.cass.load_statistics(self.metric_key)
         if stat:
-            self.df = DataFrame(stat, index=self._get_range())
+            df = DataFrame(stat, index=self._get_range())
         else:
-            self.df = DataFrame(columns=self.COLUMNS, index=self._get_range())
+            df = DataFrame(columns=self.COLUMNS, index=self._get_range())
+        return df
     
     def load_alarms(self):
-        pass
+        alarms = self.cass.load_alarms(self.metric_key)
+        ret = dict([(k, (v, None)) for k, v in alarms])
+        storm.log("load_alarms %s for metric %s" % (str(ret), self.metric_key))
+        return ret
 
-    def get_metric_statistics(self, window, statistics, start=None,
-                              end=None, unit=None):
+    def get_metric_statistics(self, window, statistics, start=None, end=None,
+                              unit=None):
         df = self.df.ix[start:end] if start and end else self.df
         
         ret_dict = {}
@@ -73,6 +78,35 @@ class MetricMonitor(object):
             ret_dict[statistic] = func(df[statistic], window)
         
         return DataFrame(ret_dict)
+    
+    def put_alarm(self, project_id, metricalarm):
+        # 해당 알람이 DB에 있는지 확인
+        alarm_key = self.cass.get_metric_alarm_key(project_id, self.metric_key,
+                                                   metricalarm)
+
+        metricalarm['project_id'] = project_id
+        metricalarm['metric_key'] = self.metric_key
+        metricalarm['alarm_arn'] = "rn:spcs:%s:alarm:%s" % (
+            project_id, metricalarm['alarm_name']
+        )
+        metricalarm['alarm_configuration_updated_timestamp'] = utils.utcnow()
+
+        if alarm_key:
+            # TODO: 알람 업데이트 관련 알람 히스토리 생성
+            pass
+        else:
+            # TODO: 알람 신규 관련 알람 히스토리 생성
+            alarm_key = uuid.uuid4()
+            metricalarm['state_updated_timestamp'] = utils.utcnow()
+            metricalarm['state_reason'] = "alarm initial setup"
+            metricalarm['state_reason_data'] = "{}"
+            metricalarm['state_value'] = "INSUFFICIENT_DATA"
+            
+            self.alarms[alarm_key] = metricalarm
+        
+        # insert alarm into database
+        self.cass.put_metric_alarm(project_id, alarm_key, metricalarm)
+        storm.log("metric alarm inserted alarm key: %s" % (alarm_key))
 
     def put_metric_data(self, timestamp, value, unit=None):
         time_idx = timestamp.replace(second=0, microsecond=0)
@@ -105,7 +139,16 @@ class MetricMonitor(object):
         }
         
         self.cass.insert_stat(self.metric_key, stat_dict)
+        storm.log("metric data inserted %s" % (self.metric_key))
         
+        # check alarms
+        self.check_alarms()
+    
+    def check_alarms(self):
+        for alarm, timestamp in self.alarms.iteritems():
+            # TODO: 알람 체크, 타임스탬프 업데이트
+            storm.log("Check alarm %s" % alarm)
+            
 
 class PutMetricBolt(storm.BasicBolt):
     def initialize(self, stormconf, context):
@@ -133,14 +176,14 @@ class PutMetricBolt(storm.BasicBolt):
         self.metrics[metric_key].put_metric_data(
             timestamp=timestamp, value=message['value'], unit=message['unit']
         )
-        
-        storm.log("metric data inserted %s" % (metric_key))
+
     
     def process_put_metric_alarm_msg(self, metric_key, message):
+        if metric_key not in self.metrics:
+            raise Exception("No associated metric")
         project_id = message['project_id']
         metricalarm = message['metricalarm']
-        self.cass.put_metric_alarm(project_id, metric_key, metricalarm)
-        storm.log("metric alarm inserted %s" % (metric_key))
+        self.metrics[metric_key].put_alarm(project_id, metricalarm)
         
     def process(self, tup):
         metric_key = uuid.UUID(tup.values[0])

@@ -43,7 +43,6 @@ class API(object):
         
         알람 히스토리 발생.
         """
-        
         # 메트릭 유무 확인
         metric_key = self.cass.get_metric_key(
             project_id=project_id,
@@ -55,13 +54,11 @@ class API(object):
         if not metric_key:
             raise Invalid(_("invalid metric information"))
 
-        message = {'project_id': project_id, 'metric_key': metric_key,
-                   'metricalarm': metricalarm.to_column}
+        message = {'project_id': project_id, 'metric_key': str(metric_key),
+                   'metricalarm': metricalarm.to_columns()}
         self.rpc.send_msg(rpc.PUT_METRIC_ALARM_MSG_ID, message)
+        LOG.info("PUT_METRIC_ALARM_MSG sent")
 
-        # 알람 저장
-#        self.cass.put_metric_alarm(project_id, metric_key, metricalarm)
-        
         return {}
     
     def put_metric_data(self, project_id, namespace, metric_data):
@@ -83,13 +80,14 @@ class API(object):
                        'value':value, 'unit':unit, 'timestamp':timestamp}
             
             self.rpc.send_msg(rpc.PUT_METRIC_DATA_MSG_ID, message)
+            LOG.info("PUT_METRIC_DATA_MSG sent")
             
         return {}
 
     def list_metrics(self, project_id, next_token=None, dimensions=None,
                      metric_name=None, namespace=None):
         """
-        입력받은 조건과 일치하는 메트릭의 리스트를 반환한다.  
+        입력받은 조건과 일치하는 메트릭의 리스트를 반환한다.
         """
         metrics = self.cass.list_metrics(project_id, namespace, metric_name,
                                          dimensions, next_token)
@@ -101,12 +99,9 @@ class API(object):
         """
         입력받은 조건에 일치하는 메트릭의 통계자료 리스트를 반환한다.
         """
-        
         def to_datapoint(df, idx):
-            datapoint = ((k, v) for k, v in df.ix[idx].iteritems() \
-                         if not isnan(v))
-            datapoint = dict(datapoint)
-            if datapoint:
+            datapoint = df.ix[idx].dropna()
+            if len(datapoint):
                 return idx, datapoint
         
         end_idx = end_time.replace(second=0, microsecond=0)
