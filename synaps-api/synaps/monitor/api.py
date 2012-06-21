@@ -132,7 +132,8 @@ class API(object):
         
         for statistic, series in zip(statistics, stats):
             func = self.ROLLING_FUNC_MAP[statistic]
-            stat[statistic] = func(TimeSeries(series), period, min_periods=0)
+            stat[statistic] = func(TimeSeries(series, index=daterange), period,
+                                   min_periods=0)
 
         ret = filter(None, (to_datapoint(stat, i) for i in stat.index))
         return ret
