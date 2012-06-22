@@ -22,7 +22,7 @@ class MonitorController(object):
     def __str__(self):
         return 'MonitorController'
 
-    def delete_alrams(self, context, alarm_names, project_id=None):
+    def delete_alarms(self, context, alarm_names, project_id=None):
         if not (project_id and context.is_admin):
             project_id = context.project_id
             
@@ -59,7 +59,7 @@ class MonitorController(object):
         ret = {}
         return ret
     
-    def disable_alarm_actions(self, context, alarm_names=None, 
+    def disable_alarm_actions(self, context, alarm_names=None,
                               project_id=None):
         if not (project_id and context.is_admin):
             project_id = context.project_id
@@ -67,7 +67,7 @@ class MonitorController(object):
         ret = {}
         return ret
     
-    def enable_alarm_actions(self, context, alarm_names=None, 
+    def enable_alarm_actions(self, context, alarm_names=None,
                              project_id=None):
         if not (project_id and context.is_admin):
             project_id = context.project_id
