@@ -233,7 +233,8 @@ class Authorizer(wsgi.Middleware):
                  'GetMetricStatistics': ['all'],
                  'ListMetrics':['all'],
                  'PutMetricAlarm':['all'],
-                 'PutMetricData': ['all'],
+                 'PutMetricData':['all'],
+                 'SetAlarmState':['all'],
             },
             'AdminController': {
                 # All actions have the same permission: ['none'] (the default)

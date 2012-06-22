@@ -12,10 +12,10 @@ LOG = logging.getLogger(__name__)
 
 
 class MonitorController(object):
-    """ MonitorController provides the critical dispatch between
- inbound API calls through the endpoint and messages
- sent to the other nodes.
-"""
+    """
+    MonitorController provides the critical dispatch between inbound API 
+    calls through the endpoint and messages sent to the other nodes.
+    """
     def __init__(self):
         self.monitor_api = monitor.API()
 
@@ -27,6 +27,7 @@ class MonitorController(object):
             project_id = context.project_id
             
         ret = {}
+        # TODO: implement here
         return ret
 
     def describe_alarm_history(self, context, alarm_name=None, end_date=None,
@@ -37,6 +38,7 @@ class MonitorController(object):
             project_id = context.project_id
             
         ret = {}
+        # TODO: implement here
         return ret
 
     def describe_alarms(self, context, action_prefix=None,
@@ -47,6 +49,9 @@ class MonitorController(object):
             project_id = context.project_id
             
         ret = {}
+        
+        ret = self.monitor_api.describe_alarms(project_id)
+        # TODO: implement here
         return ret
     
     def describe_alarms_for_metric(self, context, metric_name, namespace,
@@ -57,6 +62,7 @@ class MonitorController(object):
             project_id = context.project_id
         
         ret = {}
+        # TODO: implement here
         return ret
     
     def disable_alarm_actions(self, context, alarm_names=None,
@@ -65,6 +71,7 @@ class MonitorController(object):
             project_id = context.project_id
         
         ret = {}
+        # TODO: implement here
         return ret
     
     def enable_alarm_actions(self, context, alarm_names=None,
@@ -73,6 +80,7 @@ class MonitorController(object):
             project_id = context.project_id
         
         ret = {}
+        # TODO: implement here
         return ret
     
     def get_metric_statistics(self, context, end_time, metric_name,
@@ -197,3 +205,15 @@ class MonitorController(object):
                                          metric_data)
         return {}
 
+    def set_alarm_state(self, context, alarm_name, state_reason, state_value,
+                        state_reason_data=None):
+        """
+        Temporarily sets the state of an alarm. When the updated StateValue
+        differs from the previous value, the action configured for the 
+        appropriate state is invoked. This is not a permanent change. The next 
+        periodic alarm check (in about a minute) will set the alarm to its 
+        actual state. 
+        """
+        
+        # TODO: implement here
+        return {}

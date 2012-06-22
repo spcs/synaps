@@ -3,6 +3,7 @@
 # All Rights Reserved
 
 import time
+import json
 
 from datetime import datetime, timedelta
 from pandas import TimeSeries, DataFrame, DateRange, datetools
@@ -34,65 +35,64 @@ class API(object):
     def __init__(self):
         self.cass = Cassandra()
         self.rpc = rpc.RemoteProcedureCall()
+
+    def describe_alarms(self, project_id, action_prefix=None,
+                        alarm_name_prefix=None, alarm_names=None,
+                        max_records=None, next_token=None, state_value=None):
+        def to_alarm(v):
+#            OrderedDict([('action_enabled', False),
+#                         ('alarm_actions', u'[]'),
+#                         ('alarm_arn', u'rn:spcs:IaaS:alarm:CPU_Alarm'),
+#                         ('alarm_configuration_updated_timestamp',
+#                          datetime.datetime(2012, 6, 22, 11, 56, 47, 810000)),
+#                         ('alarm_description', u''),
+#                         ('alarm_name', u'CPU_Alarm'),
+#                         ('comparison_operator', u'GreaterThanThreshold'),
+#                         ('dimensions', u'{"instance_name": "test instance"}'),
+#                         ('evaluation_period', 2),
+#                         ('insufficient_data_actions', u'[]'),
+#                         ('metric_key', UUID('6457a5b5-c28b-4e36-bfb8-b544f062bff9')),
+#                         ('metric_name', u'test_metric'),
+#                         ('namespace', u'SPCS/SYNAPSTEST'),
+#                         ('ok_actions', u'[]'),
+#                         ('period', 300),
+#                         ('project_id', u'IaaS'),
+#                         ('state_reason', u'alarm initial setup'),
+#                         ('state_reason_data', u'{}'),
+#                         ('state_updated_timestamp',
+#                          datetime.datetime(2012, 6, 22, 10, 33, 1, 714000)),
+#                         ('state_value', u'INSUFFICIENT_DATA'),
+#                         ('statistic', u'Average'),
+#                         ('threshold', 50.0),
+#                         ('unit', u'Percent')])
+            
+            v.pop('metric_key')
+            v.update({
+                'alarm_actions': json.loads(v['alarm_actions']),
+                'insufficient_data_actions':
+                    json.loads(v['insufficient_data_actions']),
+                'ok_actions':json.loads(v['ok_actions']),
+            })
+            LOG.debug("retrived alarms are \n%s" % pformat(v))
+            return v
+        
+        ret_dict = {}
+        ret_alarms = []
+        next_token = None
+        alarms = self.cass.describe_alarms(project_id, action_prefix,
+                                           alarm_name_prefix, alarm_names,
+                                           max_records, next_token,
+                                           state_value)
+        for k, v in alarms:
+            ret_alarms.append(to_alarm(v))
+            next_token = k
+        
+        ret_dict['MetricAlarms'] = ret_alarms
+        if next_token:
+            ret_dict['NextToken'] = str(next_token)
+        
+        return ret_dict
     
-    def put_metric_alarm(self, project_id, metricalarm):
-        """
-        알람을 DB에 넣고 값이 빈 dictionary 를 반환한다.
-        
-        메트릭 유무 확인
-        
-        알람 히스토리 발생.
-        """
-        # 메트릭 유무 확인
-        metric_key = self.cass.get_metric_key(
-            project_id=project_id,
-            namespace=metricalarm.namespace,
-            metric_name=metricalarm.metric_name,
-            dimensions=metricalarm.dimensions
-        )
-        
-        if not metric_key:
-            raise Invalid(_("invalid metric information"))
-
-        message = {'project_id': project_id, 'metric_key': str(metric_key),
-                   'metricalarm': metricalarm.to_columns()}
-        self.rpc.send_msg(rpc.PUT_METRIC_ALARM_MSG_ID, message)
-        LOG.info("PUT_METRIC_ALARM_MSG sent")
-
-        return {}
-    
-    def put_metric_data(self, project_id, namespace, metric_data):
-        """
-        metric data 를 입력받아 MQ 에 넣고 값이 빈 dictionary 를 반환한다.        
-        """
-        for metric in utils.extract_member_list(metric_data):
-            dimensions = utils.extract_member_dict(metric.get('dimensions'))
-            metric_name = metric.get('metric_name')
-            unit = metric.get('unit', 'None')
-            value = metric.get('value')
-            req_timestamp = metric.get('timestamp')
-            timestamp = req_timestamp if req_timestamp \
-                        else utils.strtime(utils.utcnow()) 
-            
-            # pack message
-            message = {'project_id': project_id, 'namespace':namespace,
-                       'metric_name': metric_name, 'dimensions': dimensions,
-                       'value':value, 'unit':unit, 'timestamp':timestamp}
-            
-            self.rpc.send_msg(rpc.PUT_METRIC_DATA_MSG_ID, message)
-            LOG.info("PUT_METRIC_DATA_MSG sent")
-            
-        return {}
-
-    def list_metrics(self, project_id, next_token=None, dimensions=None,
-                     metric_name=None, namespace=None):
-        """
-        입력받은 조건과 일치하는 메트릭의 리스트를 반환한다.
-        """
-        metrics = self.cass.list_metrics(project_id, namespace, metric_name,
-                                         dimensions, next_token)
-        return metrics
-
     def get_metric_statistics(self, project_id, end_time, metric_name,
                               namespace, period, start_time, statistics,
                               unit=None, dimensions=None):
@@ -144,3 +144,61 @@ class API(object):
 
         ret = filter(None, (to_datapoint(stat, i) for i in stat.index))
         return ret
+
+    def list_metrics(self, project_id, next_token=None, dimensions=None,
+                     metric_name=None, namespace=None):
+        """
+        입력받은 조건과 일치하는 메트릭의 리스트를 반환한다.
+        """
+        metrics = self.cass.list_metrics(project_id, namespace, metric_name,
+                                         dimensions, next_token)
+        return metrics
+    
+    def put_metric_alarm(self, project_id, metricalarm):
+        """
+        알람을 DB에 넣고 값이 빈 dictionary 를 반환한다.
+        
+        메트릭 유무 확인
+        
+        알람 히스토리 발생.
+        """
+        # 메트릭 유무 확인
+        metric_key = self.cass.get_metric_key(
+            project_id=project_id,
+            namespace=metricalarm.namespace,
+            metric_name=metricalarm.metric_name,
+            dimensions=metricalarm.dimensions
+        )
+        
+        if not metric_key:
+            raise Invalid(_("invalid metric information"))
+
+        message = {'project_id': project_id, 'metric_key': str(metric_key),
+                   'metricalarm': metricalarm.to_columns()}
+        self.rpc.send_msg(rpc.PUT_METRIC_ALARM_MSG_ID, message)
+        LOG.info("PUT_METRIC_ALARM_MSG sent")
+
+        return {}
+    
+    def put_metric_data(self, project_id, namespace, metric_data):
+        """
+        metric data 를 입력받아 MQ 에 넣고 값이 빈 dictionary 를 반환한다.        
+        """
+        for metric in utils.extract_member_list(metric_data):
+            dimensions = utils.extract_member_dict(metric.get('dimensions'))
+            metric_name = metric.get('metric_name')
+            unit = metric.get('unit', 'None')
+            value = metric.get('value')
+            req_timestamp = metric.get('timestamp')
+            timestamp = req_timestamp if req_timestamp \
+                        else utils.strtime(utils.utcnow()) 
+            
+            # pack message
+            message = {'project_id': project_id, 'namespace':namespace,
+                       'metric_name': metric_name, 'dimensions': dimensions,
+                       'value':value, 'unit':unit, 'timestamp':timestamp}
+            
+            self.rpc.send_msg(rpc.PUT_METRIC_DATA_MSG_ID, message)
+            LOG.info("PUT_METRIC_DATA_MSG sent")
+            
+        return {}

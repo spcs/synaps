@@ -52,6 +52,196 @@ class Cassandra(object):
         self.scf_stat_archive = pycassa.ColumnFamily(self.pool, 'StatArchive')
         self.cf_metric_alarm = pycassa.ColumnFamily(self.pool, 'MetricAlarm')
         
+    def describe_alarms(self, project_id, action_prefix=None,
+                        alarm_name_prefix=None, alarm_names=None,
+                        max_records=None, next_token=None, state_value=None):
+        expr_list = [
+            pycassa.create_index_expression("project_id", project_id),
+        ]
+        
+        index_clause = pycassa.create_index_clause(expr_list)
+        items = self.cf_metric_alarm.get_indexed_slices(index_clause)
+        return items
+        
+
+    def get_metric_alarm_key(self, project_id, metric_key, metricalarm):
+        expr_list = [
+            pycassa.create_index_expression("project_id", project_id),
+            pycassa.create_index_expression("metric_key", metric_key),
+            pycassa.create_index_expression("alarm_name",
+                                            metricalarm['alarm_name'])
+        ]
+        
+        index_clause = pycassa.create_index_clause(expr_list)
+        items = self.cf_metric_alarm.get_indexed_slices(index_clause)
+        
+        for k, v in items:
+            return k
+        return None
+            
+    def get_metric_key(self, project_id, namespace, metric_name, dimensions):
+        expr_list = [
+            pycassa.create_index_expression("project_id", project_id),
+            pycassa.create_index_expression("name", metric_name),
+            pycassa.create_index_expression("namespace", namespace)             
+        ]
+
+        index_clause = pycassa.create_index_clause(expr_list)
+        
+        items = self.cf_metric.get_indexed_slices(index_clause)
+
+        for k, v in items:
+            if json.loads(v['dimensions']) == dimensions: 
+                return k
+        return None
+    
+    def get_metric_key_or_create(self, project_id, namespace, metric_name,
+                                 dimensions, unit='None'):
+        # get metric key
+        key = self.get_metric_key(project_id, namespace, metric_name,
+                                  dimensions)
+        
+        # or create metric 
+        if not key:
+            key = uuid.uuid4()
+            json_dim = json.dumps(dimensions)
+            columns = {'project_id': project_id, 'namespace': namespace,
+                       'name': metric_name, 'dimensions': json_dim,
+                       'unit': unit}
+            
+            LOG.debug("cf_metric.insert (%s, %s)" % (key, columns))
+            self.cf_metric.insert(key=key, columns=columns)
+        
+        return key
+
+    def get_metric_statistics(self, project_id, namespace, metric_name,
+                              start_time, end_time, period, statistics,
+                              dimensions=None):
+        def get_stat(key, super_column, column_start, column_end):
+            stat = {}
+            try:
+                stat = self.scf_stat_archive.get(key,
+                                                 super_column=super_column,
+                                                 column_start=column_start,
+                                                 column_finish=column_end,
+                                                 column_count=1440)
+            except pycassa.NotFoundException:
+                LOG.info("not found data - %s %s %s %s" % (key, super_column,
+                                                           column_start,
+                                                           column_end))
+            
+            return stat
+        
+        # get metric key
+        key = self.get_metric_key(project_id, namespace, metric_name,
+                                  dimensions)
+
+        # or return {}
+        if not key:
+            return {}
+
+        statistics = map(utils.to_ascii, statistics)
+        stats = map(lambda x: get_stat(key, x, start_time, end_time),
+                    statistics)
+        
+        return stats
+        
+    def get_metric_unit(self, metric_key):
+        try:
+            metric = self.cf_metric.get(key=metric_key)
+        except pycassa.NotFoundException:
+            return "None"
+        return metric.get('unit', "None")
+
+    def insert_stat(self, metric_key, stat):
+        LOG.debug("scf_stat_archive.insert (%s, %s)" % (metric_key, stat))
+        self.scf_stat_archive.insert(metric_key, stat, ttl=self.STATISTICS_TTL)
+
+    def list_metrics(self, project_id, namespace=None, metric_name=None,
+                     dimensions=None, next_token=""):
+        def to_dict(v):
+            return {'project_id': v['project_id'],
+                    'dimensions': json.loads(v['dimensions']),
+                    'name': v['name'],
+                    'namespace': v['namespace']}
+        
+        def check_dimension(item):
+            if isinstance(dimensions, dict): 
+                def to_set(d):
+                    return set(d.items())
+                    
+                l_set = to_set(dimensions)
+                r_set = to_set(json.loads(item['dimensions']))
+                return l_set.issubset(r_set)
+            return True
+        
+        expr_list = [pycassa.create_index_expression("project_id",
+                                                     project_id), ]
+        if namespace:
+            expr = pycassa.create_index_expression("namespace", namespace)
+            expr_list.append(expr)
+            
+        if metric_name:
+            expr = pycassa.create_index_expression("name", metric_name)
+            expr_list.append(expr)
+            
+        index_clause = pycassa.create_index_clause(expr_list)
+        items = self.cf_metric.get_indexed_slices(index_clause)
+        
+        metrics = [(k, to_dict(v)) for k, v in items if check_dimension(v)]
+        
+        return metrics
+    
+    def load_metric_data(self, metric_key):
+        try:
+            data = self.cf_metric_archive.get(metric_key, column_count=1440)
+        except pycassa.NotFoundException:
+            data = {}
+        return data
+    
+    def load_statistics(self, metric_key):
+        try:
+            stat = self.scf_stat_archive.get(metric_key, column_count=1440)
+        except pycassa.NotFoundException:
+            stat = {}
+        return stat
+
+    def load_alarms(self, metric_key):
+        expr_list = [
+            pycassa.create_index_expression("metric_key", metric_key),
+        ]
+        index_clause = pycassa.create_index_clause(expr_list)
+
+        try:
+            items = self.cf_metric_alarm.get_indexed_slices(index_clause)
+        except pycassa.NotFoundException:
+            items = {}
+        return items
+    
+    def put_metric_alarm(self, project_id, alarm_key, metricalarm):
+        """
+        MetricAlarm 을 DB에 생성 또는 업데이트 함.
+        """
+        LOG.debug("cf_metric_alarm.insert (%s, %s)" % (alarm_key, metricalarm)) 
+        self.cf_metric_alarm.insert(key=alarm_key, columns=metricalarm)
+        return alarm_key
+        
+    def restructed_stats(self, stat):
+        def get_stat(timestamp):
+            ret = {}
+            for key in stat.keys():
+                ret[key] = stat[key][timestamp]
+            return ret
+        
+        ret = []
+        timestamps = reduce(lambda x, y: x if x == y else None,
+                            map(lambda x: x.keys(), stat.values()))
+        
+        for timestamp in timestamps:
+            ret.append((timestamp, get_stat(timestamp)))
+
+        return ret
+
     @staticmethod
     def syncdb(keyspace=None):
         """
@@ -176,186 +366,4 @@ class Cassandra(object):
                                  column='statistic',
                                  value_type=types.UTF8Type())
             
-        
         LOG.info(_("cassandra syncdb has finished"))
-            
-    def get_metric_key(self, project_id, namespace, metric_name, dimensions):
-        expr_list = [
-            pycassa.create_index_expression("project_id", project_id),
-            pycassa.create_index_expression("name", metric_name),
-            pycassa.create_index_expression("namespace", namespace)             
-        ]
-
-        index_clause = pycassa.create_index_clause(expr_list)
-        
-        items = self.cf_metric.get_indexed_slices(index_clause)
-
-        for k, v in items:
-            if json.loads(v['dimensions']) == dimensions: 
-                return k
-        return None
-    
-    def get_metric_unit(self, metric_key):
-        try:
-            metric = self.cf_metric.get(key=metric_key)
-        except pycassa.NotFoundException:
-            return "None"
-        return metric.get('unit', "None")
-    
-    def get_metric_key_or_create(self, project_id, namespace, metric_name,
-                                 dimensions, unit='None'):
-        # get metric key
-        key = self.get_metric_key(project_id, namespace, metric_name,
-                                  dimensions)
-        
-        # or create metric 
-        if not key:
-            key = uuid.uuid4()
-            json_dim = json.dumps(dimensions)
-            columns = {'project_id': project_id, 'namespace': namespace,
-                       'name': metric_name, 'dimensions': json_dim,
-                       'unit': unit}
-            
-            LOG.debug("cf_metric.insert (%s, %s)" % (key, columns))
-            self.cf_metric.insert(key=key, columns=columns)
-        
-        return key
-    
-    def get_metric_alarm_key(self, project_id, metric_key, metricalarm):
-        """
-        
-        """
-        expr_list = [
-            pycassa.create_index_expression("project_id", project_id),
-            pycassa.create_index_expression("metric_key", metric_key),
-            pycassa.create_index_expression("alarm_name",
-                                            metricalarm['alarm_name'])
-        ]
-        
-        index_clause = pycassa.create_index_clause(expr_list)
-        items = self.cf_metric_alarm.get_indexed_slices(index_clause)
-        
-        for k, v in items:
-            return k
-        return None
-
-    def put_metric_alarm(self, project_id, alarm_key, metricalarm):
-        """
-        MetricAlarm 을 DB에 생성 또는 업데이트 함.
-        """
-        LOG.debug("cf_metric_alarm.insert (%s, %s)" % (alarm_key, metricalarm)) 
-        self.cf_metric_alarm.insert(key=alarm_key, columns=metricalarm)
-        return alarm_key
-
-    def insert_stat(self, metric_key, stat):
-        LOG.debug("scf_stat_archive.insert (%s, %s)" % (metric_key, stat))
-        self.scf_stat_archive.insert(metric_key, stat, ttl=self.STATISTICS_TTL)
-
-    def list_metrics(self, project_id, namespace=None, metric_name=None,
-                     dimensions=None, next_token=""):
-        def to_dict(v):
-            return {'project_id': v['project_id'],
-                    'dimensions': json.loads(v['dimensions']),
-                    'name': v['name'],
-                    'namespace': v['namespace']}
-        
-        def check_dimension(item):
-            if isinstance(dimensions, dict): 
-                def to_set(d):
-                    return set(d.items())
-                    
-                l_set = to_set(dimensions)
-                r_set = to_set(json.loads(item['dimensions']))
-                return l_set.issubset(r_set)
-            return True
-        
-        expr_list = [pycassa.create_index_expression("project_id",
-                                                     project_id), ]
-        if namespace:
-            expr = pycassa.create_index_expression("namespace", namespace)
-            expr_list.append(expr)
-            
-        if metric_name:
-            expr = pycassa.create_index_expression("name", metric_name)
-            expr_list.append(expr)
-            
-        index_clause = pycassa.create_index_clause(expr_list)
-        items = self.cf_metric.get_indexed_slices(index_clause)
-        
-        metrics = [(k, to_dict(v)) for k, v in items if check_dimension(v)]
-        
-        return metrics
-    
-    def load_metric_data(self, metric_key):
-        try:
-            data = self.cf_metric_archive.get(metric_key, column_count=1440)
-        except pycassa.NotFoundException:
-            data = {}
-        return data
-    
-    def load_statistics(self, metric_key):
-        try:
-            stat = self.scf_stat_archive.get(metric_key, column_count=1440)
-        except pycassa.NotFoundException:
-            stat = {}
-        return stat
-
-    def load_alarms(self, metric_key):
-        expr_list = [
-            pycassa.create_index_expression("metric_key", metric_key),
-        ]
-        index_clause = pycassa.create_index_clause(expr_list)
-
-        try:
-            items = self.cf_metric_alarm.get_indexed_slices(index_clause)
-        except pycassa.NotFoundException:
-            items = {}
-        return items
-    
-    def get_metric_statistics(self, project_id, namespace, metric_name,
-                              start_time, end_time, period, statistics,
-                              dimensions=None):
-        def get_stat(key, super_column, column_start, column_end):
-            stat = {}
-            try:
-                stat = self.scf_stat_archive.get(key,
-                                                 super_column=super_column,
-                                                 column_start=column_start,
-                                                 column_finish=column_end,
-                                                 column_count=1440)
-            except pycassa.NotFoundException:
-                LOG.info("not found data - %s %s %s %s" % (key, super_column,
-                                                           column_start,
-                                                           column_end))
-            
-            return stat
-        
-        # get metric key
-        key = self.get_metric_key(project_id, namespace, metric_name,
-                                  dimensions)
-
-        # or return {}
-        if not key:
-            return {}
-
-        statistics = map(utils.to_ascii, statistics)
-        stats = map(lambda x: get_stat(key, x, start_time, end_time),
-                    statistics)
-        
-        return stats
-        
-    def restructed_stats(self, stat):
-        def get_stat(timestamp):
-            ret = {}
-            for key in stat.keys():
-                ret[key] = stat[key][timestamp]
-            return ret
-        
-        ret = []
-        timestamps = reduce(lambda x, y: x if x == y else None,
-                            map(lambda x: x.keys(), stat.values()))
-        
-        for timestamp in timestamps:
-            ret.append((timestamp, get_stat(timestamp)))
-
-        return ret
