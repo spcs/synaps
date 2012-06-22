@@ -21,6 +21,129 @@ class MonitorController(object):
 
     def __str__(self):
         return 'MonitorController'
+
+    def delete_alrams(self, context, alarm_names, project_id=None):
+        if not (project_id and context.is_admin):
+            project_id = context.project_id
+            
+        ret = {}
+        return ret
+
+    def describe_alarm_history(self, context, alarm_name=None, end_date=None,
+                               history_item_type=None, max_records=None,
+                               next_token=None, start_date=None,
+                               project_id=None):
+        if not (project_id and context.is_admin):
+            project_id = context.project_id
+            
+        ret = {}
+        return ret
+
+    def describe_alarms(self, context, action_prefix=None,
+                        alarm_name_prefix=None, alarm_names=None,
+                        max_records=None, next_token=None, state_value=None,
+                        project_id=None):
+        if not (project_id and context.is_admin):
+            project_id = context.project_id
+            
+        ret = {}
+        return ret
+    
+    def describe_alarms_for_metric(self, context, metric_name, namespace,
+                                   dimensions=None, period=None,
+                                   statistics=None, unit=None,
+                                   project_id=None):
+        if not (project_id and context.is_admin):
+            project_id = context.project_id
+        
+        ret = {}
+        return ret
+    
+    def disable_alarm_actions(self, context, alarm_names=None, 
+                              project_id=None):
+        if not (project_id and context.is_admin):
+            project_id = context.project_id
+        
+        ret = {}
+        return ret
+    
+    def enable_alarm_actions(self, context, alarm_names=None, 
+                             project_id=None):
+        if not (project_id and context.is_admin):
+            project_id = context.project_id
+        
+        ret = {}
+        return ret
+    
+    def get_metric_statistics(self, context, end_time, metric_name,
+                              namespace, period, start_time, statistics,
+                              unit=None, dimensions=None, project_id=None):
+        """
+        Gets statistics for the specified metric.
+        """
+        def stat_to_datapoint(stat):
+            """
+            단위 변경 및 형식 변경
+            """
+            timestamp, values = stat
+            ret = {}
+            ret['Timestamp'] = timestamp
+            for statistic, value in values.iteritems():
+                if statistic == "SampleCount":
+                    ret['Unit'] = "Count"
+                else:
+                    ret['Unit'] = unit
+                ret[statistic] = utils.to_unit(value, unit)
+            return ret
+                
+        if not (project_id and context.is_admin):
+            project_id = context.project_id
+        end_time = utils.parse_strtime(end_time)
+        start_time = utils.parse_strtime(start_time)
+        dimensions = utils.extract_member_dict(dimensions) \
+                     if dimensions else None
+        statistics = utils.extract_member_list(statistics)
+        stats = self.monitor_api.get_metric_statistics(project_id, end_time,
+                                                       metric_name, namespace,
+                                                       period, start_time,
+                                                       statistics, unit,
+                                                       dimensions)
+        
+        datapoints = map(stat_to_datapoint, stats)
+        label = metric_name
+        
+        return {'GetMetricStatisticsResult': {'Datapoints': datapoints,
+                                              'Label': label}}
+    
+    def list_metrics(self, context, next_token=None, dimensions=None,
+                     metric_name=None, namespace=None, project_id=None):
+        """
+        Returns a list of valid metrics stored for the Synaps account owner. 
+        Returned metrics can be used with get_metric_statics to obtain 
+        statistical data for a given metric.
+        """
+
+        def to_aws_metric(metric):
+            def to_aws_dimensions(dimensions):
+                return [{'name':k, 'value':v} for k, v in dimensions.items()]
+            
+            k, v = metric
+            ret = {}
+            ret['dimensions'] = to_aws_dimensions(v['dimensions'])
+            ret['metric_name'] = v['name']
+            ret['namespace'] = v['namespace']
+            return ret
+        
+        if not (project_id and context.is_admin):
+            project_id = context.project_id
+        dimensions = utils.extract_member_dict(dimensions) \
+                     if dimensions else None
+        metrics = self.monitor_api.list_metrics(project_id, next_token,
+                                                dimensions, metric_name,
+                                                namespace)
+        metrics = map(to_aws_metric, metrics)
+        
+        return {'ListMetricsResult': {'Metrics': metrics}}
     
     def put_metric_alarm(self, context, alarm_name, comparison_operator,
                          evaluation_periods, metric_name, namespace, period,
@@ -74,72 +197,3 @@ class MonitorController(object):
                                          metric_data)
         return {}
 
-    def get_metric_statistics(self, context, end_time, metric_name,
-                              namespace, period, start_time, statistics,
-                              unit=None, dimensions=None, project_id=None):
-        """
-        Gets statistics for the specified metric.
-        """
-        def stat_to_datapoint(stat):
-            """
-            단위 변경 및 형식 변경
-            """
-            timestamp, values = stat
-            ret = {}
-            ret['Timestamp'] = timestamp
-            for statistic, value in values.iteritems():
-                if statistic == "SampleCount":
-                    ret['Unit'] = "Count"
-                else:
-                    ret['Unit'] = unit
-                ret[statistic] = utils.to_unit(value, unit)
-            return ret
-                
-        if not (project_id and context.is_admin):
-            project_id = context.project_id
-        end_time = utils.parse_strtime(end_time)
-        start_time = utils.parse_strtime(start_time)
-        dimensions = utils.extract_member_dict(dimensions) \
-                     if dimensions else None
-        statistics = utils.extract_member_list(statistics)
-        stats = self.monitor_api.get_metric_statistics(project_id, end_time,
-                                                       metric_name, namespace,
-                                                       period, start_time,
-                                                       statistics, unit,
-                                                       dimensions)
-        
-        datapoints = map(stat_to_datapoint, stats)
-        label = metric_name
-        
-        return {'GetMetricStatisticsResult': {'Datapoints': datapoints,
-                                              'Label': label}}
-
-    def list_metrics(self, context, next_token=None, dimensions=None,
-                     metric_name=None, namespace=None, project_id=None):
-        """
-        Returns a list of valid metrics stored for the Synaps account owner. 
-        Returned metrics can be used with get_metric_statics to obtain 
-        statistical data for a given metric.
-        """
-
-        def to_aws_metric(metric):
-            def to_aws_dimensions(dimensions):
-                return [{'name':k, 'value':v} for k, v in dimensions.items()]
-            
-            k, v = metric
-            ret = {}
-            ret['dimensions'] = to_aws_dimensions(v['dimensions'])
-            ret['metric_name'] = v['name']
-            ret['namespace'] = v['namespace']
-            return ret
-        
-        if not (project_id and context.is_admin):
-            project_id = context.project_id
-        dimensions = utils.extract_member_dict(dimensions) \
-                     if dimensions else None
-        metrics = self.monitor_api.list_metrics(project_id, next_token,
-                                                dimensions, metric_name,
-                                                namespace)
-        metrics = map(to_aws_metric, metrics)
-        
-        return {'ListMetricsResult': {'Metrics': metrics}}
