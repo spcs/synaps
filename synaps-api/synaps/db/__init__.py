@@ -51,7 +51,7 @@ class Cassandra(object):
         self.cf_metric = pycassa.ColumnFamily(self.pool, 'Metric')
         self.scf_stat_archive = pycassa.ColumnFamily(self.pool, 'StatArchive')
         self.cf_metric_alarm = pycassa.ColumnFamily(self.pool, 'MetricAlarm')
-
+        
     @staticmethod
     def syncdb(keyspace=None):
         """
@@ -167,6 +167,15 @@ class Cassandra(object):
                                  column_family='MetricAlarm',
                                  column='state_value',
                                  value_type=types.UTF8Type())
+            manager.create_index(keyspace=keyspace,
+                                 column_family='MetricAlarm',
+                                 column='period',
+                                 value_type=types.IntegerType())
+            manager.create_index(keyspace=keyspace,
+                                 column_family='MetricAlarm',
+                                 column='statistic',
+                                 value_type=types.UTF8Type())
+            
         
         LOG.info(_("cassandra syncdb has finished"))
             
