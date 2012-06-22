@@ -106,7 +106,10 @@ class API(object):
         
         end_idx = end_time.replace(second=0, microsecond=0)
         start_idx = start_time.replace(second=0, microsecond=0)
+        start_ana_idx = start_idx - datetools.Minute() * (period / 60)
         daterange = DateRange(start_idx, end_idx, offset=datetools.Minute())
+        daterange_ana = DateRange(start_ana_idx, end_idx,
+                                  offset=datetools.Minute())
 
         # load default unit for metric from database
         if unit == "None" or not unit:
@@ -123,8 +126,9 @@ class API(object):
         # load statistics data from database
         stats = self.cass.get_metric_statistics(
             project_id=project_id, namespace=namespace,
-            metric_name=metric_name, start_time=start_time, end_time=end_time,
-            period=period, statistics=statistics, dimensions=dimensions
+            metric_name=metric_name, start_time=start_ana_idx,
+            end_time=end_time, period=period, statistics=statistics,
+            dimensions=dimensions
         )
         
         period = period / 60 # convert sec to min
@@ -133,9 +137,9 @@ class API(object):
         for statistic, series in zip(statistics, stats):
             func = self.ROLLING_FUNC_MAP[statistic]
             if statistic == 'SampleCount':
-                ts = TimeSeries(series, index=daterange).fillna(0)
+                ts = TimeSeries(series, index=daterange_ana).fillna(0)
             else:
-                ts = TimeSeries(series, index=daterange)
+                ts = TimeSeries(series, index=daterange_ana)
             stat[statistic] = func(ts, period, min_periods=0)
 
         ret = filter(None, (to_datapoint(stat, i) for i in stat.index))
