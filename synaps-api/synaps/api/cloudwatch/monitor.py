@@ -2,7 +2,9 @@
 # All Rights Reserved
 
 import datetime
+import json
 
+from pprint import pformat
 from synaps import log as logging
 from synaps import monitor
 from synaps import exception
@@ -45,14 +47,57 @@ class MonitorController(object):
                         alarm_name_prefix=None, alarm_names=None,
                         max_records=None, next_token=None, state_value=None,
                         project_id=None):
+        def to_alarm(v):
+            ret = {
+                'action_enabled':v['action_enabled'],
+                'alarm_actions':json.loads(v['alarm_actions']),
+                'alarm_arn':v['alarm_arn'],
+                'alarm_configuration_updated_timestamp':
+                    v['alarm_configuration_updated_timestamp'],
+                'alarm_description':v['alarm_description'],
+                'alarm_name':v['alarm_name'],
+                'comparison_operator':v['comparison_operator'],
+                'dimensions':
+                    utils.dict_to_aws(json.loads(v['dimensions'])),
+                'evaluation_period':v['evaluation_period'],
+                'insufficient_data_actions':
+                    json.loads(v['insufficient_data_actions']),
+                'metric_name':v['metric_name'],
+                'namespace':v['namespace'],
+                'ok_actions':json.loads(v['ok_actions']),
+                'period':v['period'],
+                'project_id':v['project_id'],
+                'state_reason':v['state_reason'],
+                'state_reason_data':v['state_reason_data'],
+                'state_updated_timestamp':v['state_updated_timestamp'],
+                'state_value':v['state_value'],
+                'statistic':v['statistic'],
+                'threshold':v['threshold'],
+                'unit':v['unit'],
+            }
+            return ret
+        
         if not (project_id and context.is_admin):
             project_id = context.project_id
-            
-        ret = {}
         
-        ret = self.monitor_api.describe_alarms(project_id)
-        # TODO: implement here
-        return ret
+        ret_dict = {}
+        ret_alarms = []
+        next_token = None        
+            
+        alarms = self.monitor_api.describe_alarms(project_id=project_id,
+            action_prefix=action_prefix, alarm_name_prefix=alarm_name_prefix,
+            alarm_names=alarm_names, max_records=max_records,
+            next_token=next_token, state_value=state_value,
+        )
+        for k, v in alarms:
+            ret_alarms.append(to_alarm(v))
+            next_token = k
+        
+        ret_dict['describe_alarms_result'] = {'metric_alarms': ret_alarms}
+        if next_token:
+            ret_dict['describe_alarms_result']['next_token'] = str(next_token)
+        
+        return ret_dict
     
     def describe_alarms_for_metric(self, context, metric_name, namespace,
                                    dimensions=None, period=None,
@@ -130,17 +175,13 @@ class MonitorController(object):
         Returned metrics can be used with get_metric_statics to obtain 
         statistical data for a given metric.
         """
-
         def to_aws_metric(metric):
-            def to_aws_dimensions(dimensions):
-                return [{'name':k, 'value':v} for k, v in dimensions.items()]
-            
             k, v = metric
-            ret = {}
-            ret['dimensions'] = to_aws_dimensions(v['dimensions'])
-            ret['metric_name'] = v['name']
-            ret['namespace'] = v['namespace']
-            return ret
+            return {
+                'dimensions': utils.dict_to_aws(v['dimensions']),
+                'metric_name': v['name'],
+                'namespace': v['namespace']
+            }
         
         if not (project_id and context.is_admin):
             project_id = context.project_id

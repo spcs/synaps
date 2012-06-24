@@ -506,6 +506,9 @@ def extract_member_dict(aws_dict, key='member'):
     member_list = [(member['name'], member['value']) for member in members]
     return dict(member_list)
 
+def dict_to_aws(pydict):
+    return [{'name':k, 'value':v} for k, v in pydict.iteritems()]
+
 def datetime_to_timestamp(dt):
     if isinstance(dt, datetime.datetime):
         return calendar.timegm(dt.utctimetuple())

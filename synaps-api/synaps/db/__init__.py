@@ -78,6 +78,9 @@ class Cassandra(object):
         for k, v in items:
             return k
         return None
+    
+    def get_metric_alarm(self, alarm_key):
+        return self.cf_metric_alarm.get(alarm_key)
             
     def get_metric_key(self, project_id, namespace, metric_name, dimensions):
         expr_list = [

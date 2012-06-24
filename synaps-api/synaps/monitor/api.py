@@ -4,6 +4,7 @@
 
 import time
 import json
+import uuid
 
 from datetime import datetime, timedelta
 from pandas import TimeSeries, DataFrame, DateRange, datetools
@@ -22,7 +23,6 @@ from synaps.exception import RpcInvokeException, Invalid
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
 
-
 class API(object):
     ROLLING_FUNC_MAP = {
         'Average': rolling_mean,
@@ -39,59 +39,12 @@ class API(object):
     def describe_alarms(self, project_id, action_prefix=None,
                         alarm_name_prefix=None, alarm_names=None,
                         max_records=None, next_token=None, state_value=None):
-        def to_alarm(v):
-#            OrderedDict([('action_enabled', False),
-#                         ('alarm_actions', u'[]'),
-#                         ('alarm_arn', u'rn:spcs:IaaS:alarm:CPU_Alarm'),
-#                         ('alarm_configuration_updated_timestamp',
-#                          datetime.datetime(2012, 6, 22, 11, 56, 47, 810000)),
-#                         ('alarm_description', u''),
-#                         ('alarm_name', u'CPU_Alarm'),
-#                         ('comparison_operator', u'GreaterThanThreshold'),
-#                         ('dimensions', u'{"instance_name": "test instance"}'),
-#                         ('evaluation_period', 2),
-#                         ('insufficient_data_actions', u'[]'),
-#                         ('metric_key', UUID('6457a5b5-c28b-4e36-bfb8-b544f062bff9')),
-#                         ('metric_name', u'test_metric'),
-#                         ('namespace', u'SPCS/SYNAPSTEST'),
-#                         ('ok_actions', u'[]'),
-#                         ('period', 300),
-#                         ('project_id', u'IaaS'),
-#                         ('state_reason', u'alarm initial setup'),
-#                         ('state_reason_data', u'{}'),
-#                         ('state_updated_timestamp',
-#                          datetime.datetime(2012, 6, 22, 10, 33, 1, 714000)),
-#                         ('state_value', u'INSUFFICIENT_DATA'),
-#                         ('statistic', u'Average'),
-#                         ('threshold', 50.0),
-#                         ('unit', u'Percent')])
-            
-            v.pop('metric_key')
-            v.update({
-                'alarm_actions': json.loads(v['alarm_actions']),
-                'insufficient_data_actions':
-                    json.loads(v['insufficient_data_actions']),
-                'ok_actions':json.loads(v['ok_actions']),
-            })
-            LOG.debug("retrived alarms are \n%s" % pformat(v))
-            return v
-        
-        ret_dict = {}
-        ret_alarms = []
-        next_token = None
+
         alarms = self.cass.describe_alarms(project_id, action_prefix,
                                            alarm_name_prefix, alarm_names,
                                            max_records, next_token,
                                            state_value)
-        for k, v in alarms:
-            ret_alarms.append(to_alarm(v))
-            next_token = k
-        
-        ret_dict['MetricAlarms'] = ret_alarms
-        if next_token:
-            ret_dict['NextToken'] = str(next_token)
-        
-        return ret_dict
+        return alarms
     
     def get_metric_statistics(self, project_id, end_time, metric_name,
                               namespace, period, start_time, statistics,
@@ -157,24 +110,70 @@ class API(object):
     def put_metric_alarm(self, project_id, metricalarm):
         """
         알람을 DB에 넣고 값이 빈 dictionary 를 반환한다.
-        
         메트릭 유무 확인
-        
         알람 히스토리 발생.
         """
+        
+        metricalarm = metricalarm.to_columns()
+        
         # 메트릭 유무 확인
-        metric_key = self.cass.get_metric_key(
+        metric_key = self.cass.get_metric_key_or_create(
             project_id=project_id,
-            namespace=metricalarm.namespace,
-            metric_name=metricalarm.metric_name,
-            dimensions=metricalarm.dimensions
+            namespace=metricalarm['namespace'],
+            metric_name=metricalarm['metric_name'],
+            dimensions=json.loads(metricalarm['dimensions']),
+            unit=metricalarm['unit'],
         )
         
-        if not metric_key:
-            raise Invalid(_("invalid metric information"))
+        metricalarm['project_id'] = project_id
+        metricalarm['metric_key'] = metric_key
+        metricalarm['alarm_arn'] = "arn:spcs:synaps:%s:alarm:%s" % (
+            project_id, metricalarm['alarm_name']
+        )
+        metricalarm['alarm_configuration_updated_timestamp'] = utils.utcnow()
+        
+        # 알람 유무 확인
+        alarm_key = self.cass.get_metric_alarm_key(
+            project_id=project_id, metric_key=metric_key,
+            metricalarm=metricalarm
+        )
+        
+        if alarm_key:
+            # TODO: 알람 업데이트 (히스토리 생성)
+            before_alarm = self.cass.get_metric_alarm(alarm_key)
+            if before_alarm['metric_key'] != metricalarm['metric_key']:
+                raise Exception("Metric cannot be changed.")
+            
+            metricalarm['state_updated_timestamp'] = \
+                before_alarm['state_updated_timestamp']
+            metricalarm['state_reason'] = before_alarm['state_reason']
+            metricalarm['state_reason_data'] = \
+                before_alarm['state_reason_data']
+            metricalarm['state_value'] = before_alarm['state_value']
+            
+        else:
+            # TODO: 알람 신규 (히스토리 생성)
+            alarm_key = uuid.uuid4()
+            metricalarm['state_updated_timestamp'] = utils.utcnow()
+            metricalarm['state_reason'] = "alarm initial setup"
+            metricalarm['state_reason_data'] = json.dumps({})
+            metricalarm['state_value'] = "INSUFFICIENT_DATA"
 
+        # insert alarm into database
+        self.cass.put_metric_alarm(project_id, alarm_key, metricalarm)
+        LOG.debug("metric alarm inserted alarm key: %s" % (alarm_key))
+
+        # to make json, convert datetime type into str        
+        metricalarm['state_updated_timestamp'] = utils.strtime(
+            metricalarm['state_updated_timestamp']
+        )
+        metricalarm['alarm_configuration_updated_timestamp'] = utils.strtime(
+            metricalarm['alarm_configuration_updated_timestamp']
+        )
+        metricalarm['metric_key'] = str(metric_key)
+        
         message = {'project_id': project_id, 'metric_key': str(metric_key),
-                   'metricalarm': metricalarm.to_columns()}
+                   'metricalarm': metricalarm}
         self.rpc.send_msg(rpc.PUT_METRIC_ALARM_MSG_ID, message)
         LOG.info("PUT_METRIC_ALARM_MSG sent")
 

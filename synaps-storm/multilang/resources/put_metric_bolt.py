@@ -3,6 +3,7 @@
 
 import os
 import sys
+import operator
 
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir, os.pardir))
@@ -25,7 +26,6 @@ from synaps import utils
 from synaps.db import Cassandra
 from synaps.rpc import PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID
 
-
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
     STATISTICS_TTL = Cassandra.STATISTICS_TTL
@@ -36,13 +36,21 @@ class MetricMonitor(object):
         'SampleCount': rolling_sum,
         'Sum': rolling_sum,
     }
-
+    
+    CMP_MAP = {
+        'GreaterThanOrEqualToThreshold':  operator.ge,
+        'GreaterThanThreshold': operator.gt,
+        'LessThanThreshold': operator.lt,
+        'LessThanOrEqualToThreshold': operator.le,
+    }
+    
     def __init__(self, metric_key, cass):
         self.metric_key = metric_key
         self.cass = cass
         self.df = self.load_statistics()
         # (alarm, recently checked timestamp)
         self.alarms = self.load_alarms()
+        self.lastchecked = None
 
     def _reindex(self):
         self.df = self.df.reindex(index=self._get_range())
@@ -63,10 +71,10 @@ class MetricMonitor(object):
         return df
     
     def load_alarms(self):
-        alarms = self.cass.load_alarms(self.metric_key)
-        ret = dict([(k, (v, None)) for k, v in alarms])
-        storm.log("load_alarms %s for metric %s" % (str(ret), self.metric_key))
-        return ret
+        alarms = dict(self.cass.load_alarms(self.metric_key))
+        storm.log("load_alarms %s for metric %s" % (str(alarms),
+                                                    self.metric_key))
+        return alarms
 
     def get_metric_statistics(self, window, statistics, start=None, end=None,
                               unit=None):
@@ -80,33 +88,12 @@ class MetricMonitor(object):
         return DataFrame(ret_dict)
     
     def put_alarm(self, project_id, metricalarm):
-        # 해당 알람이 DB에 있는지 확인
         alarm_key = self.cass.get_metric_alarm_key(project_id, self.metric_key,
                                                    metricalarm)
-
-        metricalarm['project_id'] = project_id
-        metricalarm['metric_key'] = self.metric_key
-        metricalarm['alarm_arn'] = "rn:spcs:%s:alarm:%s" % (
-            project_id, metricalarm['alarm_name']
-        )
-        metricalarm['alarm_configuration_updated_timestamp'] = utils.utcnow()
-
         if alarm_key:
-            # TODO: 알람 업데이트 관련 알람 히스토리 생성
-            pass
+            self.alarms[alarm_key] = self.cass.get_metric_alarm(alarm_key)
         else:
-            # TODO: 알람 신규 관련 알람 히스토리 생성
-            alarm_key = uuid.uuid4()
-            metricalarm['state_updated_timestamp'] = utils.utcnow()
-            metricalarm['state_reason'] = "alarm initial setup"
-            metricalarm['state_reason_data'] = "{}"
-            metricalarm['state_value'] = "INSUFFICIENT_DATA"
-            
-            self.alarms[alarm_key] = metricalarm
-        
-        # insert alarm into database
-        self.cass.put_metric_alarm(project_id, alarm_key, metricalarm)
-        storm.log("metric alarm inserted alarm key: %s" % (alarm_key))
+            storm.log("no alarm key [%s]" % alarm_key)
 
     def put_metric_data(self, timestamp, value, unit=None):
         time_idx = timestamp.replace(second=0, microsecond=0)
@@ -145,9 +132,54 @@ class MetricMonitor(object):
         self.check_alarms()
     
     def check_alarms(self):
-        for alarm, timestamp in self.alarms.iteritems():
-            # TODO: 알람 체크, 타임스탬프 업데이트
-            storm.log("Check alarm %s" % alarm)
+        for k, v in self.alarms.iteritems():
+            self._check_alarm(k, v)
+            
+    def _check_alarm(self, alarmkey, alarm):
+        period = int(alarm['period'] / 60)
+        evaluation_period = alarm['evaluation_period']
+        statistic = alarm['statistic']
+        threshold = alarm['threshold']
+        cmp_op = self.CMP_MAP[alarm['comparison_operator']]
+        unit = alarm['unit']
+        state_value = alarm['state_value']
+        
+        end_idx = datetime.utcnow().replace(second=0, microsecond=0)
+        start_idx = end_idx - evaluation_period * datetools.Minute()
+        start_ana_idx = start_idx - datetools.Minute() * period
+        
+        func = self.ROLLING_FUNC_MAP[statistic]
+        data = func(self.df[statistic].ix[start_ana_idx:end_idx], period,
+                    min_periods=0).ix[start_idx:end_idx]
+        if unit:
+            data = data / utils.UNIT_CONV_MAP[unit]
+        
+        if statistic == 'SampleCount':
+            data = data.fillna(0)
+        else:
+            data = data.dropna()
+
+        storm.log("data \n %s" % data)
+        if len(data) < evaluation_period:
+            if state_value != 'INSUFFICIENT_DATA':
+                # TODO: 알람 Insufficient 로!
+                storm.log("INSUFFICIENT_DATA alarm")
+        else:
+            # check 'Alarm State'
+            crossed = reduce(operator.and_, cmp_op(data, threshold))
+            
+            if crossed:
+                if state_value != 'ALARM':
+                    # TODO: 알람 Alarm 으로!
+                    storm.log("ALARM alarm")
+            else:
+                if state_value != 'OK':
+                    # TODO: 알람 OK 로!
+                    storm.log("OK alarm")
+            
+            storm.log("check %s %f" % (alarm['comparison_operator'],
+                                       threshold))
+            storm.log("result \n %s" % crossed)
             
 
 class PutMetricBolt(storm.BasicBolt):
@@ -176,11 +208,10 @@ class PutMetricBolt(storm.BasicBolt):
         self.metrics[metric_key].put_metric_data(
             timestamp=timestamp, value=message['value'], unit=message['unit']
         )
-
     
     def process_put_metric_alarm_msg(self, metric_key, message):
         if metric_key not in self.metrics:
-            raise Exception("No associated metric")
+            self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
         project_id = message['project_id']
         metricalarm = message['metricalarm']
         self.metrics[metric_key].put_alarm(project_id, metricalarm)
@@ -201,7 +232,6 @@ class PutMetricBolt(storm.BasicBolt):
                 storm.log("unknown message")
         except Exception as e:
             storm.log(traceback.format_exc(e))
-            
 
 if __name__ == "__main__":
     flags.FLAGS(sys.argv)

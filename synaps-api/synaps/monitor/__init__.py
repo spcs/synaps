@@ -203,7 +203,7 @@ class MetricAlarm(object):
         self.state_value = None
         
     def to_columns(self):
-        ret = {
+        return {
             'action_enabled': self.action_enabled,
             'alarm_actions': json.dumps(self.alarm_actions),
             'alarm_arn': self.alarm_arn,
@@ -224,8 +224,6 @@ class MetricAlarm(object):
             'threshold':self.threshold,
             'unit':self.unit               
         }
-        
-        return ret
         
     def __repr__(self):
         return "MetricAlarm:%s[%s(%s) %s %s]" % (self.alarm_name,
