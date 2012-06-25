@@ -51,6 +51,7 @@ class Cassandra(object):
         self.cf_metric = pycassa.ColumnFamily(self.pool, 'Metric')
         self.scf_stat_archive = pycassa.ColumnFamily(self.pool, 'StatArchive')
         self.cf_metric_alarm = pycassa.ColumnFamily(self.pool, 'MetricAlarm')
+        self.cf_alarm_history = pycassa.ColumnFamily(self.pool, 'AlarmHistory')
         
     def describe_alarms(self, project_id, action_prefix=None,
                         alarm_name_prefix=None, alarm_names=None,
@@ -369,4 +370,45 @@ class Cassandra(object):
                                  column='statistic',
                                  value_type=types.UTF8Type())
             
+        if 'AlarmHistory' not in column_families.keys():
+            manager.create_column_family(
+                keyspace=keyspace,
+                name='AlarmHistory', 
+                key_validation_class=pycassa.LEXICAL_UUID_TYPE, 
+                column_validation_classes={
+                    'project_id': pycassa.UTF8_TYPE,
+                    'alarm_key': pycassa.LEXICAL_UUID_TYPE,
+                    'alarm_name': pycassa.UTF8_TYPE,
+                    'history_data': pycassa.UTF8_TYPE,
+                    'history_item_type': pycassa.UTF8_TYPE,
+                    'history_summary': pycassa.UTF8_TYPE,
+                    'timestamp': pycassa.DATE_TYPE,
+                }
+            )
+
+            manager.create_index(keyspace=keyspace,
+                                 column_family='AlarmHistory',
+                                 column='project_id',
+                                 value_type=types.UTF8Type())   
+            
+            manager.create_index(keyspace=keyspace,
+                                 column_family='AlarmHistory',
+                                 column='alarm_key',
+                                 value_type=types.LexicalUUIDType())    
+              
+            manager.create_index(keyspace=keyspace,
+                                 column_family='AlarmHistory',
+                                 column='alarm_name',
+                                 value_type=types.UTF8Type())            
+            
+            manager.create_index(keyspace=keyspace,
+                                 column_family='AlarmHistory',
+                                 column='history_item_type',
+                                 value_type=types.UTF8Type())            
+            
+            manager.create_index(keyspace=keyspace,
+                                 column_family='AlarmHistory',
+                                 column='timestamp',
+                                 value_type=types.DateType())            
+                        
         LOG.info(_("cassandra syncdb has finished"))
