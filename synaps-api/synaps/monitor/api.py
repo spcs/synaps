@@ -113,7 +113,30 @@ class API(object):
         메트릭 유무 확인
         알람 히스토리 발생.
         """
-        
+        def metricalarm_for_json(metricalarm):
+            alarm_for_json = {
+                'actionEnabled': metricalarm.get('actions_enabled', False),
+                'alarmActions': metricalarm.get('alarm_actions', []),
+                'alarmArn': metricalarm.get('alarm_arn'),
+                'alarmConfigurationUpdatedTimestamp': 
+                      metricalarm.get('alarm_configuration_updated_timestamp'),
+                'alarmDescription': metricalarm.get('alarm_description'),
+                'alarmName': metricalarm.get('alarm_name'),
+                'comparisonOperator': metricalarm.get('comparison_operator'),
+                'dimensions': metricalarm.get('dimensions'),
+                'evaluationPeriods': metricalarm.get('evaluation_period'),
+                'insufficientDataActions': 
+                    metricalarm.get('insufficient_data_actions', []),
+                'metricName':metricalarm.get('metric_name'),
+                'namespace':metricalarm.get('namespace'),
+                'okactions':metricalarm.get('ok_actions', []),
+                'statistic':metricalarm.get('statistic'),
+                'threshold':metricalarm.get('threshold'),
+                'unit':metricalarm.get('unit'),
+            }
+            return alarm_for_json
+                        
+        now = utils.utcnow()
         metricalarm = metricalarm.to_columns()
         
         # 메트릭 유무 확인
@@ -130,7 +153,7 @@ class API(object):
         metricalarm['alarm_arn'] = "arn:spcs:synaps:%s:alarm:%s" % (
             project_id, metricalarm['alarm_name']
         )
-        metricalarm['alarm_configuration_updated_timestamp'] = utils.utcnow()
+        metricalarm['alarm_configuration_updated_timestamp'] = now
         
         # 알람 유무 확인
         alarm_key = self.cass.get_metric_alarm_key(
@@ -138,8 +161,9 @@ class API(object):
             metricalarm=metricalarm
         )
         
-        if alarm_key:
-            # TODO: 알람 업데이트 (히스토리 생성)
+        
+        if alarm_key:            
+            history_type = 'Update'
             before_alarm = self.cass.get_metric_alarm(alarm_key)
             if before_alarm['metric_key'] != metricalarm['metric_key']:
                 raise Exception("Metric cannot be changed.")
@@ -151,14 +175,15 @@ class API(object):
                 before_alarm['state_reason_data']
             metricalarm['state_value'] = before_alarm['state_value']
             
-        else:
-            # TODO: 알람 신규 (히스토리 생성)
+        else:            
+            history_type = "Create"
             alarm_key = uuid.uuid4()
             metricalarm['state_updated_timestamp'] = utils.utcnow()
-            metricalarm['state_reason'] = "alarm initial setup"
+            metricalarm['state_reason'] = "Unchecked: Initial alarm creation"
             metricalarm['state_reason_data'] = json.dumps({})
             metricalarm['state_value'] = "INSUFFICIENT_DATA"
-
+            
+        
         # insert alarm into database
         self.cass.put_metric_alarm(project_id, alarm_key, metricalarm)
         LOG.debug("metric alarm inserted alarm key: %s" % (alarm_key))
@@ -171,6 +196,39 @@ class API(object):
             metricalarm['alarm_configuration_updated_timestamp']
         )
         metricalarm['metric_key'] = str(metric_key)
+        
+        if history_type == "Update":
+            history_data = json.dumps({
+                'updatedAlarm':metricalarm_for_json(metricalarm),
+                'type':history_type,
+                'version': '1.0'
+            })
+            summary = "Alarm %s updated at %s" % (
+                metricalarm['alarm_name'],
+                metricalarm['alarm_configuration_updated_timestamp'] 
+            )
+        else:
+            history_data = json.dumps({
+                'createdAlarm': metricalarm_for_json(metricalarm),
+                'type':history_type, 'version': '1.0'
+            })
+            summary = "Alarm %s created at %s" % (
+                metricalarm['alarm_name'],
+                metricalarm['alarm_configuration_updated_timestamp'] 
+            )
+        
+        history_key = uuid.uuid4()
+        history_column = {
+            'project_id': project_id,
+            'alarm_key': alarm_key,
+            'alarm_name': metricalarm['alarm_name'],
+            'history_data': history_data,
+            'history_item_type': 'ConfigurationUpdate',
+            'history_summary':summary,
+            'timestamp': utils.utcnow()
+        }
+            
+        self.cass.insert_alarm_history(history_key, history_column)
         
         message = {'project_id': project_id, 'metric_key': str(metric_key),
                    'metricalarm': metricalarm}

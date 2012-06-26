@@ -43,12 +43,19 @@ class MetricMonitor(object):
         'LessThanThreshold': operator.lt,
         'LessThanOrEqualToThreshold': operator.le,
     }
+
+    CMP_STR_MAP = {
+        'GreaterThanOrEqualToThreshold': "greater than or equal to",
+        'GreaterThanThreshold': "greater than",
+        'LessThanThreshold': "less than",
+        'LessThanOrEqualToThreshold': "less than or equal to",
+    }    
+    
     
     def __init__(self, metric_key, cass):
         self.metric_key = metric_key
         self.cass = cass
         self.df = self.load_statistics()
-        # (alarm, recently checked timestamp)
         self.alarms = self.load_alarms()
         self.lastchecked = None
 
@@ -144,7 +151,8 @@ class MetricMonitor(object):
         unit = alarm['unit']
         state_value = alarm['state_value']
         
-        end_idx = datetime.utcnow().replace(second=0, microsecond=0)
+        now = utils.utcnow()
+        end_idx = now.replace(second=0, microsecond=0)
         start_idx = end_idx - evaluation_period * datetools.Minute()
         start_ana_idx = start_idx - datetools.Minute() * period
         
@@ -153,33 +161,119 @@ class MetricMonitor(object):
                     min_periods=0).ix[start_idx:end_idx]
         if unit:
             data = data / utils.UNIT_CONV_MAP[unit]
+            threshold = threshold / utils.UNIT_CONV_MAP[unit] 
         
         if statistic == 'SampleCount':
             data = data.fillna(0)
         else:
             data = data.dropna()
 
+        reason_data = {
+            "period":alarm['period'],
+            "queryDate":utils.strtime(now),
+            "recentDatapoints": list(data),
+            "startDate": utils.strtime(start_idx),
+            "statistic":statistic,
+            "threshold": threshold,
+            "version":"1.0",
+        }
+        old_state = {'stateReason':alarm.get('reason', ""),
+                     'stateValue':alarm.get('state_value',
+                                            "INSUFFICIENT_DATA"),
+                     'stateReasonData':
+                        json.loads(alarm.get('reason_data', "{}"))}
+        json_reason_data = json.dumps(reason_data)
+
         storm.log("data \n %s" % data)
         if len(data) < evaluation_period:
             if state_value != 'INSUFFICIENT_DATA':
-                # TODO: 알람 Insufficient 로!
+                template = _("Insufficient Data: %d datapoints were unknown.")
+                reason = template % (evaluation_period - len(data))
+                new_state = {'stateReason':reason,
+                             'stateReasonData':reason_data,
+                             'stateValue':'INSUFFICIENT_DATA'}
+                self.update_alarm_state(alarmkey, 'INSUFFICIENT_DATA', reason,
+                                        json_reason_data, now)
+                self.cass.update_alarm_state(alarmkey, 'INSUFFICIENT_DATA',
+                                             reason, json_reason_data, now)
+                self.alarm_history_state_update(alarmkey, alarm,
+                                                new_state, old_state)
                 storm.log("INSUFFICIENT_DATA alarm")
         else:
-            # check 'Alarm State'
             crossed = reduce(operator.and_, cmp_op(data, threshold))
+            com_op = alarm['comparison_operator']
             
             if crossed:
+                template = _("Threshold Crossed: %d datapoints were %s " + 
+                             "the threshold(%f). " + 
+                             "The most recent datapoints: %s.")
+                reason = template % (len(data),
+                                     self.CMP_STR_MAP[com_op],
+                                     threshold, str(list(data)))
                 if state_value != 'ALARM':
-                    # TODO: 알람 Alarm 으로!
+                    new_state = {'stateReason':reason,
+                                 'stateReasonData':reason_data,
+                                 'stateValue':'ALARM'}
+                    
+                    self.update_alarm_state(alarmkey, 'ALARM', reason,
+                                            json_reason_data, now)
+                    self.cass.update_alarm_state(alarmkey, 'ALARM', reason,
+                                                 json_reason_data, now)
+                    self.alarm_history_state_update(alarmkey, alarm,
+                                                    new_state, old_state)                    
                     storm.log("ALARM alarm")
             else:
+                template = _("Threshold Crossed: %d datapoints were not %s " + 
+                             "the threshold(%f). " + 
+                             "The most recent datapoints: %s.")
+                reason = template % (len(data),
+                                     self.CMP_STR_MAP[com_op],
+                                     threshold, str(list(data)))
                 if state_value != 'OK':
-                    # TODO: 알람 OK 로!
+                    new_state = {'stateReason':reason,
+                                 'stateReasonData':reason_data,
+                                 'stateValue':'OK'}                    
+                    self.update_alarm_state(alarmkey, 'OK', reason,
+                                            json_reason_data, now)
+                    self.cass.update_alarm_state(alarmkey, 'OK', reason,
+                                                 json_reason_data, now)
+                    self.alarm_history_state_update(alarmkey, alarm,
+                                                    new_state, old_state)                            
                     storm.log("OK alarm")
             
             storm.log("check %s %f" % (alarm['comparison_operator'],
                                        threshold))
             storm.log("result \n %s" % crossed)
+    
+    def alarm_history_state_update(self, alarmkey, alarm, new_state,
+                                          old_state):
+        item_type = 'StateUpdate'
+        project_id = alarm['project_id']
+        summary_tpl = "Alarm updated from %s to %s" 
+        summary = summary_tpl % (old_state.get('stateValue',
+                                               'INSUFFICIENT_DATA'),
+                                 new_state.get('stateValue',
+                                               'INSUFFICIENT_DATA'))
+        timestamp = utils.utcnow()
+        data = {'newState':new_state, 'oldState':old_state, 'version':'1.0'}
+
+        history_key = uuid.uuid4()
+        column = {'project_id':project_id, 'alarm_key':alarmkey,
+                  'alarm_name':alarm['alarm_name'],
+                  'history_data':json.dumps(data),
+                  'history_item_type':item_type, 'history_summary':summary,
+                  'timestamp':timestamp}
+        
+        self.cass.insert_alarm_history(history_key, column)
+        storm.log("alarm history \n %s" % summary)
+                
+    def update_alarm_state(self, alarmkey, state_value, reason, reason_data,
+                           timestamp):
+        alarm = self.alarms[alarmkey]
+        alarm['state_value'] = state_value
+        alarm['reason'] = reason
+        alarm['reason_data'] = reason_data
+        alarm['state_updated_timestamp'] = timestamp        
             
 
 class PutMetricBolt(storm.BasicBolt):

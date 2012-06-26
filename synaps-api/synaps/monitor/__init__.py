@@ -224,7 +224,7 @@ class MetricAlarm(object):
             'threshold':self.threshold,
             'unit':self.unit               
         }
-        
+    
     def __repr__(self):
         return "MetricAlarm:%s[%s(%s) %s %s]" % (self.alarm_name,
                                                  self.metric_name,

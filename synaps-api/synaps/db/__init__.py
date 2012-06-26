@@ -160,6 +160,19 @@ class Cassandra(object):
     def insert_stat(self, metric_key, stat):
         LOG.debug("scf_stat_archive.insert (%s, %s)" % (metric_key, stat))
         self.scf_stat_archive.insert(metric_key, stat, ttl=self.STATISTICS_TTL)
+    
+    def insert_alarm_history(self, key, column):
+        LOG.debug("cf_alarm_history.insert (%s, %s)" % (key, column))
+        self.cf_alarm_history.insert(key, column, ttl=self.STATISTICS_TTL)
+        
+    def update_alarm_state(self, alarmkey, state, reason, reason_data,
+                           timestamp):
+        state_info = {'state_value': state, 'state_reason': reason,
+                      'state_reason_data': reason_data,
+                      'state_updated_timestamp':timestamp}
+        self.cf_metric_alarm.insert(alarmkey, state_info)
+        LOG.debug("cf_metric_alarm.insert (%s, %s)" % (str(alarmkey),
+                                                       str(state_info)))
 
     def list_metrics(self, project_id, namespace=None, metric_name=None,
                      dimensions=None, next_token=""):
@@ -373,8 +386,8 @@ class Cassandra(object):
         if 'AlarmHistory' not in column_families.keys():
             manager.create_column_family(
                 keyspace=keyspace,
-                name='AlarmHistory', 
-                key_validation_class=pycassa.LEXICAL_UUID_TYPE, 
+                name='AlarmHistory',
+                key_validation_class=pycassa.LEXICAL_UUID_TYPE,
                 column_validation_classes={
                     'project_id': pycassa.UTF8_TYPE,
                     'alarm_key': pycassa.LEXICAL_UUID_TYPE,
