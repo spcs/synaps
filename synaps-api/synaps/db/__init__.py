@@ -63,7 +63,18 @@ class Cassandra(object):
         index_clause = pycassa.create_index_clause(expr_list)
         items = self.cf_metric_alarm.get_indexed_slices(index_clause)
         return items
+
+    def describe_alarm_history(self, project_id, alarm_name=None,
+                               end_date=None, history_item_type=None,
+                               max_records=None, next_token=None,
+                               start_date=None):
+        expr_list = [
+            pycassa.create_index_expression("project_id", project_id),
+        ]
         
+        index_clause = pycassa.create_index_clause(expr_list)
+        items = self.cf_alarm_history.get_indexed_slices(index_clause)
+        return items        
 
     def get_metric_alarm_key(self, project_id, metric_key, metricalarm):
         expr_list = [

@@ -36,12 +36,41 @@ class MonitorController(object):
                                history_item_type=None, max_records=None,
                                next_token=None, start_date=None,
                                project_id=None):
+        def to_alarm_history(v):
+            ret = {
+                'alarm_name': v['alarm_name'],
+                'history_data': v['history_data'],
+                'history_item_type': v['history_item_type'],
+                'history_summary': v['history_summary'],
+                'timestamp': utils.strtime(v['timestamp'],
+                                           "%Y-%m-%dT%H:%M:%S.%fZ")
+            }
+            return ret
+        
         if not (project_id and context.is_admin):
             project_id = context.project_id
             
-        ret = {}
-        # TODO: implement here
-        return ret
+        ret_dict = {}
+        ret_histories = []
+        next_token = None        
+            
+        histories = self.monitor_api.describe_alarm_history(
+            alarm_name=alarm_name, end_date=end_date,
+            history_item_type=history_item_type,
+            max_records=max_records, next_token=next_token,
+            start_date=start_date, project_id=project_id
+        )
+        for k, v in histories:
+            ret_histories.append(to_alarm_history(v))
+            next_token = k
+            
+        ret_dict['describe_alarm_history_result'] = {'alarm_history_items': 
+                                                     ret_histories}
+        if next_token:
+            ret_dict['describe_alarm_history_result']['next_token'] = \
+                str(next_token)
+        
+        return ret_dict
 
     def describe_alarms(self, context, action_prefix=None,
                         alarm_name_prefix=None, alarm_names=None,
@@ -53,7 +82,8 @@ class MonitorController(object):
                 'alarm_actions':json.loads(v['alarm_actions']),
                 'alarm_arn':v['alarm_arn'],
                 'alarm_configuration_updated_timestamp':
-                    v['alarm_configuration_updated_timestamp'],
+                    utils.strtime(
+                        v['alarm_configuration_updated_timestamp']),
                 'alarm_description':v['alarm_description'],
                 'alarm_name':v['alarm_name'],
                 'comparison_operator':v['comparison_operator'],
@@ -69,7 +99,9 @@ class MonitorController(object):
                 'project_id':v['project_id'],
                 'state_reason':v['state_reason'],
                 'state_reason_data':v['state_reason_data'],
-                'state_updated_timestamp':v['state_updated_timestamp'],
+                'state_updated_timestamp':
+                    utils.strtime(v['state_updated_timestamp'],
+                                  "%Y-%m-%dT%H:%M:%S.%fZ"),
                 'state_value':v['state_value'],
                 'statistic':v['statistic'],
                 'threshold':v['threshold'],

@@ -45,6 +45,18 @@ class API(object):
                                            max_records, next_token,
                                            state_value)
         return alarms
+
+    def describe_alarm_history(self, project_id, alarm_name=None,
+                               end_date=None, history_item_type=None,
+                               max_records=None, next_token=None,
+                               start_date=None):
+        histories = self.cass.describe_alarm_history(
+            alarm_name=alarm_name, end_date=end_date,
+            history_item_type=history_item_type,
+            max_records=max_records, next_token=next_token,
+            start_date=start_date, project_id=project_id
+        )
+        return histories
     
     def get_metric_statistics(self, project_id, end_time, metric_name,
                               namespace, period, start_time, statistics,
@@ -203,19 +215,13 @@ class API(object):
                 'type':history_type,
                 'version': '1.0'
             })
-            summary = "Alarm %s updated at %s" % (
-                metricalarm['alarm_name'],
-                metricalarm['alarm_configuration_updated_timestamp'] 
-            )
+            summary = "Alarm %s updated" % metricalarm['alarm_name']
         else:
             history_data = json.dumps({
                 'createdAlarm': metricalarm_for_json(metricalarm),
                 'type':history_type, 'version': '1.0'
             })
-            summary = "Alarm %s created at %s" % (
-                metricalarm['alarm_name'],
-                metricalarm['alarm_configuration_updated_timestamp'] 
-            )
+            summary = "Alarm %s created" % metricalarm['alarm_name']
         
         history_key = uuid.uuid4()
         history_column = {
