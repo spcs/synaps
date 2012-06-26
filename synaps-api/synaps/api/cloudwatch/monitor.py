@@ -151,10 +151,6 @@ class MonitorController(object):
                 
         if not (project_id and context.is_admin):
             project_id = context.project_id
-        if end_time.endswith('Z'):
-            end_time = end_time[:-1]
-        if start_time.endswith('Z'):
-            start_time = start_time[:-1]
         end_time = utils.parse_strtime(end_time)
         start_time = utils.parse_strtime(start_time)
         dimensions = utils.extract_member_dict(dimensions) \

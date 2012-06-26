@@ -200,6 +200,8 @@ def str_to_timestamp(timestr, fmt=PERFECT_TIME_FORMAT):
 
 def parse_strtime(timestr, fmt=PERFECT_TIME_FORMAT):
     """Turn a formatted time back into a datetime."""
+    if timestr.endswith('Z'):
+        timestr = timestr[:-1]
     return datetime.datetime.strptime(timestr, fmt)
 
 def strtime(at=None, fmt=PERFECT_TIME_FORMAT):
