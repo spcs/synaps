@@ -39,7 +39,9 @@ public class SetAlarmStateRequestMarshaller implements Marshaller<Request<SetAla
         Request<SetAlarmStateRequest> request = new DefaultRequest<SetAlarmStateRequest>(setAlarmStateRequest, "AmazonCloudWatch");
         request.addParameter("Action", "SetAlarmState");
         request.addParameter("Version", "2010-08-01");
-
+        if (setAlarmStateRequest.getProject_id() != null) {
+            request.addParameter("Project_id", StringUtils.fromString(setAlarmStateRequest.getProject_id()));
+        }
         if (setAlarmStateRequest.getAlarmName() != null) {
             request.addParameter("AlarmName", StringUtils.fromString(setAlarmStateRequest.getAlarmName()));
         }

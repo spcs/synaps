@@ -25,7 +25,24 @@ import com.amazonaws.AmazonWebServiceRequest;
  */
 public class DeleteAlarmsRequest extends AmazonWebServiceRequest {
 
-    /**
+	/**
+     * A Project_id of alarms to be deleted.
+     * <p>
+     * <b>Constraints:</b><br/>
+     * <b>Length: </b>1 - 255<br/>
+     * <b>Pattern: </b>[^:].*<br/>
+     */
+    private String project_id;
+    
+    public String getProject_id() {
+		return project_id;
+	}
+
+	public void setProject_id(String project_id) {
+		this.project_id = project_id;
+	}
+
+	/**
      * A list of alarms to be deleted.
      * <p>
      * <b>Constraints:</b><br/>
@@ -126,6 +143,7 @@ public class DeleteAlarmsRequest extends AmazonWebServiceRequest {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
+        if (project_id != null) sb.append("Project_id: " + project_id + ", ");
         if (alarmNames != null) sb.append("AlarmNames: " + alarmNames + ", ");
         sb.append("}");
         return sb.toString();
@@ -135,7 +153,7 @@ public class DeleteAlarmsRequest extends AmazonWebServiceRequest {
     public int hashCode() {
         final int prime = 31;
         int hashCode = 1;
-        
+        hashCode = prime * hashCode + ((getProject_id() == null) ? 0 : getProject_id().hashCode()); 
         hashCode = prime * hashCode + ((getAlarmNames() == null) ? 0 : getAlarmNames().hashCode()); 
         return hashCode;
     }
@@ -148,6 +166,8 @@ public class DeleteAlarmsRequest extends AmazonWebServiceRequest {
         if (obj instanceof DeleteAlarmsRequest == false) return false;
         DeleteAlarmsRequest other = (DeleteAlarmsRequest)obj;
         
+        if (other.getProject_id() == null ^ this.getProject_id() == null) return false;
+        if (other.getProject_id() != null && other.getProject_id().equals(this.getProject_id()) == false) return false; 
         if (other.getAlarmNames() == null ^ this.getAlarmNames() == null) return false;
         if (other.getAlarmNames() != null && other.getAlarmNames().equals(this.getAlarmNames()) == false) return false; 
         return true;

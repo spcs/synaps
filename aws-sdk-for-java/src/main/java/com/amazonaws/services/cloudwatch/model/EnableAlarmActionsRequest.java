@@ -24,7 +24,16 @@ import com.amazonaws.AmazonWebServiceRequest;
  * @see com.amazonaws.services.cloudwatch.AmazonCloudWatch#enableAlarmActions(EnableAlarmActionsRequest)
  */
 public class EnableAlarmActionsRequest extends AmazonWebServiceRequest {
+	
+	private String project_id;
+    
+    public String getProject_id() {
+		return project_id;
+	}
 
+	public void setProject_id(String project_id) {
+		this.project_id = project_id;
+	}
     /**
      * The names of the alarms to enable actions for.
      * <p>
@@ -126,6 +135,7 @@ public class EnableAlarmActionsRequest extends AmazonWebServiceRequest {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
+        if (project_id != null) sb.append("Project_id: " + project_id + ", ");
         if (alarmNames != null) sb.append("AlarmNames: " + alarmNames + ", ");
         sb.append("}");
         return sb.toString();
@@ -135,7 +145,7 @@ public class EnableAlarmActionsRequest extends AmazonWebServiceRequest {
     public int hashCode() {
         final int prime = 31;
         int hashCode = 1;
-        
+        hashCode = prime * hashCode + ((getProject_id() == null) ? 0 : getProject_id().hashCode()); 
         hashCode = prime * hashCode + ((getAlarmNames() == null) ? 0 : getAlarmNames().hashCode()); 
         return hashCode;
     }
@@ -148,6 +158,8 @@ public class EnableAlarmActionsRequest extends AmazonWebServiceRequest {
         if (obj instanceof EnableAlarmActionsRequest == false) return false;
         EnableAlarmActionsRequest other = (EnableAlarmActionsRequest)obj;
         
+        if (other.getProject_id() == null ^ this.getProject_id() == null) return false;
+        if (other.getProject_id() != null && other.getProject_id().equals(this.getProject_id()) == false) return false; 
         if (other.getAlarmNames() == null ^ this.getAlarmNames() == null) return false;
         if (other.getAlarmNames() != null && other.getAlarmNames().equals(this.getAlarmNames()) == false) return false; 
         return true;

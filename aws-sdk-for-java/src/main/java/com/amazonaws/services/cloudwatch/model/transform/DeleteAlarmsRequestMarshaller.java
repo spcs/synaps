@@ -40,7 +40,10 @@ public class DeleteAlarmsRequestMarshaller implements Marshaller<Request<DeleteA
         request.addParameter("Action", "DeleteAlarms");
         request.addParameter("Version", "2010-08-01");
 
-
+        if (deleteAlarmsRequest.getProject_id() != null) {
+            request.addParameter("Project_id", StringUtils.fromString(deleteAlarmsRequest.getProject_id()));
+        }
+        
         java.util.List<String> alarmNamesList = deleteAlarmsRequest.getAlarmNames();
         int alarmNamesListIndex = 1;
 

@@ -28,7 +28,16 @@ import com.amazonaws.AmazonWebServiceRequest;
  * @see com.amazonaws.services.cloudwatch.AmazonCloudWatch#describeAlarmHistory(DescribeAlarmHistoryRequest)
  */
 public class DescribeAlarmHistoryRequest extends AmazonWebServiceRequest {
+	
+	private String project_id;
+    
+    public String getProject_id() {
+		return project_id;
+	}
 
+	public void setProject_id(String project_id) {
+		this.project_id = project_id;
+	}
     /**
      * The name of the alarm.
      * <p>
@@ -358,6 +367,7 @@ public class DescribeAlarmHistoryRequest extends AmazonWebServiceRequest {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
+        if (project_id != null) sb.append("Project_id: " + project_id + ", ");
         if (alarmName != null) sb.append("AlarmName: " + alarmName + ", ");
         if (historyItemType != null) sb.append("HistoryItemType: " + historyItemType + ", ");
         if (startDate != null) sb.append("StartDate: " + startDate + ", ");
@@ -372,7 +382,7 @@ public class DescribeAlarmHistoryRequest extends AmazonWebServiceRequest {
     public int hashCode() {
         final int prime = 31;
         int hashCode = 1;
-        
+        hashCode = prime * hashCode + ((getProject_id() == null) ? 0 : getProject_id().hashCode());
         hashCode = prime * hashCode + ((getAlarmName() == null) ? 0 : getAlarmName().hashCode()); 
         hashCode = prime * hashCode + ((getHistoryItemType() == null) ? 0 : getHistoryItemType().hashCode()); 
         hashCode = prime * hashCode + ((getStartDate() == null) ? 0 : getStartDate().hashCode()); 
@@ -390,6 +400,8 @@ public class DescribeAlarmHistoryRequest extends AmazonWebServiceRequest {
         if (obj instanceof DescribeAlarmHistoryRequest == false) return false;
         DescribeAlarmHistoryRequest other = (DescribeAlarmHistoryRequest)obj;
         
+        if (other.getProject_id() == null ^ this.getProject_id() == null) return false;
+        if (other.getProject_id() != null && other.getProject_id().equals(this.getProject_id()) == false) return false; 
         if (other.getAlarmName() == null ^ this.getAlarmName() == null) return false;
         if (other.getAlarmName() != null && other.getAlarmName().equals(this.getAlarmName()) == false) return false; 
         if (other.getHistoryItemType() == null ^ this.getHistoryItemType() == null) return false;
