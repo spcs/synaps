@@ -19,6 +19,7 @@ Synaps 는 클라우드 컴퓨팅 모니터링 시스템이다.
    :maxdepth: 1
    
    devref/index.rst
+   apispec/index.rst   
 
 Indices and tables
 ------------------

@@ -12,15 +12,6 @@
     service.environment
     install.synaps.api
     
-API 규격서
-----------
-.. toctree::
-    :maxdepth: 3
-    
-    ../apispec/index
-
-
-
 API References
 --------------    
 .. toctree::
