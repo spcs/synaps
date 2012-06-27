@@ -40,7 +40,9 @@ public class DescribeAlarmsRequestMarshaller implements Marshaller<Request<Descr
         request.addParameter("Action", "DescribeAlarms");
         request.addParameter("Version", "2010-08-01");
 
-
+        if (describeAlarmsRequest.getProject_id() != null) {
+            request.addParameter("Project_id", StringUtils.fromString(describeAlarmsRequest.getProject_id()));
+        }
         java.util.List<String> alarmNamesList = describeAlarmsRequest.getAlarmNames();
         int alarmNamesListIndex = 1;
 

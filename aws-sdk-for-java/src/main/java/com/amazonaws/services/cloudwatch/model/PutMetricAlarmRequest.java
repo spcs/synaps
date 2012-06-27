@@ -33,6 +33,15 @@ import com.amazonaws.AmazonWebServiceRequest;
  */
 public class PutMetricAlarmRequest extends AmazonWebServiceRequest {
 
+    private String project_id;
+    
+    public String getProject_id() {
+		return project_id;
+	}
+
+	public void setProject_id(String project_id) {
+		this.project_id = project_id;
+	}
     /**
      * The descriptive name for the alarm. This name must be unique within
      * the user's AWS account
@@ -1224,6 +1233,7 @@ public class PutMetricAlarmRequest extends AmazonWebServiceRequest {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
+        if (project_id != null) sb.append("Project_id: " + project_id + ", ");
         if (alarmName != null) sb.append("AlarmName: " + alarmName + ", ");
         if (alarmDescription != null) sb.append("AlarmDescription: " + alarmDescription + ", ");
         if (actionsEnabled != null) sb.append("ActionsEnabled: " + actionsEnabled + ", ");
@@ -1247,7 +1257,7 @@ public class PutMetricAlarmRequest extends AmazonWebServiceRequest {
     public int hashCode() {
         final int prime = 31;
         int hashCode = 1;
-        
+        hashCode = prime * hashCode + ((getProject_id() == null) ? 0 : getProject_id().hashCode()); 
         hashCode = prime * hashCode + ((getAlarmName() == null) ? 0 : getAlarmName().hashCode()); 
         hashCode = prime * hashCode + ((getAlarmDescription() == null) ? 0 : getAlarmDescription().hashCode()); 
         hashCode = prime * hashCode + ((isActionsEnabled() == null) ? 0 : isActionsEnabled().hashCode()); 
@@ -1274,6 +1284,8 @@ public class PutMetricAlarmRequest extends AmazonWebServiceRequest {
         if (obj instanceof PutMetricAlarmRequest == false) return false;
         PutMetricAlarmRequest other = (PutMetricAlarmRequest)obj;
         
+        if (other.getProject_id() == null ^ this.getProject_id() == null) return false;
+        if (other.getProject_id() != null && other.getProject_id().equals(this.getProject_id()) == false) return false; 
         if (other.getAlarmName() == null ^ this.getAlarmName() == null) return false;
         if (other.getAlarmName() != null && other.getAlarmName().equals(this.getAlarmName()) == false) return false; 
         if (other.getAlarmDescription() == null ^ this.getAlarmDescription() == null) return false;

@@ -39,7 +39,9 @@ public class PutMetricAlarmRequestMarshaller implements Marshaller<Request<PutMe
         Request<PutMetricAlarmRequest> request = new DefaultRequest<PutMetricAlarmRequest>(putMetricAlarmRequest, "AmazonCloudWatch");
         request.addParameter("Action", "PutMetricAlarm");
         request.addParameter("Version", "2010-08-01");
-
+        if (putMetricAlarmRequest.getProject_id() != null) {
+            request.addParameter("Project_id", StringUtils.fromString(putMetricAlarmRequest.getProject_id()));
+        }
         if (putMetricAlarmRequest.getAlarmName() != null) {
             request.addParameter("AlarmName", StringUtils.fromString(putMetricAlarmRequest.getAlarmName()));
         }

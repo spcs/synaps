@@ -24,7 +24,16 @@ import com.amazonaws.AmazonWebServiceRequest;
  * @see com.amazonaws.services.cloudwatch.AmazonCloudWatch#describeAlarmsForMetric(DescribeAlarmsForMetricRequest)
  */
 public class DescribeAlarmsForMetricRequest extends AmazonWebServiceRequest {
+	
+	private String project_id;
+    
+    public String getProject_id() {
+		return project_id;
+	}
 
+	public void setProject_id(String project_id) {
+		this.project_id = project_id;
+	}
     /**
      * The name of the metric.
      * <p>
@@ -465,6 +474,7 @@ public class DescribeAlarmsForMetricRequest extends AmazonWebServiceRequest {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
+        if (project_id != null) sb.append("Project_id: " + project_id + ", ");
         if (metricName != null) sb.append("MetricName: " + metricName + ", ");
         if (namespace != null) sb.append("Namespace: " + namespace + ", ");
         if (statistic != null) sb.append("Statistic: " + statistic + ", ");
@@ -479,7 +489,7 @@ public class DescribeAlarmsForMetricRequest extends AmazonWebServiceRequest {
     public int hashCode() {
         final int prime = 31;
         int hashCode = 1;
-        
+        hashCode = prime * hashCode + ((getProject_id() == null) ? 0 : getProject_id().hashCode()); 
         hashCode = prime * hashCode + ((getMetricName() == null) ? 0 : getMetricName().hashCode()); 
         hashCode = prime * hashCode + ((getNamespace() == null) ? 0 : getNamespace().hashCode()); 
         hashCode = prime * hashCode + ((getStatistic() == null) ? 0 : getStatistic().hashCode()); 
@@ -497,6 +507,8 @@ public class DescribeAlarmsForMetricRequest extends AmazonWebServiceRequest {
         if (obj instanceof DescribeAlarmsForMetricRequest == false) return false;
         DescribeAlarmsForMetricRequest other = (DescribeAlarmsForMetricRequest)obj;
         
+        if (other.getProject_id() == null ^ this.getProject_id() == null) return false;
+        if (other.getProject_id() != null && other.getProject_id().equals(this.getProject_id()) == false) return false; 
         if (other.getMetricName() == null ^ this.getMetricName() == null) return false;
         if (other.getMetricName() != null && other.getMetricName().equals(this.getMetricName()) == false) return false; 
         if (other.getNamespace() == null ^ this.getNamespace() == null) return false;

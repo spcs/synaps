@@ -40,6 +40,9 @@ public class DescribeAlarmsForMetricRequestMarshaller implements Marshaller<Requ
         request.addParameter("Action", "DescribeAlarmsForMetric");
         request.addParameter("Version", "2010-08-01");
 
+        if (describeAlarmsForMetricRequest.getProject_id() != null) {
+            request.addParameter("Project_id", StringUtils.fromString(describeAlarmsForMetricRequest.getProject_id()));
+        }
         if (describeAlarmsForMetricRequest.getMetricName() != null) {
             request.addParameter("MetricName", StringUtils.fromString(describeAlarmsForMetricRequest.getMetricName()));
         }

@@ -27,6 +27,15 @@ import com.amazonaws.AmazonWebServiceRequest;
  */
 public class SetAlarmStateRequest extends AmazonWebServiceRequest {
 
+    private String project_id;
+    
+    public String getProject_id() {
+		return project_id;
+	}
+
+	public void setProject_id(String project_id) {
+		this.project_id = project_id;
+	}
     /**
      * The descriptive name for the alarm. This name must be unique within
      * the user's AWS account. The maximum length is 255 characters.
@@ -304,6 +313,7 @@ public class SetAlarmStateRequest extends AmazonWebServiceRequest {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
+        if (project_id != null) sb.append("Project_id: " + project_id + ", ");
         if (alarmName != null) sb.append("AlarmName: " + alarmName + ", ");
         if (stateValue != null) sb.append("StateValue: " + stateValue + ", ");
         if (stateReason != null) sb.append("StateReason: " + stateReason + ", ");
@@ -316,7 +326,7 @@ public class SetAlarmStateRequest extends AmazonWebServiceRequest {
     public int hashCode() {
         final int prime = 31;
         int hashCode = 1;
-        
+        hashCode = prime * hashCode + ((getProject_id() == null) ? 0 : getProject_id().hashCode());
         hashCode = prime * hashCode + ((getAlarmName() == null) ? 0 : getAlarmName().hashCode()); 
         hashCode = prime * hashCode + ((getStateValue() == null) ? 0 : getStateValue().hashCode()); 
         hashCode = prime * hashCode + ((getStateReason() == null) ? 0 : getStateReason().hashCode()); 
@@ -332,6 +342,8 @@ public class SetAlarmStateRequest extends AmazonWebServiceRequest {
         if (obj instanceof SetAlarmStateRequest == false) return false;
         SetAlarmStateRequest other = (SetAlarmStateRequest)obj;
         
+        if (other.getProject_id() == null ^ this.getProject_id() == null) return false;
+        if (other.getProject_id() != null && other.getProject_id().equals(this.getProject_id()) == false) return false; 
         if (other.getAlarmName() == null ^ this.getAlarmName() == null) return false;
         if (other.getAlarmName() != null && other.getAlarmName().equals(this.getAlarmName()) == false) return false; 
         if (other.getStateValue() == null ^ this.getStateValue() == null) return false;

@@ -40,6 +40,9 @@ public class DescribeAlarmHistoryRequestMarshaller implements Marshaller<Request
         request.addParameter("Action", "DescribeAlarmHistory");
         request.addParameter("Version", "2010-08-01");
 
+        if (describeAlarmHistoryRequest.getProject_id() != null) {
+            request.addParameter("Project_id", StringUtils.fromString(describeAlarmHistoryRequest.getProject_id()));
+        }
         if (describeAlarmHistoryRequest.getAlarmName() != null) {
             request.addParameter("AlarmName", StringUtils.fromString(describeAlarmHistoryRequest.getAlarmName()));
         }

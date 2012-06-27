@@ -26,6 +26,15 @@ import com.amazonaws.AmazonWebServiceRequest;
  */
 public class DescribeAlarmsRequest extends AmazonWebServiceRequest {
 
+	private String project_id;
+    
+    public String getProject_id() {
+		return project_id;
+	}
+
+	public void setProject_id(String project_id) {
+		this.project_id = project_id;
+	}
     /**
      * A list of alarm names to retrieve information for.
      * <p>
@@ -424,6 +433,7 @@ public class DescribeAlarmsRequest extends AmazonWebServiceRequest {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
+        if (project_id != null) sb.append("Project_id: " + project_id + ", ");
         if (alarmNames != null) sb.append("AlarmNames: " + alarmNames + ", ");
         if (alarmNamePrefix != null) sb.append("AlarmNamePrefix: " + alarmNamePrefix + ", ");
         if (stateValue != null) sb.append("StateValue: " + stateValue + ", ");
@@ -438,7 +448,7 @@ public class DescribeAlarmsRequest extends AmazonWebServiceRequest {
     public int hashCode() {
         final int prime = 31;
         int hashCode = 1;
-        
+        hashCode = prime * hashCode + ((getProject_id() == null) ? 0 : getProject_id().hashCode()); 
         hashCode = prime * hashCode + ((getAlarmNames() == null) ? 0 : getAlarmNames().hashCode()); 
         hashCode = prime * hashCode + ((getAlarmNamePrefix() == null) ? 0 : getAlarmNamePrefix().hashCode()); 
         hashCode = prime * hashCode + ((getStateValue() == null) ? 0 : getStateValue().hashCode()); 
@@ -456,6 +466,8 @@ public class DescribeAlarmsRequest extends AmazonWebServiceRequest {
         if (obj instanceof DescribeAlarmsRequest == false) return false;
         DescribeAlarmsRequest other = (DescribeAlarmsRequest)obj;
         
+        if (other.getProject_id() == null ^ this.getProject_id() == null) return false;
+        if (other.getProject_id() != null && other.getProject_id().equals(this.getProject_id()) == false) return false; 
         if (other.getAlarmNames() == null ^ this.getAlarmNames() == null) return false;
         if (other.getAlarmNames() != null && other.getAlarmNames().equals(this.getAlarmNames()) == false) return false; 
         if (other.getAlarmNamePrefix() == null ^ this.getAlarmNamePrefix() == null) return false;

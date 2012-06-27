@@ -40,7 +40,9 @@ public class DisableAlarmActionsRequestMarshaller implements Marshaller<Request<
         request.addParameter("Action", "DisableAlarmActions");
         request.addParameter("Version", "2010-08-01");
 
-
+        if (disableAlarmActionsRequest.getProject_id() != null) {
+            request.addParameter("Project_id", StringUtils.fromString(disableAlarmActionsRequest.getProject_id()));
+        }
         java.util.List<String> alarmNamesList = disableAlarmActionsRequest.getAlarmNames();
         int alarmNamesListIndex = 1;
 
