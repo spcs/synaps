@@ -1,4 +1,4 @@
-.. _developer.guid:
+.. _developer.guide:
 
 개발자 가이드
 =============
@@ -12,6 +12,15 @@
     service.environment
     install.synaps.api
     
+API 규격서
+----------
+.. toctree::
+    :maxdepth: 3
+    
+    ../apispec/index
+
+
+
 API References
 --------------    
 .. toctree::
