@@ -1,7 +1,7 @@
-.. _delete_alarms:
+.. _describe_alarm_history:
 
-Delete Alarms
-=============
+Describe Alarm History
+======================
 
 설명
 ----
@@ -25,6 +25,41 @@ Delete Alarms
 
        Length constraints: Minimum of 0 item(s) in the list. Maximum of 100 
        item(s) in the list.
+     - No
+
+   * - AlarmName	
+     - The name of the alarm.
+       
+       Type: String
+       
+       Length constraints: Minimum length of 1. Maximum length of 255.
+     - No
+   * - EndDate	
+     - The ending date to retrieve alarm history.
+       
+       Type: DateTime
+     - No
+   * - HistoryItemType	
+     - The type of alarm histories to retrieve.
+      
+       Type: String
+      
+       Valid Values: ConfigurationUpdate | StateUpdate | Action
+     - No
+   * - MaxRecords	
+     - The maximum number of alarm history records to retrieve.
+      
+       Type: Integer
+     - No
+   * - NextToken	
+     - The token returned by a previous call to indicate that there is more data available.
+       
+       Type: String
+     - No
+   * - StartDate	
+     - The starting date to retrieve alarm history.
+       
+       Type: DateTime
      - No
 
 에러
