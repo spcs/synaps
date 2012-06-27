@@ -9,16 +9,13 @@ import uuid
 from datetime import datetime, timedelta
 from pandas import TimeSeries, DataFrame, DateRange, datetools
 from pandas import (rolling_sum, rolling_max, rolling_min, rolling_mean)
-from numpy import isnan
-
-from pprint import pformat
 
 from synaps import flags
 from synaps import log as logging
 from synaps.db import Cassandra
 from synaps import rpc
 from synaps import utils
-from synaps.exception import RpcInvokeException, Invalid
+from synaps.exception import AdminRequired
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
@@ -119,7 +116,7 @@ class API(object):
                                          dimensions, next_token)
         return metrics
     
-    def put_metric_alarm(self, project_id, metricalarm):
+    def put_metric_alarm(self, project_id, metricalarm, is_admin=False):
         """
         알람을 DB에 넣고 값이 빈 dictionary 를 반환한다.
         메트릭 유무 확인
@@ -147,6 +144,9 @@ class API(object):
                 'unit':metricalarm.get('unit'),
             }
             return alarm_for_json
+
+        if metricalarm['namespace'].startswith("SPCS/") and not is_admin:
+            raise AdminRequired()
                         
         now = utils.utcnow()
         metricalarm = metricalarm.to_columns()
@@ -243,10 +243,14 @@ class API(object):
 
         return {}
     
-    def put_metric_data(self, project_id, namespace, metric_data):
+    def put_metric_data(self, project_id, namespace, metric_data,
+                        is_admin=False):
         """
         metric data 를 입력받아 MQ 에 넣고 값이 빈 dictionary 를 반환한다.        
         """
+        if namespace.startswith("SPCS/") and not is_admin:
+            raise AdminRequired()
+        
         for metric in utils.extract_member_list(metric_data):
             dimensions = utils.extract_member_dict(metric.get('dimensions'))
             metric_name = metric.get('metric_name')

@@ -262,7 +262,8 @@ class MonitorController(object):
             unit=unit
         )
 
-        self.monitor_api.put_metric_alarm(project_id, metricalarm)
+        self.monitor_api.put_metric_alarm(project_id, metricalarm,
+                                          context.is_admin)
         
         return {}
 
@@ -276,7 +277,7 @@ class MonitorController(object):
             project_id = context.project_id
         
         self.monitor_api.put_metric_data(project_id, namespace,
-                                         metric_data)
+                                         metric_data, context.is_admin)
         return {}
 
     def set_alarm_state(self, context, alarm_name, state_reason, state_value,

@@ -175,27 +175,6 @@ class DecryptionFailure(SynapsException):
     message = _("Failed to decrypt text")
 
 
-class ImagePaginationFailed(SynapsException):
-    message = _("Failed to paginate through images from image service")
-
-
-class VirtualInterfaceCreateException(SynapsException):
-    message = _("Virtual Interface creation failed")
-
-
-class VirtualInterfaceMacAddressException(SynapsException):
-    message = _("5 attempts to create virtual interface"
-                "with unique mac address failed")
-
-
-class GlanceConnectionFailed(SynapsException):
-    message = _("Connection to glance failed") + ": %(reason)s"
-
-
-class MelangeConnectionFailed(SynapsException):
-    message = _("Connection to melange failed") + ": %(reason)s"
-
-
 class NotAuthorized(SynapsException):
     message = _("Not authorized.")
     code = 401

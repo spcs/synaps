@@ -26,100 +26,11 @@ from synaps import log as logging
 FLAGS = flags.FLAGS
 LOG = logging.getLogger(__name__)
 
-
-def image_type(image_type):
-    """Converts to a three letter image type.
-
-    aki, kernel => aki
-    ari, ramdisk => ari
-    anything else => ami
-
-    """
-    if image_type == 'kernel':
-        return 'aki'
-    if image_type == 'ramdisk':
-        return 'ari'
-    if image_type not in ['aki', 'ari']:
-        return 'ami'
-    return image_type
-
-
-def ec2_id_to_id(ec2_id):
-    """Convert an ec2 ID (i-[base 16 number]) to an instance id (int)"""
-    try:
-        return int(ec2_id.split('-')[-1], 16)
-    except ValueError:
-        raise exception.InvalidEc2Id(ec2_id=ec2_id)
-
-
-def image_ec2_id(image_id, image_type='ami'):
-    """Returns image ec2_id using id and three letter type."""
-    template = image_type + '-%08x'
-    try:
-        return id_to_ec2_id(image_id, template=template)
-    except ValueError:
-        #TODO(wwolf): once we have ec2_id -> glance_id mapping
-        # in place, this wont be necessary
-        return "ami-00000000"
-
-
-def get_ip_info_for_instance_from_nw_info(nw_info):
-    ip_info = dict(fixed_ips=[], fixed_ip6s=[], floating_ips=[])
-    for vif in nw_info:
-        vif_fixed_ips = vif.fixed_ips()
-
-        fixed_ips = [ip['address']
-                     for ip in vif_fixed_ips if ip['version'] == 4]
-        fixed_ip6s = [ip['address']
-                      for ip in vif_fixed_ips if ip['version'] == 6]
-        floating_ips = [ip['address']
-                        for ip in vif.floating_ips()]
-        ip_info['fixed_ips'].extend(fixed_ips)
-        ip_info['fixed_ip6s'].extend(fixed_ip6s)
-        ip_info['floating_ips'].extend(floating_ips)
-
-    return ip_info
-
-
-#def get_ip_info_for_instance(context, instance):
-#    """Return a dictionary of IP information for an instance"""
-#
-#    cached_nwinfo = instance['info_cache']['network_info']
-#    # Make sure empty response is turned into []
-#    if not cached_nwinfo:
-#        cached_nwinfo = []
-#    nw_info = network_model.NetworkInfo.hydrate(cached_nwinfo)
-#    return get_ip_info_for_instance_from_nw_info(nw_info)
-
-
-def get_availability_zone_by_host(services, host):
-    if len(services) > 0:
-        return services[0]['availability_zone']
-    return 'unknown zone'
-
-
-def id_to_ec2_id(instance_id, template='i-%08x'):
-    """Convert an instance ID (int) to an ec2 ID (i-[base 16 number])"""
-    return template % int(instance_id)
-
-
-def id_to_ec2_snap_id(instance_id):
-    """Convert an snapshot ID (int) to an ec2 snapshot ID
-    (snap-[base 16 number])"""
-    return id_to_ec2_id(instance_id, 'snap-%08x')
-
-
-def id_to_ec2_vol_id(instance_id):
-    """Convert an volume ID (int) to an ec2 volume ID (vol-[base 16 number])"""
-    return id_to_ec2_id(instance_id, 'vol-%08x')
-
-
 _c2u = re.compile('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))')
 
 
 def camelcase_to_underscore(str):
     return _c2u.sub(r'_\1', str).lower().strip('_')
-
 
 def _try_convert(value):
     """Return a non-string from a string or unicode, if possible.
