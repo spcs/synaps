@@ -28,10 +28,10 @@ class MonitorController(object):
     def delete_alarms(self, context, alarm_names, project_id=None):
         if not (project_id and context.is_admin):
             project_id = context.project_id
-            
-        ret = {}
-        # TODO: implement here
-        return ret
+
+        alarm_names = utils.extract_member_list(alarm_names)
+        self.monitor_api.delete_alarms(project_id, alarm_names)            
+        return {}
 
     def describe_alarm_history(self, context, alarm_name=None, end_date=None,
                                history_item_type=None, max_records=None,
@@ -262,8 +262,7 @@ class MonitorController(object):
             unit=unit
         )
 
-        self.monitor_api.put_metric_alarm(project_id, metricalarm,
-                                          context.is_admin)
+        self.monitor_api.put_metric_alarm(project_id, metricalarm)
         
         return {}
 
@@ -276,8 +275,7 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         
-        self.monitor_api.put_metric_data(project_id, namespace,
-                                         metric_data, context.is_admin)
+        self.monitor_api.put_metric_data(project_id, namespace, metric_data)
         return {}
 
     def set_alarm_state(self, context, alarm_name, state_reason, state_value,

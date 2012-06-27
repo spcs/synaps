@@ -15,7 +15,7 @@ from synaps import log as logging
 from synaps.db import Cassandra
 from synaps import rpc
 from synaps import utils
-from synaps.exception import AdminRequired
+from synaps.exception import AdminRequired, InvalidRequest
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
@@ -32,6 +32,20 @@ class API(object):
     def __init__(self):
         self.cass = Cassandra()
         self.rpc = rpc.RemoteProcedureCall()
+
+    def delete_alarms(self, project_id, alarm_names):
+        alarmkeys = []
+        for alarm_name in alarm_names:
+            k = self.cass.get_metric_alarm_key(project_id, alarm_name)
+            if not k:
+                raise InvalidRequest("Alarm %s does not exists." % alarm_name)
+            alarmkeys.append(str(k))
+                
+        body = {'project_id': project_id,
+                'alarmkeys': alarmkeys} # UUID str  
+        self.rpc.send_msg(rpc.DELETE_ALARMS_MSG_ID, body)
+        LOG.info("DELETE_ALARMS_MSG sent")
+        
 
     def describe_alarms(self, project_id, action_prefix=None,
                         alarm_name_prefix=None, alarm_names=None,
@@ -116,7 +130,7 @@ class API(object):
                                          dimensions, next_token)
         return metrics
     
-    def put_metric_alarm(self, project_id, metricalarm, is_admin=False):
+    def put_metric_alarm(self, project_id, metricalarm):
         """
         알람을 DB에 넣고 값이 빈 dictionary 를 반환한다.
         메트릭 유무 확인
@@ -145,9 +159,6 @@ class API(object):
             }
             return alarm_for_json
 
-        if metricalarm['namespace'].startswith("SPCS/") and not is_admin:
-            raise AdminRequired()
-                        
         now = utils.utcnow()
         metricalarm = metricalarm.to_columns()
         
@@ -169,8 +180,7 @@ class API(object):
         
         # 알람 유무 확인
         alarm_key = self.cass.get_metric_alarm_key(
-            project_id=project_id, metric_key=metric_key,
-            metricalarm=metricalarm
+            project_id=project_id, alarm_name=metricalarm['alarm_name']
         )
         
         
@@ -178,7 +188,7 @@ class API(object):
             history_type = 'Update'
             before_alarm = self.cass.get_metric_alarm(alarm_key)
             if before_alarm['metric_key'] != metricalarm['metric_key']:
-                raise Exception("Metric cannot be changed.")
+                raise InvalidRequest("Metric cannot be changed.")
             
             metricalarm['state_updated_timestamp'] = \
                 before_alarm['state_updated_timestamp']

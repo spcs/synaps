@@ -52,7 +52,7 @@ class Cassandra(object):
         self.scf_stat_archive = pycassa.ColumnFamily(self.pool, 'StatArchive')
         self.cf_metric_alarm = pycassa.ColumnFamily(self.pool, 'MetricAlarm')
         self.cf_alarm_history = pycassa.ColumnFamily(self.pool, 'AlarmHistory')
-        
+
     def describe_alarms(self, project_id, action_prefix=None,
                         alarm_name_prefix=None, alarm_names=None,
                         max_records=None, next_token=None, state_value=None):
@@ -76,12 +76,10 @@ class Cassandra(object):
         items = self.cf_alarm_history.get_indexed_slices(index_clause)
         return items        
 
-    def get_metric_alarm_key(self, project_id, metric_key, metricalarm):
+    def get_metric_alarm_key(self, project_id, alarm_name):
         expr_list = [
             pycassa.create_index_expression("project_id", project_id),
-            pycassa.create_index_expression("metric_key", metric_key),
-            pycassa.create_index_expression("alarm_name",
-                                            metricalarm['alarm_name'])
+            pycassa.create_index_expression("alarm_name", alarm_name)
         ]
         
         index_clause = pycassa.create_index_clause(expr_list)
