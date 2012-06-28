@@ -22,10 +22,8 @@ FLAGS = flags.FLAGS
 
 class API(object):
     ROLLING_FUNC_MAP = {
-        'Average': rolling_mean,
-        'Minimum': rolling_min,
-        'Maximum': rolling_max,
-        'SampleCount': rolling_sum,
+        'Average': rolling_mean, 'Minimum': rolling_min, 
+        'Maximum': rolling_max, 'SampleCount': rolling_sum, 
         'Sum': rolling_sum,
     }
     
@@ -41,8 +39,7 @@ class API(object):
                 raise InvalidRequest("Alarm %s does not exists." % alarm_name)
             alarmkeys.append(str(k))
                 
-        body = {'project_id': project_id,
-                'alarmkeys': alarmkeys} # UUID str  
+        body = {'project_id': project_id, 'alarmkeys': alarmkeys} # UUID str  
         self.rpc.send_msg(rpc.DELETE_ALARMS_MSG_ID, body)
         LOG.info("DELETE_ALARMS_MSG sent")
         

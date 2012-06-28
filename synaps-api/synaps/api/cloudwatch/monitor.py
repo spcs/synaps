@@ -275,7 +275,8 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         
-        self.monitor_api.put_metric_data(project_id, namespace, metric_data)
+        self.monitor_api.put_metric_data(project_id, namespace, metric_data,
+                                         context.is_admin)
         return {}
 
     def set_alarm_state(self, context, alarm_name, state_reason, state_value,

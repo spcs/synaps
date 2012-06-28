@@ -30,9 +30,6 @@ cloudwatch_opts = [
     cfg.IntOpt('lockout_window',
                default=15,
                help='Number of minutes for lockout window.'),
-#    cfg.StrOpt('keystone_ec2_url',
-#               default='http://localhost:5000/v2.0/ec2tokens',
-#               help='URL to get token from ec2 request.'),
     ]
 
 FLAGS = flags.FLAGS
@@ -293,11 +290,6 @@ class Executor(wsgi.Application):
         except exception.InvalidRequest as ex:
             LOG.debug(_('InvalidRequest raised: %s'), unicode(ex),
                      context=context)
-            return cloudwatch_error(req, request_id, type(ex).__name__,
-                                    unicode(ex))
-        except exception.QuotaError as ex:
-            LOG.debug(_('QuotaError raised: %s'), unicode(ex),
-                      context=context)
             return cloudwatch_error(req, request_id, type(ex).__name__,
                                     unicode(ex))
         except Exception as ex:
