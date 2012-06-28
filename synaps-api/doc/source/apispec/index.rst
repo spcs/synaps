@@ -16,42 +16,42 @@ Actions
 .. toctree::
    :maxdepth: 1
    
-   delete_alarms
-   describe_alarm_history
-   describe_alarms
-   describe_alarms_for_metric
-   disable_alarm_actions
-   enable_alarm_actions
-   get_metric_statistics
-   list_metrics
-   put_metric_alarm
-   put_metric_data
-   set_alarm_state
+   action/delete_alarms
+   action/describe_alarm_history
+   action/describe_alarms
+   action/describe_alarms_for_metric
+   action/disable_alarm_actions
+   action/enable_alarm_actions
+   action/get_metric_statistics
+   action/list_metrics
+   action/put_metric_alarm
+   action/put_metric_data
+   action/set_alarm_state
    
 Data Types
 ----------
 .. toctree::
    :maxdepth: 1
    
-   alarm_history_item_type
-   datapoint_type
-   describe_alarm_history_result_type
-   describe_alarms_for_metric_result_type
-   describe_alarms_result_type
-   dimension_type
-   dimension_filter_type
-   get_metric_statistics_result_type
-   list_metric_result_type
-   metric_type
-   metric_alarm_type
-   metric_datum_type
-   statistic_set_type
+   datatype/alarm_history_item
+   datatype/datapoint
+   datatype/describe_alarm_history_result
+   datatype/describe_alarms_for_metric_result
+   datatype/describe_alarms_result
+   datatype/dimension
+   datatype/dimension_filter
+   datatype/get_metric_statistics_result
+   datatype/list_metric_result
+   datatype/metric
+   datatype/metric_alarm
+   datatype/metric_datum
+   datatype/statistic_set
    
 Common
 ------
 .. toctree::
    :maxdepth: 1
 
-   common_query_parameters
-   common_errors
+   common/common_query_parameters
+   common/common_errors
    
