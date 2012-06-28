@@ -32,7 +32,7 @@ class ApiSpout(Spout):
         self.channel = self.conn.channel()
         queue_args = {"x-ha-policy" : "all" }
         self.channel.queue_declare(queue='metric_queue', durable=True,
-                                   arguments=queue_args)   
+                                   arguments=queue_args)
     
     def ack(self, id):
         if id in self.delivery_tags:

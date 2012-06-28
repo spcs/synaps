@@ -11,13 +11,15 @@ if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
+from uuid import UUID
 
 import md5
 import json
 import storm
 import traceback
 from synaps.db import Cassandra
-from synaps.rpc import PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID
+from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
+                        DELETE_ALARMS_MSG_ID)
 
 threshhold = 10000
 flags.FLAGS(sys.argv)
@@ -47,6 +49,13 @@ class UnpackMessageBolt(storm.BasicBolt):
             
         return self.key_dict[memory_key]
     
+    def get_alarm_metric_key(self, alarmkey):
+        alarm = self.cass.get_metric_alarm(alarmkey)
+        if alarm:
+            return alarm.get('metric_key')
+        else:
+            return None
+    
     def process(self, tup):
         message_buf = tup.values[0]
         message = json.loads(message_buf)
@@ -59,6 +68,20 @@ class UnpackMessageBolt(storm.BasicBolt):
             elif message_id == PUT_METRIC_ALARM_MSG_ID:
                 metric_key = message.get('metric_key')
                 storm.emit([metric_key, message_buf])
+            elif message_id == DELETE_ALARMS_MSG_ID:
+                project_id = message.get('project_id')
+                alarmkeys = message.get('alarmkeys')
+                for alarmkey in alarmkeys:
+                    try:
+                        alarmkey_uuid = UUID(alarmkey)
+                        metric_key = self.get_alarm_metric_key(alarmkey_uuid)
+                        metric_key = str(metric_key)
+                        if metric_key:
+                            message['alarmkey'] = alarmkey
+                            storm.emit([metric_key, json.dumps(message)])
+                    except Exception as e:
+                        storm.log("Alarm %s does not exists" % alarmkey)
+                        storm.log(traceback.format_exc(e))
             
         except Exception as e:
             storm.log(traceback.format_exc(e))

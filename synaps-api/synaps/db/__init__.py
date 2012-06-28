@@ -52,6 +52,9 @@ class Cassandra(object):
         self.scf_stat_archive = pycassa.ColumnFamily(self.pool, 'StatArchive')
         self.cf_metric_alarm = pycassa.ColumnFamily(self.pool, 'MetricAlarm')
         self.cf_alarm_history = pycassa.ColumnFamily(self.pool, 'AlarmHistory')
+        
+    def delete_metric_alarm(self, alarm_key):
+        self.cf_metric_alarm.remove(alarm_key)
 
     def describe_alarms(self, project_id, action_prefix=None,
                         alarm_name_prefix=None, alarm_names=None,
@@ -90,7 +93,12 @@ class Cassandra(object):
         return None
     
     def get_metric_alarm(self, alarm_key):
-        return self.cf_metric_alarm.get(alarm_key)
+        ret = None
+        try:
+            ret = self.cf_metric_alarm.get(alarm_key)
+        except pycassa.NotFoundException:
+            pass
+        return ret
             
     def get_metric_key(self, project_id, namespace, metric_name, dimensions):
         expr_list = [

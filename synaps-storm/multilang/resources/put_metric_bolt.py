@@ -4,6 +4,7 @@
 import os
 import sys
 import operator
+from uuid import uuid4, UUID
 
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir, os.pardir))
@@ -24,7 +25,8 @@ from synaps import flags
 from synaps import log as logging
 from synaps import utils
 from synaps.db import Cassandra
-from synaps.rpc import PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID
+from synaps.rpc import PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID, \
+    DELETE_ALARMS_MSG_ID
 
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
@@ -68,7 +70,20 @@ class MetricMonitor(object):
         end = now_idx + timedelta(seconds=60 * 60) # 1 HOUR
         daterange = DateRange(start, end, offset=datetools.Minute())
         return daterange
-    
+
+    def delete_metric_alarm(self, alarmkey):
+        """
+        메모리 및 DB에서 알람을 삭제한다.
+        
+        alarmkey:
+            alarmkey should be UUID
+        """
+        alarm = self.alarms.pop(alarmkey)
+        self.cass.delete_metric_alarm(alarmkey)
+        self.alarm_history_delete(alarmkey, alarm)
+        storm.log("delete alarm %s for metric %s" % (str(alarmkey),
+                                                     self.metric_key))
+                                                        
     def load_statistics(self):
         stat = self.cass.load_statistics(self.metric_key)
         if stat:
@@ -95,8 +110,8 @@ class MetricMonitor(object):
         return DataFrame(ret_dict)
     
     def put_alarm(self, project_id, metricalarm):
-        alarm_key = self.cass.get_metric_alarm_key(project_id, self.metric_key,
-                                                   metricalarm)
+        alarm_name = metricalarm.get('alarm_name')
+        alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
         if alarm_key:
             self.alarms[alarm_key] = self.cass.get_metric_alarm(alarm_key)
         else:
@@ -141,6 +156,7 @@ class MetricMonitor(object):
     def check_alarms(self):
         for k, v in self.alarms.iteritems():
             self._check_alarm(k, v)
+        self.lastchecked = utils.utcnow()
             
     def _check_alarm(self, alarmkey, alarm):
         period = int(alarm['period'] / 60)
@@ -245,6 +261,24 @@ class MetricMonitor(object):
                                        threshold))
             storm.log("result \n %s" % crossed)
     
+    def alarm_history_delete(self, alarm_key, alarm):
+        item_type = 'ConfigurationUpdate'
+        summary = "Alarm %s deleted" % alarm['alarm_name']
+        
+        history_key = uuid.uuid4()
+        history_column = {
+            'project_id': alarm['project_id'],
+            'alarm_key': alarm_key,
+            'alarm_name': alarm['alarm_name'],
+            'history_data': json.dumps({'type': 'Delete', 'version': '1.0'}),
+            'history_item_type': item_type,
+            'history_summary': summary,
+            'timestamp': utils.utcnow()
+        }
+        
+        self.cass.insert_alarm_history(history_key, history_column)
+        
+    
     def alarm_history_state_update(self, alarmkey, alarm, new_state,
                                           old_state):
         item_type = 'StateUpdate'
@@ -309,23 +343,30 @@ class PutMetricBolt(storm.BasicBolt):
         project_id = message['project_id']
         metricalarm = message['metricalarm']
         self.metrics[metric_key].put_alarm(project_id, metricalarm)
+
+    def process_delete_metric_alarms_msg(self, metric_key, message):
+        alarmkey = UUID(message['alarmkey'])
+        storm.log("debug: %s" % self.metrics.keys())
+        if metric_key not in self.metrics:
+            self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
+        self.metrics[metric_key].delete_metric_alarm(alarmkey)
         
     def process(self, tup):
-        metric_key = uuid.UUID(tup.values[0])
+        metric_key = UUID(tup.values[0])
         message = json.loads(tup.values[1])
         message_id = message.get('message_id')
         
-        try:
-            if message_id == PUT_METRIC_DATA_MSG_ID:
-                storm.log("process put_metric_data_msg (%s)" % message)
-                self.process_put_metric_data_msg(metric_key, message)
-            elif message_id == PUT_METRIC_ALARM_MSG_ID:
-                storm.log("process put_metric_alarm_msg (%s)" % message)
-                self.process_put_metric_alarm_msg(metric_key, message)
-            else:
-                storm.log("unknown message")
-        except Exception as e:
-            storm.log(traceback.format_exc(e))
+        if message_id == PUT_METRIC_DATA_MSG_ID:
+            storm.log("process put_metric_data_msg (%s)" % message)
+            self.process_put_metric_data_msg(metric_key, message)
+        elif message_id == PUT_METRIC_ALARM_MSG_ID:
+            storm.log("process put_metric_alarm_msg (%s)" % message)
+            self.process_put_metric_alarm_msg(metric_key, message)
+        elif message_id == DELETE_ALARMS_MSG_ID:
+            storm.log("process put_metric_alarm_msg (%s)" % message)
+            self.process_delete_metric_alarms_msg(metric_key, message)
+        else:
+            storm.log("unknown message")
 
 if __name__ == "__main__":
     flags.FLAGS(sys.argv)
