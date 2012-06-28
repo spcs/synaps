@@ -1,6 +1,6 @@
 .. _put_metric_data:
 
-Put Metric Data
+PutMetricData
 ======================
 
 설명

@@ -1,6 +1,6 @@
 .. _metric_datum:
 
-Metric Datum
+MetricDatum
 ======================
 
 설명

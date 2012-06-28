@@ -1,6 +1,6 @@
 .. _enable_alarm_actions:
 
-Enable Alarm Actions
+EnableAlarmActions
 ======================
 
 설명

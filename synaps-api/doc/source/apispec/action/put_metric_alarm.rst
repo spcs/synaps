@@ -1,6 +1,6 @@
 .. _put_metric_alarm:
 
-Put Metric Alarm
+PutMetricAlarm
 ======================
 
 설명

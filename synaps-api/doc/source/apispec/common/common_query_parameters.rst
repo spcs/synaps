@@ -3,36 +3,111 @@
 공통 쿼리 매개변수
 ==================
 
-모든 API에서 사용하는 공통 매개변수를 정리함.   
+This section lists the request parameters that all actions use. Any 
+action-specific parameters are listed in the topic for the action.  
 
-+------------------+----------------------------------------------+----------+
-|파라미터 이름     |설명                                          |필수 여부 |
-+==================+==============================================+==========+
-|Action            |수행할 액션                                   |필수      |
-|                  |                                              |          |
-|                  |Default: None                                 |          |
-|                  |                                              |          |
-|                  |Type: String                                  |          |
-+------------------+----------------------------------------------+----------+
-|AuthParams        |쿼리 요청을 인증하기위해 필요한 파라미터      |조건      |
-|                  | - AWSAccessKeyID                             |          |
-|                  | - SignatureVersion                           |          |
-|                  | - Timestamp                                  |          |
-|                  | - Signature                                  |          |
-|                  | - Default:None                               |          |
-+------------------+----------------------------------------------+----------+
-|AWSAccessKeyId    |요청 시 서명을 위해 사용하는 AWS Secret Access|필수      |
-|                  |Key 에 대응하는 Access Key Id                 |          |
-+------------------+----------------------------------------------+----------+
-|Expires           |                                              |          |
-+------------------+----------------------------------------------+----------+
-|AWSAccessKeyId    |                                              |          |
-+------------------+----------------------------------------------+----------+
-|AWSAccessKeyId    |                                              |          |
-+------------------+----------------------------------------------+----------+
-|AWSAccessKeyId    |                                              |          |
-+------------------+----------------------------------------------+----------+
-|AWSAccessKeyId    |                                              |          |
-+------------------+----------------------------------------------+----------+
-|AWSAccessKeyId    |                                              |          |
-+------------------+----------------------------------------------+----------+
+.. list-table:: 
+   :widths: 15 50 10
+   :header-rows: 1
+
+   * - Parameter Name
+     - 설명
+     - 필수 여부
+   * - Action
+     - The action to perform.
+
+       Default: None
+
+       Type: String
+     - Yes
+   * - AuthParams
+     - The parameters required to authenticate a query request.
+
+       Contains:
+
+       AWSAccessKeyID
+
+       SignatureVersion
+
+       Timestamp
+
+       Signature
+
+       Default: None
+     - Conditional
+   * - AWSAccessKeyId
+     - The Access Key ID corresponding to the AWS Secret Access Key you used to 
+       sign the request.
+
+       Default: None
+
+       Type: String
+     - Yes
+   * - Expires
+     - The date and time at which the request signature expires, in the format 
+       YYYY-MM-DDThh:mm:ssZ, as specified in the ISO 8601 standard.
+
+       Condition: Requests must include either Timestamp or Expires, but not 
+       both.
+
+       Default: None
+
+       Type: String
+     - Conditional
+   * - SecurityToken
+     - The temporary security token obtained through a call to AWS Security 
+       Token Service. Only available for actions in the following AWS services: 
+       Amazon EC2, Amazon Simple Notification Service, Amazon SQS, and AWS 
+       SimpleDB.
+
+       Default: None
+
+       Type: String
+     - 
+   * - Signature
+     - The digital signature you created for the request. Refer to the service's 
+       developer documentation for information about how to generate the 
+       signature.
+
+       Default: None
+
+       Type: String
+     - Yes
+   * - SignatureMethod
+     - The hash algorithm you used to create the request signature.
+
+       Default: None
+
+       Valid Values: HmacSHA256 | HmacSHA1.
+
+       Type: String
+     - Yes
+   * - SignatureVersion
+     - The signature version you use to sign the request. Set this to the value 
+       recommended in your product-specific documentation on security.
+
+       Default: None
+
+       Type: String
+     - Yes
+   * - Timestamp
+     - The date and time the request was signed, in the format 
+       YYYY-MM-DDThh:mm:ssZ, as specified in the ISO 8601 standard.
+
+       Condition: Requests must include either Timestamp or Expires, but not 
+       both.
+
+       Default: None
+
+       Type: String
+     - Conditional
+   * - Version
+     - The API version to use, in the format YYYY-MM-DD.
+
+       Default: None
+
+       Type: String
+     - Yes
+
+.. toctree::
+   :maxdepth: 1

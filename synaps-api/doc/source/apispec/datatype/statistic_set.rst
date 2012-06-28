@@ -1,6 +1,6 @@
 .. _statistic_set:
 
-Statistic Set
+StatisticSet
 ======================
 
 설명

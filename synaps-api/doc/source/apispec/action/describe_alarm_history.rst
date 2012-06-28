@@ -1,6 +1,6 @@
 .. _describe_alarm_history:
 
-Describe Alarm History
+DescribeAlarmHistory
 ======================
 
 설명

@@ -1,6 +1,6 @@
 .. _dimension_filter:
 
-Dimension Filter
+DimensionFilter
 ======================
 
 설명

@@ -1,6 +1,6 @@
 .. _delete_alarms:
 
-Delete Alarms
+DeleteAlarms
 =============
 
 설명

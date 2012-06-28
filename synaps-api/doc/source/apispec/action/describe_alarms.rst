@@ -1,6 +1,6 @@
 .. _describe_alarms:
 
-Describe Alarms
+DescribeAlarms
 ======================
 
 설명

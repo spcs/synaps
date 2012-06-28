@@ -1,6 +1,6 @@
 .. _set_alarm_state:
 
-Set Alarm State
+SetAlarmState
 ======================
 
 설명

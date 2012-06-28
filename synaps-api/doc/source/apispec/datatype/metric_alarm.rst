@@ -1,6 +1,6 @@
 .. _metric_alarm:
 
-Metric Alarm
+MetricAlarm
 ======================
 
 설명

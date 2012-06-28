@@ -1,6 +1,6 @@
 .. _get_metric_statistics:
 
-Get Metric Statistics
+GetMetricStatistics
 ======================
 
 설명

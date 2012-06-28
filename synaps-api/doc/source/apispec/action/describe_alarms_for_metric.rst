@@ -1,6 +1,6 @@
 .. _describe_alarm_for_metric:
 
-Describe Alarm For Metric
+DescribeAlarmForMetric
 ======================
 
 설명

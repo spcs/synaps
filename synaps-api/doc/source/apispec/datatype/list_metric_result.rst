@@ -1,6 +1,6 @@
 .. _list_metric_result:
 
-List Metric Result
+ListMetricResult
 ======================
 
 설명

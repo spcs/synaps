@@ -1,13 +1,13 @@
 .. _alarm_history_item:
 
-Alarm History Item
+AlarmHistoryItem
 ======================
 
 설명
 ----
 The AlarmHistoryItem data type contains descriptive information about the 
 history of a specific alarm. If you call DescribeAlarmHistory, Amazon CloudWatch
-returns this data type as part of the :ref:1describe_alarm_history_result` data type.
+returns this data type as part of the :ref:`describe_alarm_history_result` data type.
 
 Contents
 ----

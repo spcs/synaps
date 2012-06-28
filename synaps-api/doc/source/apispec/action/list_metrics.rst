@@ -1,6 +1,6 @@
 .. _list_metrics:
 
-List Metrics
+ListMetrics
 ======================
 
 설명

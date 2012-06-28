@@ -1,6 +1,6 @@
 .. _describe_alarms_result:
 
-Describe Alarms Result
+DescribeAlarmsResult
 ======================
 
 설명
