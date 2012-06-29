@@ -488,7 +488,6 @@ def extract_member_list(aws_list, key='member'):
     
     ['something1', 'something2', 'something3']
     """
-    
     return OrderedDict(aws_list[key]).values()
 
 def extract_member_dict(aws_dict, key='member'):

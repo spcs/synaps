@@ -83,8 +83,8 @@ class MonitorController(object):
                 'alarm_actions':json.loads(v['alarm_actions']),
                 'alarm_arn':v['alarm_arn'],
                 'alarm_configuration_updated_timestamp':
-                    utils.strtime(
-                        v['alarm_configuration_updated_timestamp']),
+                    utils.strtime(v['alarm_configuration_updated_timestamp'],
+                                  "%Y-%m-%dT%H:%M:%S.%fZ"),
                 'alarm_description':v['alarm_description'],
                 'alarm_name':v['alarm_name'],
                 'comparison_operator':v['comparison_operator'],
@@ -244,6 +244,8 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         
+        d = utils.extract_member_dict(dimensions) if dimensions else {}
+        
         metricalarm = monitor.MetricAlarm(
             alarm_name=alarm_name,
             comparison_operator=comparison_operator,
@@ -256,7 +258,7 @@ class MonitorController(object):
             action_enabled=action_enabled,
             alarm_actions=alarm_actions,
             alarm_description=alarm_description,
-            dimensions=utils.extract_member_dict(dimensions),
+            dimensions=d,
             insufficient_data_actions=insufficient_actions,
             ok_actions=ok_actions,
             unit=unit
