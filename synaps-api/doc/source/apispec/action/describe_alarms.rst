@@ -10,7 +10,7 @@ DescribeAlarms
 
 요청 매개변수
 -------------
-공통 매개변수에 대한 정보는 :ref:`common_query_parameters`를 참고한다.
+공통 매개변수에 대한 정보는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
    :widths: 15 50 10
@@ -20,7 +20,8 @@ DescribeAlarms
      - 설명
      - 필수 여부
    * - ActionPrefix
-     - 미구현
+     - 아직 구현되지 않았음.
+     
        액션 이름 시작 문자열.
 
        Type: String

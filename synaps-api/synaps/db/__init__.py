@@ -36,6 +36,8 @@ def certificate_get_all_by_user(admin, user_id):
     # TBD: implement here
     pass
 
+def pack_dimensions(dimensions):
+    return json.dumps(OrderedDict(sorted(dimensions.items())))
 
 class Cassandra(object):
     STATISTICS_TTL = FLAGS.get('statistics_ttl')
@@ -148,10 +150,12 @@ class Cassandra(object):
         return ret
             
     def get_metric_key(self, project_id, namespace, metric_name, dimensions):
+        dimensions = pack_dimensions(dimensions)
         expr_list = [
             pycassa.create_index_expression("project_id", project_id),
             pycassa.create_index_expression("name", metric_name),
-            pycassa.create_index_expression("namespace", namespace)             
+            pycassa.create_index_expression("namespace", namespace),
+            pycassa.create_index_expression("dimensions", dimensions)
         ]
 
         index_clause = pycassa.create_index_clause(expr_list)
@@ -159,8 +163,7 @@ class Cassandra(object):
         items = self.cf_metric.get_indexed_slices(index_clause)
 
         for k, v in items:
-            if json.loads(v['dimensions']) == dimensions: 
-                return k
+            return k
         return None
     
     def get_metric_key_or_create(self, project_id, namespace, metric_name,
@@ -172,7 +175,7 @@ class Cassandra(object):
         # or create metric 
         if not key:
             key = uuid.uuid4()
-            json_dim = json.dumps(dimensions)
+            json_dim = pack_dimensions(dimensions)
             columns = {'project_id': project_id, 'namespace': namespace,
                        'name': metric_name, 'dimensions': json_dim,
                        'unit': unit}
@@ -363,7 +366,14 @@ class Cassandra(object):
             manager.create_column_family(
                 keyspace=keyspace,
                 name='Metric',
-                key_validation_class=pycassa.LEXICAL_UUID_TYPE
+                key_validation_class=pycassa.LEXICAL_UUID_TYPE,
+                column_validation_classes={
+                    'project_id': pycassa.UTF8_TYPE,
+                    'name': pycassa.UTF8_TYPE,
+                    'namespace': pycassa.UTF8_TYPE,
+                    'unit': pycassa.UTF8_TYPE,
+                    'dimensions': pycassa.UTF8_TYPE
+                }
             )
             manager.create_index(keyspace=keyspace, column_family='Metric',
                                 column='project_id',
@@ -374,6 +384,10 @@ class Cassandra(object):
             manager.create_index(keyspace=keyspace, column_family='Metric',
                                  column='namespace',
                                  value_type=types.UTF8Type())
+            manager.create_index(keyspace=keyspace, column_family='Metric',
+                                 column='dimensions',
+                                 value_type=types.UTF8Type())
+
 
         if 'StatArchive' not in column_families.keys():
             manager.create_column_family(
