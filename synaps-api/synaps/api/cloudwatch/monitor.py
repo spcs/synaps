@@ -117,7 +117,6 @@ class MonitorController(object):
         max_records = int(max_records) if max_records else 100
         ret_dict = {}
         ret_alarms = []
-        next_token = None
         alarm_names = utils.extract_member_list(alarm_names) \
                       if alarm_names else None
         if alarm_names:

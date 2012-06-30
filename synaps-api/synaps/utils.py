@@ -595,3 +595,7 @@ def strcmp_const_time(s1, s2):
     for (a, b) in zip(s1, s2):
         result |= ord(a) ^ ord(b)
     return result == 0            
+
+def prefix_end(buf):
+    lastord = ord(buf[-1])
+    return buf[:-1] + unichr(lastord+1)

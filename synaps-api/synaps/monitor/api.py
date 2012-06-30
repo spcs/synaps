@@ -47,6 +47,16 @@ class API(object):
     def describe_alarms(self, project_id, action_prefix=None,
                         alarm_name_prefix=None, alarm_names=None,
                         max_records=None, next_token=None, state_value=None):
+        """
+        params:
+            project_id: string
+            action_prefix: TODO: not implemented yet.
+            alarm_name_prefix: string
+            alarm_names: string list
+            max_records: integer
+            next_token: string (uuid type)
+            state_value: string (OK | ALARM | INSUFFICIENT_DATA)
+        """
 
         alarms = self.cass.describe_alarms(project_id, action_prefix,
                                            alarm_name_prefix, alarm_names,

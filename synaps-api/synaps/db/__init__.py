@@ -56,15 +56,37 @@ class Cassandra(object):
         
     def delete_metric_alarm(self, alarm_key):
         self.cf_metric_alarm.remove(alarm_key)
+    
+    def _describe_alarms_by_names(self, project_id, alarm_names):
+        for alarm_name in alarm_names:
+            expr_list = [
+                pycassa.create_index_expression("project_id", project_id),
+                pycassa.create_index_expression("alarm_name", alarm_name)
+            ]
+            
+            index_clause = pycassa.create_index_clause(expr_list)
+            items = self.cf_metric_alarm.get_indexed_slices(index_clause)
+            
+            for k, v in items:
+                yield k, v            
 
     def describe_alarms(self, project_id, action_prefix=None,
                         alarm_name_prefix=None, alarm_names=None,
                         max_records=100, next_token=None, state_value=None):
         """
         
-        TODO: action_prefix is not implemented yet.
-        TODO: alarm_names is not implemented yet.
+        params:
+            project_id: string
+            action_prefix: TODO: not implemented yet.
+            alarm_name_prefix: string
+            alarm_names: string list
+            max_records: integer
+            next_token: string (uuid type)
+            state_value: string (OK | ALARM | INSUFFICIENT_DATA)
         """
+        if alarm_names:
+            return self._describe_alarms_by_names(project_id, alarm_names)
+        
         next_token = uuid.UUID(next_token) if next_token else ''
         
         expr_list = []
@@ -72,17 +94,18 @@ class Cassandra(object):
         expr_list.append(prj_expr)
             
         if alarm_name_prefix:
-            alarm_name_prefix_end = alarm_name_prefix + unichr(0)
             expr_s = create_index_expression("alarm_name", alarm_name_prefix,
                                              GTE)
             expr_e = create_index_expression("alarm_name",
-                                             alarm_name_prefix_end, LT)
+                                           utils.prefix_end(alarm_name_prefix),
+                                           LT)
             expr_list.append(expr_s)
             expr_list.append(expr_e)
         
         if state_value:
             expr = create_index_expression("state_value", state_value)
             expr_list.append(expr)
+        LOG.info("expr %s" % expr_list)
 
         index_clause = create_index_clause(expr_list=expr_list,
                                            start_key=next_token,
