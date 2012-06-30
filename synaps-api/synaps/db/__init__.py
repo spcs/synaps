@@ -255,7 +255,8 @@ class Cassandra(object):
                 r_set = to_set(json.loads(item['dimensions']))
                 return l_set.issubset(r_set)
             return True
-        
+
+        next_token = uuid.UUID(next_token) if next_token else ''
         expr_list = [pycassa.create_index_expression("project_id",
                                                      project_id), ]
         if namespace:
@@ -266,7 +267,9 @@ class Cassandra(object):
             expr = pycassa.create_index_expression("name", metric_name)
             expr_list.append(expr)
             
-        index_clause = pycassa.create_index_clause(expr_list)
+        index_clause = pycassa.create_index_clause(expr_list,
+                                                   start_key=next_token,
+                                                   count=500)
         items = self.cf_metric.get_indexed_slices(index_clause)
         
         metrics = [(k, to_dict(v)) for k, v in items if check_dimension(v)]
