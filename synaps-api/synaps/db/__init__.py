@@ -6,7 +6,8 @@ import time
 import uuid
 import pycassa
 import datetime
-from pycassa import types
+from pycassa import (types, create_index_clause, create_index_expression, EQ,
+                     GT, GTE, LT, LTE)
 import struct
 import json
 import pickle
@@ -58,18 +59,41 @@ class Cassandra(object):
 
     def describe_alarms(self, project_id, action_prefix=None,
                         alarm_name_prefix=None, alarm_names=None,
-                        max_records=None, next_token=None, state_value=None):
-        expr_list = [
-            pycassa.create_index_expression("project_id", project_id),
-        ]
+                        max_records=100, next_token=None, state_value=None):
+        """
         
-        index_clause = pycassa.create_index_clause(expr_list)
+        TODO: action_prefix is not implemented yet.
+        TODO: alarm_names is not implemented yet.
+        """
+        next_token = uuid.UUID(next_token) if next_token else ''
+        
+        expr_list = []
+        prj_expr = create_index_expression("project_id", project_id)
+        expr_list.append(prj_expr)
+            
+        if alarm_name_prefix:
+            alarm_name_prefix_end = alarm_name_prefix + unichr(0)
+            expr_s = create_index_expression("alarm_name", alarm_name_prefix,
+                                             GTE)
+            expr_e = create_index_expression("alarm_name",
+                                             alarm_name_prefix_end, LT)
+            expr_list.append(expr_s)
+            expr_list.append(expr_e)
+        
+        if state_value:
+            expr = create_index_expression("state_value", state_value)
+            expr_list.append(expr)
+
+        index_clause = create_index_clause(expr_list=expr_list,
+                                           start_key=next_token,
+                                           count=max_records)
+        
         items = self.cf_metric_alarm.get_indexed_slices(index_clause)
         return items
 
     def describe_alarm_history(self, project_id, alarm_name=None,
                                end_date=None, history_item_type=None,
-                               max_records=None, next_token=None,
+                               max_records=100, next_token=None,
                                start_date=None):
         expr_list = [
             pycassa.create_index_expression("project_id", project_id),

@@ -52,7 +52,7 @@ class UnpackMessageBolt(storm.BasicBolt):
     def get_alarm_metric_key(self, alarmkey):
         alarm = self.cass.get_metric_alarm(alarmkey)
         if alarm:
-            return alarm.get('metric_key')
+            return str(alarm.get('metric_key'))
         else:
             return None
     

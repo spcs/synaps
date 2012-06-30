@@ -53,7 +53,8 @@ class MonitorController(object):
             
         ret_dict = {}
         ret_histories = []
-        next_token = None        
+        next_token = None
+        max_records = int(max_records) if max_records else 100        
             
         histories = self.monitor_api.describe_alarm_history(
             alarm_name=alarm_name, end_date=end_date,
@@ -113,15 +114,23 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         
+        max_records = int(max_records) if max_records else 100
         ret_dict = {}
         ret_alarms = []
-        next_token = None        
+        next_token = None
+        alarm_names = utils.extract_member_list(alarm_names) \
+                      if alarm_names else None
+        if alarm_names:
+            if len(alarm_names) > 100:
+                msg = "only 100 alarm names are allowed per request"
+                raise exception.InvalidRequest(_(msg))        
             
         alarms = self.monitor_api.describe_alarms(project_id=project_id,
             action_prefix=action_prefix, alarm_name_prefix=alarm_name_prefix,
             alarm_names=alarm_names, max_records=max_records,
             next_token=next_token, state_value=state_value,
         )
+        
         for k, v in alarms:
             ret_alarms.append(to_alarm(v))
             next_token = k
