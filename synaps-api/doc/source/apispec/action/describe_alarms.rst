@@ -5,14 +5,12 @@ DescribeAlarms
 
 설명
 ----
-Retrieves alarms with the specified names. If no name is specified, all alarms 
-for the user are returned. Alarms can be retrieved by using only a prefix for 
-the alarm name, the alarm state, or a prefix for any action.
+특정 이름을 가진 알람을 조회한다. 이름이 지정되지 않은 경우, 사용자의 모든 알람
+을 반환한다. 알람 이름의 시작 문자열이나 알람 상태를 통해 조회할 수 있다.
 
 요청 매개변수
 -------------
-For information about the common parameters that all actions use, see 
-:ref:`common_query_parameters`.
+공통 매개변수에 대한 정보는 :ref:`common_query_parameters`를 참고한다.
 
 .. list-table:: 
    :widths: 15 50 10
@@ -22,63 +20,62 @@ For information about the common parameters that all actions use, see
      - 설명
      - 필수 여부
    * - ActionPrefix
-     - The action name prefix.
+     - 미구현
+       액션 이름 시작 문자열.
 
        Type: String
 
-       Length constraints: Minimum length of 1. Maximum length of 1024.
+       길이 제한: 최소 1자, 최대 1024자.
      - No
    * - AlarmNamePrefix
-     - The alarm name prefix. AlarmNames cannot be specified if this parameter 
-       is specified.
+     - 알람 이름의 시작 문자열. AlarmNames 매개변수를 사용한 경우 본 매개변수는
+       무시한다.
 
        Type: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자, 최대 255자.
      - No
    * - AlarmNames.member.N
-     - A list of alarm names to retrieve information for.
+     - 알람 정보를 얻어올 알람 이름의 리스트.
 
        Type: String list
 
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 100 
-       item(s) in the list.
+       길이 제한: 최소 0개의 이름, 최대 100개의 이름.
      - No
    * - MaxRecords
-     - The maximum number of alarm descriptions to retrieve.
+     - 얻어올 알람의 최대 갯수.
 
        Type: Integer
      - No
    * - NextToken
-     - The token returned by a previous call to indicate that there is more 
-       data available.
+     - 해당 토큰을 키로하는 알람부터 조회
 
        Type: String
      - No
    * - StateValue
-     - The state value to be used in matching alarms.
+     - 일치하는 알람의 상태값.
 
        Type: String
 
-       Valid Values: OK | ALARM | INSUFFICIENT_DATA
+       유효 값: OK | ALARM | INSUFFICIENT_DATA
      - No
  
-Response Elements
+응답
 ----
-The following elements come wrapped in a DescribeAlarmHistoryResult structure.
+다음 자료를 DescribeAlarmsResult 에 담아 반환한다.
 
 .. list-table:: 
    :widths: 20 40
    :header-rows: 1
 
-   * - Name
-     - Description
-   * - AlarmHistoryItems
-     - A list of alarm histories in JSON format.
-       
-       Type: AlarmHistoryItem list
+   * - 이름
+     - 설명
+   * - MetricAlarms	
+       알람 정보
+
+       Type: MetricAlarm list
    * - NextToken
-     - A string that marks the start of the next batch of returned results.
+     - 결과의 마지막 토큰
        
        Type: String
     

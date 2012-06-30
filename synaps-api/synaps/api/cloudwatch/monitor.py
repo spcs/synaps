@@ -231,9 +231,16 @@ class MonitorController(object):
         metrics = self.monitor_api.list_metrics(project_id, next_token,
                                                 dimensions, metric_name,
                                                 namespace)
+        ret_list = []
+        for metric in metrics:
+            k, v = metric
+            ret_list.append(to_aws_metric(metric))
+            next_token = k
+            
         metrics = map(to_aws_metric, metrics)
         
-        return {'ListMetricsResult': {'Metrics': metrics}}
+        return {'ListMetricsResult': {'Metrics': ret_list,
+                                      'NextToken':str(next_token)}}
     
     def put_metric_alarm(self, context, alarm_name, comparison_operator,
                          evaluation_periods, metric_name, namespace, period,
