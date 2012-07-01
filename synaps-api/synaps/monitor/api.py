@@ -22,8 +22,8 @@ FLAGS = flags.FLAGS
 
 class API(object):
     ROLLING_FUNC_MAP = {
-        'Average': rolling_mean, 'Minimum': rolling_min, 
-        'Maximum': rolling_max, 'SampleCount': rolling_sum, 
+        'Average': rolling_mean, 'Minimum': rolling_min,
+        'Maximum': rolling_max, 'SampleCount': rolling_sum,
         'Sum': rolling_sum,
     }
     
@@ -62,6 +62,25 @@ class API(object):
                                            alarm_name_prefix, alarm_names,
                                            max_records, next_token,
                                            state_value)
+        return alarms
+    
+    def describe_alarms_for_metric(self, project_id, namespace, metric_name,
+                                   dimensions=None, period=None,
+                                   statistic=None, unit=None):
+        """
+        params:
+            project_id: string
+            metric_name: string
+            namespace: string
+            dimensions: dict
+            period: integer
+            statistic: string (SampleCount | Average | Sum | Minimum | 
+                               Maximum)
+            unit: string
+        """
+        alarms = self.cass.describe_alarms_for_metric(project_id, namespace,
+            metric_name, dimensions=dimensions, period=period,
+            statistic=statistic, unit=unit)
         return alarms
 
     def describe_alarm_history(self, project_id, alarm_name=None,
@@ -269,7 +288,9 @@ class API(object):
             raise AdminRequired()
         
         for metric in utils.extract_member_list(metric_data):
-            dimensions = utils.extract_member_dict(metric.get('dimensions'))
+            dimensions = utils.extract_member_dict(metric.get('dimensions',
+                                                              {}))
+                         
             metric_name = metric.get('metric_name')
             unit = metric.get('unit', 'None')
             value = metric.get('value')

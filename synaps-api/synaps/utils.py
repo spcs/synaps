@@ -488,6 +488,8 @@ def extract_member_list(aws_list, key='member'):
     
     ['something1', 'something2', 'something3']
     """
+    if not aws_list: 
+        return []
     return OrderedDict(aws_list[key]).values()
 
 def extract_member_dict(aws_dict, key='member'):
@@ -503,6 +505,8 @@ def extract_member_dict(aws_dict, key='member'):
     
     this is useful for processing dimension.
     """
+    if not aws_dict:
+        return {}
     members = extract_member_list(aws_dict, key)
     member_list = [(member['name'], member['value']) for member in members]
     return dict(member_list)
@@ -598,4 +602,4 @@ def strcmp_const_time(s1, s2):
 
 def prefix_end(buf):
     lastord = ord(buf[-1])
-    return buf[:-1] + unichr(lastord+1)
+    return buf[:-1] + unichr(lastord + 1)

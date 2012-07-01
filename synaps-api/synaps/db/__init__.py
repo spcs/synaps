@@ -16,6 +16,7 @@ from collections import OrderedDict
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
+from synaps import exception
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
@@ -116,15 +117,75 @@ class Cassandra(object):
         items = self.cf_metric_alarm.get_indexed_slices(index_clause)
         return items
 
+    def describe_alarms_for_metric(self, project_id, namespace, metric_name,
+                                   dimensions=None, period=None,
+                                   statistic=None, unit=None):
+        metric_key = self.get_metric_key(project_id, namespace, metric_name,
+                                         dimensions)
+
+        if not metric_key:
+            raise exception.InvalidParameterValue("no metric")
+
+        expr_list = [create_index_expression("metric_key", metric_key)]
+        
+        if period:
+            expr = create_index_expression("period", int(period))
+            expr_list.append(expr)
+        
+        if statistic:
+            expr = create_index_expression("statistic", statistic)
+            expr_list.append(expr)
+            
+        if unit:
+            expr = create_index_expression("unit", unit)
+            expr_list.append(expr)
+        LOG.info("expr %s" % expr_list)
+        index_clause = pycassa.create_index_clause(expr_list)
+        items = self.cf_metric_alarm.get_indexed_slices(index_clause)
+        return items
+
     def describe_alarm_history(self, project_id, alarm_name=None,
                                end_date=None, history_item_type=None,
                                max_records=100, next_token=None,
                                start_date=None):
+        """
+        
+        params:
+            project_id: string
+            alarm_name: string
+            end_date: datetime
+            history_item_type: string (ConfigurationUpdate | StateUpdate |
+                                       Action)
+            max_records: integer
+            next_token: string (uuid type)
+            start_date: datetime
+        """
+        next_token = uuid.UUID(next_token) if next_token else ''
+        
         expr_list = [
             pycassa.create_index_expression("project_id", project_id),
         ]
         
-        index_clause = pycassa.create_index_clause(expr_list)
+        if alarm_name:
+            expr = create_index_expression("alarm_name", alarm_name)
+            expr_list.append(expr)
+        
+        if end_date:
+            expr = create_index_expression("timestamp", end_date, LTE)
+            expr_list.append(expr)
+        
+        if start_date:
+            expr = create_index_expression("timestamp", start_date, GTE)
+            expr_list.append(expr)
+        
+        if history_item_type:
+            expr = create_index_expression("history_item_type",
+                                           history_item_type)
+            expr_list.append(expr)
+        
+        index_clause = pycassa.create_index_clause(expr_list=expr_list,
+                                                   start_key=next_token,
+                                                   count=max_records)
         items = self.cf_alarm_history.get_indexed_slices(index_clause)
         return items        
 
