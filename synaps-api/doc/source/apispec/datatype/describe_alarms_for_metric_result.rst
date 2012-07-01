@@ -1,14 +1,14 @@
 .. _describe_alarms_for_metric_result:
 
 DescribeAlarmsForMetricResult
-======================
+=============================
 
 설명
 ----
 The output for the :ref:`describe_alarms_for_metric` action.
 
 Contents
-----
+--------
 
 .. list-table:: 
    :widths: 15 50

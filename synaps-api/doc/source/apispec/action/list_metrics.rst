@@ -1,83 +1,74 @@
 .. _list_metrics:
 
 ListMetrics
-======================
+===========
 
 설명
 ----
-Returns a list of valid metrics stored for the AWS account owner. Returned 
-metrics can be used with GetMetricStatistics to obtain statistical data for a 
-given metric.
+SPCS 사용자가 저장한 유효한 메트릭을 반환한다. 반환된 메트릭은
+:ref:`get_metric_statistics` 에 사용해서 통계자료를 얻을 수 있다. 
 
-Note
-  Up to 500 results are returned for any one call. To retrieve further results, 
-  use returned NextToken values with subsequent ListMetrics operations.
+알림
+  최대 500 개 결과만 얻을 수 있음. 다음 리스트를 얻기 위해서는 NextToken을 사용
+  해야함.
 
-Note
-  If you create a metric with the :ref:`put_metric_data` action, allow up to 
-  fifteen minutes for the metric to appear in calls to the ListMetrics action. 
-  Statistics about the metric, however, are available sooner using 
-  :ref:`get_metric_statistics` .
 
 요청 매개변수
 -------------
-For information about the common parameters that all actions use, see 
-:ref:`common_query_parameters`.
+공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
-   :widths: 15 50 10
+   :widths: 20 50 10
    :header-rows: 1
 
    * - 이름
      - 설명
      - 필수 여부
    * - Dimensions.member.N
-     - A list of dimensions to filter against.
+     - 검색에 사용할 dimension 의 리스트
 
-       Type: :ref:`dimension_filter` list
+       자료 형: :ref:`dimension_filter` 리스트
 
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 10 
-       item(s) in the list.
+       길이 제한: 최소 0개부터 최대 10개의 아이템
      - No
    * - MetricName
-     - The name of the metric to filter against.
+     - 검색에 사용할 메트릭 이름
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자 ~ 최대 255자
      - No
    * - Namespace	
-     - The namespace to filter against.
+     - 검색에 사용할 namespace
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자 ~ 최대 255자
      - No
    * - NextToken
-     - The token returned by a previous call to indicate that there is more 
-       data available.
-
-       Type: String
+     - 다음 데이터를 조회하기 위한 토큰.
+       
+       자료 형: String
      - No       
        
-Response Elements
+응답
 ----
-The following elements come wrapped in a GetMetricStatisticsResult structure.
+아래 엘리먼트가 ListMetricsResult 에 구조화되어 반환된다.
 
 .. list-table:: 
    :widths: 20 40
    :header-rows: 1
 
-   * - Name
-     - Description
+   * - 이름
+     - 설명
    * - Metrics
-     - A list of metrics used to generate statistics for an AWS account.
+     - SPCS 사용자의 메트릭 리스트
 
-       Type: :ref:metric` list
+       자료 형: :ref:`metric` 리스트
    * - NextToken
-     - A string that marks the start of the next batch of returned results.
-
-       Type: String
+     - 다음 데이터를 조회하기 위한 토큰.
+       
+       자료 형: String
      
 에러
 ----
@@ -97,6 +88,3 @@ The following elements come wrapped in a GetMetricStatisticsResult structure.
    * - InvalidParameterValue
      - Bad or out-of-range value was supplied for the input parameter.
      - 400     
-     
-.. toctree::
-   :maxdepth: 1

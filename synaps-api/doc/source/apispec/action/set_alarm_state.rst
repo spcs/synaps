@@ -1,19 +1,18 @@
 .. _set_alarm_state:
 
 SetAlarmState
-======================
+=============
+.. DANGER::
+  아직 구현되지 않은 기능 
 
 설명
 ----
-Temporarily sets the state of an alarm. When the updated StateValue differs from
-the previous value, the action configured for the appropriate state is invoked.
-This is not a permanent change. The next periodic alarm check (in about a 
-minute) will set the alarm to its actual state.
+임시로 알람의 상태를 정한다. 상태는 지속되지 않고 다음 알람 체크 시 실제 상태로
+변경된다.
 
 요청 매개변수
 -------------
-For information about the common parameters that all actions use, see 
-:ref:`common_query_parameters`.
+공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
    :widths: 15 50 10
@@ -71,6 +70,3 @@ For information about the common parameters that all actions use, see
    * - ResourceNotFound
      - The named resource does not exist.
      - 404   
-     
-.. toctree::
-   :maxdepth: 1

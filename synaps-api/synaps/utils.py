@@ -412,7 +412,7 @@ def execute(*cmd, **kwargs):
     :delay_on_retry     True | False. Defaults to True. If set to True, wait a
                         short amount of time before retrying.
     :attempts           How many times to retry cmd.
-    :run_as_root        True | False. Defaults to False. If set to True,
+    :run_as_root        True | False. Defaults to False. If set to True, 
                         the command is prefixed by the command specified
                         in the root_helper FLAG.
 

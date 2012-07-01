@@ -10,7 +10,7 @@ The MetricDatum data type encapsulates the information sent with
 aggregated into an existing metric.
 
 Contents
-----
+--------
 
 .. list-table:: 
    :widths: 15 50

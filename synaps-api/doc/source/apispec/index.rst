@@ -1,18 +1,10 @@
 .. _index:
 
-Synaps API Specification
-========================
+액션
+----
 
-Welcome
--------
-This is the SPCS Synaps API Reference. This guide provides detailed information 
-about SPCS Synaps actions, data types, parameters, and errors.
+다음의 액션을 지원한다.
 
-SPCS Synaps is a web service that enables you to publish, monitor, and manage 
-various metrics, as well as configure alarm actions based on data from metrics. 
-
-Actions
--------
 .. toctree::
    :maxdepth: 1
    
@@ -28,8 +20,16 @@ Actions
    action/put_metric_data
    action/set_alarm_state
    
-Data Types
-----------
+자료 형
+-------
+
+SPCS Synaps API 는 액션 별로 다양한 자료 형을 사용한다. 이 장에서는 각각의 
+자료 형을 자세히 소개한다.
+
+알림:
+  응답으로 전달되는 각각의 요소의 순서는 보장되지 않으므로 응용 프로그램은 
+  특정 순서를 가정해서는 안된다. 
+
 .. toctree::
    :maxdepth: 1
    
@@ -47,8 +47,8 @@ Data Types
    datatype/metric_datum
    datatype/statistic_set
    
-Common
-------
+공통
+----
 .. toctree::
    :maxdepth: 1
 

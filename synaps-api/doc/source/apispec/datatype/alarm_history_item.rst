@@ -10,7 +10,7 @@ history of a specific alarm. If you call DescribeAlarmHistory, Amazon CloudWatch
 returns this data type as part of the :ref:`describe_alarm_history_result` data type.
 
 Contents
-----
+--------
 
 .. list-table:: 
    :widths: 15 50

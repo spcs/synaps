@@ -1,41 +1,19 @@
 .. _get_metric_statistics:
 
 GetMetricStatistics
-======================
+===================
 
 설명
 ----
-Gets statistics for the specified metric.
+특정 메트릭의 통계자료를 조회한다.
 
-Note
-  The maximum number of data points returned from a single GetMetricStatistics 
-  request is 1,440. If a request is made that generates more than 1,440 data 
-  points, Amazon CloudWatch returns an error. In such a case, alter the request 
-  by narrowing the specified time range or increasing the specified period. 
-  Alternatively, make multiple requests across adjacent time ranges.
-
-Amazon CloudWatch aggregates data points based on the length of the period that 
-you specify. For example, if you request statistics with a one-minute 
-granularity, Amazon CloudWatch aggregates data points with time stamps that fall 
-within the same one-minute period. In such a case, the data points queried can 
-greatly outnumber the data points returned.
-
-Note
-  The maximum number of data points that can be queried is 50,850; whereas the 
-  maximum number of data points returned is 1,440.
-
-The following examples show various statistics allowed by the data point query 
-maximum of 50,850 when you call GetMetricStatistics on Amazon EC2 instances 
-with detailed (one-minute) monitoring enabled:
-
-- Statistics for up to 400 instances for a span of one hour
-- Statistics for up to 35 instances over a span of 24 hours
-- Statistics for up to 2 instances over a span of 2 weeks
+알림:
+  한 GetMetricStatistics 요청으로 얻어올 수 있는 최대 데이터포인트의 수는
+  1,440 개이다. 그 이상의 요청을 한 경우 에러를 반환한다. 
 
 요청 매개변수
 -------------
-For information about the common parameters that all actions use, 
-see :ref:`common_query_parameters`.
+공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
    :widths: 15 50 10
@@ -45,69 +23,57 @@ see :ref:`common_query_parameters`.
      - 설명
      - 필수 여부
    * - Dimensions.member.N
-     - The list of dimensions associated with the metric.
+     - 메트릭과 관련된 Dimension 리스트
 
-       Type: :ref:`dimension` list
+       자료 형: :ref:`dimension` list
 
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 10 
-       item(s) in the list.
+       길이 제한: 최소 0개부터 최대 10개의 아이템
      - No
-
    * - EndTime	
-     - The time stamp to use for determining the last datapoint to return. 
-       The value specified is exclusive; results will include datapoints up to
-       the time stamp specified.
+     - 데이터포인트가 반환될 시간의 끝
 
-       Type: DateTime
+       자료 형: DateTime
      - Yes
    * - MetricName
-     - The name of the metric.
+     - 메트릭 이름
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자 ~ 최대 255자
      - Yes
    * - Namespace	
-     - The namespace of the metric.
+     - 메트릭의 namespace
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자 ~ 최대 255자
      - Yes
    * - Period
-     - The granularity, in seconds, of the returned datapoints. Period must be 
-       at least 60 seconds and must be a multiple of 60. The default value is 60.
+     - 데이터포인트의 통계에 적용할 기간. 최소 60초이며 반드시 60초의 배수이어
+       야 한다. 기본 값은 60이다.
 
-       Type: Integer
+       자료 형: Integer
      - Yes
    * - StartTime
-     - The time stamp to use for determining the first datapoint to return. 
-       The value specified is inclusive; results include datapoints with the time stamp specified.     - No
+     - 데이터포인트가 반환될 시간의 시작
 
-       Note
-         The specified start time is rounded down to the nearest value. 
-         Datapoints are returned for start times up to two weeks in the past. Specified start times that are more than two weeks in the past will not return datapoints for metrics that are older than two weeks.
-
-       Type: DateTime
+       자료 형: DateTime
      - Yes
    * - Statistics.member.N
-     - The metric statistics to return. For information about specific 
-       statistics returned by GetMetricStatistics, go to :ref:`statistics` in 
-       the Amazon CloudWatch Developer Guide.
+     - 반환될 메트릭 통계. 
 
-       Valid Values: Average | Sum | SampleCount | Maximum | Minimum
+       유효 값: Average | Sum | SampleCount | Maximum | Minimum
 
-       Type: String list
+       자료 형: String list
 
-       Length constraints: Minimum of 1 item(s) in the list. Maximum of 5 
-       item(s) in the list.
+       길이 제한: 최소 1개 ~ 5개의 아이템 
      - Yes
    * - Unit
-     - The unit for the metric.
+     - 메트릭에 적용될 단위
 
-       Type: String
+       자료 형: String
 
-       Valid Values: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
+       유효 값: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
        Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits | 
        Gigabits | Terabits | Percent | Count | Bytes/Second | Kilobytes/Second | 
        Megabytes/Second | Gigabytes/Second | Terabytes/Second | Bits/Second | 
@@ -116,34 +82,32 @@ see :ref:`common_query_parameters`.
      - Yes
        
        
-       
-       
-Response Elements
+응답
 ----
-The following elements come wrapped in a GetMetricStatisticsResult structure.
+아래 엘리먼트가 GetMetricStatisticsResult 에 구조화되어 반환된다.
 
 .. list-table:: 
    :widths: 20 40
    :header-rows: 1
 
-   * - Name
-     - Description
+   * - 이름
+     - 설명
    * - Datapoints
-     - The : datapoints for the specified metric.
+     - 해당 메트릭의 데이터포인트
 
-       Type: :ref:`datapoint` list
+       자료 형: :ref:`datapoint` 리스트
      
 에러
 ----
 공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
 
 .. list-table:: 
-   :widths: 15 50 10
+   :widths: 20 50 10
    :header-rows: 1
 
    * - 에러
      - 설명
-     - HTTP Status Code
+     - HTTP 상태 코드
    * - InternalService
      - Indicates that the request processing has failed due to some unknown 
        error, exception, or failure.
@@ -159,6 +123,3 @@ The following elements come wrapped in a GetMetricStatisticsResult structure.
        supplied.
      - 400
      
-     
-.. toctree::
-   :maxdepth: 1

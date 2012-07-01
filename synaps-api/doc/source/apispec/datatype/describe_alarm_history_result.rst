@@ -1,14 +1,14 @@
 .. _describe_alarm_history_result:
 
 DescribeAlarmHistoryResult
-======================
+==========================
 
 설명
 ----
 The output for the :ref:`describe_alarm_history` action.
 
 Contents
-----
+--------
 
 .. list-table:: 
    :widths: 15 50

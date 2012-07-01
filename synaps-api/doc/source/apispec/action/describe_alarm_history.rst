@@ -5,89 +5,88 @@ DescribeAlarmHistory
 
 설명
 ----
-지정된 모든 알람을 지운다. 
+특정 알람의 히스토리를 조회한다. 기간이나 아이템 타입(history_item_type)에 따라
+히스토리를 검색할 수 있다. 알람 이름을 지정하지 않은 경우, 사용자의 모든 알람에
+해당하는 히스토리 정보가 조회된다. 
+
+알림:
+  SPCS Synaps는 알람 히스토리를 2주간 보관한다.
 
 요청 매개변수
 -------------
 공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
-   :widths: 15 50 10
+   :widths: 20 50 10
    :header-rows: 1
 
    * - 이름
      - 설명
      - 필수 여부
-   * - AlarmNames.member.N
-     - A list of alarms to be deleted.
-
-       Type: String list
-
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 100 
-       item(s) in the list.
-     - No
-
    * - AlarmName	
-     - The name of the alarm.
+     - 알람 이름
        
        Type: String
        
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자 ~ 최대 255자
      - No
    * - EndDate	
-     - The ending date to retrieve alarm history.
+     - 알람 히스토리를 조회할 기간의 끝
        
        Type: DateTime
      - No
    * - HistoryItemType	
-     - The type of alarm histories to retrieve.
+     - 조회할 알람 히스토리의 종류
       
        Type: String
       
-       Valid Values: ConfigurationUpdate | StateUpdate | Action
+       유효 값: ConfigurationUpdate | StateUpdate | Action
      - No
    * - MaxRecords	
-     - The maximum number of alarm history records to retrieve.
+     - 조회할 알람 히스토리의 최대 갯수
       
        Type: Integer
      - No
    * - NextToken	
-     - The token returned by a previous call to indicate that there is more data available.
+     - 다음 데이터를 조회하기 위한 토큰 
        
        Type: String
      - No
    * - StartDate	
-     - The starting date to retrieve alarm history.
+     - 알람 히스토리를 조회할 기간의 시작
        
        Type: DateTime
      - No
 
-Response Elements
+응답
 ----
-The following elements come wrapped in a DescribeAlarmHistoryResult structure.
+아래 엘리먼트가 DescribeAlarmHistoryResult 에 구조화되어 반환된다.
 
 .. list-table:: 
-   :widths: 20 40
+   :widths: 30 50
    :header-rows: 1
 
-   * - Name
-     - Description
+   * - 이름
+     - 설명
    * - AlarmHistoryItems
-     - A list of alarm histories in JSON format.
+     - JSON 형식의 알람 히스토리
        
-       Type: AlarmHistoryItem list
+       자료 형: :ref:`alarm_history_item` 리스트
    * - NextToken
-     - A string that marks the start of the next batch of returned results.
+     - 다음 데이터를 조회하기 위한 토큰.
        
-       Type: String
+       자료 형: String
 
 
 에러
 ----
 공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
 
+알림:
+  (TBD) 반환하는 에러는 아직 모두 정의되지 않았다.
+
 .. list-table:: 
-   :widths: 15 50 10
+   :widths: 20 50 10
    :header-rows: 1
 
    * - 에러
@@ -96,6 +95,3 @@ The following elements come wrapped in a DescribeAlarmHistoryResult structure.
    * - InvalidNextToken
      - The next token specified is invalid.
      - 400
-     
-.. toctree::
-   :maxdepth: 1

@@ -554,18 +554,18 @@ class AuthManager(object):
 
         :type name: str
         :param name: Name of the project to create. The name will also be
-        used as the project id.
+                     used as the project id.
 
         :type manager_user: User or uid
         :param manager_user: This user will be the project manager.
 
         :type description: str
         :param project: Description of the project. If no description is
-        specified, the name of the project will be used.
+                        specified, the name of the project will be used.
 
         :type member_users: list of User or uid
         :param: Initial project members. The project manager will always be
-        added as a member, even if he isn't specified in this list.
+                added as a member, even if he isn't specified in this list.
 
         :rtype: Project
         :return: The new project.
@@ -699,7 +699,8 @@ class AuthManager(object):
 
         :type admin: bool
         :param admin: Whether to set the admin flag. The admin flag gives
-        superuser status regardless of roles specified for the user.
+                      superuser status regardless of roles specified for the 
+                      user.
 
         :type create_project: bool
         :param: Whether to create a project for the user with the same name.

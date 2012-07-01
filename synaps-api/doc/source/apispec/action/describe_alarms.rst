@@ -13,7 +13,7 @@ DescribeAlarms
 공통 매개변수에 대한 정보는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
-   :widths: 15 50 10
+   :widths: 20 50 10
    :header-rows: 1
 
    * - 이름
@@ -83,6 +83,9 @@ DescribeAlarms
 에러
 ----
 공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
+
+알림:
+  (TBD) 반환하는 에러는 아직 모두 정의되지 않았다.
 
 .. list-table:: 
    :widths: 15 50 10

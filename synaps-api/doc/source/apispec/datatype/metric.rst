@@ -14,7 +14,7 @@ latency. Both metrics are in the examples namespace. Both metrics have two
 dimensions, InstanceID and InstanceType.
 
 Contents
-----
+--------
 
 .. list-table:: 
    :widths: 15 50

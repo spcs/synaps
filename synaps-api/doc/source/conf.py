@@ -25,7 +25,9 @@ sys.path.insert(0, os.path.abspath('./'))
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'ext.synaps_todo', 'sphinx.ext.coverage', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig','sphinx.ext.graphviz']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx',
+              'sphinx.ext.coverage', 'sphinx.ext.pngmath',
+              'sphinx.ext.ifconfig', 'sphinx.ext.graphviz']
 
 # autodoc generation is a bit aggressive and a nuisance when doing heavy text edit cycles.
 # execute "export SPHINX_DEBUG=1" in your terminal to disable
@@ -47,7 +49,7 @@ else:
 source_suffix = '.rst'
 
 # The encoding of source files.
-#source_encoding = 'utf-8'
+source_encoding = 'utf-8'
 
 # The master toctree document.
 master_doc = 'index'
@@ -192,16 +194,16 @@ htmlhelp_basename = 'synapsdoc'
 # -- Options for LaTeX output --------------------------------------------------
 
 # The paper size ('letter' or 'a4').
-#latex_paper_size = 'letter'
+latex_paper_size = 'a4'
 
 # The font size ('10pt', '11pt' or '12pt').
-#latex_font_size = '10pt'
+latex_font_size = '11pt'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Synaps.tex', u'Synaps Documentation',
-   u'Anso Labs, LLC', 'manual'),
+  ('index', 'Synaps.tex', u'SPCS Synaps Documentation',
+   u'SC클라우드서비스그룹, 삼성SDS', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -223,5 +225,5 @@ latex_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'python': ('http://docs.python.org/', None),}
+#intersphinx_mapping = {'python': ('http://docs.python.org/', None),}
 

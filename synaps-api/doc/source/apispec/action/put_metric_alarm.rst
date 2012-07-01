@@ -5,141 +5,119 @@ PutMetricAlarm
 
 설명
 ----
-Creates or updates an alarm and associates it with the specified Amazon 
-CloudWatch metric. Optionally, this operation can associate one or more Amazon 
-Simple Notification Service resources with the alarm.
+메트릭에 대해 알람을 생성하거나 업데이트한다. 
 
-When this operation creates an alarm, the alarm state is immediately set to 
-INSUFFICIENT_DATA. The alarm is evaluated and its StateValue is set 
-appropriately. Any actions associated with the StateValue is then executed.
-
-Note
-  When updating an existing alarm, its StateValue is left unchanged.
-  
 요청 매개변수
 -------------
-For information about the common parameters that all actions use, see 
-:ref:`common_query_parameters`.
+공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
-.. list-table:: 
-   :widths: 15 50 10
+.. list-table:: 매개변수 표 1
+   :widths: 20 50 10
    :header-rows: 1
 
    * - 이름
      - 설명
      - 필수 여부
    * - ActionsEnabled
-     - Indicates whether or not actions should be executed during any changes 
-       to the alarm's state.
+     - 알람의 상태가 바뀌면 액션이 수행되어야할지 여부
+       .. DANGER::
+         아직 구현되지 않은 기능 
 
-       Type: Boolean
+       자료 형: Boolean
      - No
    * - AlarmActions.member.N
-     - The list of actions to execute when this alarm transitions into an ALARM 
-       state from any other state. Each action is specified as an Amazon 
-       Resource Number (ARN). Currently the only action supported is publishing 
-       to an Amazon SNS topic or an Amazon Auto Scaling policy.
+     - .. DANGER::
+         아직 구현되지 않은 기능 
 
-       Type: String list
-
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 5 
-       item(s) in the list.
      - No
    * - AlarmDescription	
-     - The description for the alarm.
+     - 알람 설명
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 0. Maximum length of 255.
+       길이 제한: 최소 1자 ~ 최대 255자
      - No
    * - AlarmName
-     - The descriptive name for the alarm. This name must be unique within the 
-       user's AWS account
+     - 알람 이름. 이 이름은 SPCS 프로젝트에 한해 유일해야한다.
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
-     - Yes     
+       길이 제한: 최소 1자 ~ 최대 255자
+     - Yes
+
    * - ComparisonOperator
-     - The arithmetic operation to use when comparing the specified Statistic 
-       and Threshold. The specified Statistic value is used as the first operand.
+     - 임계치와 비교할 연산자. 통계 자료가 좌변 연산 값으로 사용된다.
 
-       Type: String
+       자료 형: String
 
-       Valid Values: GreaterThanOrEqualToThreshold | GreaterThanThreshold | 
+       유효 값: GreaterThanOrEqualToThreshold | GreaterThanThreshold | 
        LessThanThreshold | LessThanOrEqualToThreshold
      - Yes     
    * - Dimensions.member.N
-     - The dimensions for the alarm's associated metric.
+     - 알람에 관련된 메트릭의 dimensions
 
-       Type: :ref:`dimension` list
+       자료 형: :ref:`dimension` 리스트
 
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 10 
-       item(s) in the list.
-     - No     
+       길이 제한: 최소 0개부터 최대 10개의 아이템
+       - No     
    * - EvaluationPeriods
-     - The number of periods over which data is compared to the specified 
-       threshold.
+     - 임계치 비교를 할 데이터의 횟수
 
-       Type: Integer
+       자료 형: Integer
      - Yes     
    * - InsufficientDataActions.member.N
-     - The list of actions to execute when this alarm transitions into an 
-       INSUFFICIENT_DATA state from any other state. Each action is specified as 
-       an Amazon Resource Number (ARN). Currently the only action supported is 
-       publishing to an Amazon SNS topic or an Amazon Auto Scaling policy.
+     - .. DANGER::
+         아직 구현되지 않은 기능 
 
-       Type: String list
+     - No
 
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 5 
-       item(s) in the list.
-     - No     
+.. list-table:: 매개변수 표 Cont'
+   :widths: 20 50 10
+   :header-rows: 1
+
+   * - 이름
+     - 설명
+     - 필수 여부     
    * - MetricName
-     - The name for the alarm's associated metric.
+     - 알람에 관련된 메트릭의 이름
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
-     - Yes     
+       길이 제한: 최소 1자 ~ 최대 255자
+     - Yes
    * - Namespace
-     - The namespace for the alarm's associated metric.
+     - 알람에 관련된 메트릭의 namespace
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
-     - Yes     
+       길이 제한: 최소 1자 ~ 최대 255자
+     - Yes
    * - OKActions.member.N
-     - The list of actions to execute when this alarm transitions into an OK 
-       state from any other state. Each action is specified as an Amazon 
-       Resource Number (ARN). Currently the only action supported is publishing 
-       to an Amazon SNS topic or an Amazon Auto Scaling policy.
+     - .. DANGER::
+         아직 구현되지 않은 기능 
 
-       Type: String list
-
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 5 
-       item(s) in the list.
-     - No   
+     - No
    * - Period
-     - The period in seconds over which the specified statistic is applied.
+     - 통계가 적용될 기간(초 단위)
 
-       Type: Integer
+       자료 형: Integer
      - Yes     
    * - Statistic
-     - The statistic to apply to the alarm's associated metric.
+     - 알람에 사용할 메트릭의 통계
 
-       Type: String
+       자료 형: String
 
-       Valid Values: SampleCount | Average | Sum | Minimum | Maximum
+       유효 값: SampleCount | Average | Sum | Minimum | Maximum
      - Yes     
    * - Threshold
-     - The value against which the specified statistic is compared.
+     - 통계자료와 비교할 임계치.
 
-       Type: Double
+       자료 형: Double
      - Yes     
    * - Unit
-     - The unit for the alarm's associated metric.
+     - 알람과 연계된 메트릭의 단위.
 
-       Type: String
+       자료 형: String
 
        Valid Values: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
        Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits | 
@@ -163,6 +141,3 @@ For information about the common parameters that all actions use, see
    * - LimitExceeded
      - The quota for alarms for this customer has already been reached.
      - 400  
-     
-.. toctree::
-   :maxdepth: 1

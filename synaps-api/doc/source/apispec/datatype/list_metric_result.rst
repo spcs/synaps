@@ -8,7 +8,7 @@ ListMetricResult
 The output for the :ref:`list_metrics` action.
 
 Contents
-----
+--------
 
 .. list-table:: 
    :widths: 15 50

@@ -9,7 +9,7 @@ The Datapoint data type encapsulates the statistical data that Amazon
 CloudWatch computes from metric data.
 
 Contents
-----
+--------
 
 .. list-table:: 
    :widths: 15 50

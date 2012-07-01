@@ -8,7 +8,7 @@ DescribeAlarmsResult
 The output for the :ref:`describe_alarms` action.
 
 Contents
-----
+--------
 
 .. list-table:: 
    :widths: 15 50

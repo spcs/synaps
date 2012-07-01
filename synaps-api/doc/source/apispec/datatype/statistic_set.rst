@@ -10,7 +10,7 @@ The StatisticSet data type describes the StatisticValues component of
 specific metric.
 
 Contents
-----
+--------
 
 .. list-table:: 
    :widths: 15 50

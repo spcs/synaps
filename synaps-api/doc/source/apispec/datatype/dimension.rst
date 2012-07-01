@@ -11,7 +11,7 @@ Name, Value pair.
 For examples that use one or more dimensions, see :ref:`put_metric_data`.
 
 Contents
-----
+--------
 
 .. list-table:: 
    :widths: 15 50

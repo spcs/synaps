@@ -1,14 +1,14 @@
 .. _get_metric_statistics_result:
 
 GetMetricStatisticsResult
-======================
+=========================
 
 설명
 ----
 The output for the :ref:`get_metric_statistics` action.
 
 Contents
-----
+--------
 
 .. list-table:: 
    :widths: 15 50

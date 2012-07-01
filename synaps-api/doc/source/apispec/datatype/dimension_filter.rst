@@ -8,7 +8,7 @@ DimensionFilter
 The DimensionFilter data type is used to filter :ref:`list_metrics` results.
 
 Contents
-----
+--------
 
 .. list-table:: 
    :widths: 15 50

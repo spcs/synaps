@@ -9,7 +9,7 @@ The :ref:`metric_alarm` data type represents an alarm. You can use
 :ref:`put_metric_alarm` to create or update an alarm.
 
 Contents
-----
+--------
 
 .. list-table:: 
    :widths: 15 50
