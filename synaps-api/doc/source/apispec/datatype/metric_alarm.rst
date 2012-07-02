@@ -5,8 +5,8 @@ MetricAlarm
 
 설명
 ----
-The :ref:`metric_alarm` data type represents an alarm. You can use 
-:ref:`put_metric_alarm` to create or update an alarm.
+:ref:`metric_alarm` 자료형은 알람을 나타낸다. :ref:`put_metric_alarm` 액션으로 
+알람을 생성하고 갱신할 수 있다.
 
 내용
 ----
