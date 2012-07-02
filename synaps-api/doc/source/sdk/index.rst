@@ -20,4 +20,3 @@ SPCS의 프로덕트간 연동은 Synaps Admin SDK를 통해 연동한다.
 * Java
  - AWS SDK for Java의 spin-off SDK 를 통해 연동한다.
  - http://182.194.3.195/projects/synaps-java-adminsdk/repository 참고
- 

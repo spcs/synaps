@@ -41,6 +41,7 @@ Software Development Kit
     :maxdepth: 2
     
     sdk/index.rst
+    sdk/example.rst
 
 Module References
 -----------------    
