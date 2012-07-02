@@ -2,28 +2,26 @@
 
 공통 쿼리 매개변수
 ==================
-
-This section lists the request parameters that all actions use. Any 
-action-specific parameters are listed in the topic for the action.  
+모든 액션에서 사용하는 매개변수의 목록.  
 
 .. list-table:: 
-   :widths: 15 50 10
+   :widths: 20 50 10
    :header-rows: 1
 
-   * - Parameter Name
+   * - 매개변수 이름
      - 설명
      - 필수 여부
    * - Action
-     - The action to perform.
+     - 수행할 액션
 
-       Default: None
+       기본 값: None
 
-       Type: String
+       자료 형: String
      - Yes
    * - AuthParams
-     - The parameters required to authenticate a query request.
+     - 질의 요청을 인증하기 위한 매개변수.
 
-       Contains:
+       다음을 포함:
 
        AWSAccessKeyID
 
@@ -33,81 +31,64 @@ action-specific parameters are listed in the topic for the action.
 
        Signature
 
-       Default: None
-     - Conditional
+       기본 값: None
+     - 조건부
    * - AWSAccessKeyId
-     - The Access Key ID corresponding to the AWS Secret Access Key you used to 
-       sign the request.
+     - 요청에 서명할 AWS Secrete Access Key 와 짝을 이루는 Access Key ID
 
-       Default: None
+       기본 값: None
 
-       Type: String
+       자료 형: String
      - Yes
    * - Expires
-     - The date and time at which the request signature expires, in the format 
-       YYYY-MM-DDThh:mm:ssZ, as specified in the ISO 8601 standard.
+     - 요청 서명의 만기 일시. ISO 8601 표준에 명기된 대로 YYYY-MM-DDThh:mm:ssZ
+       의 형식을 따른다.
 
-       Condition: Requests must include either Timestamp or Expires, but not 
-       both.
+       조건: 요청은 Timestamp 또는 Expires 둘 중 하나를 반드시 포함해야 하며,
+       모두 포함할 수 없다.
 
-       Default: None
+       기본 값: None
 
-       Type: String
-     - Conditional
-   * - SecurityToken
-     - The temporary security token obtained through a call to AWS Security 
-       Token Service. Only available for actions in the following AWS services: 
-       Amazon EC2, Amazon Simple Notification Service, Amazon SQS, and AWS 
-       SimpleDB.
-
-       Default: None
-
-       Type: String
-     - 
+       자료 형: String
+     - 조건부
    * - Signature
-     - The digital signature you created for the request. Refer to the service's 
-       developer documentation for information about how to generate the 
-       signature.
+     - 요청 시 생성하는 전자 서명. 
 
-       Default: None
+       기본 값: None
 
-       Type: String
+       자료 형: String
      - Yes
    * - SignatureMethod
-     - The hash algorithm you used to create the request signature.
+     - 서명에 사용하는 해시 알고리즘
 
-       Default: None
+       기본 값: None
 
-       Valid Values: HmacSHA256 | HmacSHA1.
+       유효 값: HmacSHA256 | HmacSHA1.
 
-       Type: String
+       자료 형: String
      - Yes
    * - SignatureVersion
-     - The signature version you use to sign the request. Set this to the value 
-       recommended in your product-specific documentation on security.
+     - 요청에 서명할 때 사용한 서명의 버전
 
-       Default: None
+       기본 값: None
 
-       Type: String
+       자료 형: String
      - Yes
    * - Timestamp
-     - The date and time the request was signed, in the format 
-       YYYY-MM-DDThh:mm:ssZ, as specified in the ISO 8601 standard.
+     - 요청에 서명하는 날짜 및 시간, ISO 8601 표준에 따라 YYYY-MM-DDThh:mm:ssZ 
+       와 같은 형식을 따른다.
 
-       Condition: Requests must include either Timestamp or Expires, but not 
-       both.
+       조건: 요청은 Timestamp 또는 Expires 둘 중 하나를 반드시 포함해야 하며,
+       모두 포함할 수 없다.
 
-       Default: None
+       기본 값: None
 
-       Type: String
-     - Conditional
+       자료 형: String
+     - 조건부
    * - Version
-     - The API version to use, in the format YYYY-MM-DD.
+     - 사용할 API 버전, YYYY-MM-DD.
 
-       Default: None
+       기본 값: None
 
-       Type: String
+       자료 형: String
      - Yes
-
-.. toctree::
-   :maxdepth: 1

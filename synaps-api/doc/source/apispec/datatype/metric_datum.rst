@@ -1,67 +1,53 @@
 .. _metric_datum:
 
 MetricDatum
-======================
+===========
 
 설명
 ----
-The MetricDatum data type encapsulates the information sent with 
-:ref:`put_metric_data` to either create a new metric or add new values to be 
-aggregated into an existing metric.
+:ref:`put_metric_data` 를 통해 보낼 정보. 새로운 메트릭을 생성하거나 기존
+메트릭에 새로운 값을 추가하기 위해 사용함.
 
-Contents
---------
+내용
+----
 
 .. list-table:: 
-   :widths: 15 50
+   :widths: 30 50
    :header-rows: 1
    
    * - 이름
      - 설명
    * - Dimensions
-     - A list of dimensions associated with the metric.
+     - 메트릭의 dimensions
 
-       Type: :ref:`dimension` list
+       자료 형: :ref:`dimension` 리스트
 
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 10 
-       item(s) in the list.
+       길이 제한: 최소 0개, 최대 10개의 아이템
    * - MetricName
-     - The name of the metric.
+     - 메트릭 이름
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자, 최대 255자
    * - StatisticValues
-     - A set of statistical values describing the metric.
-
-       Type: :ref:`statistic_set`
+     - TBD - 아직 구현되지 않음
    * - Timestamp
-     - The time stamp used for the metric. If not specified, the default value 
-       is set to the time the metric data was received.
+     - 메트릭에 대응하는 timestamp. 지정되지 않은 경우 기본 값으로 메트릭을 
+       입력받은 시간을 사용한다.
 
-       Type: DateTime
+       자료 형: DateTime
    * - Unit
-     - The unit of the metric.
+     - 메트릭의 단위
 
-       Type: String
+       자료 형: String
 
-       Valid Values: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
+       유효 값: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
        Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits | 
        Gigabits | Terabits | Percent | Count | Bytes/Second | Kilobytes/Second | 
        Megabytes/Second | Gigabytes/Second | Terabytes/Second | Bits/Second | 
        Kilobits/Second | Megabits/Second | Gigabits/Second | Terabits/Second | 
        Count/Second | None
    * - Value
-     - The value for the metric.
+     - 메트릭의 값
 
-       Important
-         Although the Value parameter accepts numbers of type Double, Amazon 
-         CloudWatch truncates values with very large exponents. Values with 
-         base-10 exponents greater than 126 (1 x 10^126) are truncated. 
-         Likewise, values with base-10 exponents less than -130 (1 x 10^-130) 
-         are also truncated.
-       
-       Type: Double
-       
-.. toctree::
-   :maxdepth: 1 
+       자료 형: Double

@@ -1,37 +1,34 @@
 .. _dimension:
 
 Dimension
-======================
+=========
 
 설명
 ----
-The Dimension data type further expands on the identity of a metric using a 
-Name, Value pair.
+이름, 값의 짝(pair)을 사용하여 메트릭을 구분하기 위해 사용하는 자료 형
 
-For examples that use one or more dimensions, see :ref:`put_metric_data`.
+dimensions 사용에 대한 예제는 :ref:`put_metric_data` 참고.
 
-Contents
---------
+내용
+----
 
 .. list-table:: 
-   :widths: 15 50
+   :widths: 30 50
    :header-rows: 1
    
    * - 이름
      - 설명
    * - Name
-     - The name of the dimension.
+     - dimension 이름
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자 부터 255자
    * - Value
-     - The value representing the dimension measurement
+     - dimension 값
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
-       
-.. toctree::
-   :maxdepth: 1 
+       길이 제한: 최소 1자 부터 255자
+
    

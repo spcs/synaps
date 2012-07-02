@@ -85,15 +85,4 @@ DescribeAlarms
 공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
 
 알림:
-  (TBD) 반환하는 에러는 아직 모두 정의되지 않았다.
-
-.. list-table:: 
-   :widths: 15 50 10
-   :header-rows: 1
-
-   * - 에러
-     - 설명
-     - HTTP Status Code
-   * - InvalidNextToken
-     - The next token specified is invalid.
-     - 400
+  TBD

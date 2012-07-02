@@ -5,26 +5,22 @@ DescribeAlarmHistoryResult
 
 설명
 ----
-The output for the :ref:`describe_alarm_history` action.
+:ref:`describe_alarm_history` 액션의 결과 값 
 
-Contents
---------
+내용
+----
 
 .. list-table:: 
-   :widths: 15 50
+   :widths: 30 50
    :header-rows: 1
    
    * - 이름
      - 설명
    * - AlarmHistoryItems
-     - A list of alarm histories in JSON format.
+     - JSON 형식의 알람 히스토리 리스트
 
-       Type: :ref:`alarm_history_item` list
+       자료 형: :ref:`alarm_history_item` 리스트
    * - NextToken
-     - A string that marks the start of the next batch of returned results.
+     - 다음 정보 요청을 위해 사용할 토큰
 
-       Type: String
-       
-.. toctree::
-   :maxdepth: 1 
-   
+       자료 형: String

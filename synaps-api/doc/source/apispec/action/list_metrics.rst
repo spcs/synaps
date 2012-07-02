@@ -74,17 +74,5 @@ SPCS 사용자가 저장한 유효한 메트릭을 반환한다. 반환된 메�
 ----
 공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
 
-.. list-table:: 
-   :widths: 15 50 10
-   :header-rows: 1
-
-   * - 에러
-     - 설명
-     - HTTP Status Code
-   * - InternalService
-     - Indicates that the request processing has failed due to some unknown 
-       error, exception, or failure.
-     - 500
-   * - InvalidParameterValue
-     - Bad or out-of-range value was supplied for the input parameter.
-     - 400     
+알림:
+  TBD

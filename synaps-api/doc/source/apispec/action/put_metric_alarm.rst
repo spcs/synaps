@@ -11,7 +11,7 @@ PutMetricAlarm
 -------------
 공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
-.. list-table:: 매개변수 표 1
+.. list-table:: 
    :widths: 20 50 10
    :header-rows: 1
 
@@ -26,9 +26,7 @@ PutMetricAlarm
        자료 형: Boolean
      - No
    * - AlarmActions.member.N
-     - .. DANGER::
-         아직 구현되지 않은 기능 
-
+     - TBD - 아직 구현되지 않음
      - No
    * - AlarmDescription	
      - 알람 설명
@@ -66,15 +64,8 @@ PutMetricAlarm
        자료 형: Integer
      - Yes     
    * - InsufficientDataActions.member.N
-     - .. DANGER::
-         아직 구현되지 않은 기능 
-
+     - TBD - 아직 구현되지 않음
      - No
-
-.. list-table:: 매개변수 표 Cont'
-   :widths: 20 50 10
-   :header-rows: 1
-
    * - 이름
      - 설명
      - 필수 여부     
@@ -93,9 +84,7 @@ PutMetricAlarm
        길이 제한: 최소 1자 ~ 최대 255자
      - Yes
    * - OKActions.member.N
-     - .. DANGER::
-         아직 구현되지 않은 기능 
-
+     - TBD - 아직 구현되지 않음
      - No
    * - Period
      - 통계가 적용될 기간(초 단위)
@@ -131,13 +120,5 @@ PutMetricAlarm
 ----
 공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
 
-.. list-table:: 
-   :widths: 15 50 10
-   :header-rows: 1
-
-   * - 에러
-     - 설명
-     - HTTP Status Code
-   * - LimitExceeded
-     - The quota for alarms for this customer has already been reached.
-     - 400  
+알림:
+  TBD

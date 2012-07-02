@@ -1,166 +1,130 @@
 .. _metric_alarm:
 
 MetricAlarm
-======================
+===========
 
 설명
 ----
 The :ref:`metric_alarm` data type represents an alarm. You can use 
 :ref:`put_metric_alarm` to create or update an alarm.
 
-Contents
---------
+내용
+----
 
 .. list-table:: 
-   :widths: 15 50
+   :widths: 30 50
    :header-rows: 1
    
    * - 이름
      - 설명
    * - ActionsEnabled
-     - Indicates whether actions should be executed during any changes to the 
-       alarm's state.
+     - TBD - 아직 구현되지 않음
 
-       Type: Boolean
+       자료 형: Boolean
    * - AlarmActions
-     - The list of actions to execute when this alarm transitions into an ALARM 
-       state from any other state. Each action is specified as an Amazon 
-       Resource Number (ARN). Currently the only actions supported are 
-       publishing to an Amazon SNS topic and triggering an Auto Scaling policy.
-
-       Type: String list
-
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 5 
-       item(s) in the list.
+     - TBD - 아직 구현되지 않음
    * - AlarmArn
-     - The Amazon Resource Name (ARN) of the alarm.
+     - 알람의 자원 번호
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 1600.
+       길이 제한: 최소 1자, 최대 1000자
    * - AlarmConfigurationUpdatedTimestamp
-     - The time stamp of the last update to the alarm configuration.
+     - 알람 설정이 변경된 가장 최근의 시간 
 
-       Type: DateTime
+       자료 형: DateTime
    * - AlarmDescription
-     - The description for the alarm.
+     - 알람 설명
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 0. Maximum length of 255.
+       길이 제한: 최소 0자, 최대 255자
    * - AlarmName
-     - The name of the alarm.
+     - 알람 이름
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자, 최대 255자
    * - ComparisonOperator
-     - The arithmetic operation to use when comparing the specified Statistic 
-       and Threshold. The specified Statistic value is used as the first 
-       operand.
+     - 특정 통계 자료와 임계치를 비교하기 위해 사용하는 산술 연산자. 통계 자료
+       가 좌변 변수로 적용 된다. 
 
-       Type: String
+       자료 형: String
 
-       Valid Values: GreaterThanOrEqualToThreshold | GreaterThanThreshold |
+       유효 값: GreaterThanOrEqualToThreshold | GreaterThanThreshold |
        LessThanThreshold | LessThanOrEqualToThreshold
    * - Dimensions
-     - The list of dimensions associated with the alarm's associated metric.
+     - 알람 대상 메트릭의 dimensions 리스트
 
-       Type: :ref:`dimension` list
+       자료 형: :ref:`dimension` 리스트
 
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 10 
-       item(s) in the list.
+       길이 제한: 0개부터 10개의 아이템
    * - EvaluationPeriods
-     - The number of periods over which data is compared to the specified 
-       threshold.
+     - 임계치와 비교할 데이터의 갯수
 
-       Type: Integer
+       자료 형: Integer
    * - InsufficientDataActions
-     - The list of actions to execute when this alarm transitions into an 
-       INSUFFICIENT_DATA state from any other state. Each action is specified as 
-       an Amazon Resource Number (ARN). Currently the only actions supported are 
-       publishing to an Amazon SNS topic or triggering an Auto Scaling policy.
-       
-       Important
-         The current WSDL lists this attribute as UnknownActions.
-       
-       Type: String list
-
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 5 
-       item(s) in the list.
+     - TBD - 아직 구현되지 않음
    * - MetricName
-     - The name of the alarm's metric.
+     - 알람 대상 메트릭의 이름
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자, 최대 255자
    * - Namespace
-     - The namespace of alarm's associated metric.
+     - 알람 대상 메트릭의 namespace
 
        Type: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자, 최대 255자
    * - OKActions
-     - The list of actions to execute when this alarm transitions into an OK 
-       state from any other state. Each action is specified as an Amazon 
-       Resource Number (ARN). Currently the only actions supported are 
-       publishing to an Amazon SNS topic and triggering an Auto Scaling policy.
-
-       Type: String list
-
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 5 
-       item(s) in the list.
+     - TBD - 아직 구현되지 않음
    * - Period
-     - The period in seconds over which the statistic is applied.
+     - 통계 자료 계산에 적용될 기간 (초단위) 
 
-       Type: Integer
+       자료 형: Integer
    * - StateReason
-     - A human-readable explanation for the alarm's state.
+     - 알람 상태의 이유 (사람이 읽기 좋은 형식)
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 0. Maximum length of 1023.
+       길이 제한: 최소 0자, 최대 1023자
    * - StateReasonData
-     - An explanation for the alarm's state in machine-readable JSON format
+     - 알람 상태의 이유 (JSON 형식)
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 0. Maximum length of 4000.
+       길이 제한: 최소 0자, 최대 4000자
    * - StateUpdatedTimestamp
-     - The time stamp of the last update to the alarm's state.
+     - 알람의 상태가 변경된 최근의 timestamp
 
-       Type: DateTime
+       자료 형: DateTime
    * - StateValue
-     - The state value for the alarm.
+     - 알람의 상태 값
 
-       Type: String
+       자료 형: String
 
-       Valid Values: OK | ALARM | INSUFFICIENT_DATA
+       유효 값: OK | ALARM | INSUFFICIENT_DATA
    * - Statistic
-     - The statistic to apply to the alarm's associated metric.
+     - 알람 대상 메트릭의 통계
 
-       Type: String
+       자료 형: String
 
-       Valid Values: SampleCount | Average | Sum | Minimum | Maximum
+       유효 값: SampleCount | Average | Sum | Minimum | Maximum
    * - Threshold
-     - The value against which the specified statistic is compared.
+     - 통계자료와 비교할 임계치
 
-       Type: Double
+       자료 형: Double
    * - Unit
-     - The unit of the alarm's associated metric.
+     - 알람 대상 메트릭의 단위
 
-       Type: String
+       자료 형: String
 
-       Valid Values: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
+       유효 값: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
        Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits | 
        Gigabits | Terabits | Percent | Count | Bytes/Second | Kilobytes/Second | 
        Megabytes/Second | Gigabytes/Second | Terabytes/Second | Bits/Second | 
        Kilobits/Second | Megabits/Second | Gigabits/Second | Terabits/Second | 
        Count/Second | None
 
-       Type: String
-
-       
-.. toctree::
-   :maxdepth: 1 
    

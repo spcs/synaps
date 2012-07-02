@@ -40,24 +40,5 @@ PutMetricData
 ----
 공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
 
-.. list-table:: 
-   :widths: 15 50 10
-   :header-rows: 1
-
-   * - 에러
-     - 설명
-     - HTTP Status Code
-   * - InternalService
-     - Indicates that the request processing has failed due to some unknown 
-       error, exception, or failure.
-     - 500  
-   * - InvalidParameterCombination
-     - Parameters that must not be used together were used together.
-     - 400  
-   * - InvalidParameterValue
-     - Bad or out-of-range value was supplied for the input parameter.
-     - 400  
-   * - MissingRequiredParameter
-     - An input parameter that is mandatory for processing the request is not 
-       supplied.
-     - 400  
+알림:
+  TBD

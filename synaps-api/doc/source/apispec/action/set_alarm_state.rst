@@ -3,7 +3,7 @@
 SetAlarmState
 =============
 .. DANGER::
-  아직 구현되지 않은 기능 
+  TBD - 아직 구현되지 않음 
 
 설명
 ----
@@ -22,51 +22,37 @@ SetAlarmState
      - 설명
      - 필수 여부
    * - AlarmName
-     - The descriptive name for the alarm. This name must be unique within the 
-       user's AWS account. The maximum length is 255 characters.
+     - 알람 이름. SPCS 사용자의 알람 내에서 유일한 이름을 가져야 함. 
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자 ~ 최대 255자
      - Yes
    * - StateReason
-     - The reason that this alarm is set to this specific state (in 
-       human-readable text format)
+     - 사람이 읽기 좋은 텍스트 형식으로 알람의 상태가 변경된 이유를 기술함 
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 0. Maximum length of 1023.
+       길이 제한: 최소 1자 ~ 최대 1203자
      - Yes
    * - StateReasonData
-     - The reason that this alarm is set to this specific state (in 
-       machine-readable JSON format)
+     - JSON 형식으로 알람의 상태가 변경된 이유를 기술함
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 0. Maximum length of 4000.
+       길이 제한: 최소 0자 ~ 최대 4000자
      - No
    * - StateValue
-     - The value of the state.
+     - 상태 값
 
-       Type: String
+       자료 형: String
 
-       Valid Values: OK | ALARM | INSUFFICIENT_DATA
+       유효 값: OK | ALARM | INSUFFICIENT_DATA
      - Yes       
      
 에러
 ----
 공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
 
-.. list-table:: 
-   :widths: 15 50 10
-   :header-rows: 1
-
-   * - 에러
-     - 설명
-     - HTTP Status Code
-   * - InvalidFormat
-     - Data was not syntactically valid JSON.
-     - 400
-   * - ResourceNotFound
-     - The named resource does not exist.
-     - 404   
+알림:
+  TBD

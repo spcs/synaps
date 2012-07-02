@@ -2,11 +2,11 @@
       Copyright 2012 Samsung SDS.
       All Rights Reserved.
 
-SPCS Synaps
-===========
+SPCS Synaps Documentation
+=========================
 
-개요
-----
+Overview
+--------
 
 SPCS Synaps는 다음과 같은 특징을 갖는 클라우드 컴퓨팅 모니터링 시스템이다.
 
@@ -15,8 +15,8 @@ SPCS Synaps는 다음과 같은 특징을 갖는 클라우드 컴퓨팅 모니�
 * **실시간 모니터링**: Synaps는 입력되는 메트릭을 실시간으로 모니터링하여 보다 
   정밀한 알람을 제공한다. 
 
-개발 가이드
------------
+Development Guide
+-----------------
 
 .. toctree::
     :maxdepth: 2
@@ -26,17 +26,24 @@ SPCS Synaps는 다음과 같은 특징을 갖는 클라우드 컴퓨팅 모니�
     devref/install.synaps.api
 	devref/api
 
-API 규격
---------
+Application Programming Interface
+---------------------------------
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
     apispec/index.rst   
 
+Software Development Kit
+------------------------
 
-모듈 레퍼런스
--------------    
+.. toctree::
+    :maxdepth: 2
+    
+    sdk/index.rst
+
+Module References
+-----------------    
 .. toctree::
     :maxdepth: 1
 

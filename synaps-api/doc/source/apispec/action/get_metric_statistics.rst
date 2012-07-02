@@ -7,10 +7,6 @@ GetMetricStatistics
 ----
 특정 메트릭의 통계자료를 조회한다.
 
-알림:
-  한 GetMetricStatistics 요청으로 얻어올 수 있는 최대 데이터포인트의 수는
-  1,440 개이다. 그 이상의 요청을 한 경우 에러를 반환한다. 
-
 요청 매개변수
 -------------
 공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
@@ -101,25 +97,5 @@ GetMetricStatistics
 ----
 공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
 
-.. list-table:: 
-   :widths: 20 50 10
-   :header-rows: 1
-
-   * - 에러
-     - 설명
-     - HTTP 상태 코드
-   * - InternalService
-     - Indicates that the request processing has failed due to some unknown 
-       error, exception, or failure.
-     - 500
-   * - InvalidParameterCombination
-     - Parameters that must not be used together were used together.
-     - 400
-   * - InvalidParameterValue
-     - Bad or out-of-range value was supplied for the input parameter.
-     - 400
-   * - MissingRequiredParameter
-     - An input parameter that is mandatory for processing the request is not 
-       supplied.
-     - 400
-     
+알림:
+  TBD

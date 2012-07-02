@@ -1,29 +1,26 @@
 .. _list_metric_result:
 
 ListMetricResult
-======================
+================
 
 설명
 ----
-The output for the :ref:`list_metrics` action.
+:ref:`list_metrics` 액션의 결과 값
 
-Contents
---------
+내용
+----
 
 .. list-table:: 
-   :widths: 15 50
+   :widths: 30 50
    :header-rows: 1
    
    * - 이름
      - 설명
    * - Metrics
-     - A list of metrics used to generate statistics for an AWS account.
+     - 통계자료를 생성하는 메트릭의 리스트
 
-       Type: :ref:`metric` list
+       자료 형: :ref:`metric` 리스트
    * - NextToken
-     - A string that marks the start of the next batch of returned results.
+     - 다음 정보 요청을 위해 사용할 토큰
 
-       Type: String
-       
-.. toctree::
-   :maxdepth: 1 
+       자료 형: String

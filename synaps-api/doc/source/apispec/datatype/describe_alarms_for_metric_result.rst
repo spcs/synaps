@@ -5,21 +5,18 @@ DescribeAlarmsForMetricResult
 
 설명
 ----
-The output for the :ref:`describe_alarms_for_metric` action.
+:ref:`describe_alarms_for_metric` 액션의 결과 값
 
-Contents
---------
+내용
+----
 
 .. list-table:: 
-   :widths: 15 50
+   :widths: 30 50
    :header-rows: 1
    
    * - 이름
      - 설명
    * - MetricAlarms
-     - A list of information for each alarm with the specified metric.
+     - 특정 메트릭에 관련된 알람의 리스트.
 
-       Type: :ref:`metric_alarm` list
-       
-.. toctree::
-   :maxdepth: 1 
+       자료 형: :ref:`metric_alarm` 리스트

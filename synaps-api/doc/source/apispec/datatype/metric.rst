@@ -1,46 +1,36 @@
 .. _metric:
 
 Metric
-======================
+======
 
 설명
 ----
-The Metric data type contains information about a specific metric. If you call 
-:ref:`list_metrics`, Amazon CloudWatch returns information contained by this 
-data type.
+:ref:`list_metrics` 호출 시 얻는 메트릭 리스트
 
-The example in the Examples section publishes two metrics named buffers and 
-latency. Both metrics are in the examples namespace. Both metrics have two 
-dimensions, InstanceID and InstanceType.
-
-Contents
---------
+내용
+----
 
 .. list-table:: 
-   :widths: 15 50
+   :widths: 30 50
    :header-rows: 1
    
    * - 이름
      - 설명
    * - Dimensions
-     - A list of dimensions associated with the metric.
+     - 메트릭의 dimensions.
 
-       Type: :ref:`dimension` list
+       자료 형: :ref:`dimension` 리스트
 
-       Length constraints: Minimum of 0 item(s) in the list. Maximum of 10 
-       item(s) in the list.
+       길이 제한: 0개부터 10개의 아이템
    * - MetricName
-     - The name of the metric.
+     - 메트릭의 이름
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자, 최대 255자
    * - Namespace
-     - The namespace of the metric.
+     - 메트릭의 namespace
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
-       
-.. toctree::
-   :maxdepth: 1 
+       길이 제한: 최소 1자, 최대 255자

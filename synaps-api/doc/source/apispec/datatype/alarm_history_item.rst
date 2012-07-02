@@ -1,52 +1,48 @@
 .. _alarm_history_item:
 
 AlarmHistoryItem
-======================
+================
 
 설명
 ----
-The AlarmHistoryItem data type contains descriptive information about the 
-history of a specific alarm. If you call DescribeAlarmHistory, Amazon CloudWatch
-returns this data type as part of the :ref:`describe_alarm_history_result` data type.
+AlarmHistoryItem 자료 형은 특정 알람의 히스토리 정보를 포함한다. 
+:ref:`describe_alarm_history` 를 호출하면 SPCS Synaps 는 이 자료 형을
+:ref:`describe_alarm_history_result` 자료 형에 포함해서 돌려준다.
 
-Contents
---------
+내용
+----
 
 .. list-table:: 
-   :widths: 15 50
+   :widths: 30 50
    :header-rows: 1
    
    * - 이름
      - 설명
    * - AlarmName
-     - The descriptive name for the alarm.
+     - 알람 이름
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자 부터 255자
    * - HistoryData
-     - Machine-readable data about the alarm in JSON format.
+     - JSON 형식의 알람에 대한 정보 (기계가 읽기 위한 용도)
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 4095.
+       길이 제한: 최소 1자 부터 4095자
    * - HistoryItemType
-     - The type of alarm history item.
+     - 알람 히스토리 종류
 
-       Type: String
+       자료 형: String
 
-       Valid Values: ConfigurationUpdate | StateUpdate | Action
+       유효 값: ConfigurationUpdate | StateUpdate | Action
    * - HistorySummary
-     - A human-readable summary of the alarm history.
+     - 알람 히스토리의 요약 (사람이 읽기 편한 형식)
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자 부터 255자
    * - Timestamp
-     - The time stamp for the alarm history item.
+     - 알람 히스토리 항목의 timestamp
 
-       Type: DateTime
-       
-.. toctree::
-   :maxdepth: 1 
-   
+       자료 형: DateTime

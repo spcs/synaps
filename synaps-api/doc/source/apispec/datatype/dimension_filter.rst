@@ -1,38 +1,30 @@
 .. _dimension_filter:
 
 DimensionFilter
-======================
+===============
 
 설명
 ----
-The DimensionFilter data type is used to filter :ref:`list_metrics` results.
+:ref:`list_metrics` 에 적용하기 위한 검색 조건.
 
-Contents
---------
+내용
+----
 
 .. list-table:: 
-   :widths: 15 50
+   :widths: 30 50
    :header-rows: 1
    
    * - 이름
      - 설명
    * - Name
-     - The dimension name to be matched.
+     - 일치하는 dimension 이름
 
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
+       길이 제한: 최소 1자 부터 255자
    * - Value
-     - The value of the dimension to be matched.
+     - 일치하는 dimension 값
      
-       Note
-         Specifying a Name without specifying a Value returns all values 
-         associated with that Name.
-         
-       Type: String
+       자료 형: String
 
-       Length constraints: Minimum length of 1. Maximum length of 255.
-       
-.. toctree::
-   :maxdepth: 1 
-   
+       길이 제한: 최소 1자 부터 255자   

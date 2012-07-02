@@ -3,7 +3,7 @@
 DisableAlarmActions
 ===================
 .. DANGER::
-  아직 구현되지 않은 기능 
+  TBD - 아직 구현되지 않음
 
 설명
 ----
@@ -29,3 +29,9 @@ DisableAlarmActions
        길이 제한: 최소 0개부터 최대 100개의 아이템
      - Yes
  
+에러
+----
+공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
+
+알림:
+  TBD

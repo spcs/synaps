@@ -1,39 +1,37 @@
 .. _statistic_set:
 
 StatisticSet
-======================
+============
+.. DANGER::
+  TBD - 아직 구현되지 않음
 
 설명
 ----
-The StatisticSet data type describes the StatisticValues component of 
-:ref:`metric_datum`, and represents a set of statistics that describes a 
-specific metric.
+StatisticSet 자료 형은 :ref:`metric_datum` 의 StatisticValues 에 해당함, 
+특정 메트릭을 기술하는 통계자료를 나타냄
 
-Contents
---------
+내용
+----
 
 .. list-table:: 
-   :widths: 15 50
+   :widths: 30 50
    :header-rows: 1
    
    * - 이름
      - 설명
    * - Maximum
-     - The maximum value of the sample set.
+     - 샘플 셋의 최대값
 
-       Type: Double
+       자료 형: Double
    * - Minimum
-     - The minimum value of the sample set.
+     - 샘플 셋의 최소값
 
-       Type: Double
+       자료 형: Double
    * - SampleCount
-     - The number of samples used for the statistic set.
+     - 샘플의 갯수
 
-       Type: Double
+       자료 형: Double
    * - Sum
-     - The sum of values for the sample set.
+     - 샘플 셋의 합
 
-       Type: Double
-       
-.. toctree::
-   :maxdepth: 1 
+       자료 형: Double

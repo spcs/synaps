@@ -1,59 +1,54 @@
 .. _datapoint:
 
 Datapoint
-======================
+=========
 
 설명
 ----
-The Datapoint data type encapsulates the statistical data that Amazon 
-CloudWatch computes from metric data.
+SPCS Synaps 가 메트릭 데이터로 부터 계산한 통계 자료를 담는 자료형
 
-Contents
---------
+내용
+----
 
 .. list-table:: 
-   :widths: 15 50
+   :widths: 30 50
    :header-rows: 1
    
    * - 이름
      - 설명
    * - Average
-     - The average of metric values that correspond to the datapoint.
+     - 메트릭 값의 평균
 
-       Type: Double
+       자료 형: Double
    * - Maximum
-     - The maximum of the metric value used for the datapoint.
+     - 메트릭 값의 최대값
 
-       Type: Double
+       자료 형: Double
    * - Minimum
-     - The minimum metric value used for the datapoint.
+     - 메트릭 값의 최소값
 
-       Type: Double
+       자료 형: Double
    * - SampleCount
-     - The number of metric values that contributed to the aggregate value of 
-       this datapoint.
+     - 메트릭 샘플의 갯수
 
-       Type: Double
+       자료 형: Double
    * - Sum
-     - The sum of metric values used for the datapoint.
+     - 매트릭 샘플의 총 합
 
-       Type: Double
+       자료 형: Double
    * - Timestamp
-     - The time stamp used for the datapoint.
+     - 데이터포인트가 사용하는 timestamp
 
-       Type: DateTime
+       자료 형: DateTime
    * - Unit
-     - The standard unit used for the datapoint.
+     - 데이터포인트의 표준 단위
 
-       Type: String
+       자료 형: String
 
-       Valid Values: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
+       유효 값: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
        Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits | 
        Gigabits | Terabits | Percent | Count | Bytes/Second | Kilobytes/Second | 
        Megabytes/Second | Gigabytes/Second | Terabytes/Second | Bits/Second | 
        Kilobits/Second | Megabits/Second | Gigabits/Second | Terabits/Second | 
        Count/Second | None
-       
-.. toctree::
-   :maxdepth: 1 
    
