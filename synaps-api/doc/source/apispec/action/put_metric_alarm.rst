@@ -19,11 +19,7 @@ PutMetricAlarm
      - 설명
      - 필수 여부
    * - ActionsEnabled
-     - 알람의 상태가 바뀌면 액션이 수행되어야할지 여부
-       .. DANGER::
-         아직 구현되지 않은 기능 
-
-       자료 형: Boolean
+     - TBD - 아직 구현되지 않음
      - No
    * - AlarmActions.member.N
      - TBD - 아직 구현되지 않음
@@ -57,7 +53,7 @@ PutMetricAlarm
        자료 형: :ref:`dimension` 리스트
 
        길이 제한: 최소 0개부터 최대 10개의 아이템
-       - No     
+     - No     
    * - EvaluationPeriods
      - 임계치 비교를 할 데이터의 횟수
 
@@ -66,9 +62,6 @@ PutMetricAlarm
    * - InsufficientDataActions.member.N
      - TBD - 아직 구현되지 않음
      - No
-   * - 이름
-     - 설명
-     - 필수 여부     
    * - MetricName
      - 알람에 관련된 메트릭의 이름
 

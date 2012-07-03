@@ -83,6 +83,13 @@ MetricAlarm
      - 통계 자료 계산에 적용될 기간 (초단위) 
 
        자료 형: Integer
+
+.. list-table:: cont' 
+   :widths: 30 50
+   :header-rows: 1
+   
+   * - 이름
+     - 설명       
    * - StateReason
      - 알람 상태의 이유 (사람이 읽기 좋은 형식)
 
@@ -120,11 +127,11 @@ MetricAlarm
 
        자료 형: String
 
-       유효 값: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
-       Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits | 
-       Gigabits | Terabits | Percent | Count | Bytes/Second | Kilobytes/Second | 
-       Megabytes/Second | Gigabytes/Second | Terabytes/Second | Bits/Second | 
-       Kilobits/Second | Megabits/Second | Gigabits/Second | Terabits/Second | 
-       Count/Second | None
+       유효 값: Seconds | Microseconds | Milliseconds | Bytes | 
+       Kilobytes | Megabytes | Gigabytes | Terabytes | Bits | Kilobits | 
+       Megabits | Gigabits | Terabits | Percent | Count | Bytes/Second | 
+       Kilobytes/Second | Megabytes/Second | Gigabytes/Second | 
+       Terabytes/Second | Bits/Second | Kilobits/Second | Megabits/Second | 
+       Gigabits/Second | Terabits/Second | Count/Second | None
 
    
