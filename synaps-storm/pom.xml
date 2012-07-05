@@ -40,7 +40,7 @@
 
 
 	<build>
-		<sourceDirectory>src/jvm</sourceDirectory>
+		<sourceDirectory>${basedir}/src/com/spcs/synaps</sourceDirectory>
 		<resources>
 			<resource>
 				<directory>${basedir}/multilang</directory>
