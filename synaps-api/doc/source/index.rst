@@ -15,17 +15,6 @@ SPCS Synaps는 다음과 같은 특징을 갖는 클라우드 컴퓨팅 모니�
 * **실시간 모니터링**: Synaps는 입력되는 메트릭을 실시간으로 모니터링하여 보다 
   정밀한 알람을 제공한다. 
 
-Development Guide
------------------
-
-.. toctree::
-    :maxdepth: 2
-
-    devref/development.environment
-    devref/service.environment
-    devref/install.synaps.api
-	devref/api
-
 Application Programming Interface
 ---------------------------------
 
@@ -42,6 +31,19 @@ Software Development Kit
     
     sdk/index.rst
     sdk/example.rst
+
+
+Synaps Development Guide
+------------------------
+
+.. toctree::
+    :maxdepth: 2
+
+    devref/development.environment
+    devref/service.environment
+    devref/install.synaps.api
+	devref/api
+
 
 Module References
 -----------------    

@@ -123,8 +123,12 @@ class MetricMonitor(object):
             self._reindex()
         
         value = utils.to_default_unit(value, unit)
-            
-        stat = self.df.ix[time_idx]
+        
+        try:
+            stat = self.df.ix[time_idx]
+        except KeyError:
+            storm.log("index %s in not in the time range." % time_idx)
+            return
         
         stat['SampleCount'] = 1.0 if isnan(stat['SampleCount']) \
                               else stat['SampleCount'] + 1.0
@@ -356,17 +360,21 @@ class PutMetricBolt(storm.BasicBolt):
         message = json.loads(tup.values[1])
         message_id = message.get('message_id')
         
-        if message_id == PUT_METRIC_DATA_MSG_ID:
-            storm.log("process put_metric_data_msg (%s)" % message)
-            self.process_put_metric_data_msg(metric_key, message)
-        elif message_id == PUT_METRIC_ALARM_MSG_ID:
-            storm.log("process put_metric_alarm_msg (%s)" % message)
-            self.process_put_metric_alarm_msg(metric_key, message)
-        elif message_id == DELETE_ALARMS_MSG_ID:
-            storm.log("process put_metric_alarm_msg (%s)" % message)
-            self.process_delete_metric_alarms_msg(metric_key, message)
-        else:
-            storm.log("unknown message")
+        try:
+            if message_id == PUT_METRIC_DATA_MSG_ID:
+                storm.log("process put_metric_data_msg (%s)" % message)
+                self.process_put_metric_data_msg(metric_key, message)
+            elif message_id == PUT_METRIC_ALARM_MSG_ID:
+                storm.log("process put_metric_alarm_msg (%s)" % message)
+                self.process_put_metric_alarm_msg(metric_key, message)
+            elif message_id == DELETE_ALARMS_MSG_ID:
+                storm.log("process put_metric_alarm_msg (%s)" % message)
+                self.process_delete_metric_alarms_msg(metric_key, message)
+            else:
+                storm.log("unknown message")
+        except Exception as e:
+            storm.log(traceback.format_exc(e))
+            storm.fail(tup)
 
 if __name__ == "__main__":
     flags.FLAGS(sys.argv)
