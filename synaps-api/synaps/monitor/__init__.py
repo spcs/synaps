@@ -214,7 +214,7 @@ class MetricAlarm(object):
             'alarm_name': self.alarm_name,
             'comparison_operator': self.comparison_operator,
             'dimensions':json.dumps(self.dimensions),
-            'evaluation_period':self.evaluation_periods,
+            'evaluation_periods':self.evaluation_periods,
             'insufficient_data_actions': \
                 json.dumps(self.insufficient_data_actions),
             'metric_name':self.metric_name,

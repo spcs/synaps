@@ -476,7 +476,7 @@ class Cassandra(object):
                     'alarm_name': pycassa.UTF8_TYPE,
                     'comparison_operator': pycassa.UTF8_TYPE,
                     'dimensions':pycassa.UTF8_TYPE,
-                    'evaluation_period':pycassa.INT_TYPE,
+                    'evaluation_periods':pycassa.INT_TYPE,
                     'insufficient_data_actions': pycassa.UTF8_TYPE,
                     'metric_name':pycassa.UTF8_TYPE,
                     'namespace':pycassa.UTF8_TYPE,

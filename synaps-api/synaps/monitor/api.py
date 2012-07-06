@@ -173,7 +173,7 @@ class API(object):
                 'alarmName': metricalarm.get('alarm_name'),
                 'comparisonOperator': metricalarm.get('comparison_operator'),
                 'dimensions': metricalarm.get('dimensions'),
-                'evaluationPeriods': metricalarm.get('evaluation_period'),
+                'evaluationPeriods': metricalarm.get('evaluation_periods'),
                 'insufficientDataActions': 
                     metricalarm.get('insufficient_data_actions', []),
                 'metricName':metricalarm.get('metric_name'),

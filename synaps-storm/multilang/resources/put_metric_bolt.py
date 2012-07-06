@@ -164,7 +164,7 @@ class MetricMonitor(object):
             
     def _check_alarm(self, alarmkey, alarm):
         period = int(alarm['period'] / 60)
-        evaluation_period = alarm['evaluation_period']
+        evaluation_periods = alarm['evaluation_periods']
         statistic = alarm['statistic']
         threshold = alarm['threshold']
         cmp_op = self.CMP_MAP[alarm['comparison_operator']]
@@ -173,7 +173,7 @@ class MetricMonitor(object):
         
         now = utils.utcnow()
         end_idx = now.replace(second=0, microsecond=0)
-        start_idx = end_idx - evaluation_period * datetools.Minute()
+        start_idx = end_idx - evaluation_periods * datetools.Minute()
         start_ana_idx = start_idx - datetools.Minute() * period
         
         func = self.ROLLING_FUNC_MAP[statistic]
@@ -205,10 +205,10 @@ class MetricMonitor(object):
         json_reason_data = json.dumps(reason_data)
 
         storm.log("data \n %s" % data)
-        if len(data) < evaluation_period:
+        if len(data) < evaluation_periods:
             if state_value != 'INSUFFICIENT_DATA':
                 template = _("Insufficient Data: %d datapoints were unknown.")
-                reason = template % (evaluation_period - len(data))
+                reason = template % (evaluation_periods - len(data))
                 new_state = {'stateReason':reason,
                              'stateReasonData':reason_data,
                              'stateValue':'INSUFFICIENT_DATA'}
