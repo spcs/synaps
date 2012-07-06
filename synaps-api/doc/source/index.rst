@@ -17,8 +17,7 @@ SPCS Synaps는 다음과 같은 특징을 갖는 클라우드 컴퓨팅 모니�
 
 Application Programming Interface
 ---------------------------------
-SPCS Synaps API 의 사용자는 일반 사용자(User)와 관리자(Admin)으로 구분된다. 
-이에 따라 API는 :ref:`user_api` 와 :ref:`user_api` 로 구분된다. 
+SPCS Synaps API의 사용자는 일반 사용자(User)와 관리자(Admin)으로 구분된다. 
 
 .. toctree::
     :maxdepth: 3
@@ -30,14 +29,13 @@ SPCS Synaps API 의 사용자는 일반 사용자(User)와 관리자(Admin)으�
 Software Development Kit
 ------------------------
 SPCS Synaps SDK의 사용자는 일반 사용자(User)와 관리자(Admin)으로 구분된다. 
-이에 따라 SDK는 :ref:`user_sdk` 와 :ref:`user_sdk` 로 구분된다. 
 
 .. toctree::
     :maxdepth: 2
     
     sdk/user.sdk.rst
     sdk/admin.sdk.rst
-    sdk/example.rst
+    sdk/user.sdk.example.rst
 
 Synaps Development Guide
 ------------------------

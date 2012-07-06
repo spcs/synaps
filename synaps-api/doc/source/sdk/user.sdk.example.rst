@@ -1,150 +1,47 @@
-.. _example:
+.. _user_sdk_example:
 
 User SDK 사용 예제
 ==================
 
-Synaps SDK 예제 사용방법
-------------------------
-1. SPCS 홈페이지에서 “Synaps-SDK-Sample.zip” 다운로드한다.
-
-2. Eclipse 에서 Import > Existing Projects into Workspace 로 Project를 생성한다.
-
-3. Java Build Path > Libraries 에서 “Add Externel JARs” 버튼을 클릭하여 아래 
-   항목의 jar 파일을 지정한다. 
-
-* aws-java-sdk-1.3.10.jar
-* commons-codec-1.6.jar
-* commons-logging-1.1.1.jar
-* fluent-hc-4.2.jar
-* httpclient-4.2.jar
-* httpclient-cache-4.2.jar
-* httpcore-4.2.jar
-* httpmime-4.2.jar
-
-4. “AwsCredentials.properties” 파일에 계정정보를 입력한다.
+Synaps SDK 계정 설정 방법
+-------------------------
+1. SpcsCredentials.properties 파일에 아래와 같이 계정정보를 입력한다.
 
   .. code-block:: bash
   
     accessKey = df6ad231-23f9-4622-810c-acd6ae3e9e67
     secretKey = c142f025-aa84-4cc3-a97e-12bf86c561dc
 
-5. Synaps_Sample.java 에서 Endpoint를 설정한다.
-
-  .. code-block:: java
-
-    cw.setEndpoint("http://182.194.1.163:8773/monitor/");
-
-6. Synaps_Sample.java에서 테스트하고 싶은 API의 주석을 제거하고 파일 실행
-
-7. 정상적으로 실행되면 API 사용예제와 Amazon CloudWatch 설명서를 참고하여 
-   개발진행
-
-Synaps SDK 계정접속방법
------------------------
-"AwsCredentials.properties" 정보로 계정접속
-
-"setEndpoint" 함수로 EndPoint 설정
+2. 다음과 같이 클라이언트 객체를 생성한다.
 
   .. code-block:: java
 
      AmazonCloudWatch cw = new AmazonCloudWatchClient(
        new PropertiesCredentials(
-         Synaps_Sample.class.getResourceAsStream("AwsCredentials.properties")
+         Synaps_Sample.class.getResourceAsStream("SpcsCredentials.properties")
        )
      );
      cw.setEndpoint("http://182.194.1.163:8773/monitor/");
 
 Action별 SDK 사용 예제
 ----------------------
-  
-DeleteAlarms Action
-~~~~~~~~~~~~~~~~~~~
-"AlarmName" 이라는 이름을 갖는 알람을 삭제하는 예제
 
-  .. code-block:: java
-
-     DeleteAlarmsRequest DAR = new DeleteAlarmsRequest();
-     ArrayList<String> DARList = new ArrayList<String>();
-     DARList.add("AlarmName");
-     DAR.setAlarmNames(DARList);
-     cw.deleteAlarms(DAR);
-
-* API reference :ref:`delete_alarms`
-* SDK reference `DeleteAlarms`_     
-   
-DescribeAlarmHistory Action
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-프로젝트의 모든 알람 히스토리를 조회하는 예제
-
-  .. code-block:: java
-
-     DescribeAlarmHistoryResult DAHR = cw.describeAlarmHistory();
-     System.out.println(DAHR);
-
-* API reference :ref:`describe_alarm_history`
-* SDK reference `DescribeAlarmHistory`_     
-
-   
-`DescribeAlarms`_
-~~~~~~~~~~~~~~~~~
-모든 또는 특정 알람에 대한 모든 정보리스트를 반환한다. 
-
-  .. code-block:: java
-
-     DescribeAlarmsResult DAR = cw.describeAlarms();
-     System.out.println(DAR);
-
-* API reference :ref:`describe_alarm_history`
-* SDK reference `DescribeAlarmHistory`_     
-   
-`DescribeAlarmsForMetric`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-특정 Metric 에 대한 모든 알람정보를 반환한다. 
-
-  .. code-block:: java
-
-     DescribeAlarmsForMetricRequest DAFMR = new DescribeAlarmsForMetricRequest();
-     DAFMR.setMetricName("MetricName");
-     DAFMR.setNamespace("NameSpace");
-     DescribeAlarmsForMetricResult DAR = cw.describeAlarmsForMetric(DAFMR);
-     System.out.println(DAR.getMetricAlarms());
-   
-`DisableAlarmActions`_
-~~~~~~~~~~~~~~~~~~~~~~
-TBD
-   
-`EnableAlarmActions`_ 
-~~~~~~~~~~~~~~~~~~~~~
-TBD
-
-   
-`PutMetricAlarm`_ 
-~~~~~~~~~~~~~~~~~
-
-  .. code-block:: java
-
-     PutMetricAlarmRequest PMAR = new PutMetricAlarmRequest();
-     PMAR.setAlarmName("AlarmName");
-     PMAR.setComparisonOperator("GreaterThanThreshold");
-     PMAR.setEvaluationPeriods(10);
-     PMAR.setMetricName("MetricName");
-     PMAR.setNamespace("NameSpace");
-     PMAR.setPeriod(60);
-     PMAR.setStatistic("SampleCount");
-     PMAR.setThreshold(300.0);
-     cw.putMetricAlarm(PMAR);
-   
-`ListMetrics`_
-~~~~~~~~~~~~~~ 
+메트릭 관련 Action
+``````````````````
+ListMetrics Action 
+~~~~~~~~~~~~~~~~~~ 
 
   .. code-block:: java
 
      ListMetricsRequest LM = new ListMetricsRequest();
      ListMetricsResult LMR = cw.listMetrics(LM);
      System.out.println(LMR.getMetrics());
-   
-`PutMetricData`_ 
-~~~~~~~~~~~~~~~~
+     
+* API reference: :ref:`list_metrics`
+* SDK reference: `ListMetrics`_    
+
+PutMetricData Action   
+~~~~~~~~~~~~~~~~~~~~
 "MetricName"이라는 Metric을 특정시간(2012년 6월 28일 14시 ~ 17시)동안 매초마다 
 일정값(30)을 입력하는 예제
 
@@ -183,70 +80,15 @@ TBD
  		  cw.putMetricData(PDR);	
 	   }
 	 }
+
+* API reference: :ref:`put_metric_data`
+* SDK reference: `PutMetricData`_    
    
-`GetMetricStatistics`_
-~~~~~~~~~~~~~~~~~~~~~~
-
-특정시간(2012년 6월 28일 14시 ~ 17시) 동안의 통계 값을 조회하는 예제. 
-
-  .. code-block:: java
-
-	 //create Dimension
-	 Dimension dm = new Dimension();
-	 dm.setName("DName");
-	 dm.setValue("DValue");
-	 ArrayList<Dimension> dm_list = new ArrayList<Dimension>();
-	 dm_list.add(dm); 
-
-	 //create GetMetricStatisticsRequest
-	 GetMetricStatisticsRequest MSR = new GetMetricStatisticsRequest();
-	 MSR.setDimensions(dm_list);
-	 @SuppressWarnings("deprecation")
-	 Date StartTime = new Date(112,5,28,14,00);
-	 MSR.setStartTime(StartTime);
-	 System.out.println("Start Time : " + StartTime);
-	 @SuppressWarnings("deprecation")
-	 Date EndTime = new Date(112,5,28,17,00);
-	 MSR.setEndTime(EndTime);
-	 System.out.println("End Time : " + EndTime);
-	 MSR.setMetricName("MetricName");
-	 MSR.setNamespace("NameSpace");
-	 MSR.setPeriod(60);
-	 MSR.setUnit("Count");
-	 ArrayList<String> Stat = new ArrayList<String>();
-	 Stat.add(0, "SampleCount");
-	 Stat.add(1, "Sum");
-	 Stat.add(2, "Average");
-	 Stat.add(3, "Maximum");
-	 Stat.add(4, "Minimum");
-	 MSR.setStatistics(Stat);
- 
-	 //create GetMetricStatisticsResult
-	 GetMetricStatisticsResult GS = cw.getMetricStatistics(MSR);
-	 System.out.println(GS.getLabel());
-	 System.out.println(GS.getDatapoints());
-   
-`SetAlarmState`_
-~~~~~~~~~~~~~~~~
-TBD
-
-
-Synaps SDK API 응용예제
-------------------------
-ListMetrics() 에서 출력된 Metric 중에 아래의 특정 Metric 에 대한 통계정보를 
-출력한다.
-
-  .. code-block:: java
-
-    NameSpace: SPCS/NOVA
-    MetricName: CPUUtilization
-    Dimension: instanceId / instance-0000000f
-    Unit: Percent
-    Statistics: SampleCount, Average, Maximum, Minimum
-    Start Time: 2012년 7월 5일 10시
-    End Time: 2012년 7월 5일 11시
-    Period: 180초(통계단위)
-
+GetMetricStatistics Action
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+아래 예제에서는 SPCS Nova 의 가상머신 인스턴스 instance-0000000f의 CPU 사용률의
+2012년 7월 5일 10시부터 한 시간 동안의 3분(180초) 주기의 평균, 최대, 최소, 샘플 
+갯수를 조회한다.
 
   .. code-block:: java
 
@@ -282,6 +124,8 @@ ListMetrics() 에서 출력된 Metric 중에 아래의 특정 Metric 에 대한 
 	System.out.println(GS.getLabel());
 	System.out.println(GS.getDatapoints());
 
+위 예제의 실행 결과는 다음과 같다.
+
   .. code-block:: java
   
 	CPUUtilization
@@ -304,6 +148,100 @@ ListMetrics() 에서 출력된 Metric 중에 아래의 특정 Metric 에 대한 
 	 {Timestamp: Thu Jul 05 10:06:00 KST 2012, SampleCount: 1.0, 
 	  Average: 0.197889178604, Minimum: 0.197889178604, 
 	  Maximum: 0.197889178604, Unit: Percent, }, ... ]
+
+* API reference: :ref:`get_metric_statistics`
+* SDK reference: `GetMetricStatistics`_   
+
+알람 관련 Action
+````````````````
+DeleteAlarms Action
+~~~~~~~~~~~~~~~~~~~
+"AlarmName" 이라는 이름을 갖는 알람을 삭제하는 예제
+
+  .. code-block:: java
+
+     DeleteAlarmsRequest DAR = new DeleteAlarmsRequest();
+     ArrayList<String> DARList = new ArrayList<String>();
+     DARList.add("AlarmName");
+     DAR.setAlarmNames(DARList);
+     cw.deleteAlarms(DAR);
+
+* API reference: :ref:`delete_alarms`
+* SDK reference: `DeleteAlarms`_     
+   
+DescribeAlarms Action
+~~~~~~~~~~~~~~~~~~~~~
+모든 또는 특정 알람에 대한 모든 정보리스트를 반환한다. 
+
+  .. code-block:: java
+
+     DescribeAlarmsResult DAR = cw.describeAlarms();
+     System.out.println(DAR);
+
+* API reference: :ref:`describe_alarm_history`
+* SDK reference: `DescribeAlarmHistory`_     
+   
+DescribeAlarmsForMetric Action
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+특정 Metric 에 대한 모든 알람정보를 반환한다. 
+
+  .. code-block:: java
+
+     DescribeAlarmsForMetricRequest DAFMR = new DescribeAlarmsForMetricRequest();
+     DAFMR.setMetricName("MetricName");
+     DAFMR.setNamespace("NameSpace");
+     DescribeAlarmsForMetricResult DAR = cw.describeAlarmsForMetric(DAFMR);
+     System.out.println(DAR.getMetricAlarms());
+
+* API reference: :ref:`describe_alarms_for_metric`
+* SDK reference: `DescribeAlarmsForMetric`_
+   
+PutMetricAlarm Action 
+~~~~~~~~~~~~~~~~~~~~~
+
+  .. code-block:: java
+
+     PutMetricAlarmRequest PMAR = new PutMetricAlarmRequest();
+     PMAR.setAlarmName("AlarmName");
+     PMAR.setComparisonOperator("GreaterThanThreshold");
+     PMAR.setEvaluationPeriods(10);
+     PMAR.setMetricName("MetricName");
+     PMAR.setNamespace("NameSpace");
+     PMAR.setPeriod(60);
+     PMAR.setStatistic("SampleCount");
+     PMAR.setThreshold(300.0);
+     cw.putMetricAlarm(PMAR);
+
+* API reference: :ref:`put_metric_alarm`
+* SDK reference: `PutMetricAlarm`_
+
+SetAlarmState Action
+~~~~~~~~~~~~~~~~~~~~
+TBD
+   
+DisableAlarmActions Action
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+TBD
+   
+EnableAlarmActions Action
+~~~~~~~~~~~~~~~~~~~~~~~~~
+TBD
+
+
+알람 히스토리 관련 Action
+````````````````````````` 
+DescribeAlarmHistory Action
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+프로젝트의 모든 알람 히스토리를 조회하는 예제
+
+  .. code-block:: java
+
+     DescribeAlarmHistoryResult DAHR = cw.describeAlarmHistory();
+     System.out.println(DAHR);
+
+* API reference: :ref:`describe_alarm_history`
+* SDK reference: `DescribeAlarmHistory`_     
+
 										
 .. _`DeleteAlarms`: http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_DeleteAlarms.html
 .. _`DescribeAlarmHistory`: http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_DescribeAlarmHistory.html

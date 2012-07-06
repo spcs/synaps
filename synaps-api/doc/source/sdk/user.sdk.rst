@@ -1,4 +1,4 @@
-.. _user.sdk.rst:
+.. _user.sdk:
 
 User SDK
 ========

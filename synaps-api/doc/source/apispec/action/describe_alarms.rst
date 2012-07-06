@@ -72,7 +72,7 @@ DescribeAlarms
    * - 이름
      - 설명
    * - MetricAlarms	
-       알람 정보
+     - 알람 정보
 
        Type: MetricAlarm list
    * - NextToken

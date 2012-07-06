@@ -1,4 +1,4 @@
-.. _admin.sdk.rst:
+.. _admin.sdk:
 
 Admin SDK
 =========
