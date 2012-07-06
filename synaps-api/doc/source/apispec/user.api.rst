@@ -1,4 +1,4 @@
-.. _index:
+.. _user_api:
 
 사용자 API 규격
 ===============
@@ -56,27 +56,3 @@ SPCS Synaps API 는 액션 별로 다양한 자료 형을 사용한다. 이 장�
    common/common_query_parameters
    common/common_errors
 
-관리자 API 규격
-===============
-SPCS Synaps 관리자 API는 사용자 API의 액션 마다 추가로 ProjectId 매개변수를 
-입력받으며 나머지는 사용자 API와 동일하다.
-
-.. list-table:: 
-   :widths: 20 50 10
-   :header-rows: 1
-
-   * - 이름
-     - 설명
-     - 필수 여부
-   * - ProjectId
-     - API 액션을 수행할 프로젝트 식별자 
-
-       Type: String
-     - No
-
-지역별 API Endpoints
-====================
-* SPCS 수원(개발): http://182.194.1.163:8773/monitor/ 
-
-
-     
