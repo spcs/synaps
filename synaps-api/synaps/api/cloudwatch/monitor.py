@@ -26,7 +26,7 @@ def to_alarm(v):
         'comparison_operator':v['comparison_operator'],
         'dimensions':
             utils.dict_to_aws(json.loads(v['dimensions'])),
-        'evaluation_period':v['evaluation_period'],
+        'evaluation_periods':v['evaluation_period'],
         'insufficient_data_actions':
             json.loads(v['insufficient_data_actions']),
         'metric_name':v['metric_name'],
