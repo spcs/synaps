@@ -288,7 +288,16 @@ class SDSLdapDriver(object):
             # One of the flags is 0!
             scope = self.ldap.SCOPE_SUBTREE
         try:
-            res = self.conn.search_s(dn, scope, query)
+            if self.mc.get("res") != None :
+                LOG.debug("The key (res) was found in memcache")
+                res = self.mc.get("res")
+                LOG.debug("memcache load result: %s" % str(res))
+            else :            
+                LOG.debug("ldap query: dn: %s / scope: %s / query: %s" % (dn,
+                                                                      scope,
+                                                                      query))  
+                res = self.conn.search_s(dn, scope, query)
+                LOG.debug("ldap query result: %s" % (res))
         except self.ldap.NO_SUCH_OBJECT:
             return []
         # Just return the DNs
@@ -302,11 +311,16 @@ class SDSLdapDriver(object):
         if query is None:
             query = "(objectClass=*)"
         try:
-            LOG.debug("ldap query: dn: %s / scope: %s / query: %s" % (dn,
+            if self.mc.get("res_objects") != None :
+                LOG.debug("The key (res_objects) was found in memcache")
+                res = self.mc.get("res_objects")
+                LOG.debug("memcache load result: %s" % str(res))
+            else :
+                LOG.debug("ldap query: dn: %s / scope: %s / query: %s" % (dn,
                                                                       scope,
                                                                       query))
-            res = self.conn.search_s(dn, scope, query)
-            LOG.debug("ldap query result: %s" % str(res))
+                res = self.conn.search_s(dn, scope, query)
+                LOG.debug("ldap query result: %s" % str(res))
         except self.ldap.NO_SUCH_OBJECT:
             return []
         # Just return the attributes
