@@ -121,6 +121,7 @@ class SDSLdapDriver(object):
     conn = None
     mc = None
     cache = {}
+    memcache_timeout = 300  #sec
  
     def __init__(self):
         """Imports the LDAP module"""
@@ -194,7 +195,7 @@ class SDSLdapDriver(object):
         attrs = []
         dn = self.__project_to_dn(pid, search=False)
         prj = self.__find_object(dn, pattern, scope=self.ldap.SCOPE_BASE)
-        project_name = prj['ou'][0]
+        project_name = prj['tenant'][0]
         manager = self.__find_object("ou=role," + dn, "cn=manager")
         members = self.__find_objects("ou=user," + dn, '(uid=*)')
         member_ids = [member.get('uid')[0] for member in members]
@@ -292,12 +293,14 @@ class SDSLdapDriver(object):
                 LOG.debug("The key (res) was found in memcache")
                 res = self.mc.get("res")
                 LOG.debug("memcache load result: %s" % str(res))
-            else :            
+            else :
                 LOG.debug("ldap query: dn: %s / scope: %s / query: %s" % (dn,
                                                                       scope,
                                                                       query))  
                 res = self.conn.search_s(dn, scope, query)
                 LOG.debug("ldap query result: %s" % (res))
+                self.mc.set("res",res,self.memcache_timeout)
+                LOG.debug("memcache has save ldap query result: %s" % (res))
         except self.ldap.NO_SUCH_OBJECT:
             return []
         # Just return the DNs
@@ -319,8 +322,10 @@ class SDSLdapDriver(object):
                 LOG.debug("ldap query: dn: %s / scope: %s / query: %s" % (dn,
                                                                       scope,
                                                                       query))
-                res = self.conn.search_s(dn, scope, query)
+                res = self.conn.search_s(dn, scope, query)                
                 LOG.debug("ldap query result: %s" % str(res))
+                self.mc.set("res_objects",res,self.memcache_timeout)
+                LOG.debug("memcache has save ldap query result: %s" % (res))
         except self.ldap.NO_SUCH_OBJECT:
             return []
         # Just return the attributes
