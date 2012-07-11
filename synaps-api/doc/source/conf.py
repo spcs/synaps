@@ -41,9 +41,9 @@ todo_include_todos = True
 # docs do not contain the code so local, offline sphinx builds are "clean."
 templates_path = []
 if os.getenv('HUDSON_PUBLISH_DOCS'):
-  templates_path = ['_ga', '_templates']
+    templates_path = ['_ga', '_templates']
 else:
-  templates_path = ['_templates']
+    templates_path = ['_templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -222,6 +222,13 @@ latex_documents = [
 
 # If false, no module index is generated.
 #latex_use_modindex = True
+
+latex_elements = {
+    'inputenc': '\\usepackage{kotex}',
+    'utf8extra': '',
+    'fontenc': '',
+    'fontpkg': '\\usepackage{times}',
+}
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
