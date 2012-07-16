@@ -195,7 +195,7 @@ class SDSLdapDriver(object):
         attrs = []
         dn = self.__project_to_dn(pid, search=False)
         prj = self.__find_object(dn, pattern, scope=self.ldap.SCOPE_BASE)
-        project_name = prj['tenant'][0]
+        project_name = prj['ou'][0]
         manager = self.__find_object("ou=role," + dn, "cn=manager")
         members = self.__find_objects("ou=user," + dn, '(uid=*)')
         member_ids = [member.get('uid')[0] for member in members]
@@ -285,13 +285,16 @@ class SDSLdapDriver(object):
  
     def __find_dns(self, dn, query=None, scope=None):
         """Find dns by query"""
+        mc_tag = ''
+        mc_tag_temp = dn.strip(' ') + "_dns"
+        mc_tag = self.remove_space(mc_tag_temp)             
         if scope is None:
             # One of the flags is 0!
             scope = self.ldap.SCOPE_SUBTREE
         try:
-            if self.mc.get("res") != None :
+            if self.mc.get(mc_tag) != None :
                 LOG.debug("The key (res) was found in memcache")
-                res = self.mc.get("res")
+                res = self.mc.get(mc_tag)
                 LOG.debug("memcache load result: %s" % str(res))
             else :
                 LOG.debug("ldap query: dn: %s / scope: %s / query: %s" % (dn,
@@ -299,7 +302,7 @@ class SDSLdapDriver(object):
                                                                       query))  
                 res = self.conn.search_s(dn, scope, query)
                 LOG.debug("ldap query result: %s" % (res))
-                self.mc.set("res",res,self.memcache_timeout)
+                self.mc.set(mc_tag,res,self.memcache_timeout)
                 LOG.debug("memcache has save ldap query result: %s" % (res))
         except self.ldap.NO_SUCH_OBJECT:
             return []
@@ -308,15 +311,18 @@ class SDSLdapDriver(object):
  
     def __find_objects(self, dn, query=None, scope=None):
         """Find objects by query"""
+        mc_tag = ''
+        mc_tag_temp = dn.strip(' ') + "_object"
+        mc_tag = self.remove_space(mc_tag_temp)
         if scope is None:
             # One of the flags is 0!
             scope = self.ldap.SCOPE_SUBTREE
         if query is None:
             query = "(objectClass=*)"
         try:
-            if self.mc.get("res_objects") != None :
+            if self.mc.get(mc_tag) != None :
                 LOG.debug("The key (res_objects) was found in memcache")
-                res = self.mc.get("res_objects")
+                res = self.mc.get(mc_tag)
                 LOG.debug("memcache load result: %s" % str(res))
             else :
                 LOG.debug("ldap query: dn: %s / scope: %s / query: %s" % (dn,
@@ -324,7 +330,7 @@ class SDSLdapDriver(object):
                                                                       query))
                 res = self.conn.search_s(dn, scope, query)                
                 LOG.debug("ldap query result: %s" % str(res))
-                self.mc.set("res_objects",res,self.memcache_timeout)
+                self.mc.set(mc_tag,res,self.memcache_timeout)
                 LOG.debug("memcache has save ldap query result: %s" % (res))
         except self.ldap.NO_SUCH_OBJECT:
             return []
@@ -450,3 +456,10 @@ class SDSLdapDriver(object):
     def remove_from_project(self, uid, project_id):
         """Remove user from project"""
         pass
+    @sanitize
+    def remove_space(self, str):
+        string_without_space = ''
+        for c in str :
+            if c != ' ' :
+                string_without_space += c
+        return string_without_space
