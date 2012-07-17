@@ -58,7 +58,10 @@ class Cassandra(object):
         self.cf_alarm_history = pycassa.ColumnFamily(self.pool, 'AlarmHistory')
         
     def delete_metric_alarm(self, alarm_key):
-        self.cf_metric_alarm.remove(alarm_key)
+        try:
+            self.cf_metric_alarm.remove(alarm_key)
+        except pycassa.NotFoundException:
+            LOG.info(_("alarm key %s is not deleted" % alarm_key))
     
     def _describe_alarms_by_names(self, project_id, alarm_names):
         for alarm_name in alarm_names:

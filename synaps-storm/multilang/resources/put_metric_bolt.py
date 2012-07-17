@@ -78,7 +78,11 @@ class MetricMonitor(object):
         alarmkey:
             alarmkey should be UUID
         """
-        alarm = self.alarms.pop(alarmkey)
+        try:
+            alarm = self.alarms.pop(alarmkey)
+        except KeyError:
+            storm.log("alarmkey %s doesn't exist" % alarmkey)
+        
         self.cass.delete_metric_alarm(alarmkey)
         self.alarm_history_delete(alarmkey, alarm)
         storm.log("delete alarm %s for metric %s" % (str(alarmkey),
