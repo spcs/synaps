@@ -86,7 +86,6 @@ class MonitorController(object):
             
         ret_dict = {}
         ret_histories = []
-        next_token = None
         max_records = int(max_records) if max_records else 100  
         end_date = utils.parse_strtime(end_date) if end_date else end_date
         start_date = utils.parse_strtime(start_date) \
@@ -95,13 +94,17 @@ class MonitorController(object):
         histories = self.monitor_api.describe_alarm_history(
             alarm_name=alarm_name, end_date=end_date,
             history_item_type=history_item_type,
-            max_records=max_records, next_token=next_token,
+            max_records=max_records + 1, next_token=next_token,
             start_date=start_date, project_id=project_id
         )
         
-        for k, v in histories:
+        for i, (k, v) in enumerate(histories):
             ret_histories.append(to_alarm_history(v))
-            next_token = k
+            if i + 1 >= max_records:
+                next_token = k
+                break
+        else:
+            next_token = None
             
         ret_dict['describe_alarm_history_result'] = {'alarm_history_items': 
                                                      ret_histories}
@@ -131,13 +134,17 @@ class MonitorController(object):
             
         alarms = self.monitor_api.describe_alarms(project_id=project_id,
             action_prefix=action_prefix, alarm_name_prefix=alarm_name_prefix,
-            alarm_names=alarm_names, max_records=max_records,
+            alarm_names=alarm_names, max_records=max_records + 1,
             next_token=next_token, state_value=state_value,
         )
         
-        for k, v in alarms:
+        for i, (k, v) in enumerate(alarms):
             ret_alarms.append(to_alarm(v))
-            next_token = k
+            if i + 1 >= max_records:
+                next_token = k
+                break
+        else:
+            next_token = None
         
         ret_dict['describe_alarms_result'] = {'metric_alarms': ret_alarms}
         if next_token:
