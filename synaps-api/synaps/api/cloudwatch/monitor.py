@@ -83,6 +83,9 @@ class MonitorController(object):
         
         if not (project_id and context.is_admin):
             project_id = context.project_id
+        
+        if alarm_name and (not (0 < len(alarm_name) <= 255)):
+            raise exception.InvalidParameterValue()
             
         ret_dict = {}
         ret_histories = []
