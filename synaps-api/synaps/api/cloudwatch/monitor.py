@@ -85,7 +85,8 @@ class MonitorController(object):
             project_id = context.project_id
         
         if alarm_name and (not (0 < len(alarm_name) <= 255)):
-            raise exception.InvalidParameterValue()
+            err = _("Length constraints for AlarmName: 1 ~ 255")
+            raise exception.InvalidParameterValue(err=err)
             
         ret_dict = {}
         ret_histories = []

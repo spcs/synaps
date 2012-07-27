@@ -287,7 +287,7 @@ class Executor(wsgi.Application):
                     context=context)
             return cloudwatch_error(req, request_id, type(ex).__name__,
                                     unicode(ex))
-        except exception.InvalidRequest as ex:
+        except exception.Invalid as ex:
             LOG.debug(_('InvalidRequest raised: %s'), unicode(ex),
                      context=context)
             return cloudwatch_error(req, request_id, type(ex).__name__,
