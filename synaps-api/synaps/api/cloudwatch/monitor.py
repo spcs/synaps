@@ -13,43 +13,44 @@ from synaps import utils
 
 LOG = logging.getLogger(__name__)
 
+
 def to_alarm(v):
     ret = {
-        'action_enabled':v['action_enabled'],
-        'alarm_actions':json.loads(v['alarm_actions']),
-        'alarm_arn':v['alarm_arn'],
+        'action_enabled': v['action_enabled'],
+        'alarm_actions': json.loads(v['alarm_actions']),
+        'alarm_arn': v['alarm_arn'],
         'alarm_configuration_updated_timestamp':
             utils.strtime(v['alarm_configuration_updated_timestamp'],
                           "%Y-%m-%dT%H:%M:%S.%fZ"),
-        'alarm_description':v['alarm_description'],
-        'alarm_name':v['alarm_name'],
-        'comparison_operator':v['comparison_operator'],
+        'alarm_description': v['alarm_description'],
+        'alarm_name': v['alarm_name'],
+        'comparison_operator': v['comparison_operator'],
         'dimensions':
             utils.dict_to_aws(json.loads(v['dimensions'])),
-        'evaluation_periods':v['evaluation_periods'],
+        'evaluation_periods': v['evaluation_periods'],
         'insufficient_data_actions':
             json.loads(v['insufficient_data_actions']),
-        'metric_name':v['metric_name'],
-        'namespace':v['namespace'],
-        'ok_actions':json.loads(v['ok_actions']),
-        'period':v['period'],
-        'project_id':v['project_id'],
-        'state_reason':v['state_reason'],
-        'state_reason_data':v['state_reason_data'],
+        'metric_name': v['metric_name'],
+        'namespace': v['namespace'],
+        'ok_actions': json.loads(v['ok_actions']),
+        'period': v['period'],
+        'project_id': v['project_id'],
+        'state_reason': v['state_reason'],
+        'state_reason_data': v['state_reason_data'],
         'state_updated_timestamp':
             utils.strtime(v['state_updated_timestamp'],
                           "%Y-%m-%dT%H:%M:%S.%fZ"),
-        'state_value':v['state_value'],
-        'statistic':v['statistic'],
-        'threshold':v['threshold'],
-        'unit':v['unit'],
+        'state_value': v['state_value'],
+        'statistic': v['statistic'],
+        'threshold': v['threshold'],
+        'unit': v['unit'],
     }
     return ret
 
 
 class MonitorController(object):
     """
-    MonitorController provides the critical dispatch between inbound API 
+    MonitorController provides the critical dispatch between inbound API
     calls through the endpoint and messages sent to the other nodes.
     """
     def __init__(self):
@@ -62,8 +63,10 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
 
+        self.check_alarm_names(alarm_names)
+
         alarm_names = utils.extract_member_list(alarm_names)
-        self.monitor_api.delete_alarms(project_id, alarm_names)            
+        self.monitor_api.delete_alarms(project_id, alarm_names)
         return {}
 
     def describe_alarm_history(self, context, alarm_name=None, end_date=None,
@@ -80,13 +83,13 @@ class MonitorController(object):
                                            "%Y-%m-%dT%H:%M:%S.%fZ")
             }
             return ret
-        
+
         if not (project_id and context.is_admin):
             project_id = context.project_id
+
+        self.check_alarm_name(alarm_name)
+        self.check_history_item_type(history_item_type)
         
-        if alarm_name and (not (0 < len(alarm_name) <= 255)):
-            raise exception.InvalidParameterValue()
-            
         ret_dict = {}
         ret_histories = []
         max_records = int(max_records) if max_records else 100  
@@ -130,11 +133,14 @@ class MonitorController(object):
         ret_alarms = []
         alarm_names = utils.extract_member_list(alarm_names) \
                       if alarm_names else None
+        
+        self.check_action_prefix(action_prefix)
         if alarm_names:
-            if len(alarm_names) > 100:
-                msg = "only 100 alarm names are allowed per request"
-                raise exception.InvalidRequest(_(msg))        
-            
+            self.check_alarm_names(alarm_names)
+        else:
+            self.check_alarm_name_prefix(alarm_name_prefix)
+        self.check_state_value(state_value)   
+
         alarms = self.monitor_api.describe_alarms(project_id=project_id,
             action_prefix=action_prefix, alarm_name_prefix=alarm_name_prefix,
             alarm_names=alarm_names, max_records=max_records + 1,
@@ -161,6 +167,12 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         
+        self.check_dimensions(dimensions)
+        self.check_metric_name(metric_name)
+        self.check_namespace(namespace)
+        self.check_statistic(statistic)
+        self.check_unit(unit)
+
         ret_dict = {}
         ret_alarms = []
         dimensions = utils.extract_member_dict(dimensions)
@@ -183,6 +195,8 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         
+        self.check_alarm_names(alarm_names)
+        
         ret = {}
         # TODO: implement here
         return ret
@@ -191,6 +205,8 @@ class MonitorController(object):
                              project_id=None):
         if not (project_id and context.is_admin):
             project_id = context.project_id
+        
+        self.check_alarm_names(alarm_names)
         
         ret = {}
         # TODO: implement here
@@ -202,6 +218,7 @@ class MonitorController(object):
         """
         Gets statistics for the specified metric.
         """
+        
         def stat_to_datapoint(stat):
             """
             단위 변경 및 형식 변경
@@ -217,6 +234,12 @@ class MonitorController(object):
                 ret[statistic] = utils.to_unit(value, unit)
             return ret
                 
+        self.check_dimensions(dimensions)
+        self.check_metric_name(metric_name)
+        self.check_namespace(namespace)
+        self.check_statistics(statistics)
+        self.check_unit(unit)
+
         if not (project_id and context.is_admin):
             project_id = context.project_id
         end_time = utils.parse_strtime(end_time)
@@ -256,6 +279,11 @@ class MonitorController(object):
         metrics = self.monitor_api.list_metrics(project_id, next_token,
                                                 dimensions, metric_name,
                                                 namespace)
+        
+        self.check_dimensions(dimensions)
+        self.check_metric_name(metric_name)
+        self.check_namespace(namespace)  
+       
         ret_list = []
         for metric in metrics:
             k, v = metric
@@ -265,8 +293,8 @@ class MonitorController(object):
         metrics = map(to_aws_metric, metrics)
         
         return {'ListMetricsResult': {'Metrics': ret_list,
-                                      'NextToken':str(next_token)}}
-    
+                                      'NextToken': str(next_token)}}
+
     def put_metric_alarm(self, context, alarm_name, comparison_operator,
                          evaluation_periods, metric_name, namespace, period,
                          statistic, threshold, alarm_actions=[],
@@ -284,6 +312,15 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         
+        self.check_alarm_description(alarm_description)
+        self.check_alarm_name(alarm_name)
+        self.check_comparison_operator(comparison_operator)
+        self.check_dimensions(dimensions)
+        self.check_metric_name(metric_name)
+        self.check_namespace(namespace)
+        self.check_statistic(statistic)
+        self.check_unit(unit)
+
         d = utils.extract_member_dict(dimensions)
         
         metricalarm = monitor.MetricAlarm(
@@ -317,6 +354,10 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         
+        if namespace: 
+            if (not (0 < len(namespace) <= 255)) or (namespace[0:5] is "SPCS/"):
+                raise exception.InvalidParameterValue()
+        
         self.monitor_api.put_metric_data(project_id, namespace, metric_data,
                                          context.is_admin)
         return {}
@@ -330,6 +371,141 @@ class MonitorController(object):
         periodic alarm check (in about a minute) will set the alarm to its 
         actual state. 
         """
-        
+
+        self.check_alarm_name(alarm_name)
+        self.check_state_reason(state_reason)
+        self.check_state_reason_data(state_reason_data)
+        self.check_state_value(state_value)
+
         # TODO: implement here
         return {}
+
+    def check_alarm_name(self, alarm_name):        
+        if alarm_name and (not (0 < len(alarm_name) <= 255)):
+            err = "The length of Alarm name is 1~255."
+            raise exception.InvalidParameterValue(err)
+        
+        return True 
+
+    
+    def check_alarm_names(self, alarm_names):
+        if alarm_names:
+            if len(alarm_names) > 100:
+                msg = "only 100 alarm names are allowed per request"
+                raise exception.InvalidRequest(_(msg))
+        
+        return True 
+
+    
+    def check_history_item_type(self, history_item_type):
+        
+        history_item_sample = ['ConfigurationUpdate', 'StateUpdate', 'Action']
+        if history_item_type and (history_item_type not in history_item_sample):
+            err = "Unsuitable History Item Type Value"
+            raise exception.InvalidParameterValue(err)
+        
+        return True 
+
+    
+    def check_action_prefix(self, action_prefix):
+        if action_prefix and (not (0 < len(action_prefix) <= 1024)):
+            err = "The length of Action Prefix is 1~1024."
+            raise exception.InvalidParameterValue(err)
+        
+        return True 
+    
+    def check_alarm_name_prefix(self, alarm_name_prefix):
+        if alarm_name_prefix and (not (0 < len(alarm_name_prefix) <= 255)):
+            err = "The length of Alarm Name Prefix is 1~255."
+            raise exception.InvalidParameterValue(err)
+        
+        return True
+    
+    def check_state_value(self, state_value):
+        state_value_sample = ['OK', 'ALARM', 'INSUFFICIENT_DATA']
+        if state_value and (state_value not in state_value_sample):
+            err = "Unsuitable State Value"
+            raise exception.InvalidParameterValue(err)
+            
+        return True   
+    
+    def check_dimensions(self, dimensions):
+        if dimensions and (not (0 <= len(dimensions) <= 10)):
+            err = "The length of Dimensions is 0~10."
+            raise exception.InvalidParameterValue(err)
+        
+        return True 
+    
+    def check_metric_name(self, metric_name):
+        if metric_name and (not (0 < len(metric_name) <= 255)):
+            err = "The length of Metric Name is 1~255."
+            raise exception.InvalidParameterValue(err)
+        
+        return True 
+    
+    def check_namespace(self, namespace):
+        if namespace and (not (0 < len(namespace) <= 255)):
+            err = "The length of Namespace is 1~255."
+            raise exception.InvalidParameterValue(err)
+            
+        return True
+    
+    def check_statistic(self, statistic):
+        statistic_sample = ['SampleCount', 'Average', 'Sum', 'Minimum', 'Maximum']
+        if statistic and (statistic not in statistic_sample):
+            err = "Unsuitable Statistic Value"
+            raise exception.InvalidParameterValue(err)
+        
+        return True 
+    
+    def check_statistics(self, statistics):
+        statistic_sample = ['SampleCount', 'Average', 'Sum', 'Minimum', 'Maximum']
+        if statistics:
+            if (not (0 < len(statistics) <= 5)):
+                err = "The length of Namespace is 1~5."
+                raise exception.InvalidParameterValue(err)
+            else:
+                for statistic in statistics:
+                    if statistic and (statistic not in statistic_sample):
+                        err = "Unsuitable Statistic Value"
+                        raise exception.InvalidParameterValue(err)
+        
+        return True
+                    
+    def check_unit(self, unit):
+        unit_sample = ['Seconds', 'Microseconds', 'Milliseconds', 'Bytes', 'Kilobytes', 'Megabytes', 'Gigabytes', 'Terabytes', 'Bits', 'Kilobits', 'Megabits', 'Gigabits', 'Terabits', 'Percent', 'Count', 'Bytes/Second', 'Kilobytes/Second', 'Megabytes/Second', 'Gigabytes/Second', 'Terabytes/Second', 'Bits/Second', 'Kilobits/Second', 'Megabits/Second', 'Gigabits/Second', 'Terabits/Second', 'Count/Second', 'None']
+        if unit and (unit not in unit_sample):
+            err = "Unsuitable Unit Value"
+            raise exception.InvalidParameterValue(err)
+        
+        return True
+    
+    def check_alarm_description(self, alarm_description):
+        if alarm_description and (not (0 < len(alarm_description) <= 255)):
+            err = "The length of Alarm Description is 1~255."
+            raise exception.InvalidParameterValue(err)
+        
+        return True
+    
+    def check_comparison_operator(self, comparison_operator):
+        comparison_operator_sample = ['GreaterThanOrEqualToThreshold', 'GreaterThanThreshold', 'LessThanThreshold', 'LessThanOrEqualToThreshold']
+        if comparison_operator and (comparison_operator not in comparison_operator_sample):
+            err = "Unsuitable Comparison Operator Value"
+            raise exception.InvalidParameterValue(err)
+        
+        return True    
+    
+    def check_state_reason(self, state_reason):
+        if state_reason and (not (0 < len(state_reason) <= 1023)):
+            err = "The length of State Reason is 1~1023."
+            raise exception.InvalidParameterValue(err)
+        
+        return True        
+        
+    def check_state_reason_data(self, state_reason_data):
+        if state_reason_data and (not (0 < len(state_reason_data) <= 4000)):
+            err = "The length of State Reason Data is 1~4000."
+            raise exception.InvalidParameterValue(err)
+                
+        return True    
+    
