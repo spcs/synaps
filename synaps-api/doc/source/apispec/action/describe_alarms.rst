@@ -84,5 +84,13 @@ DescribeAlarms
 ----
 공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
 
-알림:
-  TBD
+.. list-table:: 
+   :widths: 20 50 10
+   :header-rows: 1
+   
+   * - 에러
+     - 설명
+     - HTTP Status Code
+   * - InvalidNextToken
+     - 주어진 next token 이 유효하지 않음
+     - 400

@@ -12,7 +12,7 @@ GetMetricStatistics
 공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
-   :widths: 15 50 10
+   :widths: 20 50 10
    :header-rows: 1
 
    * - 이름
@@ -97,5 +97,13 @@ GetMetricStatistics
 ----
 공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
 
-알림:
-  TBD
+.. list-table:: 
+   :widths: 20 50 10
+   :header-rows: 1
+   
+   * - 에러
+     - 설명
+     - HTTP Status Code
+   * - InvalidParameterValue
+     - 입력 파라미터의 값이 규격을 위반했음
+     - 400

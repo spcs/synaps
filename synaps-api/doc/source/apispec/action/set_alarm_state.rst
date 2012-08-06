@@ -15,7 +15,7 @@ SetAlarmState
 공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
-   :widths: 15 50 10
+   :widths: 20 50 10
    :header-rows: 1
 
    * - 이름
@@ -54,5 +54,17 @@ SetAlarmState
 ----
 공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
 
-알림:
-  TBD
+
+.. list-table:: 
+   :widths: 20 50 10
+   :header-rows: 1
+   
+   * - 에러
+     - 설명
+     - HTTP Status Code
+   * - InvalidFormat
+     - 데이터가 유효한 JSON 형식이 아님
+     - 400  
+   * - ResourceNotFound
+     - 해당하는 이름의 알람이 없음
+     - 400       

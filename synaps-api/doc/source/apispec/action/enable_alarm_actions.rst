@@ -31,6 +31,3 @@ EnableAlarmActions
 에러
 ----
 공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
-
-알림:
-  TBD

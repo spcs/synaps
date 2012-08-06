@@ -177,12 +177,13 @@ class DecryptionFailure(SynapsException):
 
 class NotAuthorized(SynapsException):
     message = _("Not authorized.")
-    code = 401
+    code = 403
 
 
 class AdminRequired(NotAuthorized):
     message = _("User does not have admin privileges")
-
+    code = 403
+    
 
 class Invalid(SynapsException):
     message = _("Unacceptable parameters.")
@@ -238,10 +239,6 @@ class NotAllowed(SynapsException):
 
 class GlobalRoleNotAllowed(NotAllowed):
     message = _("Unable to use global role %(role_id)s")
-
-
-class Duplicate(SynapsException):
-    pass
 
 
 class ConfigNotFound(NotFound):
