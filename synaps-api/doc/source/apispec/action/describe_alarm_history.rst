@@ -5,12 +5,12 @@ DescribeAlarmHistory
 
 설명
 ----
-특정 알람의 히스토리를 조회한다. 기간이나 아이템 타입(history_item_type)에 따라
-히스토리를 검색할 수 있다. 알람 이름을 지정하지 않은 경우, 사용자의 모든 알람에
-해당하는 히스토리 정보가 조회된다. 
+특정 알람의 히스토리를 조회한다. 기간이나 아이템 타입(HistoryItemType)
+에 따라 히스토리를 검색할 수 있다. 알람 이름(AlarmName)을 지정하지 않은 경우, 
+사용자의 모든 알람에 해당하는 히스토리 정보가 조회된다. 
 
 알림:
-  SPCS Synaps는 알람 히스토리를 2주간 보관한다.
+  SPCS Synaps는 알람의 삭제 여부에 관계없이 알람 히스토리를 2주간 보관한다.
 
 요청 매개변수
 -------------
@@ -60,7 +60,7 @@ DescribeAlarmHistory
 
 응답
 ----
-아래 엘리먼트가 DescribeAlarmHistoryResult 에 구조화되어 반환된다.
+아래 엘리먼트가 :ref:`describe_alarm_history_result` 에 구조화되어 반환된다.
 
 .. list-table:: 
    :widths: 30 50
@@ -76,7 +76,6 @@ DescribeAlarmHistory
      - 다음 데이터를 조회하기 위한 토큰.
        
        자료 형: String
-
 
 에러
 ----

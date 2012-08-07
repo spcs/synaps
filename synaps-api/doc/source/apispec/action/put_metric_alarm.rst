@@ -1,11 +1,11 @@
 .. _put_metric_alarm:
 
 PutMetricAlarm
-======================
+==============
 
 설명
 ----
-메트릭에 대해 알람을 생성하거나 업데이트한다. 
+메트릭에 대해 알람을 생성하거나 업데이트한다.
 
 요청 매개변수
 -------------
@@ -19,10 +19,10 @@ PutMetricAlarm
      - 설명
      - 필수 여부
    * - ActionsEnabled
-     - TBD - 아직 구현되지 않음
+     - TBD - v12.09.a 구현 예정
      - No
    * - AlarmActions.member.N
-     - TBD - 아직 구현되지 않음
+     - TBD - v12.09.a 구현 예정
      - No
    * - AlarmDescription	
      - 알람 설명
@@ -101,7 +101,7 @@ PutMetricAlarm
 
        자료 형: String
 
-       Valid Values: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
+       유효 값: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
        Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits | 
        Gigabits | Terabits | Percent | Count | Bytes/Second | Kilobytes/Second | 
        Megabytes/Second | Gigabytes/Second | Terabytes/Second | Bits/Second | 

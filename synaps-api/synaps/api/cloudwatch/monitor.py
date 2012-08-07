@@ -354,9 +354,7 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         
-        if namespace: 
-            if (not (0 < len(namespace) <= 255)) or (namespace[0:5] is "SPCS/"):
-                raise exception.InvalidParameterValue()
+        self.check_namespace(namespace)
         
         self.monitor_api.put_metric_data(project_id, namespace, metric_data,
                                          context.is_admin)
@@ -451,7 +449,7 @@ class MonitorController(object):
         return True
     
     def check_statistic(self, statistic):
-        statistic_sample = ['SampleCount', 'Average', 'Sum', 'Minimum', 
+        statistic_sample = ['SampleCount', 'Average', 'Sum', 'Minimum',
                             'Maximum']
         if statistic and (statistic not in statistic_sample):
             err = "Unsuitable Statistic Value"
@@ -460,7 +458,7 @@ class MonitorController(object):
         return True 
     
     def check_statistics(self, statistics):
-        statistic_sample = ['SampleCount', 'Average', 'Sum', 'Minimum', 
+        statistic_sample = ['SampleCount', 'Average', 'Sum', 'Minimum',
                             'Maximum']
         if statistics:
             if (not (0 < len(statistics) <= 5)):
@@ -475,13 +473,13 @@ class MonitorController(object):
         return True
                     
     def check_unit(self, unit):
-        unit_sample = ['Seconds', 'Microseconds', 'Milliseconds', 'Bytes', 
-                       'Kilobytes', 'Megabytes', 'Gigabytes', 'Terabytes', 
-                       'Bits', 'Kilobits', 'Megabits', 'Gigabits', 'Terabits', 
-                       'Percent', 'Count', 'Bytes/Second', 'Kilobytes/Second', 
-                       'Megabytes/Second', 'Gigabytes/Second', 
-                       'Terabytes/Second', 'Bits/Second', 'Kilobits/Second', 
-                       'Megabits/Second', 'Gigabits/Second', 'Terabits/Second', 
+        unit_sample = ['Seconds', 'Microseconds', 'Milliseconds', 'Bytes',
+                       'Kilobytes', 'Megabytes', 'Gigabytes', 'Terabytes',
+                       'Bits', 'Kilobits', 'Megabits', 'Gigabits', 'Terabits',
+                       'Percent', 'Count', 'Bytes/Second', 'Kilobytes/Second',
+                       'Megabytes/Second', 'Gigabytes/Second',
+                       'Terabytes/Second', 'Bits/Second', 'Kilobits/Second',
+                       'Megabits/Second', 'Gigabits/Second', 'Terabits/Second',
                        'Count/Second', 'None']
         if unit and (unit not in unit_sample):
             err = "Unsuitable Unit Value"
@@ -497,9 +495,9 @@ class MonitorController(object):
         return True
     
     def check_comparison_operator(self, comparison_operator):
-        comparison_operator_sample = ['GreaterThanOrEqualToThreshold', 
-                                      'GreaterThanThreshold', 
-                                      'LessThanThreshold', 
+        comparison_operator_sample = ['GreaterThanOrEqualToThreshold',
+                                      'GreaterThanThreshold',
+                                      'LessThanThreshold',
                                       'LessThanOrEqualToThreshold']
         if comparison_operator and (comparison_operator not in 
                                     comparison_operator_sample):

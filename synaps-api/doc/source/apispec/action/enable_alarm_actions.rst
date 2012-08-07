@@ -2,8 +2,6 @@
 
 EnableAlarmActions
 ==================
-.. DANGER::
-  TBD - 아직 구현되지 않음
 
 설명
 ----
