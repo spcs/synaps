@@ -55,7 +55,7 @@ source_encoding = 'utf-8'
 master_doc = 'index'
 
 # General information about the project.
-project = u'synaps'
+project = u'Synaps'
 copyright = u'2012, Samsung SDS'
 
 # The version info for the project you're documenting, acts as replacement for

@@ -5,8 +5,8 @@ ListMetrics
 
 설명
 ----
-SPCS 사용자가 저장한 유효한 메트릭을 반환한다. 반환된 메트릭은
-:ref:`get_metric_statistics` 에 사용해서 통계자료를 얻을 수 있다. 
+SPCS 사용자가 저장한 메트릭 리스트를 반환한다. :ref:`get_metric_statistics` 을 
+사용해서 조회된 메트릭의 통계자료를 얻을 수 있다. 
 
 알림
   최대 500 개 결과만 얻을 수 있음. 다음 리스트를 얻기 위해서는 NextToken을 사용
