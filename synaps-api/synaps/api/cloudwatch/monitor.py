@@ -368,7 +368,7 @@ class MonitorController(object):
         return {}
 
     def set_alarm_state(self, context, alarm_name, state_reason, state_value,
-                        state_reason_data=None):
+                        state_reason_data=None, project_id=None):
         """
         Temporarily sets the state of an alarm. When the updated StateValue
         differs from the previous value, the action configured for the 
@@ -376,13 +376,16 @@ class MonitorController(object):
         periodic alarm check (in about a minute) will set the alarm to its 
         actual state. 
         """
-
+        if not (project_id and context.is_admin):
+            project_id = context.project_id
+        
         self.check_alarm_name(alarm_name)
         self.check_state_reason(state_reason)
         self.check_state_reason_data(state_reason_data)
         self.check_state_value(state_value)
 
-        # TODO: implement here
+        self.monitor_api.set_alarm_state(project_id, alarm_name, state_reason,
+                                         state_value, state_reason_data)
         return {}
 
     def check_alarm_name(self, alarm_name):        

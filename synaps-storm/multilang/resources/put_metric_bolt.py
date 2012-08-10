@@ -26,7 +26,7 @@ from synaps import log as logging
 from synaps import utils
 from synaps.db import Cassandra
 from synaps.rpc import PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID, \
-    DELETE_ALARMS_MSG_ID
+    DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID
 
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
@@ -359,6 +359,26 @@ class PutMetricBolt(storm.BasicBolt):
             self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
         self.metrics[metric_key].delete_metric_alarm(alarmkey)
         
+    def process_set_alarm_state_msg(self, metric_key, message):
+        project_id = message.get('project_id')
+        alarm_name = message.get('alarm_name')
+        state_reason_data = message.get('state_reason_data')
+        alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
+
+        metric = self.metrics[metric_key]
+        metricalarm = metric.alarms[alarm_key]
+        metricalarm['state_reason'] = message.get('state_reason')
+        metricalarm['state_value'] = message.get('state_value')
+        metricalarm['state_reason_data'] = message.get('state_reason_data')
+
+        # write into database
+        alarm_columns = {'state_reason':message.get('state_reason'),
+                         'state_value':message.get('state_value')}
+        if state_reason_data:
+            alarm_columns['state_reason_data'] = state_reason_data
+        
+        self.cass.put_metric_alarm(alarm_key, alarm_columns)   
+        
     def process(self, tup):
         metric_key = UUID(tup.values[0])
         message = json.loads(tup.values[1])
@@ -374,6 +394,9 @@ class PutMetricBolt(storm.BasicBolt):
             elif message_id == DELETE_ALARMS_MSG_ID:
                 storm.log("process put_metric_alarm_msg (%s)" % message)
                 self.process_delete_metric_alarms_msg(metric_key, message)
+            elif message_id == SET_ALARM_STATE_MSG_ID:
+                storm.log("process set_alarm_state_msg (%s)" % message)
+                self.process_set_alarm_state_msg(metric_key, message)
             else:
                 storm.log("unknown message")
         except Exception as e:
