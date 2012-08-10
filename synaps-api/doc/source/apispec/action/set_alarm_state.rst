@@ -64,4 +64,4 @@ SetAlarmState
      - 400  
    * - ResourceNotFound
      - 해당하는 이름의 알람이 없음
-     - 400
+     - 404

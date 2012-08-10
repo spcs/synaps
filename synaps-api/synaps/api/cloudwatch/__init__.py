@@ -40,14 +40,13 @@ def cloudwatch_error(req, request_id, code, message):
     """Helper to send an cloudwatch_compatible error"""
     LOG.error(_('%(code)s: %(message)s') % locals())
     resp = webob.Response()
-    resp.status = 400
+    resp.status = code
     resp.headers['Content-Type'] = 'text/xml'
     resp.body = str('<?xml version="1.0"?>\n'
                      '<Response><Errors><Error><Code>%s</Code>'
                      '<Message>%s</Message></Error></Errors>'
                      '<RequestID>%s</RequestID></Response>' % 
-                     (utils.utf8(code), utils.utf8(message),
-                     utils.utf8(request_id)))
+                     (code, utils.utf8(message), utils.utf8(request_id)))
     return resp
 
 ## Fault Wrapper around all CloudWatch requests ##
@@ -151,7 +150,7 @@ class Authenticate(wsgi.Middleware):
                     req.host,
                     req.path)
         # Be explicit for what exceptions are 403, the rest bubble as 500
-        except (exception.NotFound, exception.NotAuthorized,
+        except (exception.ResourceNotFound, exception.NotAuthorized,
                 exception.InvalidSignature) as ex:
             LOG.audit(_("Authentication Failure: %s"), unicode(ex))
             raise webob.exc.HTTPForbidden()
@@ -274,24 +273,12 @@ class Executor(wsgi.Application):
         
         try:
             result = api_request.invoke(context)
-        except exception.CloudwatchAPIError as ex:
-            LOG.exception(_('CloudwatchApiError raised: %s'), unicode(ex),
-                          context=context)
+        except (exception.CloudwatchAPIError, exception.SynapsException) as ex:
             if ex.code:
                 return cloudwatch_error(req, request_id, ex.code, unicode(ex))
             else:
                 return cloudwatch_error(req, request_id, type(ex).__name__,
-                                        unicode(ex))
-        except exception.NotAuthorized as ex:
-            LOG.info(_('NotAuthorized raised: %s'), unicode(ex),
-                    context=context)
-            return cloudwatch_error(req, request_id, type(ex).__name__,
-                                    unicode(ex))
-        except exception.Invalid as ex:
-            LOG.debug(_('InvalidRequest raised: %s'), unicode(ex),
-                     context=context)
-            return cloudwatch_error(req, request_id, type(ex).__name__,
-                                    unicode(ex))
+                                        unicode(ex))            
         except Exception as ex:
             env = req.environ.copy()
             for k in env.keys():
@@ -309,16 +296,3 @@ class Executor(wsgi.Application):
             resp.headers['Content-Type'] = 'text/xml'
             resp.body = str(result)
             return resp                            
-
-    def _error(self, req, context, code, message):
-        LOG.error("%s: %s", code, message, context=context)
-        resp = webob.Response()
-        resp.status = 400
-        resp.headers['Content-Type'] = 'text/xml'
-        resp.body = str('<?xml version="1.0"?>\n'
-                         '<Response><Errors><Error><Code>%s</Code>'
-                         '<Message>%s</Message></Error></Errors>'
-                         '<RequestID>%s</RequestID></Response>' % 
-                         (utils.utf8(code), utils.utf8(message),
-                          utils.utf8(context.request_id)))
-        return resp

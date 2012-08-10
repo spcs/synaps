@@ -3,9 +3,9 @@
 # Copyright 2012 Samsung SDS
 # All Rights Reserved.
 
-SYNAPS_VERSION = ['12', '08', '06']
+SYNAPS_VERSION = ['12', '08', '10']
 YEAR, COUNT, REVISION = SYNAPS_VERSION
-FINAL = False   # This becomes true at Release Candidate time
+FINAL = True   # This becomes true at Release Candidate time
 
 
 def canonical_version_string():

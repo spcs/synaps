@@ -20,7 +20,7 @@ PutMetricAlarm
      - 필수 여부
    * - ActionsEnabled
      - 알람의 상태 변화에 따른 액션 수행 여부
-     - 자료 형: Boolean
+       자료 형: Boolean
      - No
    * - AlarmActions.member.N
      - TBD - v12.09.a 구현 예정

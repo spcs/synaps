@@ -198,9 +198,15 @@ class InvalidRequest(Invalid):
     message = _("The request is invalid.")
 
 
+class InvalidNextToken(Invalid):
+    message = _("The next token is invalid UUID format")
+
+
 class InvalidSignature(Invalid):
     message = _("Invalid signature %(signature)s for user %(user)s.")
 
+class InvalidFormat(Invalid):
+    message = _("Invalid json format")
 
 # Cannot be templated as the error syntax varies.
 # msg needs to be constructed when raised.
@@ -208,28 +214,28 @@ class InvalidParameterValue(Invalid):
     message = _("%(err)s")
 
 
-class NotFound(SynapsException):
+class ResourceNotFound(SynapsException):
     message = _("Resource could not be found.")
     code = 404
 
 
-class ProjectNotFound(NotFound):
+class ProjectNotFound(ResourceNotFound):
     message = _("Project %(project_id)s could not be found.")
 
 
-class ProjectMembershipNotFound(NotFound):
+class ProjectMembershipNotFound(ResourceNotFound):
     message = _("User %(user_id)s is not a member of project %(project_id)s.")
 
 
-class UserRoleNotFound(NotFound):
+class UserRoleNotFound(ResourceNotFound):
     message = _("Role %(role_id)s could not be found.")
 
 
-class AccessKeyNotFound(NotFound):
+class AccessKeyNotFound(ResourceNotFound):
     message = _("Access Key %(access_key)s could not be found.")
 
 
-class ClassNotFound(NotFound):
+class ClassNotFound(ResourceNotFound):
     message = _("Class %(class_name)s could not be found: %(exception)s")
 
 
@@ -241,11 +247,11 @@ class GlobalRoleNotAllowed(NotAllowed):
     message = _("Unable to use global role %(role_id)s")
 
 
-class ConfigNotFound(NotFound):
+class ConfigNotFound(ResourceNotFound):
     message = _("Could not find config at %(path)s")
 
 
-class PasteAppNotFound(NotFound):
+class PasteAppNotFound(ResourceNotFound):
     message = _("Could not load paste app '%(name)s' from %(path)s")
 
 
