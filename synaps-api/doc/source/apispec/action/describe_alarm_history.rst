@@ -26,36 +26,36 @@ DescribeAlarmHistory
    * - AlarmName	
      - 알람 이름
        
-       Type: String
+       자료 형: String
        
        길이 제한: 최소 1자 ~ 최대 255자
      - No
    * - EndDate	
      - 알람 히스토리를 조회할 기간의 끝
        
-       Type: DateTime
+       자료 형: DateTime
      - No
    * - HistoryItemType	
      - 조회할 알람 히스토리의 종류
       
-       Type: String
+       자료 형: String
       
        유효 값: ConfigurationUpdate | StateUpdate | Action
      - No
    * - MaxRecords	
      - 조회할 알람 히스토리의 최대 갯수
       
-       Type: Integer
+       자료 형: Integer
      - No
    * - NextToken	
      - 다음 데이터를 조회하기 위한 토큰
        
-       Type: String
+       자료 형: String
      - No
    * - StartDate	
      - 알람 히스토리를 조회할 기간의 시작
        
-       Type: DateTime
+       자료 형: DateTime
      - No
 
 응답
@@ -79,7 +79,7 @@ DescribeAlarmHistory
 
 에러
 ----
-공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
+공통으로 발생하는 에러는 :ref:`common_errors` 를 참고한다.
 
 .. list-table:: 
    :widths: 20 50 10

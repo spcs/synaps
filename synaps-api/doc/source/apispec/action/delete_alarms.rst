@@ -22,14 +22,14 @@ DeleteAlarms
    * - AlarmNames.member.N
      - 삭제할 알람의 이름 리스트.
 
-       Type: String list
+       자료 형: String list
 
        길이 제한: 최소 0개 부터 100개까지의 알람.
      - No
 
 에러
 ----
-공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
+공통으로 발생하는 에러는 :ref:`common_errors` 를 참고한다.
 
 .. list-table:: 
    :widths: 20 50 10

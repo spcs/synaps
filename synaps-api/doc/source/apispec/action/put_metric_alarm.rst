@@ -19,7 +19,8 @@ PutMetricAlarm
      - 설명
      - 필수 여부
    * - ActionsEnabled
-     - TBD - v12.09.a 구현 예정
+     - 알람의 상태 변화에 따른 액션 수행 여부
+     - 자료 형: Boolean
      - No
    * - AlarmActions.member.N
      - TBD - v12.09.a 구현 예정
@@ -55,12 +56,12 @@ PutMetricAlarm
        길이 제한: 최소 0개부터 최대 10개의 아이템
      - No     
    * - EvaluationPeriods
-     - 임계치 비교를 할 데이터의 횟수
+     - 임계치 비교를 할 기간 (분 단위)
 
        자료 형: Integer
      - Yes     
    * - InsufficientDataActions.member.N
-     - TBD - 아직 구현되지 않음
+     - TBD - v12.09.a 구현 예정
      - No
    * - MetricName
      - 알람에 관련된 메트릭의 이름
@@ -77,7 +78,7 @@ PutMetricAlarm
        길이 제한: 최소 1자 ~ 최대 255자
      - Yes
    * - OKActions.member.N
-     - TBD - 아직 구현되지 않음
+     - TBD - v12.09.a 구현 예정
      - No
    * - Period
      - 통계가 적용될 기간(초 단위)
@@ -111,4 +112,4 @@ PutMetricAlarm
             
 에러
 ----
-공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
+공통으로 발생하는 에러는 :ref:`common_errors` 를 참고한다.

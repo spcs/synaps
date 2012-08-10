@@ -72,7 +72,7 @@ SPCS 사용자가 저장한 메트릭 리스트를 반환한다. :ref:`get_metri
      
 에러
 ----
-공통으로 발생하는 매개변수는 :ref:`common_errors` 를 참고한다.
+공통으로 발생하는 에러는 :ref:`common_errors` 를 참고한다.
 
 .. list-table:: 
    :widths: 20 50 10
