@@ -41,4 +41,4 @@ synaps-api 빌드, 설치 및 실행
 
 synaps-storm 빌드 및 실행
 -------------------------
-TBD
+:ref:`service.environment` 참고
