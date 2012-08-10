@@ -48,9 +48,9 @@ rabbit mq 2중화 구성
    $ rm -rf /var/lib/rabbitmq/mnesia
 
 
-* erlang_cookie 파일 동기화 ::
+* erlang.cookie 파일 동기화 ::
 
-   한 노드의 /var/lib/rabbitmq/.erlang_cookie 파일을 다른 노드에 overwrite
+   한 노드의 /var/lib/rabbitmq/.erlang.cookie 파일을 다른 노드에 overwrite
 
 
 2. 클러스터링
@@ -90,11 +90,12 @@ rabbit mq 2중화 구성
 
 synaps-storm 클러스터 구축
 --------------------------
-1. 공통모듈 설치
+1. 공통모듈 설치(구축 전 synaps-api 설치 진행)
 
   .. code-block:: bash
 
    $ apt-get install openjdk-6-jdk
+   $ apt-get install maven2
 
 
 2. zookeeper 설치
@@ -138,7 +139,7 @@ synaps-storm 클러스터 구축
 
 * 실행이 되지 않고, cygpath(cywin)관련 오류가 나면 다음의 라인을 찾아 주석처리 ::
 
-   *ZOOCFG=`cygpath -wp "$ZOOCFG"`
+   ZOOCFG=`cygpath -wp "$ZOOCFG"`
 
 
 5. zeromq 설치
@@ -148,9 +149,11 @@ synaps-storm 클러스터 구축
    $ apt-get install make
    $ apt-get install build-essential
    $ apt-get install uuid-dev
-   $ tar zxvf zeromq-2.1.11.tar.gz
-   $ cd zeromq-2.1.11
+   $ wget http://download.zeromq.org/zeromq-2.1.7.tar.gz
+   $ tar zxvf zeromq-2.1.7.tar.gz
+   $ cd zeromq-2.1.7
    $ ./configure
+   $ make
    $ make install
    $ sudo ldconfig
 
@@ -163,6 +166,8 @@ synaps-storm 클러스터 구축
    $ apt-get install libtool
    $ apt-get install automake
    $ export JAVA_HOME='/usr/lib/jvm/java-6-openjdk'
+   $ tar zxvf nathanmarz-jzmq-dd3327d.tar.gz
+   $ cd nathanmarz-jzmq-dd3327d
    $ ./autogen.sh
    $ ./configure
    $ make
@@ -186,6 +191,7 @@ synaps-storm 클러스터 구축
    $ ln -s ~/opt/storm-0.7.1 storm
    $ mkdir ~/.storm
    $ chmod 777 ~/.storm
+   $ ln -s ~/opt/storm/bin/storm /bin/storm
 
 
 8. storm 설정
@@ -194,10 +200,10 @@ synaps-storm 클러스터 구축
 
   .. code-block:: bash
 
-   $ vi stormdirectory/conf/storm.yaml
+   $ vi ~/opt/storm/conf/storm.yaml
 
 
-* 다음을 수정 ::
+* 다음을 설정 파일에 추가 ::
 
    storm.zookeeper.servers:
         - "10.101.1.113" 
@@ -206,13 +212,14 @@ synaps-storm 클러스터 구축
 
    nimbus.host: "10.101.1.217" 
 
-   java.library.path: "/usr/lib/jvm/java-6-openjdk:/usr/local/lib:/opt/local/lib:/usr/lib" 
+   java.library.path: "/usr/lib/jvm/java-6-openjdk:/usr/local/lib:/opt/local/lib:/usr/lib"
+    
 
 * 설정파일을 옮김
 
-  .. code-block::bash
+  .. code-block:: bash
 
-   $ cp storm/conf/storm.yaml ~/.storm/
+   $ cp ~opt/storm/conf/storm.yaml ~/.storm/
    $ mkdir /var/lib/dhcp3/
 
 
@@ -222,21 +229,21 @@ synaps-storm 클러스터 구축
 
   .. code-block:: bash
 
-   $ bin/storm nimbus
+   $ nohup storm nimbus &
 
 
 * storm supervisor 실행(at Supervisor)
 
   .. code-block:: bash
 
-   $ bin/storm supervisor
+   $ nohup storm supervisor &
 
 
 * storm ui 실행(apache2 package 필요, 필요시 apt-get install apache2 실행, (at Nimbus))
 
   .. code-block:: bash
 
-   $ bin/storm ui
+   $ nohup storm ui &
 
 
 10. 방화벽 설정
@@ -246,6 +253,40 @@ synaps-storm 클러스터 구축
    2181, 6627, 3772, 3773, 6700, 6701, 6702, 6703, 2888, 2889, 2890, 3888, 3889, 3890
 
 위 default 설정 및 새로 설정해준 포트들에 대하여 오픈필요.
+
+
+11. storm build 및 실행
+
+* storm build::
+
+  .. code-block:: bash
+
+   $ cd ~/synaps/synaps-storm/
+   $ mvn install
+   
+
+* storm run(At nimbus)
+
+  .. code-block:: bash
+
+   $ cd ~/synaps/synaps-storm/target
+   $ storm jar synaps-storm-2012.##.##.jar com.spcs.synaps.PutMetricTopology metric#####
+   
+   
+* storm run 확인(At supervisor)
+
+  .. code-block:: bash
+
+   $ ps aux | grep python
+   
+   
+* 다음 4개의 프로세스 확인(At supervisor)::
+
+   root     21254  0.0  0.3 135624 27876 ?        S    18:45   0:00 python put_metric_bolt.py
+   root     21267 39.5  0.2 113928 21640 ?        S    18:45  49:36 python api_spout.py
+   root     21269  0.0  0.3 135628 27880 ?        S    18:45   0:00 python put_metric_bolt.py
+   root     21270  0.0  0.2 122480 23964 ?        S    18:45   0:00 python unpack_bolt.py
+
 
 synaps-database 클러스터 구축
 -----------------------------

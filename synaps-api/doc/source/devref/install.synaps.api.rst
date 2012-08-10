@@ -14,8 +14,8 @@ Ubuntu(11.04)상에서 synaps-api를 설치 및 설정 방법에 대해 설명�
 
 .. code-block:: bash
 
-  $ sudo apt-get install build-essential python-dev
-  $ sudo apt-get install python-setuptools python-eventlet python-pastedeploy python-webob
+  $ sudo apt-get install build-essential python-dev memcached
+  $ sudo apt-get install python-setuptools python-eventlet python-pastedeploy python-webob python-ldap
   $ sudo apt-get install git python-gflags python-netaddr
 
 
@@ -36,6 +36,7 @@ pandas 설치(web server, storm server)
 
    $ wget http://labix.org/download/python-dateutil/python-dateutil-1.5.tar.gz
    $ tar zxvf python-dateutil-1.5.tar.gz
+   $ cd python-dateutil-1.5
    $ python setup.py install
    
 2. pandas 설치
@@ -46,6 +47,7 @@ pandas 설치(web server, storm server)
 
    $ wget http://pypi.python.org/packages/source/p/pandas/pandas-0.7.3.tar.gz#md5=e4876ea5882accce15f6f37750f3ffec
    $ tar zxvf pandas-0.7.3.tar.gz
+   $ cd pandas-0.7.3/
    $ python setup.py install
 
 
@@ -74,10 +76,32 @@ pycassa 설치
   $ sudo python setup.py install
   $ cd ..
   
+  
 pika 설치
 ---------
 python RabbitMQ 클라이언트인 pika를 설치한다.
 
+.. code-block:: bash
+
+  $ wget http://pypi.python.org/packages/source/p/pika/pika-0.9.5.tar.gz
+  $ tar xvfz pika-0.9.5.tar.gz
+  $ cd pika-0.9.5
+  $ sudo python setup.py install
+  $ cd ..  
+  
+  
+boto 설치
+---------
+python RabbitMQ 클라이언트인 pika를 설치한다.
+
+.. code-block:: bash
+
+  $ wget http://boto.googlecode.com/files/boto-2.3.0.tar.gz
+  $ tar xvfz boto-2.3.0.tar.gz
+  $ cd boto-2.3.0
+  $ sudo python setup.py install
+  $ cd ..
+  
   
 synaps 설치
 ```````````
@@ -90,7 +114,6 @@ synaps-api 설치 및 설정
   $ git clone ssh://git@redmine.dev/home/git/synaps -b master
   $ cd synaps/synaps-api
   $ sudo python setup.py install
-  $ cd ..
   
 /etc/synaps/synaps.conf 에서 환경에 맞는 설정을 적용한다.
 
