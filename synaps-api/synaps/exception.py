@@ -205,6 +205,7 @@ class InvalidNextToken(Invalid):
 class InvalidSignature(Invalid):
     message = _("Invalid signature %(signature)s for user %(user)s.")
 
+
 class InvalidFormat(Invalid):
     message = _("Invalid json format")
 

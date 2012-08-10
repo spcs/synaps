@@ -198,10 +198,10 @@ class MonitorController(object):
             project_id = context.project_id
         
         self.check_alarm_names(alarm_names)
-        
-        ret = {}
-        # TODO: implement here
-        return ret
+
+        alarm_names = utils.extract_member_list(alarm_names)
+        self.monitor_api.set_alarm_actions(project_id, alarm_names, False)
+        return {}        
     
     def enable_alarm_actions(self, context, alarm_names=None,
                              project_id=None):
@@ -209,10 +209,10 @@ class MonitorController(object):
             project_id = context.project_id
         
         self.check_alarm_names(alarm_names)
-        
-        ret = {}
-        # TODO: implement here
-        return ret
+
+        alarm_names = utils.extract_member_list(alarm_names)
+        self.monitor_api.set_alarm_actions(project_id, alarm_names, True)
+        return {}      
     
     def get_metric_statistics(self, context, end_time, metric_name,
                               namespace, period, start_time, statistics,
@@ -459,7 +459,7 @@ class MonitorController(object):
         statistic_sample = ['SampleCount', 'Average', 'Sum', 'Minimum',
                             'Maximum']
         if statistic and (statistic not in statistic_sample):
-            err = "Unsuitable Statistic Value" + statistic
+            err = "Unsuitable Statistic Value %s" % statistic
             raise exception.InvalidParameterValue(err)
         
         return True 
