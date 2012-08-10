@@ -95,6 +95,20 @@ class API(object):
         )
         return histories
     
+    def set_alarm_actions(self, project_id, alarm_names, enabled):
+        for alarm_name in alarm_names:
+            alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
+            self.cass.put_metric_alarm(alarm_key, {'action_enabled':enabled})
+    
+    def set_alarm_state(self, project_id, alarm_name, state_reason,
+                        state_value, state_reason_data=None):
+       
+        body = {'project_id': project_id, 'alarm_name': alarm_name,
+                'state_reason': state_reason, 'state_value': state_value,
+                'state_reason_data': state_reason_data}   
+        self.rpc.send_msg(rpc.SET_ALARM_STATE_MSG_ID, body)
+        LOG.info("SET_ALARM_STATE_MSG sent")        
+    
     def get_metric_statistics(self, project_id, end_time, metric_name,
                               namespace, period, start_time, statistics,
                               unit=None, dimensions=None):
@@ -233,7 +247,7 @@ class API(object):
             
         
         # insert alarm into database
-        self.cass.put_metric_alarm(project_id, alarm_key, metricalarm)
+        self.cass.put_metric_alarm(alarm_key, metricalarm)
         LOG.debug("metric alarm inserted alarm key: %s" % (alarm_key))
 
         # to make json, convert datetime type into str        

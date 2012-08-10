@@ -287,7 +287,7 @@ class Executor(wsgi.Application):
 
             LOG.exception(_('Unexpected error raised: %s'), unicode(ex))
             LOG.error(_('Environment: %s') % utils.dumps(env))
-            return cloudwatch_error(req, request_id, 'UnknownError',
+            return cloudwatch_error(req, request_id, 500,
                                     _('An unknown error has occurred. '
                                       'Please try your request again.'))                        
         else:

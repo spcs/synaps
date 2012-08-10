@@ -19,7 +19,7 @@ import storm
 import traceback
 from synaps.db import Cassandra
 from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
-                        DELETE_ALARMS_MSG_ID)
+                        DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID)
 
 threshhold = 10000
 flags.FLAGS(sys.argv)
@@ -82,6 +82,14 @@ class UnpackMessageBolt(storm.BasicBolt):
                     except Exception as e:
                         storm.log("Alarm %s does not exists" % alarmkey)
                         storm.log(traceback.format_exc(e))
+            elif message_id == SET_ALARM_STATE_MSG_ID:
+                project_id = message.get('project_id')
+                alarm_name = message.get('alarm_name')
+                alarm_key = self.cass.get_metric_alarm_key(project_id,
+                                                           alarm_name)
+                alarm = self.cass.get_metric_alarm(alarm_key)
+                metric_key = str(alarm.get('metric_key'))
+                storm.emit([metric_key, json.dumps(message)])
             
         except Exception as e:
             storm.log(traceback.format_exc(e))

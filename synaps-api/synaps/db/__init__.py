@@ -369,7 +369,7 @@ class Cassandra(object):
             items = {}
         return items
     
-    def put_metric_alarm(self, project_id, alarm_key, metricalarm):
+    def put_metric_alarm(self, alarm_key, metricalarm):
         """
         MetricAlarm 을 DB에 생성 또는 업데이트 함.
         """
