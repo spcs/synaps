@@ -166,16 +166,18 @@ class MonitorController(object):
                                    statistic=None, unit=None, project_id=None):
         if not (project_id and context.is_admin):
             project_id = context.project_id
+               
+
+        ret_dict = {}
+        ret_alarms = []
+        dimensions = utils.extract_member_dict(dimensions)
         
         self.check_dimensions(dimensions)
         self.check_metric_name(metric_name)
         self.check_namespace(namespace)
         self.check_statistic(statistic)
         self.check_unit(unit)
-
-        ret_dict = {}
-        ret_alarms = []
-        dimensions = utils.extract_member_dict(dimensions)
+        
         alarms = self.monitor_api.describe_alarms_for_metric(
             project_id=project_id, namespace=namespace,
             metric_name=metric_name, dimensions=dimensions, period=period,
@@ -234,11 +236,7 @@ class MonitorController(object):
                 ret[statistic] = utils.to_unit(value, unit)
             return ret
                 
-        self.check_dimensions(dimensions)
-        self.check_metric_name(metric_name)
-        self.check_namespace(namespace)
-        self.check_statistics(statistics)
-        self.check_unit(unit)
+        
 
         if not (project_id and context.is_admin):
             project_id = context.project_id
@@ -246,11 +244,20 @@ class MonitorController(object):
         start_time = utils.parse_strtime(start_time)
         dimensions = utils.extract_member_dict(dimensions)
         statistics = utils.extract_member_list(statistics)
+        
+        self.check_dimensions(dimensions)
+        self.check_metric_name(metric_name)
+        self.check_namespace(namespace)
+        self.check_statistics(statistics)
+        self.check_unit(unit)
+        
         stats = self.monitor_api.get_metric_statistics(project_id, end_time,
                                                        metric_name, namespace,
                                                        period, start_time,
                                                        statistics, unit,
                                                        dimensions)
+    
+        
         
         datapoints = map(stat_to_datapoint, stats)
         label = metric_name
@@ -452,7 +459,7 @@ class MonitorController(object):
         statistic_sample = ['SampleCount', 'Average', 'Sum', 'Minimum',
                             'Maximum']
         if statistic and (statistic not in statistic_sample):
-            err = "Unsuitable Statistic Value"
+            err = "Unsuitable Statistic Value" + statistic
             raise exception.InvalidParameterValue(err)
         
         return True 
@@ -467,7 +474,7 @@ class MonitorController(object):
             else:
                 for statistic in statistics:
                     if statistic and (statistic not in statistic_sample):
-                        err = "Unsuitable Statistic Value"
+                        err = "Unsuitable Statistic Value" + statistic
                         raise exception.InvalidParameterValue(err)
         
         return True
