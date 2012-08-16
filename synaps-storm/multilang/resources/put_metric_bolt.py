@@ -27,10 +27,13 @@ from synaps import utils
 from synaps.db import Cassandra
 from synaps.rpc import PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID, \
     DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID
+from synaps import exception
 
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
     STATISTICS_TTL = Cassandra.STATISTICS_TTL
+    MAX_PERIOD = 0    
+    
     ROLLING_FUNC_MAP = {
         'Average': rolling_mean,
         'Minimum': rolling_min,
@@ -59,8 +62,9 @@ class MetricMonitor(object):
         self.cass = cass
         self.df = self.load_statistics()
         self.alarms = self.load_alarms()
+        self.MAX_PERIOD = self.set_max_period(self.alarms)
         self.lastchecked = None
-
+        
     def _reindex(self):
         self.df = self.df.reindex(index=self._get_range())
 
@@ -70,7 +74,17 @@ class MetricMonitor(object):
         end = now_idx + timedelta(seconds=60 * 60) # 1 HOUR
         daterange = DateRange(start, end, offset=datetools.Minute())
         return daterange
-
+    
+    def set_max_period(self, alarms):
+        
+        period_buf = 0
+        for k, v in alarms.iteritems():
+            if period_buf < v.get('period'):
+                period_buf = v.get('period')
+        
+        return period_buf
+                 
+        
     def delete_metric_alarm(self, alarmkey):
         """
         메모리 및 DB에서 알람을 삭제한다.
@@ -159,10 +173,16 @@ class MetricMonitor(object):
         self.cass.insert_stat(self.metric_key, stat_dict)
         storm.log("metric data inserted %s" % (self.metric_key))
         
-        # check alarms
-        self.check_alarms()
+        now = utils.utcnow().replace(second=0, microsecond=0)
+        timedelta_buf = now - time_idx
+        
+        if(timedelta_buf <= timedelta(seconds=self.MAX_PERIOD)):
+            # check alarms            
+            self.check_alarms()
+        
     
     def check_alarms(self):
+        storm.log("start alarm checking")
         for k, v in self.alarms.iteritems():
             self._check_alarm(k, v)
         self.lastchecked = utils.utcnow()
@@ -343,8 +363,7 @@ class PutMetricBolt(storm.BasicBolt):
         timestamp = utils.parse_strtime(message['timestamp'])
 
         self.metrics[metric_key].put_metric_data(
-            timestamp=timestamp, value=message['value'], unit=message['unit']
-        )
+            timestamp=timestamp, value=message['value'], unit=message['unit'] )
     
     def process_put_metric_alarm_msg(self, metric_key, message):
         if metric_key not in self.metrics:
@@ -378,7 +397,7 @@ class PutMetricBolt(storm.BasicBolt):
         if state_reason_data:
             alarm_columns['state_reason_data'] = state_reason_data
         
-        self.cass.put_metric_alarm(alarm_key, alarm_columns)   
+        self.cass.put_metric_alarm(alarm_key, alarm_columns)
         
     def process(self, tup):
         metric_key = UUID(tup.values[0])
