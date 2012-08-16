@@ -82,6 +82,7 @@ class MetricMonitor(object):
             alarm = self.alarms.pop(alarmkey)
         except KeyError:
             storm.log("alarmkey %s doesn't exist" % alarmkey)
+            return
         
         self.cass.delete_metric_alarm(alarmkey)
         self.alarm_history_delete(alarmkey, alarm)
