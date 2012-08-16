@@ -513,7 +513,7 @@ synaps-storm 클러스터 구축
 
 11. storm build 및 실행
 
-* storm build::
+* storm build
 
   .. code-block:: bash
 
