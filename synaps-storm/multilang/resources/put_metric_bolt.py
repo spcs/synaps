@@ -305,7 +305,6 @@ class MetricMonitor(object):
         }
         
         self.cass.insert_alarm_history(history_key, history_column)
-        self.MAX_PERIOD = self.set_max_period(self.alarms)
         
     
     def alarm_history_state_update(self, alarmkey, alarm, new_state,
