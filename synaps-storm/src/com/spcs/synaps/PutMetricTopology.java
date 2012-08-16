@@ -103,7 +103,7 @@ public class PutMetricTopology {
 		} else {
 			LocalCluster cluster = new LocalCluster();
 			cluster.submitTopology("metric", conf, builder.createTopology());
-			Utils.sleep(60000);
+			Utils.sleep(90000);
 			cluster.killTopology("metric");
 			Utils.sleep(10000);
 			cluster.shutdown();
