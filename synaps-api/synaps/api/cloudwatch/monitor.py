@@ -327,7 +327,9 @@ class MonitorController(object):
         self.check_namespace(namespace)
         self.check_statistic(statistic)
         self.check_unit(unit)
-
+        self.check_period(period)
+        self.check_evaluation_periods(evaluation_periods)
+        
         d = utils.extract_member_dict(dimensions)
         
         metricalarm = monitor.MetricAlarm(
@@ -529,4 +531,21 @@ class MonitorController(object):
             raise exception.InvalidParameterValue(err)
                 
         return True    
+    
+    def check_period(self, period):
+        # period 의 최대값은 임시 설정입니다.
+        if period and (not 0 < int(period) <= (60 * 60)):
+            err = "The length of Period is 1~3600."
+            raise exception.InvalidParameterValue(err)
+            
+        return True
+    
+    def check_evaluation_periods(self,evaluation_periods):
+        # evaluation_periods 의 최대값은 임시 설정입니다.
+        if evaluation_periods and (not 0 < int(evaluation_periods) <= 100):
+            err = "The length of Evaluation Period is 1~100."
+            raise exception.InvalidParameterValue(err)
+                
+        return True
+    
     
