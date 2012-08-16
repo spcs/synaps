@@ -56,6 +56,22 @@ public class PutMetricTopology {
 
 		@Override
 		public void declareOutputFields(OutputFieldsDeclarer declarer) {
+			declarer.declare(new Fields("alarm_key", "message"));
+		}
+
+		@Override
+		public Map<String, Object> getComponentConfiguration() {
+			return null;
+		}
+	}
+
+	public static class ActionBolt extends ShellBolt implements IRichBolt {
+		public ActionBolt() {
+			super("python", "action_bolt.py");
+		}
+
+		@Override
+		public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		}
 
 		@Override
@@ -74,6 +90,8 @@ public class PutMetricTopology {
 				.shuffleGrouping("api_spout");
 		builder.setBolt("putmetric_bolt", new PutMetricBolt(), 4)
 				.fieldsGrouping("unpack_bolt", new Fields("metric_key"));
+		builder.setBolt("action_bolt", new ActionBolt(), 2).shuffleGrouping(
+				"putmetric_bolt");
 
 		Config conf = new Config();
 		conf.setDebug(true);
