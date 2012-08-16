@@ -77,12 +77,14 @@ class MetricMonitor(object):
     
     def set_max_period(self, alarms):
         
-        period_buf = 0
-        for k, v in alarms.iteritems():
-            if period_buf < v.get('period'):
-                period_buf = v.get('period')
-        
-        return period_buf
+        #period_buf = 0
+        #for k, v in alarms.iteritems():
+        #    if period_buf < v.get('period'):
+        #        period_buf = v.get('period')
+        #
+        #return period_buf
+            
+        return max(v.get('period') for k, v in alarms.iteritems())
                  
         
     def delete_metric_alarm(self, alarmkey):
@@ -102,6 +104,8 @@ class MetricMonitor(object):
         self.alarm_history_delete(alarmkey, alarm)
         storm.log("delete alarm %s for metric %s" % (str(alarmkey),
                                                      self.metric_key))
+        
+        self.MAX_PERIOD = self.set_max_period(self.alarms)
                                                         
     def load_statistics(self):
         stat = self.cass.load_statistics(self.metric_key)
@@ -135,6 +139,8 @@ class MetricMonitor(object):
             self.alarms[alarm_key] = self.cass.get_metric_alarm(alarm_key)
         else:
             storm.log("no alarm key [%s]" % alarm_key)
+            
+        self.MAX_PERIOD = self.set_max_period(self.alarms)
 
     def put_metric_data(self, timestamp, value, unit=None):
         time_idx = timestamp.replace(second=0, microsecond=0)
@@ -306,6 +312,7 @@ class MetricMonitor(object):
         }
         
         self.cass.insert_alarm_history(history_key, history_column)
+        self.MAX_PERIOD = self.set_max_period(self.alarms)
         
     
     def alarm_history_state_update(self, alarmkey, alarm, new_state,

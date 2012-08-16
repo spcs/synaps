@@ -59,6 +59,8 @@ PutMetricAlarm
      - 임계치 비교를 할 기간 (분 단위)
 
        자료 형: Integer
+       
+       유효 값: 1 ~ 100
      - Yes     
    * - InsufficientDataActions.member.N
      - TBD - v12.09.a 구현 예정
@@ -84,6 +86,8 @@ PutMetricAlarm
      - 통계가 적용될 기간(초 단위)
 
        자료 형: Integer
+       
+       유효 값: 1 ~ 86400 (24 시간)
      - Yes     
    * - Statistic
      - 알람에 사용할 메트릭의 통계
