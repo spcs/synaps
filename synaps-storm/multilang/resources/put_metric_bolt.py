@@ -76,13 +76,6 @@ class MetricMonitor(object):
         return daterange
     
     def set_max_period(self, alarms):
-        
-        #period_buf = 0
-        #for k, v in alarms.iteritems():
-        #    if period_buf < v.get('period'):
-        #        period_buf = v.get('period')
-        #
-        #return period_buf
             
         return max(v.get('period') for k, v in alarms.iteritems())
                  
