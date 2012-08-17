@@ -3,6 +3,7 @@
 # All Rights Reserved
 
 from synaps.monitor.api import API
+from synaps.utils import validate_email, validate_international_phonenumber
 import json
 
 class Datapoint(object):
@@ -153,13 +154,24 @@ class MetricAlarm(object):
                  action_enabled=False, alarm_actions=[], alarm_description="",
                  dimensions={}, insufficient_data_actions=[], ok_actions=[],
                  unit=""):
+        def validate_actions(actions):
+            assert (isinstance(actions, list))
+            for a in actions:
+                assert (validate_email(a) or 
+                        validate_international_phonenumber(a))
 
         assert (isinstance(action_enabled, bool))
         self.action_enabled = action_enabled
+
+        validate_actions(alarm_actions)
+        self.alarm_actions = alarm_actions  
         
-        assert (isinstance(alarm_actions, list))
-        self.alarm_actions = alarm_actions
+        validate_actions(insufficient_data_actions)
+        self.insufficient_data_actions = insufficient_data_actions
         
+        validate_actions(ok_actions)
+        self.ok_actions = ok_actions
+
         assert (len(alarm_description) <= 255)
         self.alarm_description = alarm_description
         
@@ -175,17 +187,12 @@ class MetricAlarm(object):
         assert (isinstance(evaluation_periods, int))
         self.evaluation_periods = evaluation_periods
         
-        assert (isinstance(insufficient_data_actions, list))
-        self.insufficient_data_actions = insufficient_data_actions
-        
         assert (len(metric_name) <= 255)
         self.metric_name = metric_name 
         
         assert (len(namespace) <= 255)
         self.namespace = namespace
         
-        assert (isinstance(ok_actions, list))
-        self.ok_actions = ok_actions
 
         assert (isinstance(period, int))
         self.period = period

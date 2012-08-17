@@ -47,7 +47,6 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(0, utils.datetime_to_timestamp(epoch))
         
     def test_validate_international_phonenumber(self):
-        number = '+82 311 2112'
         valid_set = (
             '+82 10 1234 5678',
             '+1 714 306 2014',
@@ -66,6 +65,25 @@ class TestUtils(unittest.TestCase):
 
         for v in invalid_set:
             ret = utils.validate_international_phonenumber(v)
+            self.assertFalse(ret, "input value: %s" % v)
+
+    def test_validate_email(self):
+        valid_set = (
+            'june.yi@samsung.com',
+            'goodman@gmail.com',
+        )
+        
+        invalid_set = (
+            'a@b.c',
+            'abcd'
+        )
+        
+        for v in valid_set:
+            ret = utils.validate_email(v)
+            self.assertTrue(ret, "input value: %s" % v)
+
+        for v in invalid_set:
+            ret = utils.validate_email(v)
             self.assertFalse(ret, "input value: %s" % v)
 
 

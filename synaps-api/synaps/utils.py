@@ -42,7 +42,8 @@ FLAGS.register_opt(
     cfg.BoolOpt('disable_process_locking', default=False,
                 help='Whether to disable inter-process locks'))
 
-RE_INTERNATIONAL_PHONENUMBER = re.compile("^\+[0-9]{1,3} [0-9]{4,14}$")
+RE_INTERNATIONAL_PHONENUMBER = re.compile("^\+[0-9]{7,17}$")
+RE_EMAIL = re.compile('^[_.0-9a-z-]+@([0-9a-z][0-9a-z-]+.)+[a-z]{2,4}$')
 
 UNIT_CONV_MAP = {
     'None': 1.0,
@@ -73,6 +74,9 @@ UNIT_CONV_MAP = {
     'Gigabits/Second':2.0 ** 27, # std: Bytes/Second
     'Terabits/Second':2.0 ** 37, # std: Bytes/Second
 }
+
+def validate_email(email):
+    return RE_EMAIL.match(email) is not None
 
 def validate_international_phonenumber(number):
     """
