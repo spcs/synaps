@@ -29,6 +29,8 @@ PutMetricAlarm
        국제전화번호의 경우 +82 10 1234 5678 와 같은 형식을 따르며, 
        국제전화코드는 나머지 번호와 번호는 공백(' ')으로 구분되어야한다. 
        허용되는 문자열은 +, [0-9], 공백(' ') 으로 제한된다.
+       
+       International Telecommunication Union ITU-T Rec. E.123 (02/2001) 참조
 
        자료 형: String
      - No
@@ -76,6 +78,8 @@ PutMetricAlarm
        국제전화번호의 경우 +82 10 1234 5678 와 같은 형식을 따르며, 
        국제전화코드는 나머지 번호와 번호는 공백(' ')으로 구분되어야한다. 
        허용되는 문자열은 +, [0-9], 공백(' ') 으로 제한된다.
+       
+       International Telecommunication Union ITU-T Rec. E.123 (02/2001) 참조
 
        자료 형: String
      - No
@@ -100,6 +104,8 @@ PutMetricAlarm
        국제전화번호의 경우 +82 10 1234 5678 와 같은 형식을 따르며, 
        국제전화코드는 나머지 번호와 번호는 공백(' ')으로 구분되어야한다. 
        허용되는 문자열은 +, [0-9], 공백(' ') 으로 제한된다.
+       
+       International Telecommunication Union ITU-T Rec. E.123 (02/2001) 참조
 
        자료 형: String
      - No
