@@ -8,32 +8,6 @@ from synaps import utils
 
 class TestUtils(unittest.TestCase):
 
-    def test_align_metrictime(self):
-        actual = utils.align_metrictime(timestamp=90.0, resolution=60)
-        self.assertEqual(actual, 120)
-
-        actual = utils.align_metrictime(timestamp=100.0, resolution=60)
-        self.assertEqual(actual, 120)
-
-        actual = utils.align_metrictime(timestamp=60.0, resolution=60)
-        self.assertEqual(actual, 120)
-
-        actual = utils.align_metrictime(timestamp=120.0, resolution=60)
-        self.assertEqual(actual, 180)
-
-        actual = utils.align_metrictime(timestamp=125.0, resolution=60)
-        self.assertEqual(actual, 180)
-
-        actual = utils.align_metrictime(timestamp=149.0, resolution=60)
-        self.assertEqual(actual, 180)
-
-        actual = utils.align_metrictime(timestamp=150.0, resolution=60)
-        self.assertEqual(actual, 180)
-
-        actual = utils.align_metrictime(timestamp=170.1, resolution=60)
-        self.assertEqual(actual, 180)
-
-        
     def test_extract_member_list(self):
         metric_data = {'member': {'1': 
                           {'dimensions': 
@@ -68,20 +42,31 @@ class TestUtils(unittest.TestCase):
     
         
         
-    def test_extract_member_dict(self):
-        input = {'member': {'1': {'name': {'1': u'member1'},
-                                  'value': {'1': u'value1'}},
-                            '2': {'name': {'1': u'member2'},
-                                  'value': {'1': u'value2'}}}}
-
-        expected = {u'member1': u'value1', u'member2': u'value2'}
-        
-        real = utils.extract_member_dict(input)
-        self.assertEqual(real, expected)
-        
     def test_datetime_to_timestamp(self):
         epoch = datetime.datetime(1970, 1, 1, 0, 0, 0)
-        self.assertEqual(0, utils.datetime_to_timestamp(epoch)) 
+        self.assertEqual(0, utils.datetime_to_timestamp(epoch))
+        
+    def test_validate_international_phonenumber(self):
+        number = '+82 311 2112'
+        valid_set = (
+            '+82 10 1234 5678',
+            '+1 714 306 2014',
+            '+82 2 1395 3134',
+            '+292 19823476'
+        )
+        
+        invalid_set = (
+            '12321 123 1231 23',
+            '02 123 4231'
+        )
+        
+        for v in valid_set:
+            ret = utils.validate_international_phonenumber(v)
+            self.assertTrue(ret, "input value: %s" % v)
+
+        for v in invalid_set:
+            ret = utils.validate_international_phonenumber(v)
+            self.assertFalse(ret, "input value: %s" % v)
 
 
 if __name__ == "__main__":

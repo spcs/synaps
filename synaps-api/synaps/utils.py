@@ -42,6 +42,8 @@ FLAGS.register_opt(
     cfg.BoolOpt('disable_process_locking', default=False,
                 help='Whether to disable inter-process locks'))
 
+RE_INTERNATIONAL_PHONENUMBER = re.compile("^\+[0-9]{1,3} [0-9]{4,14}$")
+
 UNIT_CONV_MAP = {
     'None': 1.0,
     'Seconds': 1.0,
@@ -71,6 +73,21 @@ UNIT_CONV_MAP = {
     'Gigabits/Second':2.0 ** 27, # std: Bytes/Second
     'Terabits/Second':2.0 ** 37, # std: Bytes/Second
 }
+
+def validate_international_phonenumber(number):
+    """
+    International Telecommunication Union ITU-T Rec. E.123 (02/2001) 
+    
+    Notation for national and international telephone numbers, e-mail addresses 
+    and web addresses
+    """
+    try:
+        head, tail = number.split(' ', 1)
+    except ValueError:
+        return False
+    
+    number = head + tail.replace(' ', '')
+    return RE_INTERNATIONAL_PHONENUMBER.match(number) is not None
 
 def to_unit(value, unit):
     if not unit:
