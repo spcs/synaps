@@ -103,7 +103,7 @@ class APIRequest(object):
 
         xml.appendChild(response_el)
 
-        response = xml.toxml()
+        response = xml.toxml(encoding='UTF-8')
         xml.unlink()
 
         return response
@@ -134,6 +134,8 @@ class APIRequest(object):
             data_el.appendChild(
                   xml.createTextNode(_database_to_isoformat(data)))
         elif data is not None:
-            data_el.appendChild(xml.createTextNode(str(data)))
-
+            if isinstance(data, unicode):
+                data_el.appendChild(xml.createTextNode(data))
+            else:
+                data_el.appendChild(xml.createTextNode(str(data)))
         return data_el
