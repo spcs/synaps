@@ -11,6 +11,7 @@ synaps 는 다음과 같이 네가지 클러스터 그룹으로 구성된다.
 #. synaps-mq - 메시지큐 (synaps-api 와 synaps-storm 간의 메시지 전달)
 #. synaps-storm - 실시간 분산 처리
 #. synaps-database - 카산드라 데이터베이스
+#. synaps-mail - Mail 및 SMS 서버
 
 .. image:: /images/synaps-deployment.jpg
    :width: 100%
@@ -599,7 +600,7 @@ synaps-database 클러스터 구축
 
   .. code-block:: bash
 
-   $ tar zxvf apache-cassandra-1.0.8-bin.tar.gz
+   $ tar zxvf apache-cassandra-1.0.8-b치
 
 
 * 클러스터 설정
@@ -643,3 +644,146 @@ synaps-database 클러스터 구축
 * 방화벽 설정 ::
 
    카산드라 사용 포트 : 7000, 7001, 9160
+   
+   
+synaps-mail 구축
+-----------------------------
+
+1. sendmail 설치
+
+  .. code-block:: bash
+
+   $ apt-get install sendmail
+   
+   
+2. SMSMMSAgent 설치
+
+* 사용 패키지 설치
+
+  .. code-block:: bash
+
+   $ apt-get install mysql-server
+   $ apt-get install ksh
+   $ apt-get install openjdk-6-jdk
+   
+
+* database 생성
+
+  .. code-block:: bash
+
+   $ mysql -u root -psynaps
+   mysql> create database synaps;
+   mysql> exit
+   
+
+* SMSMMSAgent 설치
+
+  .. code-block:: bash
+
+   $ tar zxvf SMSMMSAgent.tar.gz
+   $ mv SMSMMSAgent /usr/local/
+   
+
+* SMSMMSAgent 설정
+
+  .. code-block:: bash
+
+   $ vi /usr/local/SMSMMSAgent/conf/vega.cfg
+   
+   
+  .. code-block:: bash
+   
+    SMS_SVC=ON
+    MMS_SVC=OFF
+    ADMIN_PORT=6271
+    
+    # MySQL
+    DB_DRIVER=com.mysql.jdbc.Driver
+    DB_URL=jdbc:mysql://localhost/synaps
+    DB_ID=root
+    DB_PWD=synaps
+    
+    HOME_DIR=../
+    LOG_DIR=../log/
+
+    CONVERT_CHAR=N
+    FROM_CHAR=ISO8859_1
+    TO_CHAR=KSC5601
+    
+    XFIELDS=
+    XSCHEMA=
+    
+    SMS_ONLY_SEND=N
+
+    SMS_IP=210.94.53.49
+    SMS_PORT=9000
+
+    #########################
+    SMS_DELIVER_CNT=1
+
+    SMS_DELIVER_ID_1=ossweb
+    SMS_DELIVER_PWD_1=oss0919
+    SMS_DELIVER_MAX_1=3
+
+    SMS_DEFAULT_DELIVER_ID=ossweb
+
+    SMS_REPORT_ID=ossweb
+    SMS_REPORT_PWD=oss0919
+    #########################
+
+    SMS_SEND=SMS_SEND
+    SMS_RESULT=SMS_RESULT
+    SMS_SPAM=SMS_SPAM
+    SMS_RESULT_DIV=N
+
+    SMS_TTL_SEND=180
+
+    SMS_BAN_TIME=0~0
+
+    SMS_DUP_CHK=N
+
+    SMS_ENCRYPT=N
+    
+    MMS_ONLY_SEND=N
+
+    MMS_DELIVER_IP=210.118.51.150
+    MMS_DELIVER_PORT=7000
+
+    MMS_REPORT_IP=210.118.51.150
+    MMS_REPORT_PORT=7003
+
+    MMS_DELIVER_CNT=1
+    MMS_DELIVER_ID_1=ossweb
+    MMS_DELIVER_PWD_1=oss0919
+    MMS_DELIVER_MAX_1=3
+    MMS_REPORT_ID=ossweb
+    MMS_REPORT_PWD=oss0919
+    
+    MMS_DEFAULT_DELIVER_ID=ossweb
+    
+    MMS_SEND=MMS_SEND
+    MMS_SEND_CONTENTS=MMS_SEND_CONTENTS
+    MMS_SEND_BROADCAST=MMS_SEND_BROADCAST
+    MMS_RESULT=MMS_RESULT
+    MMS_RESULT_CONTENTS=MMS_RESULT_CONTENTS
+    MMS_SPAM=MMS_SPAM
+
+    MMS_RESULT_DIV=N
+
+    MMS_TTL_SEND=180
+
+    MMS_BAN_TIME=0~0
+
+    MMS_DUP_CHK=N
+
+    MMS_FAIL_SMS_SEND=N
+
+    MMS_FAIL_SMS_SEND_TTL=24
+
+    MMS_FAIL_SMS_SEND_ERR=2103,4305,2300,2506
+
+    MMS_FAIL_SMS_DELIVER_ID=
+
+    MMS_FAIL_RESEND_TIME=0~0
+
+    MMS_FAIL_SCHED_TIME=0
