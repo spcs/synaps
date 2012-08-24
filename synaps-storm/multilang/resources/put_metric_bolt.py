@@ -71,11 +71,13 @@ class MetricMonitor(object):
         
     def _reindex(self):
         self.df = self.df.reindex(index=self._get_range())
-
+        self.df.fillna('NaN')
+        storm.log("reindexing...")
+        
     def _get_range(self):
         now_idx = datetime.utcnow().replace(second=0, microsecond=0)
         start = now_idx - timedelta(seconds=self.MAX_START_PERIOD)
-        end = now_idx + timedelta(seconds=self.MAX_END_PERIOD) # 1 HOUR
+        end = now_idx + timedelta(seconds=self.MAX_END_PERIOD)
         daterange = DateRange(start, end, offset=datetools.Minute())
         return daterange
     
@@ -139,8 +141,16 @@ class MetricMonitor(object):
             
         self.MAX_START_PERIOD = self.set_MAX_START_PERIOD(self.alarms)
 
-    def put_metric_data(self, timestamp, value, unit=None):
+    def put_metric_data(self, metric_key, timestamp, value, unit=None):
         time_idx = timestamp.replace(second=0, microsecond=0)
+        
+        if timedelta(seconds=self.cass.STATISTICS_TTL) < (utils.utcnow() - 
+                                                            time_idx):
+            msg = "index %s is older than TTL. It doesn't need to insert DB"
+            storm.log(msg % time_idx)
+            return
+        
+        
         if time_idx not in self.df.index:
             self._reindex()
         
@@ -148,9 +158,16 @@ class MetricMonitor(object):
         
         try:
             stat = self.df.ix[time_idx]
+            stat = dict((k, v if v else float('nan')) for k, v in stat.iteritems())
         except KeyError:
-            storm.log("index %s in not in the time range." % time_idx)
-            return
+            storm.log("index %s is not in the time range of memory. It will find DB." % time_idx)
+            stat = self.cass.get_metric_statistics_for_key(metric_key, time_idx)
+            if [{}, {}, {}, {}, {}] == stat:
+                storm.log("index %s is not in the DB. It will write newly." % time_idx)
+                stat = {'SampleCount' : None, 'Sum' : None, 'Average' : None, 'Minimum' : None, 'Maximum' : None }
+                stat = dict((k, v if v else float('nan')) for k, v in stat.iteritems())
+            else:            
+                stat = dict(zip(self.cass.STATISTICS, map(lambda x: x.values()[0], stat)))
         
         stat['SampleCount'] = 1.0 if isnan(stat['SampleCount']) \
                               else stat['SampleCount'] + 1.0
@@ -172,6 +189,8 @@ class MetricMonitor(object):
             'Minimum':{time_idx: stat['Minimum']},
             'Maximum':{time_idx: stat['Maximum']}
         }
+        
+        storm.log("statdict is  %s" % stat_dict)
         
         self.cass.insert_stat(self.metric_key, stat_dict)
         storm.log("metric data inserted %s" % (self.metric_key))
@@ -365,8 +384,8 @@ class PutMetricBolt(storm.BasicBolt):
 
         timestamp = utils.parse_strtime(message['timestamp'])
 
-        self.metrics[metric_key].put_metric_data(
-            timestamp=timestamp, value=message['value'], unit=message['unit'] )
+        self.metrics[metric_key].put_metric_data(metric_key,
+            timestamp=timestamp, value=message['value'], unit=message['unit'])
     
     def process_put_metric_alarm_msg(self, metric_key, message):
         if metric_key not in self.metrics:

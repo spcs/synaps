@@ -5,7 +5,7 @@
 import time
 import uuid
 import pycassa
-import datetime
+from datetime import datetime, timedelta
 from pycassa import (types, create_index_clause, create_index_expression, EQ,
                      GT, GTE, LT, LTE)
 import struct
@@ -280,7 +280,32 @@ class Cassandra(object):
                     statistics)
         
         return stats
+    
+    def get_metric_statistics_for_key(self, key, time_idx):
         
+        def get_stat(key, super_column, column_start, column_end):
+            stat = {}
+            try:
+                stat = self.scf_stat_archive.get(key,
+                                                 super_column=super_column,
+                                                 column_start=column_start,
+                                                 column_finish=column_end,
+                                                 column_count=1440)
+            except pycassa.NotFoundException:
+                LOG.info("not found data - %s %s %s %s" % (key, super_column,
+                                                           column_start,
+                                                           column_end))
+            
+            return stat
+        
+        if not key:
+            return {}
+
+        stats = map(lambda x: get_stat(key, x, time_idx, time_idx),
+                    self.STATISTICS)
+        
+        return stats
+            
     def get_metric_unit(self, metric_key):
         try:
             metric = self.cf_metric.get(key=metric_key)
