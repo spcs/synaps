@@ -16,7 +16,7 @@ LOG = logging.getLogger(__name__)
 
 def to_alarm(v):
     ret = {
-        'action_enabled': v['action_enabled'],
+        'actions_enabled': v['actions_enabled'],
         'alarm_actions': json.loads(v['alarm_actions']),
         'alarm_arn': v['alarm_arn'],
         'alarm_configuration_updated_timestamp':
@@ -306,7 +306,7 @@ class MonitorController(object):
                          evaluation_periods, metric_name, namespace, period,
                          statistic, threshold, alarm_actions=[],
                          insufficient_data_actions=[], ok_actions=[],
-                         action_enabled=False, alarm_description="",
+                         actions_enabled=True, alarm_description="",
                          dimensions={}, unit="", project_id=None):
         """
         Create or updates an alarm and associates it with the specified
@@ -345,7 +345,7 @@ class MonitorController(object):
             period=period,
             statistic=statistic,
             threshold=threshold,
-            action_enabled=action_enabled,
+            actions_enabled=actions_enabled,
             alarm_actions=alarm_actions,
             alarm_description=alarm_description,
             dimensions=d,

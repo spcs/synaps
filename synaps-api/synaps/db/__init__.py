@@ -471,7 +471,7 @@ class Cassandra(object):
                 column_validation_classes={
                     'metric_key': pycassa.LEXICAL_UUID_TYPE,
                     'project_id': pycassa.UTF8_TYPE,
-                    'action_enabled': pycassa.BOOLEAN_TYPE,
+                    'actions_enabled': pycassa.BOOLEAN_TYPE,
                     'alarm_actions': pycassa.UTF8_TYPE,
                     'alarm_arn': pycassa.UTF8_TYPE,
                     'alarm_configuration_updated_timestamp': pycassa.DATE_TYPE,

@@ -20,6 +20,7 @@ import traceback
 from synaps.db import Cassandra
 from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
                         DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID)
+from synaps.utils import validate_email, validate_international_phonenumber
 
 threshhold = 10000
 flags.FLAGS(sys.argv)
@@ -30,10 +31,46 @@ class ActionBolt(storm.BasicBolt):
     def initialize(self, stormconf, context):
         self.cass = Cassandra()
     
-    def process(self, tup):
-        message_buf = tup.values[0]
-        message = json.loads(message_buf)
-        storm.log("[ActionBolt] received: %s " % message_buf)
+    def log(self, msg):
+        storm.log("[ActionBolt] " + msg)
 
+    def send_sms(self, action, message):
+        self.log("%s %s" % (action, message))
+    
+    def send_email(self, action, message):
+        self.log("%s %s" % (action, message))
+    
+    def do_action(self, action, message):
+        def get_action_type(action):
+            if validate_email(action):
+                return "email"
+            elif validate_international_phonenumber(action):
+                return "SMS"
+        
+        action_type = get_action_type(action)
+        if action_type == "email":
+            self.send_email(action, message)
+        elif action_type == "SMS":
+            self.send_sms(action, message)
+    
+    def process(self, tup):
+        alarm_key = tup.values[0]
+        message_buf = tup.values[1]
+        message = json.loads(message_buf)
+        actions = []
+        
+        alarm = self.cass.get_metric_alarm(UUID(alarm_key))
+        if alarm['actions_enabled']:
+            if message['state'] == 'OK':
+                actions = json.loads(alarm['ok_actions'])
+            elif message['state'] == 'INSUFFICIENT_DATA':
+                actions = json.loads(alarm['insufficient_data_actions'])
+            elif message['state'] == 'ALARM':
+                actions = json.loads(alarm['alarm_actions'])
+            
+            for action in actions:
+                self.do_action(action, message)
+        
+        self.log("message received: %s " % message_buf)
 
 ActionBolt().run()

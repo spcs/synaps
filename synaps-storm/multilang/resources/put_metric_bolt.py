@@ -242,6 +242,7 @@ class MetricMonitor(object):
                                              reason, json_reason_data, now)
                 self.alarm_history_state_update(alarmkey, alarm,
                                                 new_state, old_state)
+                self.do_alarm_action(alarmkey, alarm, new_state, old_state)
                 storm.log("INSUFFICIENT_DATA alarm")
         else:
             crossed = reduce(operator.and_, cmp_op(data, threshold))
@@ -264,7 +265,8 @@ class MetricMonitor(object):
                     self.cass.update_alarm_state(alarmkey, 'ALARM', reason,
                                                  json_reason_data, now)
                     self.alarm_history_state_update(alarmkey, alarm,
-                                                    new_state, old_state)                    
+                                                    new_state, old_state)
+                    self.do_alarm_action(alarmkey, alarm, new_state, old_state)                    
                     storm.log("ALARM alarm")
             else:
                 template = _("Threshold Crossed: %d datapoints were not %s " + 
@@ -282,12 +284,61 @@ class MetricMonitor(object):
                     self.cass.update_alarm_state(alarmkey, 'OK', reason,
                                                  json_reason_data, now)
                     self.alarm_history_state_update(alarmkey, alarm,
-                                                    new_state, old_state)                            
+                                                    new_state, old_state)
+                    self.do_alarm_action(alarmkey, alarm, new_state, old_state)                            
                     storm.log("OK alarm")
             
             storm.log("check %s %f" % (alarm['comparison_operator'],
                                        threshold))
             storm.log("result \n %s" % crossed)
+    
+    def do_alarm_action(self, alarmkey, alarm, new_state, old_state):
+        """
+        parameter example:
+        
+        alarmkey: f459c0e0-f927-481f-9158-deb8abe102a2 
+        alarm: OrderedDict([('actions_enabled', False), 
+                            ('alarm_actions', u'[]'), 
+                            ('alarm_arn', u'arn:spcs:synaps:IaaS:alarm:TEST_\uc54c\ub78c_02'), 
+                            ('alarm_configuration_updated_timestamp', datetime.datetime(2012, 8, 25, 10, 51, 38, 469000)), 
+                            ('alarm_description', u''), 
+                            ('alarm_name', u'TEST_\uc54c\ub78c_02'), 
+                            ('comparison_operator', u'LessThanThreshold'), 
+                            ('dimensions', u'{"instance_name": "test instance"}'), 
+                            ('evaluation_periods', 2), 
+                            ('insufficient_data_actions', u'[]'), 
+                            ('metric_key', UUID('96f19ec9-673b-4237-ae66-1bfde526595c')), 
+                            ('metric_name', u'test_metric'), 
+                            ('namespace', u'SPCS/SYNAPSTEST'), 
+                            ('ok_actions', u'[]'), 
+                            ('period', 300), 
+                            ('project_id', u'IaaS'), 
+                            ('state_reason', u'Threshold Crossed: 2 datapoints were not less than the threshold(2.000000). The most recent datapoints: [55.25, 55.25].'), 
+                            ('state_reason_data', u'{"startDate": "2012-08-25T10:30:00.000000", "period": 300, "threshold": 2.0, "version": "1.0", "statistic": "Average", "recentDatapoints": [55.25, 55.25], "queryDate": "2012-08-25T10:32:24.671991"}'), 
+                            ('state_updated_timestamp', datetime.datetime(2012, 8, 25, 11, 39, 49, 657449)), 
+                            ('state_value', 'OK'), 
+                            ('statistic', u'Average'), 
+                            ('threshold', 2.0), 
+                            ('unit', u'Percent'), 
+                            ('reason', u'Threshold Crossed: 3 datapoints were not less than the threshold(2.000000). The most recent datapoints: [75.0, 80.0, 67.625].'), 
+                            ('reason_data', '{"startDate": "2012-08-25T11:37:00.000000", "period": 300, "threshold": 2.0, "version": "1.0", "statistic": "Average", "recentDatapoints": [75.0, 80.0, 67.625], "queryDate": "2012-08-25T11:39:49.657449"}')
+                            ]) 
+        new_state: {'stateReason': u'Threshold Crossed: 3 datapoints were not less than the threshold(2.000000). The most recent datapoints: [75.0, 80.0, 67.625].', 
+                    'stateValue': 'OK', 
+                    'stateReasonData': {'startDate': '2012-08-25T11:37:00.000000', 'period': 300, 'threshold': 2.0, 'version': '1.0', 'statistic': u'Average', 'recentDatapoints': [75.0, 80.0, 67.625], 'queryDate': '2012-08-25T11:39:49.657449'}} 
+        old_state: {'stateReason': u'Insufficient Data: 1 datapoints were unknown.', 
+                    'stateReasonData': {u'startDate': u'2012-08-25T11:37:00.000000', u'period': 300, u'recentDatapoints': [55.25], u'version': u'1.0', u'statistic': u'Average', u'threshold': 2.0, u'queryDate': u'2012-08-25T11:39:26.261056'}, 'stateValue': 'INSUFFICIENT_DATA'}
+        """
+
+        msg = {
+            'state': new_state['stateValue'],
+            'subject': "%s state has been changed from %s to %s" % 
+                (alarm['alarm_name'], old_state['stateValue'],
+                 new_state['stateValue']),
+            'body': new_state['stateReason']
+        }
+        storm.log("emit to Alarm Action: %s %s" % (alarmkey, msg)) 
+        storm.emit([str(alarmkey), json.dumps(msg)])        
     
     def alarm_history_delete(self, alarm_key, alarm):
         item_type = 'ConfigurationUpdate'
@@ -362,7 +413,7 @@ class PutMetricBolt(storm.BasicBolt):
         timestamp = utils.parse_strtime(message['timestamp'])
 
         self.metrics[metric_key].put_metric_data(
-            timestamp=timestamp, value=message['value'], unit=message['unit'] )
+            timestamp=timestamp, value=message['value'], unit=message['unit'])
     
     def process_put_metric_alarm_msg(self, metric_key, message):
         if metric_key not in self.metrics:

@@ -151,7 +151,7 @@ class MetricAlarm(object):
     
     def __init__(self, alarm_name, comparison_operator, evaluation_periods,
                  metric_name, namespace, period, statistic, threshold,
-                 action_enabled=False, alarm_actions=[], alarm_description="",
+                 actions_enabled=False, alarm_actions=[], alarm_description="",
                  dimensions={}, insufficient_data_actions=[], ok_actions=[],
                  unit=""):
         def validate_actions(actions):
@@ -160,8 +160,8 @@ class MetricAlarm(object):
                 assert (validate_email(a) or 
                         validate_international_phonenumber(a))
 
-        assert (isinstance(action_enabled, bool))
-        self.action_enabled = action_enabled
+        assert (isinstance(actions_enabled, bool))
+        self.actions_enabled = actions_enabled
 
         validate_actions(alarm_actions)
         self.alarm_actions = alarm_actions  
@@ -212,7 +212,7 @@ class MetricAlarm(object):
         
     def to_columns(self):
         return {
-            'action_enabled': self.action_enabled,
+            'actions_enabled': self.actions_enabled,
             'alarm_actions': json.dumps(self.alarm_actions),
             'alarm_arn': self.alarm_arn,
             'alarm_configuration_updated_timestamp': 
