@@ -36,6 +36,7 @@ from synaps.openstack.common import cfg
 LOG = logging.getLogger(__name__)
 ISO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 PERFECT_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
+NO_MS_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 FLAGS = flags.FLAGS
 
 FLAGS.register_opt(
@@ -223,7 +224,13 @@ def parse_strtime(timestr, fmt=PERFECT_TIME_FORMAT):
     """Turn a formatted time back into a datetime."""
     if timestr.endswith('Z'):
         timestr = timestr[:-1]
-    return datetime.datetime.strptime(timestr, fmt)
+
+    try:
+        ret = datetime.datetime.strptime(timestr, fmt)
+    except ValueError:
+        ret = datetime.datetime.strptime(timestr, NO_MS_TIME_FORMAT)
+        
+    return ret
 
 def strtime(at=None, fmt=PERFECT_TIME_FORMAT):
     """Returns formatted utcnow."""
