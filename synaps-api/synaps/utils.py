@@ -77,7 +77,11 @@ UNIT_CONV_MAP = {
 }
 
 def validate_email(email):
-    return RE_EMAIL.match(email) is not None
+    try:
+        ret = RE_EMAIL.match(email) is not None
+    except TypeError:
+        ret = False
+    return ret
 
 def validate_international_phonenumber(number):
     """
