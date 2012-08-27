@@ -27,10 +27,20 @@ utils.default_flagfile()
 logging.setup()
 
 class UnpackMessageBolt(storm.BasicBolt):
+    BOLT_NAME = "UnpackMessageBolt"
+    
     def initialize(self, stormconf, context):
         self.cass = Cassandra()
         self.key_dict = {}
     
+    def log(self, msg):
+        storm.log("[%s] %s" % (self.BOLT_NAME, msg))
+        
+    def tracelog(self, e):
+        msg = traceback.format_exc(e)
+        for line in msg.splitlines():
+            self.log("TRACE: " + msg)
+                
     def get_metric_key(self, message):
         memory_key = md5.md5(str((message['project_id'],
                                   message['namespace'],

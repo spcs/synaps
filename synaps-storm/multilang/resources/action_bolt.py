@@ -31,6 +31,7 @@ FLAGS = flags.FLAGS
 logging.setup()
 
 class ActionBolt(storm.BasicBolt):
+    BOLT_NAME = "ActionBolt"
     ENABLE_SEND_MAIL = FLAGS.get('enable_send_mail')
     ENABLE_SEND_SMS = FLAGS.get('enable_send_sms')
     NOTIFICATION_SERVER = FLAGS.get('notification_server_addr')
@@ -42,7 +43,7 @@ class ActionBolt(storm.BasicBolt):
         self.sock.connect(self.NOTIFICATION_SERVER)
     
     def log(self, msg):
-        storm.log("[ActionBolt] " + msg)
+        storm.log("[%s] %s" % (self.BOLT_NAME, msg))
         
     def tracelog(self, e):
         msg = traceback.format_exc(e)

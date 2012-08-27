@@ -25,8 +25,8 @@ from synaps import flags
 from synaps import log as logging
 from synaps import utils
 from synaps.db import Cassandra
-from synaps.rpc import PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID, \
-    DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID
+from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
+                        DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID)
 from synaps import exception
 
 class MetricMonitor(object):
@@ -212,9 +212,10 @@ class MetricMonitor(object):
         else:
             data = data.dropna()
 
+        query_date = utils.strtime(now)
         reason_data = {
             "period":alarm['period'],
-            "queryDate":utils.strtime(now),
+            "queryDate":query_date,
             "recentDatapoints": list(data),
             "startDate": utils.strtime(start_idx),
             "statistic":statistic,
@@ -242,7 +243,8 @@ class MetricMonitor(object):
                                              reason, json_reason_data, now)
                 self.alarm_history_state_update(alarmkey, alarm,
                                                 new_state, old_state)
-                self.do_alarm_action(alarmkey, alarm, new_state, old_state)
+                self.do_alarm_action(alarmkey, alarm, new_state, old_state,
+                                     query_date)
                 storm.log("INSUFFICIENT_DATA alarm")
         else:
             crossed = reduce(operator.and_, cmp_op(data, threshold))
@@ -266,7 +268,8 @@ class MetricMonitor(object):
                                                  json_reason_data, now)
                     self.alarm_history_state_update(alarmkey, alarm,
                                                     new_state, old_state)
-                    self.do_alarm_action(alarmkey, alarm, new_state, old_state)                    
+                    self.do_alarm_action(alarmkey, alarm, new_state, old_state,
+                                         query_date)                    
                     storm.log("ALARM alarm")
             else:
                 template = _("Threshold Crossed: %d datapoints were not %s " + 
@@ -285,14 +288,16 @@ class MetricMonitor(object):
                                                  json_reason_data, now)
                     self.alarm_history_state_update(alarmkey, alarm,
                                                     new_state, old_state)
-                    self.do_alarm_action(alarmkey, alarm, new_state, old_state)                            
+                    self.do_alarm_action(alarmkey, alarm, new_state, old_state,
+                                         query_date)                            
                     storm.log("OK alarm")
             
             storm.log("check %s %f" % (alarm['comparison_operator'],
                                        threshold))
             storm.log("result \n %s" % crossed)
     
-    def do_alarm_action(self, alarmkey, alarm, new_state, old_state):
+    def do_alarm_action(self, alarmkey, alarm, new_state, old_state,
+                        query_date):
         """
         parameter example:
         
@@ -332,10 +337,11 @@ class MetricMonitor(object):
 
         msg = {
             'state': new_state['stateValue'],
-            'subject': "%s state has been changed from %s to %s" % 
+            'subject': "%s state has been changed from %s to %s at %s" % 
                 (alarm['alarm_name'], old_state['stateValue'],
-                 new_state['stateValue']),
-            'body': new_state['stateReason']
+                 new_state['stateValue'], query_date),
+            'body': "%s at %s" % (new_state['stateReason'], query_date),
+            'query_date': query_date
         }
         storm.log("emit to Alarm Action: %s %s" % (alarmkey, msg)) 
         storm.emit([str(alarmkey), json.dumps(msg)])        
@@ -390,9 +396,19 @@ class MetricMonitor(object):
             
 
 class PutMetricBolt(storm.BasicBolt):
+    BOLT_NAME = "PutMetricBolt"
+    
     def initialize(self, stormconf, context):
         self.cass = Cassandra()
         self.metrics = {}
+    
+    def log(self, msg):
+        storm.log("[%s] %s" % (self.BOLT_NAME, msg))
+        
+    def tracelog(self, e):
+        msg = traceback.format_exc(e)
+        for line in msg.splitlines():
+            self.log("TRACE: " + msg)
     
     def process_put_metric_data_msg(self, metric_key, message):
         """
@@ -424,7 +440,7 @@ class PutMetricBolt(storm.BasicBolt):
 
     def process_delete_metric_alarms_msg(self, metric_key, message):
         alarmkey = UUID(message['alarmkey'])
-        storm.log("debug: %s" % self.metrics.keys())
+        self.log("debug: %s" % self.metrics.keys())
         if metric_key not in self.metrics:
             self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
         self.metrics[metric_key].delete_metric_alarm(alarmkey)
@@ -456,21 +472,21 @@ class PutMetricBolt(storm.BasicBolt):
         
         try:
             if message_id == PUT_METRIC_DATA_MSG_ID:
-                storm.log("process put_metric_data_msg (%s)" % message)
+                self.log("process put_metric_data_msg (%s)" % message)
                 self.process_put_metric_data_msg(metric_key, message)
             elif message_id == PUT_METRIC_ALARM_MSG_ID:
-                storm.log("process put_metric_alarm_msg (%s)" % message)
+                self.log("process put_metric_alarm_msg (%s)" % message)
                 self.process_put_metric_alarm_msg(metric_key, message)
             elif message_id == DELETE_ALARMS_MSG_ID:
-                storm.log("process put_metric_alarm_msg (%s)" % message)
+                self.log("process put_metric_alarm_msg (%s)" % message)
                 self.process_delete_metric_alarms_msg(metric_key, message)
             elif message_id == SET_ALARM_STATE_MSG_ID:
-                storm.log("process set_alarm_state_msg (%s)" % message)
+                self.log("process set_alarm_state_msg (%s)" % message)
                 self.process_set_alarm_state_msg(metric_key, message)
             else:
                 storm.log("unknown message")
         except Exception as e:
-            storm.log(traceback.format_exc(e))
+            self.tracelog(e)
             storm.fail(tup)
 
 if __name__ == "__main__":
