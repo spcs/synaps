@@ -32,7 +32,7 @@ def to_alarm(v):
             json.loads(v['insufficient_data_actions']),
         'metric_name': v['metric_name'],
         'namespace': v['namespace'],
-        'ok_actions': json.loads(v['ok_actions']),
+        'OK_actions': json.loads(v['ok_actions']),
         'period': v['period'],
         'project_id': v['project_id'],
         'state_reason': v['state_reason'],
@@ -305,7 +305,7 @@ class MonitorController(object):
     def put_metric_alarm(self, context, alarm_name, comparison_operator,
                          evaluation_periods, metric_name, namespace, period,
                          statistic, threshold, alarm_actions=[],
-                         insufficient_actions=[], ok_actions=[],
+                         insufficient_data_actions=[], ok_actions=[],
                          action_enabled=False, alarm_description="",
                          dimensions={}, unit="", project_id=None):
         """
@@ -319,6 +319,12 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         
+        d = utils.extract_member_dict(dimensions)
+        alarm_actions = utils.extract_member_list(alarm_actions)
+        insufficient_data_actions = \
+            utils.extract_member_list(insufficient_data_actions)
+        ok_actions = utils.extract_member_list(ok_actions)
+
         self.check_alarm_description(alarm_description)
         self.check_alarm_name(alarm_name)
         self.check_comparison_operator(comparison_operator)
@@ -329,8 +335,6 @@ class MonitorController(object):
         self.check_unit(unit)
         self.check_period(period)
         self.check_evaluation_periods(evaluation_periods)
-        
-        d = utils.extract_member_dict(dimensions)
         
         metricalarm = monitor.MetricAlarm(
             alarm_name=alarm_name,
@@ -345,7 +349,7 @@ class MonitorController(object):
             alarm_actions=alarm_actions,
             alarm_description=alarm_description,
             dimensions=d,
-            insufficient_data_actions=insufficient_actions,
+            insufficient_data_actions=insufficient_data_actions,
             ok_actions=ok_actions,
             unit=unit
         )
@@ -539,11 +543,9 @@ class MonitorController(object):
             
         return True
     
-    def check_evaluation_periods(self,evaluation_periods):
+    def check_evaluation_periods(self, evaluation_periods):
         if evaluation_periods and (not 0 < int(evaluation_periods) <= 100):
             err = "The length of Evaluation Period is 1~100."
             raise exception.InvalidParameterValue(err)
                 
         return True
-    
-    
