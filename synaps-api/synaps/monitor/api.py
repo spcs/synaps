@@ -98,7 +98,7 @@ class API(object):
     def set_alarm_actions(self, project_id, alarm_names, enabled):
         for alarm_name in alarm_names:
             alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
-            self.cass.put_metric_alarm(alarm_key, {'action_enabled':enabled})
+            self.cass.put_metric_alarm(alarm_key, {'actions_enabled':enabled})
     
     def set_alarm_state(self, project_id, alarm_name, state_reason,
                         state_value, state_reason_data=None):
