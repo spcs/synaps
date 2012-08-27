@@ -4,6 +4,7 @@
 # Administrator of the National Aeronautics and Space Administration.
 # All Rights Reserved.
 # Copyright 2012 Red Hat, Inc.
+# Copyright 2012 SamsungSDS, Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -107,12 +108,6 @@ core_opts = [
     cfg.IntOpt('statistics_ttl',
                default=60 * 60 * 24 * 15, # 15 days in seconds
                help='time to live of statistics data'),
-    cfg.IntOpt('max_start_period',
-               default=60 * 5 , # 5 minutes in seconds
-               help='start time of alarm checking period'),
-    cfg.IntOpt('max_end_period',
-               default=60 * 60, # 1 hour in seconds
-               help='end time of alarm checking period'),
     cfg.ListOpt('statistics_archives',
                 default=['1', '5', '15', '60', '360', '1440'],
                 help='intervals to store statistical metric data in minutes'),

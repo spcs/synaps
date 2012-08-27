@@ -62,6 +62,11 @@ class ApiSpout(Spout):
                 
         except Exception as e:
             log(traceback.format_exc(e))
+        
+    def checkStatus(self):
+        log("This is check status massage!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        
+        pass
 
 if __name__ == "__main__":
     flags.FLAGS(sys.argv)

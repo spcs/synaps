@@ -29,14 +29,11 @@ from synaps.rpc import PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID, \
     DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID
 from synaps import exception
 
-FLAGS = flags.FLAGS    
-
 
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
     STATISTICS_TTL = Cassandra.STATISTICS_TTL
-    MAX_START_PERIOD = FLAGS.get('max_start_period')
-    MAX_END_PERIOD = FLAGS.get('max_end_period')
+    MAX_PERIOD = 0  
     
     ROLLING_FUNC_MAP = {
         'Average': rolling_mean,
@@ -66,7 +63,7 @@ class MetricMonitor(object):
         self.cass = cass
         self.df = self.load_statistics()
         self.alarms = self.load_alarms()
-        self.MAX_START_PERIOD = self.set_MAX_START_PERIOD(self.alarms)
+        self.MAX_PERIOD = self.set_max_period(self.alarms)
         self.lastchecked = None
         
     def _reindex(self):
@@ -74,12 +71,12 @@ class MetricMonitor(object):
 
     def _get_range(self):
         now_idx = datetime.utcnow().replace(second=0, microsecond=0)
-        start = now_idx - timedelta(seconds=self.MAX_START_PERIOD)
-        end = now_idx + timedelta(seconds=self.MAX_END_PERIOD) # 1 HOUR
+        start = now_idx - timedelta(seconds=self.STATISTICS_TTL)
+        end = now_idx + timedelta(seconds=60 * 60) # 1 HOUR
         daterange = DateRange(start, end, offset=datetools.Minute())
         return daterange
     
-    def set_MAX_START_PERIOD(self, alarms):
+    def set_max_period(self, alarms):
             
         return max(v.get('period') for k, v in alarms.iteritems())
                  
@@ -102,7 +99,7 @@ class MetricMonitor(object):
         storm.log("delete alarm %s for metric %s" % (str(alarmkey),
                                                      self.metric_key))
         
-        self.MAX_START_PERIOD = self.set_MAX_START_PERIOD(self.alarms)
+        self.MAX_PERIOD = self.set_max_period(self.alarms)
                                                         
     def load_statistics(self):
         stat = self.cass.load_statistics(self.metric_key)
@@ -137,7 +134,7 @@ class MetricMonitor(object):
         else:
             storm.log("no alarm key [%s]" % alarm_key)
             
-        self.MAX_START_PERIOD = self.set_MAX_START_PERIOD(self.alarms)
+        self.MAX_PERIOD = self.set_max_period(self.alarms)
 
     def put_metric_data(self, timestamp, value, unit=None):
         time_idx = timestamp.replace(second=0, microsecond=0)
@@ -179,7 +176,7 @@ class MetricMonitor(object):
         now = utils.utcnow().replace(second=0, microsecond=0)
         timedelta_buf = now - time_idx
         
-        if(timedelta_buf <= timedelta(seconds=self.MAX_START_PERIOD)):
+        if(timedelta_buf <= timedelta(seconds=self.MAX_PERIOD)):
             # check alarms            
             self.check_alarms()
         

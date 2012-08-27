@@ -93,5 +93,8 @@ class UnpackMessageBolt(storm.BasicBolt):
             
         except Exception as e:
             storm.log(traceback.format_exc(e))
+            
+    def checkStatus(self):
+        storm.log("LogLogLogLogLogLogLogLogLogLogLogLogLogLogLogLogLogLogLog2")
 
 UnpackMessageBolt().run()

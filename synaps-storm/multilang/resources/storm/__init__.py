@@ -1,6 +1,11 @@
+#!/usr/bin/env python
+
 import sys
 import os
 import traceback
+import time
+
+
 from collections import deque
 
 try:
@@ -158,6 +163,9 @@ class BasicBolt:
 
     def process(self, tuple):
         pass
+    
+    def checkStatus(self):
+        pass
 
     def run(self):
         global MODE
@@ -167,6 +175,10 @@ class BasicBolt:
         self.initialize(conf, context)
         try:
             while True:
+                now = time.localtime()
+                if now.tm_sec%2 == 0:
+                    self.checkStatus()
+                
                 tup = readTuple()
                 ANCHOR_TUPLE = tup
                 self.process(tup)
@@ -187,6 +199,9 @@ class Spout:
     def nextTuple(self):
         pass
 
+    def checkStatus(self):
+        pass
+    
     def run(self):
         global MODE
         MODE = Spout
@@ -194,6 +209,7 @@ class Spout:
         self.initialize(conf, context)
         try:
             while True:
+                
                 msg = readCommand()
                 if msg["command"] == "next":
                     self.nextTuple()
@@ -204,3 +220,33 @@ class Spout:
                 sync()
         except Exception, e:
             log(traceback.format_exc(e))
+            
+#class CheckSpout:
+#    def initialize(self, conf, context):
+#        pass
+#
+#    def ack(self, id):
+#        pass
+#
+#    def fail(self, id):
+#        pass
+#
+#    def nextTuple(self):
+#        pass
+#    
+#    def checkStatus(self):
+#        pass
+#    
+#    def run(self):
+#        global MODE
+#        MODE = Spout
+#        conf, context = initComponent()
+#        self.initialize(conf, context)
+#        try:
+#            while True:
+#                now = time.localtime()
+#                if now.tm_sec%30 == 0:
+#                    self.checkStatus()
+#                    
+#        except Exception, e:
+#            log(traceback.format_exc(e))

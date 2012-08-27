@@ -91,7 +91,7 @@ class LDAPWrapper(object):
             LOG.info("LDAP SERVER DOWN")
             raise
     
-    def __wrap_reconnect(f):
+    def __wrap_reconnect(self, f):
         def inner(self, *args, **kwargs):
             if self.conn is None:
                 self.connect()
@@ -139,7 +139,7 @@ class SDSLdapDriver(object):
     def __exit__(self, exc_type, exc_value, traceback):
         return False
     
-    def __local_cache(key_fmt):  # pylint: disable=E0213
+    def __local_cache(self, key_fmt):  # pylint: disable=E0213
         """Wrap function to cache it's result in self.__cache.
         Works only with functions with one fixed argument.
         """
