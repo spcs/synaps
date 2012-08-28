@@ -4,6 +4,7 @@
 # Administrator of the National Aeronautics and Space Administration.
 # All Rights Reserved.
 # Copyright 2012 Red Hat, Inc.
+# Copyright (c) 2012 Samsung SDS Co., LTD
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -108,11 +109,11 @@ core_opts = [
                default=60 * 60 * 24 * 15, # 15 days in seconds
                help='time to live of statistics data'),
     cfg.IntOpt('max_start_period',
-               default=60 * 5 , # 5 minutes in seconds
-               help='start time of alarm checking period'),
+               default=60 * 5, # 5 minutes in seconds
+               help='start time of memory.'),
     cfg.IntOpt('max_end_period',
                default=60 * 60, # 1 hour in seconds
-               help='end time of alarm checking period'),
+               help='end time of memory.'),
     cfg.ListOpt('statistics_archives',
                 default=['1', '5', '15', '60', '360', '1440'],
                 help='intervals to store statistical metric data in minutes'),
@@ -141,6 +142,36 @@ core_opts = [
     cfg.StrOpt('spcs_secret_access_key',
                default='admin',
                help='SPCS Access Key'),
+    cfg.StrOpt('smtp_server',
+               default='mailin.samsung.com',
+               help='Default mail server'),
+    cfg.StrOpt('mail_sender',
+               default='spcs@sdscloud.co.kr',
+               help='Default mail sender'),
+    cfg.BoolOpt('enable_send_mail',
+                default=False,
+                help='flag for mail send'),
+    cfg.StrOpt('sms_sender',
+               default='82 1012345678',
+               help='Default SMS sender'),
+    cfg.StrOpt('sms_database',
+               default='synaps',
+               help='Default SMS database'),
+    cfg.StrOpt('sms_db_username',
+               default='root',
+               help='Default SMS database username'),
+    cfg.StrOpt('sms_db_password',
+               default='synaps',
+               help='Default SMS database password'),
+    cfg.BoolOpt('enable_send_sms',
+                default=False,
+                help='flag for sms send'),
+    cfg.StrOpt('notification_bind_addr',
+               default='tcp://*:31110',
+               help='Synaps Notification Bind Address'),
+    cfg.StrOpt('notification_server_addr',
+               default='tcp://mail:31110',
+               help='Synaps Notification Server')
     ]
 
 debug_opts = []

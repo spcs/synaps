@@ -1,6 +1,23 @@
 # -*- coding:utf-8 -*-
-# Copyright 2012 Samsung SDS
-# All Rights Reserved
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
+
+# Copyright 2010 United States Government as represented by the
+# Administrator of the National Aeronautics and Space Administration.
+# Copyright (c) 2012 Samsung SDS Co., LTD
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
 
 from synaps.monitor.api import API
 from synaps.utils import validate_email, validate_international_phonenumber
@@ -151,7 +168,7 @@ class MetricAlarm(object):
     
     def __init__(self, alarm_name, comparison_operator, evaluation_periods,
                  metric_name, namespace, period, statistic, threshold,
-                 action_enabled=False, alarm_actions=[], alarm_description="",
+                 actions_enabled=False, alarm_actions=[], alarm_description="",
                  dimensions={}, insufficient_data_actions=[], ok_actions=[],
                  unit=""):
         def validate_actions(actions):
@@ -160,8 +177,8 @@ class MetricAlarm(object):
                 assert (validate_email(a) or 
                         validate_international_phonenumber(a))
 
-        assert (isinstance(action_enabled, bool))
-        self.action_enabled = action_enabled
+        assert (isinstance(actions_enabled, bool))
+        self.actions_enabled = actions_enabled
 
         validate_actions(alarm_actions)
         self.alarm_actions = alarm_actions  
@@ -212,7 +229,7 @@ class MetricAlarm(object):
         
     def to_columns(self):
         return {
-            'action_enabled': self.action_enabled,
+            'actions_enabled': self.actions_enabled,
             'alarm_actions': json.dumps(self.alarm_actions),
             'alarm_arn': self.alarm_arn,
             'alarm_configuration_updated_timestamp': 

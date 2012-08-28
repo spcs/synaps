@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+# Copyright 2012 Samsung SDS
+
+import zmq
+import os
+import sys
+import smtplib
+from email.mime.text import MIMEText
+
+possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
+                                                os.pardir, os.pardir))
+if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
+    sys.path.insert(0, possible_topdir)
+    
+from synaps import flags
+from synaps import log as logging
+from synaps import utils
+
+flags.FLAGS(sys.argv)
+utils.default_flagfile()
+FLAGS = flags.FLAGS
+
+LOG = logging.getLogger("synaps.notification")
+logging.setup()
+
+SMTP_SERVER = FLAGS.get('smtp_server')
+MAIL_SENDER = FLAGS.get('mail_sender')
+
+
+def send_sms(message):
+    LOG.info("SMS: %s" % str(message))
+
+def send_email(message):
+    LOG.info("EMAIL: %s" % str(message))
+
+    msg = MIMEText(message['body'])
+    msg['Subject'] = message['subject']
+    msg['From'] = self.MAIL_SENDER
+    msg['To'] = ", ".join(message['receivers'])
+    
+    s = smtplib.SMTP(self.SMTP_SERVER)
+    s.sendmail(self.MAIL_SENDER, message['receivers'], msg.as_string())
+    s.quit()
+
+def run_forever():
+    send_func_map = {"SMS": send_sms, "email": send_email}
+    
+    bind_addr = FLAGS.get('notification_bind_addr')
+    context = zmq.Context()
+    receiver = context.socket(zmq.PULL)
+    receiver.bind(bind_addr)
+    LOG.info("synaps-notification binding %s" % bind_addr)
+    
+    while True:
+        message = receiver.recv_pyobj()
+        try:
+            func = send_func_map[message['method']]
+            func(message)
+        except:
+            LOG.info("invalid message format - %s" % str(message))        
+
+def main():
+    run_forever()
+
+if __name__ == "__main__":
+    main()
+    

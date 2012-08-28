@@ -25,19 +25,17 @@ from synaps import flags
 from synaps import log as logging
 from synaps import utils
 from synaps.db import Cassandra
-from synaps.rpc import PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID, \
-    DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID
+from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
+                        DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID)
 from synaps import exception
-
-FLAGS = flags.FLAGS    
-
+FLAGS = flags.FLAGS
 
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
     STATISTICS_TTL = Cassandra.STATISTICS_TTL
     MAX_START_PERIOD = FLAGS.get('max_start_period')
     MAX_END_PERIOD = FLAGS.get('max_end_period')
-    
+        
     ROLLING_FUNC_MAP = {
         'Average': rolling_mean,
         'Minimum': rolling_min,
@@ -68,6 +66,7 @@ class MetricMonitor(object):
         self.alarms = self.load_alarms()
         self.set_MAX_START_PERIOD(self.alarms)
         self._reindex()
+
         self.lastchecked = None
         
     def _reindex(self):
@@ -75,12 +74,15 @@ class MetricMonitor(object):
         
     def _get_range(self):
         now_idx = datetime.utcnow().replace(second=0, microsecond=0)
+
         start = now_idx - timedelta(seconds=self.MAX_START_PERIOD)
         end = now_idx + timedelta(seconds=self.MAX_END_PERIOD)
+
         daterange = DateRange(start, end, offset=datetools.Minute())
         
         return daterange
     
+
     def set_MAX_START_PERIOD(self, alarms):
         
         msp = self.MAX_START_PERIOD
@@ -114,9 +116,10 @@ class MetricMonitor(object):
         storm.log("delete alarm %s for metric %s" % (str(alarmkey),
                                                      self.metric_key))
         
+
         self.set_MAX_START_PERIOD(self.alarms)        
         
-        
+
     def load_statistics(self):
         now_idx = datetime.utcnow().replace(second=0, microsecond=0)
         start = now_idx - timedelta(seconds=self.MAX_START_PERIOD)
@@ -157,10 +160,12 @@ class MetricMonitor(object):
         else:
             storm.log("no alarm key [%s]" % alarm_key)
             
+
         self.set_MAX_START_PERIOD(self.alarms)
         
         
     def put_metric_data(self, metric_key, timestamp, value, unit=None):
+
         time_idx = timestamp.replace(second=0, microsecond=0)
         
         if timedelta(seconds=self.cass.STATISTICS_TTL) < (utils.utcnow() - 
@@ -262,9 +267,10 @@ class MetricMonitor(object):
         else:
             data = data.dropna()
 
+        query_date = utils.strtime(now)
         reason_data = {
             "period":alarm['period'],
-            "queryDate":utils.strtime(now),
+            "queryDate":query_date,
             "recentDatapoints": list(data),
             "startDate": utils.strtime(start_idx),
             "statistic":statistic,
@@ -292,6 +298,8 @@ class MetricMonitor(object):
                                              reason, json_reason_data, now)
                 self.alarm_history_state_update(alarmkey, alarm,
                                                 new_state, old_state)
+                self.do_alarm_action(alarmkey, alarm, new_state, old_state,
+                                     query_date)
                 storm.log("INSUFFICIENT_DATA alarm")
         else:
             crossed = reduce(operator.and_, cmp_op(data, threshold))
@@ -314,7 +322,9 @@ class MetricMonitor(object):
                     self.cass.update_alarm_state(alarmkey, 'ALARM', reason,
                                                  json_reason_data, now)
                     self.alarm_history_state_update(alarmkey, alarm,
-                                                    new_state, old_state)                    
+                                                    new_state, old_state)
+                    self.do_alarm_action(alarmkey, alarm, new_state, old_state,
+                                         query_date)                    
                     storm.log("ALARM alarm")
             else:
                 template = _("Threshold Crossed: %d datapoints were not %s " + 
@@ -332,12 +342,64 @@ class MetricMonitor(object):
                     self.cass.update_alarm_state(alarmkey, 'OK', reason,
                                                  json_reason_data, now)
                     self.alarm_history_state_update(alarmkey, alarm,
-                                                    new_state, old_state)                            
+                                                    new_state, old_state)
+                    self.do_alarm_action(alarmkey, alarm, new_state, old_state,
+                                         query_date)                            
                     storm.log("OK alarm")
             
             storm.log("check %s %f" % (alarm['comparison_operator'],
                                        threshold))
             storm.log("result \n %s" % crossed)
+    
+    def do_alarm_action(self, alarmkey, alarm, new_state, old_state,
+                        query_date):
+        """
+        parameter example:
+        
+        alarmkey: f459c0e0-f927-481f-9158-deb8abe102a2 
+        alarm: OrderedDict([('actions_enabled', False), 
+                            ('alarm_actions', u'[]'), 
+                            ('alarm_arn', u'arn:spcs:synaps:IaaS:alarm:TEST_\uc54c\ub78c_02'), 
+                            ('alarm_configuration_updated_timestamp', datetime.datetime(2012, 8, 25, 10, 51, 38, 469000)), 
+                            ('alarm_description', u''), 
+                            ('alarm_name', u'TEST_\uc54c\ub78c_02'), 
+                            ('comparison_operator', u'LessThanThreshold'), 
+                            ('dimensions', u'{"instance_name": "test instance"}'), 
+                            ('evaluation_periods', 2), 
+                            ('insufficient_data_actions', u'[]'), 
+                            ('metric_key', UUID('96f19ec9-673b-4237-ae66-1bfde526595c')), 
+                            ('metric_name', u'test_metric'), 
+                            ('namespace', u'SPCS/SYNAPSTEST'), 
+                            ('ok_actions', u'[]'), 
+                            ('period', 300), 
+                            ('project_id', u'IaaS'), 
+                            ('state_reason', u'Threshold Crossed: 2 datapoints were not less than the threshold(2.000000). The most recent datapoints: [55.25, 55.25].'), 
+                            ('state_reason_data', u'{"startDate": "2012-08-25T10:30:00.000000", "period": 300, "threshold": 2.0, "version": "1.0", "statistic": "Average", "recentDatapoints": [55.25, 55.25], "queryDate": "2012-08-25T10:32:24.671991"}'), 
+                            ('state_updated_timestamp', datetime.datetime(2012, 8, 25, 11, 39, 49, 657449)), 
+                            ('state_value', 'OK'), 
+                            ('statistic', u'Average'), 
+                            ('threshold', 2.0), 
+                            ('unit', u'Percent'), 
+                            ('reason', u'Threshold Crossed: 3 datapoints were not less than the threshold(2.000000). The most recent datapoints: [75.0, 80.0, 67.625].'), 
+                            ('reason_data', '{"startDate": "2012-08-25T11:37:00.000000", "period": 300, "threshold": 2.0, "version": "1.0", "statistic": "Average", "recentDatapoints": [75.0, 80.0, 67.625], "queryDate": "2012-08-25T11:39:49.657449"}')
+                            ]) 
+        new_state: {'stateReason': u'Threshold Crossed: 3 datapoints were not less than the threshold(2.000000). The most recent datapoints: [75.0, 80.0, 67.625].', 
+                    'stateValue': 'OK', 
+                    'stateReasonData': {'startDate': '2012-08-25T11:37:00.000000', 'period': 300, 'threshold': 2.0, 'version': '1.0', 'statistic': u'Average', 'recentDatapoints': [75.0, 80.0, 67.625], 'queryDate': '2012-08-25T11:39:49.657449'}} 
+        old_state: {'stateReason': u'Insufficient Data: 1 datapoints were unknown.', 
+                    'stateReasonData': {u'startDate': u'2012-08-25T11:37:00.000000', u'period': 300, u'recentDatapoints': [55.25], u'version': u'1.0', u'statistic': u'Average', u'threshold': 2.0, u'queryDate': u'2012-08-25T11:39:26.261056'}, 'stateValue': 'INSUFFICIENT_DATA'}
+        """
+
+        msg = {
+            'state': new_state['stateValue'],
+            'subject': "%s state has been changed from %s to %s at %s" % 
+                (alarm['alarm_name'], old_state['stateValue'],
+                 new_state['stateValue'], query_date),
+            'body': "%s at %s" % (new_state['stateReason'], query_date),
+            'query_date': query_date
+        }
+        storm.log("emit to Alarm Action: %s %s" % (alarmkey, msg)) 
+        storm.emit([str(alarmkey), json.dumps(msg)])        
     
     def alarm_history_delete(self, alarm_key, alarm):
         item_type = 'ConfigurationUpdate'
@@ -389,9 +451,19 @@ class MetricMonitor(object):
             
 
 class PutMetricBolt(storm.BasicBolt):
+    BOLT_NAME = "PutMetricBolt"
+    
     def initialize(self, stormconf, context):
         self.cass = Cassandra()
         self.metrics = {}
+    
+    def log(self, msg):
+        storm.log("[%s] %s" % (self.BOLT_NAME, msg))
+        
+    def tracelog(self, e):
+        msg = traceback.format_exc(e)
+        for line in msg.splitlines():
+            self.log("TRACE: " + msg)
     
     def process_put_metric_data_msg(self, metric_key, message):
         """
@@ -411,8 +483,9 @@ class PutMetricBolt(storm.BasicBolt):
 
         timestamp = utils.parse_strtime(message['timestamp'])
 
+
         self.metrics[metric_key].put_metric_data(metric_key,
-            timestamp=timestamp, value=message['value'], unit=message['unit'])
+                                                 timestamp=timestamp, value=message['value'], unit=message['unit'])
     
     def process_put_metric_alarm_msg(self, metric_key, message):
         if metric_key not in self.metrics:
@@ -423,7 +496,7 @@ class PutMetricBolt(storm.BasicBolt):
 
     def process_delete_metric_alarms_msg(self, metric_key, message):
         alarmkey = UUID(message['alarmkey'])
-        storm.log("debug: %s" % self.metrics.keys())
+        self.log("debug: %s" % self.metrics.keys())
         if metric_key not in self.metrics:
             self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
         self.metrics[metric_key].delete_metric_alarm(alarmkey)
@@ -455,21 +528,21 @@ class PutMetricBolt(storm.BasicBolt):
         
         try:
             if message_id == PUT_METRIC_DATA_MSG_ID:
-                storm.log("process put_metric_data_msg (%s)" % message)
+                self.log("process put_metric_data_msg (%s)" % message)
                 self.process_put_metric_data_msg(metric_key, message)
             elif message_id == PUT_METRIC_ALARM_MSG_ID:
-                storm.log("process put_metric_alarm_msg (%s)" % message)
+                self.log("process put_metric_alarm_msg (%s)" % message)
                 self.process_put_metric_alarm_msg(metric_key, message)
             elif message_id == DELETE_ALARMS_MSG_ID:
-                storm.log("process put_metric_alarm_msg (%s)" % message)
+                self.log("process put_metric_alarm_msg (%s)" % message)
                 self.process_delete_metric_alarms_msg(metric_key, message)
             elif message_id == SET_ALARM_STATE_MSG_ID:
-                storm.log("process set_alarm_state_msg (%s)" % message)
+                self.log("process set_alarm_state_msg (%s)" % message)
                 self.process_set_alarm_state_msg(metric_key, message)
             else:
                 storm.log("unknown message")
         except Exception as e:
-            storm.log(traceback.format_exc(e))
+            self.tracelog(e)
             storm.fail(tup)
 
 if __name__ == "__main__":
