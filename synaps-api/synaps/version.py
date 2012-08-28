@@ -3,7 +3,7 @@
 # Copyright 2012 Samsung SDS
 # All Rights Reserved.
 
-SYNAPS_VERSION = ['12', '08', '27']
+SYNAPS_VERSION = ['12', '08', '28']
 YEAR, COUNT, REVISION = SYNAPS_VERSION
 FINAL = False   # This becomes true at Release Candidate time
 

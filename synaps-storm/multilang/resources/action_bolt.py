@@ -80,17 +80,19 @@ class ActionBolt(storm.BasicBolt):
         message_buf = tup.values[1]
         message = json.loads(message_buf)
         self.log("message received: %s " % message_buf)
-        actions = []
 
         alarm = self.cass.get_metric_alarm(UUID(alarm_key))
-        if alarm['actions_enabled']:
-            if message['state'] == 'OK':
-                actions = json.loads(alarm['ok_actions'])
-            elif message['state'] == 'INSUFFICIENT_DATA':
-                actions = json.loads(alarm['insufficient_data_actions'])
-            elif message['state'] == 'ALARM':
-                actions = json.loads(alarm['alarm_actions'])
+        actions_enabled = alarm['actions_enabled']
+        if message['state'] == 'OK':
+            actions = json.loads(alarm['ok_actions'])
+        elif message['state'] == 'INSUFFICIENT_DATA':
+            actions = json.loads(alarm['insufficient_data_actions'])
+        elif message['state'] == 'ALARM':
+            actions = json.loads(alarm['alarm_actions'])
 
+        self.log("actions enabled: %s actions: %s " % (actions_enabled,
+                                                       actions))
+        if actions_enabled and actions:
             if self.ENABLE_SEND_MAIL:            
                 email_receivers = [action for action in actions 
                                    if self.get_action_type(action) == "email"]
@@ -103,6 +105,7 @@ class ActionBolt(storm.BasicBolt):
                 }
                 
                 self.sock.send_pyobj(notification_message)
+                self.log("notify: %s " % notification_message)
                 
                 
             if self.ENABLE_SEND_SMS:
@@ -111,12 +114,13 @@ class ActionBolt(storm.BasicBolt):
 
                 notification_message = {
                     'method': "SMS",
-                    'receivers': email_receivers,
+                    'receivers': sms_receivers,
                     'subject': message['subject'],
                     'body': message['body']
                 }
                 
                 self.sock.send_pyobj(notification_message)
+                self.log("notify: %s " % notification_message)
 
 
 ActionBolt().run()
