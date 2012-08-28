@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-# Copyright 2012 Samsung SDS
+# Copyright (c) 2012 Samsung SDS, Co., LTD
 # All Rights Reserved
 
 import datetime

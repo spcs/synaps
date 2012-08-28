@@ -1,6 +1,6 @@
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
-# Copyright 2012 Samsung SDS
+# Copyright (c) 2012 Samsung SDS Co., LTD
 # All Rights Reserved.
 
 
