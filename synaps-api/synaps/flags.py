@@ -152,7 +152,7 @@ core_opts = [
                 default=True,
                 help='flag for mail send'),
     cfg.StrOpt('sms_sender',
-               default='82 1012345678',
+               default='01012345678',
                help='Default SMS sender'),
     cfg.StrOpt('sms_database',
                default='synaps',
