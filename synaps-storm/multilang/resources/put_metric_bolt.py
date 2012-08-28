@@ -66,26 +66,36 @@ class MetricMonitor(object):
         self.cass = cass
         self.df = self.load_statistics()
         self.alarms = self.load_alarms()
-        self.MAX_START_PERIOD = self.set_MAX_START_PERIOD(self.alarms)
+        self.set_MAX_START_PERIOD(self.alarms)
+        self._reindex()
         self.lastchecked = None
         
     def _reindex(self):
         self.df = self.df.reindex(index=self._get_range())
-        self.df.fillna('NaN')
-        storm.log("reindexing...")
         
     def _get_range(self):
         now_idx = datetime.utcnow().replace(second=0, microsecond=0)
         start = now_idx - timedelta(seconds=self.MAX_START_PERIOD)
         end = now_idx + timedelta(seconds=self.MAX_END_PERIOD)
         daterange = DateRange(start, end, offset=datetools.Minute())
+        
         return daterange
     
     def set_MAX_START_PERIOD(self, alarms):
-            
-        return max(v.get('period') for k, v in alarms.iteritems())
-                 
         
+        msp = self.MAX_START_PERIOD
+        
+        if alarms:
+            self.MAX_START_PERIOD = max(v.get('period') for k, v in alarms.iteritems())
+        else:
+            self.MAX_START_PERIOD = FLAGS.get('max_start_period')
+        
+        storm.log("MAX_START_PERIOD is changed %s -> %s" % (str(msp), self.MAX_START_PERIOD))
+        if msp < self.MAX_START_PERIOD:
+            self.df = self.load_statistics()
+        elif msp > self.MAX_START_PERIOD:
+            self._reindex()
+                
     def delete_metric_alarm(self, alarmkey):
         """
         메모리 및 DB에서 알람을 삭제한다.
@@ -104,10 +114,16 @@ class MetricMonitor(object):
         storm.log("delete alarm %s for metric %s" % (str(alarmkey),
                                                      self.metric_key))
         
-        self.MAX_START_PERIOD = self.set_MAX_START_PERIOD(self.alarms)
-                                                        
+        self.set_MAX_START_PERIOD(self.alarms)        
+        
+        
     def load_statistics(self):
-        stat = self.cass.load_statistics(self.metric_key)
+        now_idx = datetime.utcnow().replace(second=0, microsecond=0)
+        start = now_idx - timedelta(seconds=self.MAX_START_PERIOD)
+        end = now_idx + timedelta(seconds=self.MAX_END_PERIOD)
+        
+        stat = self.cass.load_statistics(self.metric_key, start, end)
+        
         if stat:
             df = DataFrame(stat, index=self._get_range())
         else:
@@ -122,6 +138,7 @@ class MetricMonitor(object):
 
     def get_metric_statistics(self, window, statistics, start=None, end=None,
                               unit=None):
+        
         df = self.df.ix[start:end] if start and end else self.df
         
         ret_dict = {}
@@ -136,11 +153,13 @@ class MetricMonitor(object):
         alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
         if alarm_key:
             self.alarms[alarm_key] = self.cass.get_metric_alarm(alarm_key)
+            storm.log("alarm key is [%s]" % alarm_key)
         else:
             storm.log("no alarm key [%s]" % alarm_key)
             
-        self.MAX_START_PERIOD = self.set_MAX_START_PERIOD(self.alarms)
-
+        self.set_MAX_START_PERIOD(self.alarms)
+        
+        
     def put_metric_data(self, metric_key, timestamp, value, unit=None):
         time_idx = timestamp.replace(second=0, microsecond=0)
         
@@ -158,16 +177,24 @@ class MetricMonitor(object):
         
         try:
             stat = self.df.ix[time_idx]
-            stat = dict((k, v if v else float('nan')) for k, v in stat.iteritems())
+            
+            for v in stat:
+                if v == None: v = float('nan')                    
+                 
+            storm.log("index is found in memory.")
+
         except KeyError:
             storm.log("index %s is not in the time range of memory. It will find DB." % time_idx)
             stat = self.cass.get_metric_statistics_for_key(metric_key, time_idx)
             if [{}, {}, {}, {}, {}] == stat:
                 storm.log("index %s is not in the DB. It will write newly." % time_idx)
-                stat = {'SampleCount' : None, 'Sum' : None, 'Average' : None, 'Minimum' : None, 'Maximum' : None }
-                stat = dict((k, v if v else float('nan')) for k, v in stat.iteritems())
+                stat = {'SampleCount' : float('nan'), 'Sum' : float('nan'), 'Average' : float('nan'), 'Minimum' : float('nan'), 'Maximum' : float('nan') }
+                
             else:            
                 stat = dict(zip(self.cass.STATISTICS, map(lambda x: x.values()[0], stat)))
+                for v in stat:
+                    if v == None: v = float('nan') 
+        
         
         stat['SampleCount'] = 1.0 if isnan(stat['SampleCount']) \
                               else stat['SampleCount'] + 1.0
@@ -188,12 +215,12 @@ class MetricMonitor(object):
             'Average':{time_idx: stat['Average']},
             'Minimum':{time_idx: stat['Minimum']},
             'Maximum':{time_idx: stat['Maximum']}
-        }
-        
-        storm.log("statdict is  %s" % stat_dict)
+        }        
         
         self.cass.insert_stat(self.metric_key, stat_dict)
         storm.log("metric data inserted %s" % (self.metric_key))
+        
+        #self.df.ix[time_idx] = stat
         
         now = utils.utcnow().replace(second=0, microsecond=0)
         timedelta_buf = now - time_idx
@@ -204,7 +231,6 @@ class MetricMonitor(object):
         
     
     def check_alarms(self):
-        storm.log("start alarm checking")
         for k, v in self.alarms.iteritems():
             self._check_alarm(k, v)
         self.lastchecked = utils.utcnow()
@@ -224,8 +250,9 @@ class MetricMonitor(object):
         start_ana_idx = start_idx - datetools.Minute() * period
         
         func = self.ROLLING_FUNC_MAP[statistic]
-        data = func(self.df[statistic].ix[start_ana_idx:end_idx], period,
+        data = func(self.df[statistic].ix[start_ana_idx:end_idx], period, 
                     min_periods=0).ix[start_idx:end_idx]
+
         if unit:
             data = data / utils.UNIT_CONV_MAP[unit]
             threshold = threshold / utils.UNIT_CONV_MAP[unit] 
