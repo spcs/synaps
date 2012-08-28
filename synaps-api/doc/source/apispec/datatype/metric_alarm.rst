@@ -83,6 +83,8 @@ MetricAlarm
      - 통계 자료 계산에 적용될 기간 (초단위) 
 
        자료 형: Integer
+       
+       유효값 : 60 ~ 86400 사이의 60의 배수. (24시간, 1 분 단위)
 
 .. list-table:: cont' 
    :widths: 30 50

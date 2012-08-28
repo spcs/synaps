@@ -540,6 +540,10 @@ class MonitorController(object):
         if period and (not 0 < int(period) <= (60 * 60 * 24)):
             err = "The length of Period is 1~86400. (24 hours)"
             raise exception.InvalidParameterValue(err)
+        
+        if period and (not int(period) % 60 == 0):
+            err = "Period is must be multiple of 60."
+            raise exception.InvalidParameterValue(err)
             
         return True
     

@@ -28,13 +28,14 @@ from synaps.db import Cassandra
 from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
                         DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID)
 from synaps import exception
-
+FLAGS = flags.FLAGS
 
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
     STATISTICS_TTL = Cassandra.STATISTICS_TTL
-    MAX_PERIOD = 0  
-    
+    MAX_START_PERIOD = FLAGS.get('max_start_period')
+    MAX_END_PERIOD = FLAGS.get('max_end_period')
+        
     ROLLING_FUNC_MAP = {
         'Average': rolling_mean,
         'Minimum': rolling_min,
@@ -63,28 +64,40 @@ class MetricMonitor(object):
         self.cass = cass
         self.df = self.load_statistics()
         self.alarms = self.load_alarms()
-        self.MAX_PERIOD = self.set_max_period(self.alarms)
+        self.set_MAX_START_PERIOD(self.alarms)
+        self._reindex()
+
         self.lastchecked = None
         
     def _reindex(self):
         self.df = self.df.reindex(index=self._get_range())
-
+        
     def _get_range(self):
         now_idx = datetime.utcnow().replace(second=0, microsecond=0)
-        start = now_idx - timedelta(seconds=self.STATISTICS_TTL)
-        end = now_idx + timedelta(seconds=60 * 60) # 1 HOUR
+
+        start = now_idx - timedelta(seconds=self.MAX_START_PERIOD)
+        end = now_idx + timedelta(seconds=self.MAX_END_PERIOD)
+
         daterange = DateRange(start, end, offset=datetools.Minute())
+        
         return daterange
     
-    def set_max_period(self, alarms):
-        if alarms:
-            max_period = max(v.get('period') for k, v in alarms.iteritems())
-        else:
-            max_period = 0
-            
-        return max_period
-                 
+
+    def set_MAX_START_PERIOD(self, alarms):
         
+        msp = self.MAX_START_PERIOD
+        
+        if alarms:
+            self.MAX_START_PERIOD = max(v.get('period') for k, v in alarms.iteritems())
+        else:
+            self.MAX_START_PERIOD = FLAGS.get('max_start_period')
+        
+        storm.log("MAX_START_PERIOD is changed %s -> %s" % (str(msp), self.MAX_START_PERIOD))
+        if msp < self.MAX_START_PERIOD:
+            self.df = self.load_statistics()
+        elif msp > self.MAX_START_PERIOD:
+            self._reindex()
+                
     def delete_metric_alarm(self, alarmkey):
         """
         메모리 및 DB에서 알람을 삭제한다.
@@ -103,10 +116,17 @@ class MetricMonitor(object):
         storm.log("delete alarm %s for metric %s" % (str(alarmkey),
                                                      self.metric_key))
         
-        self.MAX_PERIOD = self.set_max_period(self.alarms)
-                                                        
+
+        self.set_MAX_START_PERIOD(self.alarms)        
+        
+
     def load_statistics(self):
-        stat = self.cass.load_statistics(self.metric_key)
+        now_idx = datetime.utcnow().replace(second=0, microsecond=0)
+        start = now_idx - timedelta(seconds=self.MAX_START_PERIOD)
+        end = now_idx + timedelta(seconds=self.MAX_END_PERIOD)
+        
+        stat = self.cass.load_statistics(self.metric_key, start, end)
+        
         if stat:
             df = DataFrame(stat, index=self._get_range())
         else:
@@ -121,6 +141,7 @@ class MetricMonitor(object):
 
     def get_metric_statistics(self, window, statistics, start=None, end=None,
                               unit=None):
+        
         df = self.df.ix[start:end] if start and end else self.df
         
         ret_dict = {}
@@ -135,13 +156,25 @@ class MetricMonitor(object):
         alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
         if alarm_key:
             self.alarms[alarm_key] = self.cass.get_metric_alarm(alarm_key)
+            storm.log("alarm key is [%s]" % alarm_key)
         else:
             storm.log("no alarm key [%s]" % alarm_key)
             
-        self.MAX_PERIOD = self.set_max_period(self.alarms)
 
-    def put_metric_data(self, timestamp, value, unit=None):
+        self.set_MAX_START_PERIOD(self.alarms)
+        
+        
+    def put_metric_data(self, metric_key, timestamp, value, unit=None):
+
         time_idx = timestamp.replace(second=0, microsecond=0)
+        
+        if timedelta(seconds=self.cass.STATISTICS_TTL) < (utils.utcnow() - 
+                                                            time_idx):
+            msg = "index %s is older than TTL. It doesn't need to insert DB"
+            storm.log(msg % time_idx)
+            return
+        
+        
         if time_idx not in self.df.index:
             self._reindex()
         
@@ -149,9 +182,24 @@ class MetricMonitor(object):
         
         try:
             stat = self.df.ix[time_idx]
+            
+            for v in stat:
+                if v == None: v = float('nan')                    
+                 
+            storm.log("index is found in memory.")
+
         except KeyError:
-            storm.log("index %s in not in the time range." % time_idx)
-            return
+            storm.log("index %s is not in the time range of memory. It will find DB." % time_idx)
+            stat = self.cass.get_metric_statistics_for_key(metric_key, time_idx)
+            if [{}, {}, {}, {}, {}] == stat:
+                storm.log("index %s is not in the DB. It will write newly." % time_idx)
+                stat = {'SampleCount' : float('nan'), 'Sum' : float('nan'), 'Average' : float('nan'), 'Minimum' : float('nan'), 'Maximum' : float('nan') }
+                
+            else:            
+                stat = dict(zip(self.cass.STATISTICS, map(lambda x: x.values()[0], stat)))
+                for v in stat:
+                    if v == None: v = float('nan') 
+        
         
         stat['SampleCount'] = 1.0 if isnan(stat['SampleCount']) \
                               else stat['SampleCount'] + 1.0
@@ -172,21 +220,22 @@ class MetricMonitor(object):
             'Average':{time_idx: stat['Average']},
             'Minimum':{time_idx: stat['Minimum']},
             'Maximum':{time_idx: stat['Maximum']}
-        }
+        }        
         
         self.cass.insert_stat(self.metric_key, stat_dict)
         storm.log("metric data inserted %s" % (self.metric_key))
         
+        #self.df.ix[time_idx] = stat
+        
         now = utils.utcnow().replace(second=0, microsecond=0)
         timedelta_buf = now - time_idx
         
-        if(timedelta_buf <= timedelta(seconds=self.MAX_PERIOD)):
+        if(timedelta_buf <= timedelta(seconds=self.MAX_START_PERIOD)):
             # check alarms            
             self.check_alarms()
         
     
     def check_alarms(self):
-        storm.log("start alarm checking")
         for k, v in self.alarms.iteritems():
             self._check_alarm(k, v)
         self.lastchecked = utils.utcnow()
@@ -206,8 +255,9 @@ class MetricMonitor(object):
         start_ana_idx = start_idx - datetools.Minute() * period
         
         func = self.ROLLING_FUNC_MAP[statistic]
-        data = func(self.df[statistic].ix[start_ana_idx:end_idx], period,
+        data = func(self.df[statistic].ix[start_ana_idx:end_idx], period, 
                     min_periods=0).ix[start_idx:end_idx]
+
         if unit:
             data = data / utils.UNIT_CONV_MAP[unit]
             threshold = threshold / utils.UNIT_CONV_MAP[unit] 
@@ -433,8 +483,9 @@ class PutMetricBolt(storm.BasicBolt):
 
         timestamp = utils.parse_strtime(message['timestamp'])
 
-        self.metrics[metric_key].put_metric_data(
-            timestamp=timestamp, value=message['value'], unit=message['unit'])
+
+        self.metrics[metric_key].put_metric_data(metric_key,
+                                                 timestamp=timestamp, value=message['value'], unit=message['unit'])
     
     def process_put_metric_alarm_msg(self, metric_key, message):
         if metric_key not in self.metrics:
