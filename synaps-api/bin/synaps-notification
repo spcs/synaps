@@ -35,11 +35,11 @@ def send_email(message):
 
     msg = MIMEText(message['body'])
     msg['Subject'] = message['subject']
-    msg['From'] = self.MAIL_SENDER
+    msg['From'] = MAIL_SENDER
     msg['To'] = ", ".join(message['receivers'])
     
-    s = smtplib.SMTP(self.SMTP_SERVER)
-    s.sendmail(self.MAIL_SENDER, message['receivers'], msg.as_string())
+    s = smtplib.SMTP(SMTP_SERVER, timeout=3)
+    s.sendmail(MAIL_SENDER, message['receivers'], msg.as_string())
     s.quit()
 
 def run_forever():
@@ -56,8 +56,9 @@ def run_forever():
         try:
             func = send_func_map[message['method']]
             func(message)
-        except:
-            LOG.info("invalid message format - %s" % str(message))        
+        except Exception as ex:
+            LOG.exception(_('Unexpected error raised: %s'), unicode(ex))
+            LOG.info("notification failed - %s" % str(message))        
 
 def main():
     run_forever()
