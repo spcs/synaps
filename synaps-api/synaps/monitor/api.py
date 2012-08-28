@@ -5,7 +5,7 @@
 # Administrator of the National Aeronautics and Space Administration.
 # Copyright 2011 Piston Cloud Computing, Inc.
 # Copyright 2012 Red Hat, Inc.
-# Copyright 2012 SamsungSDS, Inc.
+# Copyright (c) 2012 Samsung SDS Co., LTD
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may

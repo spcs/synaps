@@ -3,7 +3,7 @@
 
 # Copyright 2010 United States Government as represented by the
 # Administrator of the National Aeronautics and Space Administration.
-# Copyright 2012 SamsungSDS, Inc.
+# Copyright (c) 2012 Samsung SDS Co., LTD
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -18,8 +18,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-# Importing full names to not pollute the namespace and cause possible
-# collisions with use of 'from nova.compute import <foo>' elsewhere.
 
 from synaps.monitor.api import API
 from synaps.utils import validate_email, validate_international_phonenumber
