@@ -16,7 +16,7 @@ Ubuntu(11.04)상에서 synaps-api를 설치 및 설정 방법에 대해 설명�
 
   $ sudo apt-get install build-essential python-dev memcached
   $ sudo apt-get install python-setuptools python-eventlet python-pastedeploy python-webob python-ldap
-  $ sudo apt-get install git python-gflags python-netaddr
+  $ sudo apt-get install git python-gflags python-netaddr python-memcache
 
 
 pandas 설치(web server, storm server)
@@ -29,15 +29,18 @@ pandas 설치(web server, storm server)
   .. code-block:: bash
 
    $ apt-get install python-numpy
+
    
 * python-dateutil 설치
 
   .. code-block:: bash
 
+   $ cd ~
    $ wget http://labix.org/download/python-dateutil/python-dateutil-1.5.tar.gz
    $ tar zxvf python-dateutil-1.5.tar.gz
    $ cd python-dateutil-1.5
    $ python setup.py install
+
    
 2. pandas 설치
 
@@ -45,6 +48,7 @@ pandas 설치(web server, storm server)
 
   .. code-block:: bash
 
+   $ cd ~   
    $ wget http://pypi.python.org/packages/source/p/pandas/pandas-0.7.3.tar.gz#md5=e4876ea5882accce15f6f37750f3ffec
    $ tar zxvf pandas-0.7.3.tar.gz
    $ cd pandas-0.7.3/
@@ -57,6 +61,7 @@ thrift 설치
 
 .. code-block:: bash
 
+  $ cd ~
   $ wget http://pypi.python.org/packages/source/t/thrift/thrift-0.8.0.tar.gz
   $ tar xvfz thrift-0.8.0.tar.gz
   $ cd thrift-0.8.0
@@ -70,11 +75,11 @@ pycassa 설치
 
 .. code-block:: bash
 
+  $ cd ~  
   $ wget https://github.com/downloads/pycassa/pycassa/pycassa-1.5.1.tar.gz
   $ tar xvfz pycassa-1.5.1.tar.gz
   $ cd pycassa-1.5.1
   $ sudo python setup.py install
-  $ cd ..
   
   
 pika 설치
@@ -83,24 +88,23 @@ python RabbitMQ 클라이언트인 pika를 설치한다.
 
 .. code-block:: bash
 
+  $ cd ~  
   $ wget http://pypi.python.org/packages/source/p/pika/pika-0.9.5.tar.gz
   $ tar xvfz pika-0.9.5.tar.gz
   $ cd pika-0.9.5
   $ sudo python setup.py install
-  $ cd ..  
   
   
 boto 설치
 ---------
-python RabbitMQ 클라이언트인 pika를 설치한다.
 
 .. code-block:: bash
 
+  $ cd ~
   $ wget http://boto.googlecode.com/files/boto-2.3.0.tar.gz
   $ tar xvfz boto-2.3.0.tar.gz
   $ cd boto-2.3.0
   $ sudo python setup.py install
-  $ cd ..
   
   
 synaps 설치
@@ -111,9 +115,11 @@ synaps-api 설치 및 설정
 
 .. code-block:: bash
 
+  $ cd ~  
   $ git clone ssh://git@redmine.dev/home/git/synaps -b master
   $ cd synaps/synaps-api
   $ sudo python setup.py install
+  
   
 /etc/synaps/synaps.conf 에서 환경에 맞는 설정을 적용한다.
 
@@ -122,7 +128,8 @@ synaps-api 설치 및 설정
   $ sudo mkdir /etc/synaps
   $ sudo mkdir /var/log/synaps
   $ sudo cp etc/synaps/* /etc/synaps
-  $ sudo vi /etc/synaps/synaps.conf  
+  $ sudo vi /etc/synaps/synaps.conf
+    
 
 synaps-database 초기화
 ----------------------
@@ -132,11 +139,13 @@ synaps-database 초기화
 .. code-block:: bash
 
   $ sudo synaps-syncdb
+  
 
 .. DANGER::
   위 명령이 무엇을 하는지 정확히 파악한 후 실행할 것. /etc/synaps/synaps.conf에 
   설정된 DB의 키스페이스 및 컬럼패밀리의 유무 여부 및 정합성을 체크하고, 
-  이에 대해 조치함. 
+  이에 대해 조치함.
+   
   
 synaps-api 실행 및 정지
 -----------------------

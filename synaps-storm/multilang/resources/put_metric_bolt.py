@@ -29,10 +29,11 @@ from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
                         DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID)
 from synaps import exception
 
+
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
     STATISTICS_TTL = Cassandra.STATISTICS_TTL
-    MAX_PERIOD = 0    
+    MAX_PERIOD = 0  
     
     ROLLING_FUNC_MAP = {
         'Average': rolling_mean,

@@ -1,4 +1,4 @@
-# Copyright 2012 Samsung SDS
+# Copyright (c) 2012 Samsung SDS Co., LTD
 # All Rights Reserved
 
 from synaps import flags

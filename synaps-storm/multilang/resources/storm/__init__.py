@@ -1,6 +1,11 @@
+#!/usr/bin/env python
+
 import sys
 import os
 import traceback
+import time
+
+
 from collections import deque
 
 try:
@@ -166,7 +171,7 @@ class BasicBolt:
         conf, context = initComponent()
         self.initialize(conf, context)
         try:
-            while True:
+            while True:                
                 tup = readTuple()
                 ANCHOR_TUPLE = tup
                 self.process(tup)
@@ -187,6 +192,9 @@ class Spout:
     def nextTuple(self):
         pass
 
+    def checkStatus(self):
+        pass
+    
     def run(self):
         global MODE
         MODE = Spout
@@ -194,6 +202,7 @@ class Spout:
         self.initialize(conf, context)
         try:
             while True:
+                
                 msg = readCommand()
                 if msg["command"] == "next":
                     self.nextTuple()
