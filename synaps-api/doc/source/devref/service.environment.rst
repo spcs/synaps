@@ -6,7 +6,7 @@
 본 문서에서는 서비스를 위해 synaps를 각각의 클러스터에 설치하는 방법을 설명한다. 
 synaps 는 다음과 같이 네가지 클러스터 그룹으로 구성된다.
 
-#. synaps-공통모듈  -  ntp, Ganglia
+#. synaps-전체Node 공통모듈  -  ntp, Ganglia
 #. synaps-api - 사용자와 연동하는 웹서비스
 #. synaps-mq - 메시지큐 (synaps-api 와 synaps-storm 간의 메시지 전달)
 #. synaps-storm - 실시간 분산 처리
@@ -23,7 +23,7 @@ synaps-api 클러스터 구축
 로드밸런서를 두어 synaps-api 클러스터를 구축한다.
 
 
-synaps-공통모듈 설정
+synaps-전체Node 공통모듈 설정
 ------------------------
 
 * ntp 설치
@@ -38,6 +38,7 @@ synaps-공통모듈 설정
   .. code-block:: bash
   
    $ vi /etc/ntpd.conf
+   
    
   ::
   
@@ -105,6 +106,7 @@ synaps-공통모듈 설정
   
    $ vi /etc/ntpd.conf
    
+   
   ::
   
    # /etc/ntp.conf, configuration for ntpd; see ntp.conf(5) for help
@@ -159,6 +161,10 @@ synaps-공통모듈 설정
    # next lines.  Please do this only if you trust everybody on the network!
    #disable auth
    #broadcastclient
+   
+  .. DANGER::
+  
+   ntp를 사용하기 위해서는 udp 123포트 오픈 필요.   
 
 
 * Ganglia server 설치
@@ -184,7 +190,10 @@ synaps-공통모듈 설정
 
    gridname "Cluster GRID NAME"
 
-   ※ 구성한 클러스터의 이름을 등록 해주며, 클러스터 Top node를 등록
+
+  .. DANGER::
+  
+   ※ 구성한 클러스터의 이름을 등록 해주며, 클러스터의 main ganglia node를 등록
    
    
 * Ganglia agent 설치(대상 :  monitoring 대상 전 node)  
@@ -243,17 +252,20 @@ synaps-공통모듈 설정
    port = 8663
    }
 
-   ※ 클러스터 이름과 포트는 클러스터별로 다르게 정해주며, Host는 Ganglia Top node로 지정.
+
+  .. DANGER::
+
+    클러스터 이름과 포트는 클러스터별로 다르게 정해주며, Host는 Ganglia Main node로 지정.
    
 
-* Ganglia 설치(대상 :  monitoring 대상 cluster 중 1개 노드)  
+* Ganglia 설치(대상 :  monitoring 대상 cluster 중 1개 노드, Ganglia Main node)  
 
   .. code-block:: bash
   
    $ apt-get install gmetad
    
 
-* Ganglia 설정(대상 :  monitoring 대상 cluster 중 1개 노드)
+* Ganglia 설정(대상 :  monitoring 대상 cluster 중 1개 노드, Ganglia Main node)
    
   .. code-block:: bash
   
@@ -266,6 +278,9 @@ synaps-공통모듈 설정
 
    trusted_hosts 10.245.217.13 10.245.217.14
 
+
+  .. DANGER::
+  
    ※ data_source는 ganglia agent가 설치된 모든 노드를 등록해주며, trusted_hosts nagios의 모든 노드를 등록해준다.
    
 
@@ -285,6 +300,12 @@ rabbit mq 2중화 구성
 1. 필요조건
 
 * rabbit mq 설치
+
+
+  .. DANGER::
+  
+   rabbitmq의 version은 2.8.2 버전 이상을 사용하여야, 이중화 구축이 가능.
+
 
   .. code-block:: bash
 
@@ -341,9 +362,10 @@ rabbit mq 2중화 구성
   ::
 
    Cluster status of node 'rabbit@synaps-mq02' ...
-   [{nodes,[{disc,['rabbit@rabbit@synaps-mq02','rabbit@rabbit@synaps-mq01']}]},
-   {running_nodes,['rabbit@rabbit@synaps-mq01','rabbit@rabbit@synaps-mq02']}]
+   [{nodes,[{disc,['rabbit@synaps-mq02','rabbit@synaps-mq01']}]},
+   {running_nodes,['rabbit@synaps-mq01','rabbit@synaps-mq02']}]
    ...done.
+   
 
 synaps-storm 클러스터 구축
 --------------------------
@@ -382,7 +404,7 @@ synaps-storm 클러스터 구축
    $ vi /etc/zookeeper/conf/myid
 
 
-* 다음과 같이 수정 ::
+* server.1의 경우 다음과 같이 수정 ::
 
    1
 
@@ -401,11 +423,17 @@ synaps-storm 클러스터 구축
 
 5. zeromq 설치
 
+  .. DANGER::
+  
+   ZMQ의 version은 반드시 2.1.7을 사용.
+
+
   .. code-block:: bash
 
    $ apt-get install make
    $ apt-get install build-essential
    $ apt-get install uuid-dev
+   $ cd ~
    $ wget http://download.zeromq.org/zeromq-2.1.7.tar.gz
    $ tar zxvf zeromq-2.1.7.tar.gz
    $ cd zeromq-2.1.7
@@ -423,6 +451,7 @@ synaps-storm 클러스터 구축
    $ apt-get install libtool
    $ apt-get install automake
    $ export JAVA_HOME='/usr/lib/jvm/java-6-openjdk'
+   $ cd ~
    $ tar zxvf nathanmarz-jzmq-dd3327d.tar.gz
    $ cd nathanmarz-jzmq-dd3327d
    $ ./autogen.sh
@@ -435,17 +464,17 @@ synaps-storm 클러스터 구축
 
 * storm package 다운로드 및 배치 ::
 
-   https://github.com/downloads/nathanmarz/storm/storm-0.7.1.zip
+   https://github.com/downloads/nathanmarz/storm/storm-0.8.0.zip
 
 
   .. code-block:: bash
 
    $ apt-get install unzip
    $ mkdir ~/opt
-   $ mv storm-0.7.1.zip ~/opt/
+   $ mv storm-0.8.0.zip ~/opt/
    $ cd ~/opt
-   $ unzip storm-0.7.1
-   $ ln -s ~/opt/storm-0.7.1 storm
+   $ unzip storm-0.8.0
+   $ ln -s ~/opt/storm-0.8.0 storm
    $ mkdir ~/.storm
    $ chmod 777 ~/.storm
    $ ln -s ~/opt/storm/bin/storm /bin/storm
@@ -592,6 +621,10 @@ synaps-database 클러스터 구축
 * 맨 아랫줄에 아래 내용 추가 ::
 
    /dev/vdb	/cassDATA	ext3	defaults	1	2
+   
+  .. DANGER::
+  
+   VM 환경일 경우 fstab의 설정 오류로 인해 VM이 정상적으로 작동 하지 않을 수 있으니,  주의하여 등록.
 
 
 2. Cassandra 설치
@@ -599,15 +632,16 @@ synaps-database 클러스터 구축
 * 다운로드 및 압축풀기
 
   .. code-block:: bash
-
-   $ tar zxvf apache-cassandra-1.0.8-b치
+  
+   $ cd ~
+   $ tar zxvf apache-cassandra-1.0.8-bin.tar.gz
 
 
 * 클러스터 설정
 
   .. code-block:: bash
 
-   $ vi apache-cassandra-1.0.8/conf/cassandra.yaml
+   $ vi ~/apache-cassandra-1.0.8/conf/cassandra.yaml
 
 
 * 아래 내용 찾아서 수정 ::
@@ -679,7 +713,8 @@ synaps-mail 구축
 * SMSMMSAgent 설치
 
   .. code-block:: bash
-
+  
+   $ cd ~
    $ tar zxvf SMSMMSAgent.tar.gz
    $ mv SMSMMSAgent /usr/local/
    
@@ -787,3 +822,61 @@ synaps-mail 구축
     MMS_FAIL_RESEND_TIME=0~0
 
     MMS_FAIL_SCHED_TIME=0
+    
+
+* table 생성
+다음 sql문을 이용하여 table 생성
+
+  ::
+   
+   CREATE TABLE `SMS_RESULT` (
+   `msg_key` varchar(20) NOT NULL DEFAULT '',
+   `evnt_sqc` decimal(5,0) NOT NULL,
+   `receiver` varchar(20) NOT NULL,
+   `sender` varchar(20) DEFAULT NULL,
+   `message` varchar(100) DEFAULT NULL,
+   `url` varchar(100) DEFAULT NULL,
+   `depart` varchar(10) DEFAULT NULL,
+   `extend` varchar(5) DEFAULT NULL,
+   `reg_time` varchar(14) DEFAULT NULL,
+   `reserve_time` varchar(14) DEFAULT NULL,
+   `nat_code` int(3) DEFAULT NULL,
+   `fixed_com` varchar(4) DEFAULT NULL,
+   `tran_id` varchar(20) DEFAULT NULL,
+   `submit_result` char(3) DEFAULT NULL,
+   `submit_time` varchar(14) DEFAULT NULL,
+   `deliver_time` varchar(14) DEFAULT NULL,
+   `report_time` varchar(14) DEFAULT NULL,
+   `result` char(3) DEFAULT NULL,
+   `result_desc` varchar(20) DEFAULT NULL,
+   `mms_msg_key` varchar(20) DEFAULT NULL,
+   `dest` varchar(5) DEFAULT NULL,
+   PRIMARY KEY (`msg_key`)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+   
+   CREATE TABLE `SMS_SEND` (
+   `msg_key` varchar(20) NOT NULL DEFAULT '',
+   `receiver` varchar(20) NOT NULL,
+   `sender` varchar(20) DEFAULT NULL,
+   `message` varchar(100) NOT NULL,
+   `url` varchar(100) DEFAULT NULL,
+   `depart` varchar(10) DEFAULT NULL,
+   `extend` varchar(5) DEFAULT NULL,
+   `reg_time` varchar(14) NOT NULL,
+   `reserve_time` varchar(14) NOT NULL DEFAULT '00000000000000',
+   `nat_code` int(3) DEFAULT NULL,
+   `fixed_com` varchar(4) DEFAULT NULL,
+   `tran_id` varchar(20) NOT NULL DEFAULT ' ',
+   `mms_msg_key` varchar(20) DEFAULT NULL,
+   PRIMARY KEY (`msg_key`)
+   )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+   
+   CREATE TABLE `SMS_SPAM` (
+   `seq` int(8) NOT NULL,
+   `tran_id` varchar(20) NOT NULL DEFAULT 'ALL',
+   `reg_time` varchar(14) NOT NULL,
+   `receiver` varchar(20) NOT NULL,
+   `remark` varchar(100) DEFAULT NULL,
+   PRIMARY KEY (`seq`)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  
