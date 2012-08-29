@@ -28,7 +28,6 @@ from synaps.utils import validate_email, validate_international_phonenumber
 
 threshhold = 10000
 FLAGS = flags.FLAGS
-logging.setup()
 
 class ActionBolt(storm.BasicBolt):
     BOLT_NAME = "ActionBolt"
@@ -122,5 +121,8 @@ class ActionBolt(storm.BasicBolt):
                 self.sock.send_pyobj(notification_message)
                 self.log("notify: %s " % notification_message)
 
-
-ActionBolt().run()
+if __name__ == "__main__":
+    flags.FLAGS(sys.argv)
+    utils.default_flagfile()
+    logging.setup()
+    ActionBolt().run()
