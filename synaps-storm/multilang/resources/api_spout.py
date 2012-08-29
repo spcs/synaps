@@ -32,7 +32,7 @@ class ApiSpout(Spout):
     def tracelog(self, e):
         msg = traceback.format_exc(e)
         for line in msg.splitlines():
-            self.log("TRACE: " + msg)
+            self.log("TRACE: " + line)
     
     def connect(self):
         self.conn = pika.BlockingConnection(

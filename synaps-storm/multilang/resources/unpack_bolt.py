@@ -22,9 +22,6 @@ from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
                         DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID)
 
 threshhold = 10000
-flags.FLAGS(sys.argv)
-utils.default_flagfile()
-logging.setup()
 
 class UnpackMessageBolt(storm.BasicBolt):
     BOLT_NAME = "UnpackMessageBolt"
@@ -39,7 +36,7 @@ class UnpackMessageBolt(storm.BasicBolt):
     def tracelog(self, e):
         msg = traceback.format_exc(e)
         for line in msg.splitlines():
-            self.log("TRACE: " + msg)
+            self.log("TRACE: " + line)
                 
     def get_metric_key(self, message):
         memory_key = md5.md5(str((message['project_id'],
@@ -104,4 +101,8 @@ class UnpackMessageBolt(storm.BasicBolt):
         except Exception as e:
             storm.log(traceback.format_exc(e))
 
-UnpackMessageBolt().run()
+if __name__ == "__main__":
+    flags.FLAGS(sys.argv)
+    utils.default_flagfile()
+    logging.setup()
+    UnpackMessageBolt().run()

@@ -13,17 +13,11 @@ from synaps import log as logging
 from synaps import utils
 from uuid import UUID
 
-import smtplib
-from email.mime.text import MIMEText
-
-import md5
 import json
 import storm
 import traceback
 import zmq
 from synaps.db import Cassandra
-from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
-                        DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID)
 from synaps.utils import validate_email, validate_international_phonenumber
 
 threshhold = 10000
@@ -47,7 +41,7 @@ class ActionBolt(storm.BasicBolt):
     def tracelog(self, e):
         msg = traceback.format_exc(e)
         for line in msg.splitlines():
-            self.log("TRACE: " + msg)
+            self.log("TRACE: " + line)
     
     def get_action_type(self, action):
         if validate_email(action):

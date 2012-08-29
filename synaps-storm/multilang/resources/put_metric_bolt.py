@@ -463,7 +463,7 @@ class PutMetricBolt(storm.BasicBolt):
     def tracelog(self, e):
         msg = traceback.format_exc(e)
         for line in msg.splitlines():
-            self.log("TRACE: " + msg)
+            self.log("TRACE: " + line)
     
     def process_put_metric_data_msg(self, metric_key, message):
         """
