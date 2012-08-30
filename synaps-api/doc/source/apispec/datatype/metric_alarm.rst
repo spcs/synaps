@@ -18,11 +18,14 @@ MetricAlarm
    * - 이름
      - 설명
    * - ActionsEnabled
-     - TBD - 아직 구현되지 않음
+     - 알람의 상태 변화에 따른 액션 수행 여부
 
        자료 형: Boolean
    * - AlarmActions
-     - TBD - 아직 구현되지 않음
+     - 알람 상태가 된 경우 SMS를 보낼 전화번호(국제전화번호 형식) 또는 전자우편
+       을 보낼 E-Mail 주소의 리스트.
+
+       자료 형: String 리스트
    * - AlarmArn
      - 알람의 자원 번호
 
@@ -64,7 +67,10 @@ MetricAlarm
 
        자료 형: Integer
    * - InsufficientDataActions
-     - TBD - 아직 구현되지 않음
+     - 알람 상태가 된 경우 SMS를 보낼 전화번호(국제전화번호 형식) 또는 전자우편
+       을 보낼 E-Mail 주소의 리스트.
+
+       자료 형: String 리스트
    * - MetricName
      - 알람 대상 메트릭의 이름
 
@@ -78,13 +84,15 @@ MetricAlarm
 
        길이 제한: 최소 1자, 최대 255자
    * - OKActions
-     - TBD - 아직 구현되지 않음
+     - 알람 상태가 된 경우 SMS를 보낼 전화번호(국제전화번호 형식) 또는 전자우편
+       을 보낼 E-Mail 주소의 리스트.
+
+       자료 형: String 리스트
    * - Period
      - 통계 자료 계산에 적용될 기간 (초단위) 
 
        자료 형: Integer
-       
-       유효값 : 60 ~ 86400 사이의 60의 배수. (24시간, 1 분 단위)
+
 
 .. list-table:: cont' 
    :widths: 30 50
