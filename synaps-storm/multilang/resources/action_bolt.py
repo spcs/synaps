@@ -11,7 +11,7 @@ if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import json
 import storm
@@ -57,6 +57,31 @@ class ActionBolt(storm.BasicBolt):
         elif action_type == "SMS":
             self.send_sms(action, message)
     
+    def alarm_history_state_update(self, alarmkey, alarm, notification_message):
+#                notification_message = {
+#                    'method': "email",
+#                    'receivers': email_receivers,
+#                    'subject': message['subject'],
+#                    'body': message['body']
+#                }        
+        item_type = 'Action'
+        project_id = alarm['project_id']
+        history_summary = ("Message '%(subject)s' is sent via %(method)s" % 
+                           notification_message)
+        timestamp = utils.utcnow()
+        
+        history_key = uuid4()
+        column = {'project_id':project_id,
+                  'alarm_key':UUID(alarmkey),
+                  'alarm_name':alarm['alarm_name'],
+                  'history_data': json.dumps(notification_message),
+                  'history_item_type':item_type,
+                  'history_summary':history_summary,
+                  'timestamp':timestamp}
+        
+        self.cass.insert_alarm_history(history_key, column)
+        storm.log("alarm history \n %s" % history_summary)
+    
     def process(self, tup):
         """
         message example
@@ -99,7 +124,8 @@ class ActionBolt(storm.BasicBolt):
                 
                 self.sock.send_pyobj(notification_message)
                 self.log("notify: %s " % notification_message)
-                
+                self.alarm_history_state_update(alarm_key, alarm,
+                                                notification_message)
                 
             if self.ENABLE_SEND_SMS:
                 sms_receivers = [action for action in actions
@@ -114,6 +140,9 @@ class ActionBolt(storm.BasicBolt):
                 
                 self.sock.send_pyobj(notification_message)
                 self.log("notify: %s " % notification_message)
+                self.alarm_history_state_update(alarm_key, alarm,
+                                                notification_message)
+                
 
 if __name__ == "__main__":
     flags.FLAGS(sys.argv)
