@@ -293,7 +293,7 @@ synaps-전체Node 공통모듈 설정
    
 
 synaps-mq 구축 및 이중화 구성
-------------------------------------------
+-----------------------------
 
 rabbit mq 2중화 구성
 
@@ -375,7 +375,7 @@ synaps-storm 클러스터 구축
 
    $ apt-get install openjdk-6-jdk
    $ apt-get install maven2
-
+   $ apt-get install python-zmq
 
 2. zookeeper 설치
 
@@ -574,6 +574,7 @@ synaps-storm 클러스터 구축
    root     21270  0.0  0.2 122480 23964 ?        S    18:45   0:00 python unpack_bolt.py
 
 
+
 synaps-database 클러스터 구축
 -----------------------------
 1. SPCS내의 VM에 디스크 마운트
@@ -680,14 +681,15 @@ synaps-database 클러스터 구축
    카산드라 사용 포트 : 7000, 7001, 9160
    
    
-synaps-mail 구축
------------------------------
+synaps-noti 구축
+----------------
 
-1. sendmail 설치
+1. 공통모듈 설치(구축 전 synaps-api 설치 진행)
 
   .. code-block:: bash
 
-   $ apt-get install sendmail
+   $ apt-get install python-mysqldb
+   $ apt-get install python-zmq
    
    
 2. SMSMMSAgent 설치
