@@ -207,25 +207,6 @@ def _ensure_project_folder(project_id):
         os.chdir(start)
 
 
-def generate_vpn_files(project_id):
-    project_folder = ca_folder(project_id)
-    key_fn = os.path.join(project_folder, 'server.key')
-    crt_fn = os.path.join(project_folder, 'server.crt')
-
-    if os.path.exists(crt_fn):
-        return
-    # NOTE(vish): The 2048 is to maintain compatibility with the old script.
-    #             We are using "project-vpn" as the user_id for the cert
-    #             even though that user may not really exist. Ultimately
-    #             this will be changed to be launched by a real user.  At
-    #             that point we will can delete this helper method.
-    key, csr = generate_x509_cert('project-vpn', project_id, 2048)
-    with open(key_fn, 'w') as keyfile:
-        keyfile.write(key)
-    with open(crt_fn, 'w') as crtfile:
-        crtfile.write(csr)
-
-
 def sign_csr(csr_text, project_id=None):
     if not FLAGS.use_project_ca:
         project_id = None
