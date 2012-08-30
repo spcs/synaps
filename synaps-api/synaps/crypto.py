@@ -185,30 +185,6 @@ def revoke_cert(project_id, file_name):
     os.chdir(start)
 
 
-def revoke_certs_by_user(user_id):
-    """Revoke all user certs."""
-    admin = context.get_admin_context()
-    for cert in db.certificate_get_all_by_user(admin, user_id):
-        revoke_cert(cert['project_id'], cert['file_name'])
-
-
-def revoke_certs_by_project(project_id):
-    """Revoke all project certs."""
-    # NOTE(vish): This is somewhat useless because we can just shut down
-    #             the vpn.
-    admin = context.get_admin_context()
-    for cert in db.certificate_get_all_by_project(admin, project_id):
-        revoke_cert(cert['project_id'], cert['file_name'])
-
-
-def revoke_certs_by_user_and_project(user_id, project_id):
-    """Revoke certs for user in project."""
-    admin = context.get_admin_context()
-    for cert in db.certificate_get_all_by_user_and_project(admin,
-                                            user_id, project_id):
-        revoke_cert(cert['project_id'], cert['file_name'])
-
-
 def _project_cert_subject(project_id):
     """Helper to generate user cert subject."""
     return FLAGS.project_cert_subject % (project_id, utils.isotime())
@@ -217,28 +193,6 @@ def _project_cert_subject(project_id):
 def _user_cert_subject(user_id, project_id):
     """Helper to generate user cert subject."""
     return FLAGS.user_cert_subject % (project_id, user_id, utils.isotime())
-
-
-def generate_x509_cert(user_id, project_id, bits=1024):
-    """Generate and sign a cert for user in project."""
-    subject = _user_cert_subject(user_id, project_id)
-
-    with utils.tempdir() as tmpdir:
-        keyfile = os.path.abspath(os.path.join(tmpdir, 'temp.key'))
-        csrfile = os.path.join(tmpdir, 'temp.csr')
-        utils.execute('openssl', 'genrsa', '-out', keyfile, str(bits))
-        utils.execute('openssl', 'req', '-new', '-key', keyfile, '-out',
-                      csrfile, '-batch', '-subj', subject)
-        private_key = open(keyfile).read()
-        csr = open(csrfile).read()
-
-    (serial, signed_csr) = sign_csr(csr, project_id)
-    fname = os.path.join(ca_folder(project_id), 'newcerts/%s.pem' % serial)
-    cert = {'user_id': user_id,
-            'project_id': project_id,
-            'file_name': fname}
-    db.certificate_create(context.get_admin_context(), cert)
-    return (private_key, signed_csr)
 
 
 def _ensure_project_folder(project_id):
