@@ -361,13 +361,17 @@ class Cassandra(object):
             expr = pycassa.create_index_expression("name", metric_name)
             expr_list.append(expr)
             
+        if dimensions:
+            packed_dimensions = pack_dimensions(dimensions)
+            expr = pycassa.create_index_expression("dimensions",
+                                                   packed_dimensions)
+            expr_list.append(expr)
+            
         index_clause = pycassa.create_index_clause(expr_list,
                                                    start_key=next_token,
-                                                   count=500)
+                                                   count=501)
         items = self.cf_metric.get_indexed_slices(index_clause)
-        
-        metrics = [(k, to_dict(v)) for k, v in items if check_dimension(v)]
-        
+        metrics = ((k, to_dict(v)) for k, v in items)
         return metrics
     
     def load_metric_data(self, metric_key):
