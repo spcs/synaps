@@ -20,11 +20,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import time
 import json
 import uuid
 
-from datetime import datetime, timedelta
 from pandas import TimeSeries, DataFrame, DateRange, datetools
 from pandas import (rolling_sum, rolling_max, rolling_min, rolling_mean)
 
@@ -33,7 +31,7 @@ from synaps import log as logging
 from synaps.db import Cassandra
 from synaps import rpc
 from synaps import utils
-from synaps.exception import AdminRequired, InvalidRequest
+from synaps.exception import AdminRequired, InvalidRequest, ResourceNotFound
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
@@ -54,7 +52,8 @@ class API(object):
         for alarm_name in alarm_names:
             k = self.cass.get_metric_alarm_key(project_id, alarm_name)
             if not k:
-                raise InvalidRequest("Alarm %s does not exists." % alarm_name)
+                raise ResourceNotFound("Alarm %s does not exists." % 
+                                       alarm_name)
             alarmkeys.append(str(k))
                 
         body = {'project_id': project_id, 'alarmkeys': alarmkeys} # UUID str  
