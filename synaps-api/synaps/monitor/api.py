@@ -119,6 +119,10 @@ class API(object):
     
     def set_alarm_state(self, project_id, alarm_name, state_reason,
                         state_value, state_reason_data=None):
+
+        k = self.cass.get_metric_alarm_key(project_id, alarm_name)
+        if not k:
+            raise ResourceNotFound("Alarm %s does not exists." % alarm_name)
        
         body = {'project_id': project_id, 'alarm_name': alarm_name,
                 'state_reason': state_reason, 'state_value': state_value,
