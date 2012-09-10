@@ -105,10 +105,10 @@ class MonitorController(object):
         )
         
         for i, (k, v) in enumerate(histories):
-            ret_histories.append(to_alarm_history(v))
-            if i + 1 >= max_records:
+            if i >= max_records:
                 next_token = k
                 break
+            ret_histories.append(to_alarm_history(v))
         else:
             next_token = None
             
@@ -148,10 +148,10 @@ class MonitorController(object):
         )
         
         for i, (k, v) in enumerate(alarms):
-            ret_alarms.append(to_alarm(v))
-            if i + 1 >= max_records:
+            if i >= max_records:
                 next_token = k
                 break
+            ret_alarms.append(to_alarm(v))
         else:
             next_token = None
         
@@ -292,15 +292,21 @@ class MonitorController(object):
         self.check_namespace(namespace)  
        
         ret_list = []
-        for metric in metrics:
-            k, v = metric
-            ret_list.append(to_aws_metric(metric))
-            next_token = k
+        for i, (k, v) in enumerate(metrics):
+            if i >= 500:
+                ret_next_token = k
+                break
+            ret_list.append(to_aws_metric((k, v)))
+        else:
+            ret_next_token = None
             
         metrics = map(to_aws_metric, metrics)
         
-        return {'ListMetricsResult': {'Metrics': ret_list,
-                                      'NextToken': str(next_token)}}
+        list_metrics_result = {'Metrics': ret_list}
+        if ret_next_token:
+            list_metrics_result['NextToken'] = str(ret_next_token)
+        
+        return {'ListMetricsResult': list_metrics_result}
 
     def put_metric_alarm(self, context, alarm_name, comparison_operator,
                          evaluation_periods, metric_name, namespace, period,

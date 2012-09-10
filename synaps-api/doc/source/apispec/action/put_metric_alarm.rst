@@ -63,7 +63,15 @@ PutMetricAlarm
        자료 형: :ref:`dimension` 리스트
 
        길이 제한: 최소 0개부터 최대 10개의 아이템
-     - No     
+     - No
+     
+.. list-table:: 
+   :widths: 20 50 10
+   :header-rows: 1
+
+   * - 이름
+     - 설명
+     - 필수 여부
    * - EvaluationPeriods
      - 임계치 비교를 할 기간 (분 단위)
 

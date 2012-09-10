@@ -34,12 +34,22 @@ SMS_DB_USERNAME = FLAGS.get('sms_db_username')
 SMS_DB_PASSWORD = FLAGS.get('sms_db_password')
 
 def send_sms(message):
-    Q = """insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, MESSAGE) 
+    Q_LOCAL = """insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, MESSAGE) 
     values (now()+0, '%s','%s','%s','%s')
     """
+    Q_NAT = """insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, MESSAGE, NAT_CODE) 
+    values (now()+0, '%s','%s','%s','%s', %d)
+    """
+
     def build_query(receiver, subject):
         nat, local_no = parse_number(receiver)
-        return Q % (str(uuid4())[:15], local_no, SMS_SENDER, subject[:80])
+        if nat == None:
+            ret = Q_LOCAL % (str(uuid4())[:15], local_no, SMS_SENDER,
+                             subject[:80])
+        else:
+            ret = Q_NAT % (str(uuid4())[:15], local_no, SMS_SENDER,
+                           subject[:80], nat)
+        return ret
         
     def parse_number(no):
         nat, local_no = no.split(' ', 1)
@@ -47,7 +57,12 @@ def send_sms(message):
             nat = int(nat[1:])
         else:
             nat = int(nat)
-        local_no = '0' + local_no.replace(' ', '')
+        
+        if nat == 82: # Korean national code
+            nat = None
+            local_no = '0' + local_no.replace(' ', '')
+        else:
+            local_no = local_no.replace(' ', '')
         
         return nat, local_no
     
@@ -58,9 +73,6 @@ def send_sms(message):
     #     'method': 'SMS',
     #     'subject': u'AlarmActionTest state has been changed from OK to ALARM at 2012-08-28T10:17:50.494902'}
 
-    
-    # insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, MESSAGE) 
-    # values (now()+0, '1','01093145616','01093145616','테스트 문자 메시지 ABCD')
     conn = db.connect(host="localhost", db=SMS_DB, user=SMS_DB_USERNAME,
                       passwd=SMS_DB_PASSWORD, connect_timeout=3)
     c = conn.cursor()
