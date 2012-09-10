@@ -30,7 +30,23 @@ public class PutMetricTopology {
 			return null;
 		}
 	}
-
+	
+	public static class CheckSpout extends ShellSpout implements IRichSpout {
+		public CheckSpout() {
+			super("python", "check_spout.py");
+		}
+	
+		@Override
+		public void declareOutputFields(OutputFieldsDeclarer declarer) {
+			declarer.declare(new Fields("metric_key","message"));
+		}
+	
+		@Override
+		public Map<String, Object> getComponentConfiguration() {
+			return null;
+		}
+	}
+	
 	public static class UnpackMessageBolt extends ShellBolt implements
 			IRichBolt {
 		public UnpackMessageBolt() {
@@ -86,10 +102,11 @@ public class PutMetricTopology {
 	public static void main(String[] args) throws Exception {
 		TopologyBuilder builder = new TopologyBuilder();
 		builder.setSpout("api_spout", new ApiSpout(), 2);
+		builder.setSpout("check_spout", new CheckSpout(), 1);
 		builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 2)
 				.shuffleGrouping("api_spout");
 		builder.setBolt("putmetric_bolt", new PutMetricBolt(), 4)
-				.fieldsGrouping("unpack_bolt", new Fields("metric_key"));
+				.fieldsGrouping("unpack_bolt", new Fields("metric_key")).allGrouping("check_spout");
 		builder.setBolt("action_bolt", new ActionBolt(), 2).shuffleGrouping(
 				"putmetric_bolt");
 

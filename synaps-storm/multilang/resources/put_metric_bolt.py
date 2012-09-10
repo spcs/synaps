@@ -4,6 +4,7 @@
 import os
 import sys
 import operator
+import time
 from uuid import uuid4, UUID
 
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
@@ -26,7 +27,8 @@ from synaps import log as logging
 from synaps import utils
 from synaps.db import Cassandra
 from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
-                        DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID)
+                        DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID,
+                        CHECK_METRIC_ALARM_MSG_ID)
 from synaps import exception
 FLAGS = flags.FLAGS
 
@@ -34,6 +36,7 @@ class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
     STATISTICS_TTL = Cassandra.STATISTICS_TTL
     MAX_START_PERIOD = FLAGS.get('max_start_period')
+    MIN_START_PERIOD = 0
     MAX_END_PERIOD = FLAGS.get('max_end_period')
         
     ROLLING_FUNC_MAP = {
@@ -89,9 +92,11 @@ class MetricMonitor(object):
         
         if alarms:
             self.MAX_START_PERIOD = max(v.get('period') for k, v in alarms.iteritems())
+            self.MIN_START_PERIOD = min(v.get('period') for k, v in alarms.iteritems())
         else:
             self.MAX_START_PERIOD = FLAGS.get('max_start_period')
-        
+            self.MIN_START_PERIOD = 0
+                        
         storm.log("MAX_START_PERIOD is changed %s -> %s" % (str(msp), self.MAX_START_PERIOD))
         if msp < self.MAX_START_PERIOD:
             self.df = self.load_statistics()
@@ -241,6 +246,14 @@ class MetricMonitor(object):
         self.lastchecked = utils.utcnow()
             
     def _check_alarm(self, alarmkey, alarm):
+        last_update_time_str_ = str(alarm['state_updated_timestamp'])
+        last_update_time_str = last_update_time_str_.split(".",1)
+        last_update_time = time.mktime(time.strptime(last_update_time_str[0],"%Y-%m-%d %H:%M:%S"))
+        now = time.time()
+
+        if (now-last_update_time) < self.MIN_START_PERIOD:
+            return
+        
         period = int(alarm['period'] / 60)
         evaluation_periods = alarm['evaluation_periods']
         statistic = alarm['statistic']
@@ -350,6 +363,10 @@ class MetricMonitor(object):
             storm.log("check %s %f" % (alarm['comparison_operator'],
                                        threshold))
             storm.log("result \n %s" % crossed)
+            
+        storm.log("==================== check_end ==================")
+            
+    
     
     def do_alarm_action(self, alarmkey, alarm, new_state, old_state,
                         query_date):
@@ -521,6 +538,9 @@ class PutMetricBolt(storm.BasicBolt):
         
         self.cass.put_metric_alarm(alarm_key, alarm_columns)
         
+    def process_check_metric_alarms_msg(self, metric_key):
+        self.metrics[metric_key].check_alarms()
+        
     def process(self, tup):
         metric_key = UUID(tup.values[0])
         message = json.loads(tup.values[1])
@@ -539,6 +559,11 @@ class PutMetricBolt(storm.BasicBolt):
             elif message_id == SET_ALARM_STATE_MSG_ID:
                 self.log("process set_alarm_state_msg (%s)" % message)
                 self.process_set_alarm_state_msg(metric_key, message)
+            elif message_id == CHECK_METRIC_ALARM_MSG_ID:
+                for k, v in self.metrics.iteritems():
+                    if k:
+                        self.log("process check_alarm_state_msg (%s)" % message)
+                        self.process_check_metric_alarms_msg(k)
             else:
                 storm.log("unknown message")
         except Exception as e:

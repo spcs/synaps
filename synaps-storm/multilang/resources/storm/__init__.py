@@ -3,7 +3,6 @@
 import sys
 import os
 import traceback
-import time
 
 
 from collections import deque
@@ -190,9 +189,6 @@ class Spout:
         pass
 
     def nextTuple(self):
-        pass
-
-    def checkStatus(self):
         pass
     
     def run(self):
