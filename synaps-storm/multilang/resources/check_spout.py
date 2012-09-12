@@ -19,9 +19,10 @@ if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
 
 from synaps import flags
 from synaps import utils
-
+from synaps.rpc import CHECK_METRIC_ALARM_MSG_ID
 from storm import Spout, emit, log
 from uuid import uuid4
+import json
 
 FLAGS = flags.FLAGS
 
@@ -43,15 +44,11 @@ class CheckSpout(Spout):
     
     def nextTuple(self):
         try:
-            now = time.localtime()
-            if now.tm_sec%20 == 0:
-                self.log(now)
-                id = str(uuid4())
-                body='{"message_id": 16}'
-                emit([id,body])
-                time.sleep(10)
+            id = "periodic_%s" % str(uuid4())
+            body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID})
+            emit([None, body], id=id)
+            time.sleep(60)
                 
-
         except Exception as e:
             self.tracelog(e)
 

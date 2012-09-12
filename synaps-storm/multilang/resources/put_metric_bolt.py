@@ -67,7 +67,7 @@ class MetricMonitor(object):
         self.cass = cass
         self.df = self.load_statistics()
         self.alarms = self.load_alarms()
-        self.set_MAX_START_PERIOD(self.alarms)
+        self.set_max_start_period(self.alarms)
         self._reindex()
 
         self.lastchecked = None
@@ -86,18 +86,19 @@ class MetricMonitor(object):
         return daterange
     
 
-    def set_MAX_START_PERIOD(self, alarms):
-        
+    def set_max_start_period(self, alarms):
         msp = self.MAX_START_PERIOD
         
-        if alarms:
-            self.MAX_START_PERIOD = max(v.get('period') for k, v in alarms.iteritems())
-            self.MIN_START_PERIOD = min(v.get('period') for k, v in alarms.iteritems())
-        else:
-            self.MAX_START_PERIOD = FLAGS.get('max_start_period')
-            self.MIN_START_PERIOD = 0
-                        
-        storm.log("MAX_START_PERIOD is changed %s -> %s" % (str(msp), self.MAX_START_PERIOD))
+        self.MAX_START_PERIOD = max(v.get('period') for v 
+                                    in alarms.itervalues()) \
+                                if alarms else FLAGS.get('max_start_period') 
+        self.MIN_START_PERIOD = min(v.get('period') for v 
+                                    in alarms.itervalues()) \
+                                if alarms else 0
+                  
+        msg = "MAX_START_PERIOD is changed %s -> %s"                 
+        storm.log(msg % (str(msp), self.MAX_START_PERIOD))
+
         if msp < self.MAX_START_PERIOD:
             self.df = self.load_statistics()
         elif msp > self.MAX_START_PERIOD:
@@ -122,7 +123,7 @@ class MetricMonitor(object):
                                                      self.metric_key))
         
 
-        self.set_MAX_START_PERIOD(self.alarms)        
+        self.set_max_start_period(self.alarms)        
         
 
     def load_statistics(self):
@@ -166,7 +167,7 @@ class MetricMonitor(object):
             storm.log("no alarm key [%s]" % alarm_key)
             
 
-        self.set_MAX_START_PERIOD(self.alarms)
+        self.set_max_start_period(self.alarms)
         
         
     def put_metric_data(self, metric_key, timestamp, value, unit=None):
@@ -194,14 +195,20 @@ class MetricMonitor(object):
             storm.log("index is found in memory.")
 
         except KeyError:
-            storm.log("index %s is not in the time range of memory. It will find DB." % time_idx)
+            msg = "index %s is not in memory."
+            storm.log(msg % time_idx)
             stat = self.cass.get_metric_statistics_for_key(metric_key, time_idx)
             if [{}, {}, {}, {}, {}] == stat:
-                storm.log("index %s is not in the DB. It will write newly." % time_idx)
-                stat = {'SampleCount' : float('nan'), 'Sum' : float('nan'), 'Average' : float('nan'), 'Minimum' : float('nan'), 'Maximum' : float('nan') }
+                storm.log("index %s is not in DB." % time_idx)
+                stat = {'SampleCount' : float('nan'),
+                        'Sum' : float('nan'),
+                        'Average' : float('nan'),
+                        'Minimum' : float('nan'),
+                        'Maximum' : float('nan') }
                 
             else:            
-                stat = dict(zip(self.cass.STATISTICS, map(lambda x: x.values()[0], stat)))
+                stat = dict(zip(self.cass.STATISTICS,
+                                map(lambda x: x.values()[0], stat)))
                 for v in stat:
                     if v == None: v = float('nan') 
         
@@ -236,24 +243,16 @@ class MetricMonitor(object):
         timedelta_buf = now - time_idx
         
         if(timedelta_buf <= timedelta(seconds=self.MAX_START_PERIOD)):
-            # check alarms            
+            # check alarms
             self.check_alarms()
         
     
     def check_alarms(self):
-        for k, v in self.alarms.iteritems():
-            self._check_alarm(k, v)
+        for alarmkey, alarm in self.alarms.iteritems():
+            self._check_alarm(alarmkey, alarm)
         self.lastchecked = utils.utcnow()
             
     def _check_alarm(self, alarmkey, alarm):
-        last_update_time_str_ = str(alarm['state_updated_timestamp'])
-        last_update_time_str = last_update_time_str_.split(".",1)
-        last_update_time = time.mktime(time.strptime(last_update_time_str[0],"%Y-%m-%d %H:%M:%S"))
-        now = time.time()
-
-        if (now-last_update_time) < self.MIN_START_PERIOD:
-            return
-        
         period = int(alarm['period'] / 60)
         evaluation_periods = alarm['evaluation_periods']
         statistic = alarm['statistic']
@@ -268,7 +267,7 @@ class MetricMonitor(object):
         start_ana_idx = start_idx - datetools.Minute() * period
         
         func = self.ROLLING_FUNC_MAP[statistic]
-        data = func(self.df[statistic].ix[start_ana_idx:end_idx], period, 
+        data = func(self.df[statistic].ix[start_ana_idx:end_idx], period,
                     min_periods=0).ix[start_idx:end_idx]
 
         if unit:
@@ -363,9 +362,6 @@ class MetricMonitor(object):
             storm.log("check %s %f" % (alarm['comparison_operator'],
                                        threshold))
             storm.log("result \n %s" % crossed)
-            
-        storm.log("==================== check_end ==================")
-            
     
     
     def do_alarm_action(self, alarmkey, alarm, new_state, old_state,
@@ -502,7 +498,9 @@ class PutMetricBolt(storm.BasicBolt):
 
 
         self.metrics[metric_key].put_metric_data(metric_key,
-                                                 timestamp=timestamp, value=message['value'], unit=message['unit'])
+                                                 timestamp=timestamp,
+                                                 value=message['value'],
+                                                 unit=message['unit'])
     
     def process_put_metric_alarm_msg(self, metric_key, message):
         if metric_key not in self.metrics:
@@ -538,11 +536,17 @@ class PutMetricBolt(storm.BasicBolt):
         
         self.cass.put_metric_alarm(alarm_key, alarm_columns)
         
-    def process_check_metric_alarms_msg(self, metric_key):
-        self.metrics[metric_key].check_alarms()
+    def process_check_metric_alarms_msg(self):
+        now = datetime.utcnow()
+
+        for metric in self.metrics.itervalues():
+            min_start_period = timedelta(seconds=metric.MIN_START_PERIOD)
+            if metric.lastchecked and (now - metric.lastchecked > 
+                                       min_start_period):
+                metric.check_alarms()
         
     def process(self, tup):
-        metric_key = UUID(tup.values[0])
+        metric_key = UUID(tup.values[0]) if tup.values[0] else None
         message = json.loads(tup.values[1])
         message_id = message.get('message_id')
         
@@ -560,12 +564,10 @@ class PutMetricBolt(storm.BasicBolt):
                 self.log("process set_alarm_state_msg (%s)" % message)
                 self.process_set_alarm_state_msg(metric_key, message)
             elif message_id == CHECK_METRIC_ALARM_MSG_ID:
-                for k, v in self.metrics.iteritems():
-                    if k:
-                        self.log("process check_alarm_state_msg (%s)" % message)
-                        self.process_check_metric_alarms_msg(k)
+                self.log("process check_metric_alarm_msg (%s)" % message)
+                self.process_check_metric_alarms_msg()
             else:
-                storm.log("unknown message")
+                self.log("unknown message")
         except Exception as e:
             self.tracelog(e)
             storm.fail(tup)
