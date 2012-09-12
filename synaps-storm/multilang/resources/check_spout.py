@@ -46,6 +46,8 @@ class CheckSpout(Spout):
         try:
             id = "periodic_%s" % str(uuid4())
             body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID})
+            message = "Periodic monitoring message sent [%s] %s"
+            self.log(message % (id, body))
             emit([None, body], id=id)
             time.sleep(60)
                 
