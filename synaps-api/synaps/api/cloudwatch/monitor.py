@@ -250,6 +250,7 @@ class MonitorController(object):
         self.check_namespace(namespace)
         self.check_statistics(statistics)
         self.check_unit(unit)
+        self.check_period(period)
         
         stats = self.monitor_api.get_metric_statistics(project_id, end_time,
                                                        metric_name, namespace,
@@ -257,8 +258,6 @@ class MonitorController(object):
                                                        statistics, unit,
                                                        dimensions)
     
-        
-        
         datapoints = map(stat_to_datapoint, stats)
         label = metric_name
         
