@@ -25,8 +25,10 @@ class RemoteProcedureCall(object):
         self.connect()
     
     def connect(self):
+        host = FLAGS.get('rabbit_host')
+        port = FLAGS.get('rabbit_port')
         try:
-            LOG.info(_("connecting to rabbit_host %s %d"))
+            LOG.info(_("connecting to rabbit_host %s %d") % (host, port))
 
             self.conn = pika.BlockingConnection(
                 pika.ConnectionParameters(
