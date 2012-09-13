@@ -538,13 +538,14 @@ class PutMetricBolt(storm.BasicBolt):
         
     def process_check_metric_alarms_msg(self):
         now = datetime.utcnow()
+        msg = "Periodic check started. lastchecked: %s, now: %s, min_start_period: %s"
 
         for metric in self.metrics.itervalues():
             min_start_period = timedelta(seconds=metric.MIN_START_PERIOD)
 
-            if ((metric.lastchecked and (now - metric.lastchecked > min_start_period))
+            if ((metric.lastchecked and 
+                 (now - metric.lastchecked > min_start_period))
                 or (metric.lastchecked == None)):
-                msg = "Periodic check is triggered. lastchecked: %s, now: %s, min_start_period: %s"
                 self.log(msg % (metric.lastchecked, now, min_start_period))
                 metric.check_alarms()
         

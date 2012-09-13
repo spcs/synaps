@@ -82,7 +82,7 @@ class ActionBolt(storm.BasicBolt):
         self.cass.insert_alarm_history(history_key, column)
         storm.log("alarm history \n %s" % history_summary)
     
-    def process(self, tup):
+    def process_action(self, tup):
         """
         message example
         
@@ -93,7 +93,7 @@ class ActionBolt(storm.BasicBolt):
                  new_state['stateValue']),
             'body': new_state['stateReason']
         }
-        """
+        """        
         alarm_key = tup.values[0]
         message_buf = tup.values[1]
         message = json.loads(message_buf)
@@ -141,8 +141,13 @@ class ActionBolt(storm.BasicBolt):
                 self.sock.send_pyobj(notification_message)
                 self.log("notify: %s " % notification_message)
                 self.alarm_history_state_update(alarm_key, alarm,
-                                                notification_message)
-                
+                                                notification_message)    
+    def process(self, tup):
+        try:
+            self.process_action(tup)
+        except Exception as e:
+            self.tracelog(e)
+            storm.fail(tup)
 
 if __name__ == "__main__":
     flags.FLAGS(sys.argv)

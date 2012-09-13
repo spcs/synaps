@@ -97,9 +97,9 @@ class UnpackMessageBolt(storm.BasicBolt):
                 alarm = self.cass.get_metric_alarm(alarm_key)
                 metric_key = str(alarm.get('metric_key'))
                 storm.emit([metric_key, json.dumps(message)])
-            
         except Exception as e:
             storm.log(traceback.format_exc(e))
+            storm.fail(tup)
 
 if __name__ == "__main__":
     flags.FLAGS(sys.argv)
