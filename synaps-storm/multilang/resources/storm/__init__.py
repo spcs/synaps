@@ -1,10 +1,6 @@
-#!/usr/bin/env python
-
 import sys
 import os
 import traceback
-
-
 from collections import deque
 
 try:
@@ -75,9 +71,9 @@ def emit(*args, **kwargs):
     __emit(*args, **kwargs)
     return readTaskIds()
 
-#def emitDirect(task, *args, **kwargs):
-#    kwargs[directTask] = task
-#    __emit(*args, **kwargs)
+def emitDirect(task, *args, **kwargs):
+    kwargs["directTask"] = task
+    __emit(*args, **kwargs)
 
 def __emit(*args, **kwargs):
     global MODE
@@ -124,7 +120,7 @@ def initComponent():
     sendpid(setupInfo['pidDir'])
     return [setupInfo['conf'], setupInfo['context']]
 
-class Tuple:
+class Tuple(object):
     def __init__(self, id, component, stream, task, values):
         self.id = id
         self.component = component
@@ -137,7 +133,7 @@ class Tuple:
                 self.__class__.__name__,
                 ''.join(' %s=%r' % (k, self.__dict__[k]) for k in sorted(self.__dict__.keys())))
 
-class Bolt:
+class Bolt(object):
     def initialize(self, stormconf, context):
         pass
 
@@ -156,7 +152,7 @@ class Bolt:
         except Exception, e:
             log(traceback.format_exc(e))
 
-class BasicBolt:
+class BasicBolt(object):
     def initialize(self, stormconf, context):
         pass
 
@@ -170,7 +166,7 @@ class BasicBolt:
         conf, context = initComponent()
         self.initialize(conf, context)
         try:
-            while True:                
+            while True:
                 tup = readTuple()
                 ANCHOR_TUPLE = tup
                 self.process(tup)
@@ -178,7 +174,7 @@ class BasicBolt:
         except Exception, e:
             log(traceback.format_exc(e))
 
-class Spout:
+class Spout(object):
     def initialize(self, conf, context):
         pass
 
@@ -190,7 +186,7 @@ class Spout:
 
     def nextTuple(self):
         pass
-    
+
     def run(self):
         global MODE
         MODE = Spout
@@ -198,7 +194,6 @@ class Spout:
         self.initialize(conf, context)
         try:
             while True:
-                
                 msg = readCommand()
                 if msg["command"] == "next":
                     self.nextTuple()
