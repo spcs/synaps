@@ -156,3 +156,17 @@ synaps-api 실행 및 정지
 
   $ sudo /etc/init.d/synaps-api start
   $ sudo /etc/init.d/synaps-api stop 
+
+
+synaps-api 부팅 시 자동 실행
+-----------------------
+아래와 같이 synaps-api 를 부팅 시 자동으로 실행하게 할 수 있다.
+
+.. code-block:: bash
+
+  $ vi /etc/init.d/rc.local
+  
+  파일의 제일 아래에 다음의 내용 추가.
+  
+  /etc/init.d/synaps-api start
+  
