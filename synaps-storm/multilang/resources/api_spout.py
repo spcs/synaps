@@ -36,8 +36,16 @@ class ApiSpout(Spout):
     
     def connect(self):
         self.conn = pika.BlockingConnection(
-            pika.ConnectionParameters(host=FLAGS.get('rabbitmq_server'))
-        )
+            pika.ConnectionParameters(
+                host=FLAGS.get('rabbit_host'),
+                port=FLAGS.get('rabbit_port'),
+                credentials=pika.PlainCredentials(
+                    FLAGS.get('rabbit_userid'),
+                    FLAGS.get('rabbit_password')
+                ),
+                virtual_host=FLAGS.get('rabbit_virtual_host'),
+            )
+        )        
         
         self.channel = self.conn.channel()
         queue_args = {"x-ha-policy" : "all" }
@@ -64,11 +72,15 @@ class ApiSpout(Spout):
             )
     
             if not method_frame.NAME == 'Basic.GetEmpty':
-                id = str(uuid4())
-                message = "Start processing message in the queue - [%s] %s"
-                self.log(message % (id, body))
-                self.delivery_tags[id] = (method_frame.delivery_tag, 0)
-                emit([body], id=id)
+                try:
+                    id = str(uuid4())
+                    message = "Start processing message in the queue - [%s] %s"
+                    self.log(message % (id, body))
+                    self.delivery_tags[id] = (method_frame.delivery_tag, 0)
+                    emit([body], id=id)
+                except Exception as e:
+                    self.tracelog(e)
+                    self.fail(id)
                 
         except Exception as e:
             self.tracelog(e)

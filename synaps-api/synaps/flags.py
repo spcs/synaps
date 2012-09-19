@@ -120,9 +120,6 @@ core_opts = [
     cfg.StrOpt('cassandra_keyspace',
                default='synaps_test',
                help='cassandra key space'),
-    cfg.StrOpt('rabbitmq_server',
-               default='localhost',
-               help='rabbitmq server address'),
     cfg.StrOpt('api_paste_config',
                default="api-paste.ini",
                help='File name for the paste.deploy config for synaps-api'),
@@ -171,14 +168,18 @@ core_opts = [
                help='Synaps Notification Bind Address'),
     cfg.StrOpt('notification_server_addr',
                default='tcp://mail:31110',
-               help='Synaps Notification Server')
+               help='Synaps Notification Server'),
+    cfg.StrOpt('cloudwatch_listen',
+               default="0.0.0.0",
+               help='IP address for cloudwatch API to listen'),
+    cfg.IntOpt('cloudwatch_listen_port',
+               default=8773,
+               help='port for cloudwatch api to listen'),
     ]
 
 debug_opts = []
 
-FLAGS.register_cli_opts(log_opts)
-FLAGS.register_cli_opts(core_opts)
-FLAGS.register_cli_opts(debug_opts)
+
 
 global_opts = [
     cfg.StrOpt('my_ip',
@@ -210,4 +211,26 @@ global_opts = [
                 help='Memcached servers or None for in process cache.'),
 ]
 
+rabbitmq_opts = [
+    cfg.StrOpt('rabbit_host',
+               default='mq01',
+               help='the RabbitMQ host'),
+    cfg.IntOpt('rabbit_port',
+               default=5672,
+               help='the RabbitMQ port'),
+    cfg.StrOpt('rabbit_userid',
+               default='guest',
+               help='the RabbitMQ userid'),
+    cfg.StrOpt('rabbit_password',
+               default='guest',
+               help='the RabbitMQ password'),
+    cfg.StrOpt('rabbit_virtual_host',
+               default='/',
+               help='the RabbitMQ virtual host'),
+]
+
+FLAGS.register_cli_opts(log_opts)
+FLAGS.register_cli_opts(core_opts)
+FLAGS.register_cli_opts(debug_opts)
 FLAGS.register_opts(global_opts)
+FLAGS.register_opts(rabbitmq_opts)

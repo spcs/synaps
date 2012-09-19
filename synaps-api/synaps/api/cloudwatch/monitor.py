@@ -4,6 +4,7 @@
 
 import datetime
 import json
+import uuid
 
 from pprint import pformat
 from synaps import log as logging
@@ -89,6 +90,7 @@ class MonitorController(object):
 
         self.check_alarm_name(alarm_name)
         self.check_history_item_type(history_item_type)
+        self.check_next_token(next_token)
         
         ret_dict = {}
         ret_histories = []
@@ -139,7 +141,8 @@ class MonitorController(object):
             self.check_alarm_names(alarm_names)
         else:
             self.check_alarm_name_prefix(alarm_name_prefix)
-        self.check_state_value(state_value)   
+        self.check_state_value(state_value)
+        self.check_next_token(next_token)   
 
         alarms = self.monitor_api.describe_alarms(project_id=project_id,
             action_prefix=action_prefix, alarm_name_prefix=alarm_name_prefix,
@@ -282,13 +285,14 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         dimensions = utils.extract_member_dict(dimensions)
-        metrics = self.monitor_api.list_metrics(project_id, next_token,
-                                                dimensions, metric_name,
-                                                namespace)
-        
         self.check_dimensions(dimensions)
         self.check_metric_name(metric_name)
         self.check_namespace(namespace)  
+        self.check_next_token(next_token)
+
+        metrics = self.monitor_api.list_metrics(project_id, next_token,
+                                                dimensions, metric_name,
+                                                namespace)
        
         ret_list = []
         for i, (k, v) in enumerate(metrics):
@@ -467,6 +471,18 @@ class MonitorController(object):
             err = "The length of Namespace is 1~255."
             raise exception.InvalidParameterValue(err)
             
+        return True
+
+    def check_next_token(self, next_token):
+        if not next_token:
+            return True
+        else:
+            try:
+                uuid.UUID(next_token)
+            except ValueError:
+                err = "badly formed nextToken(%s)" % next_token
+                raise exception.InvalidParameterValue(err)
+        
         return True
     
     def check_statistic(self, statistic):
