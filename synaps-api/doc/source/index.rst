@@ -66,7 +66,8 @@ Synaps Development Guide
     :maxdepth: 2
 
     devref/development.environment
-    devref/service.environment
+    devref/service.environment1104
+    devref/service.environment1204
     devref/install.synaps.api
 
 
