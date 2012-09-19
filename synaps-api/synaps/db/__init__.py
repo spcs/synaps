@@ -52,7 +52,9 @@ class Cassandra(object):
             keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
         serverlist = FLAGS.get("cassandra_server_list")
         
-        self.pool = pycassa.ConnectionPool(keyspace, server_list=serverlist)
+        # max_retries -1 means unlimited retries
+        self.pool = pycassa.ConnectionPool(keyspace, server_list=serverlist,
+                                           max_retries= -1)
         
         self.cf_metric = pycassa.ColumnFamily(self.pool, 'Metric')
         self.scf_stat_archive = pycassa.ColumnFamily(self.pool, 'StatArchive')
