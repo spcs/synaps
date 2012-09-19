@@ -43,10 +43,10 @@ def cloudwatch_error(req, request_id, code, message):
     resp.status = code
     resp.headers['Content-Type'] = 'text/xml'
     resp.body = str('<?xml version="1.0"?>\n'
-                     '<Response><Errors><Error><Code>%s</Code>'
-                     '<Message>%s</Message></Error></Errors>'
-                     '<RequestID>%s</RequestID></Response>' % 
-                     (code, utils.utf8(message), utils.utf8(request_id)))
+                    '<ErrorResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">'
+                    '<Error><Code>%s</Code><Message>%s</Message></Error>'
+                    '<RequestId>%s</RequestId></ErrorResponse>' % 
+                    (code, utils.utf8(message), utils.utf8(request_id)))
     return resp
 
 ## Fault Wrapper around all CloudWatch requests ##
