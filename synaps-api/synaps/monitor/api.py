@@ -31,7 +31,8 @@ from synaps import log as logging
 from synaps.db import Cassandra
 from synaps import rpc
 from synaps import utils
-from synaps.exception import AdminRequired, InvalidRequest, ResourceNotFound
+from synaps.exception import (AdminRequired, InvalidRequest, ResourceNotFound,
+                              InvalidParameterValue)
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
@@ -323,8 +324,12 @@ class API(object):
             raise AdminRequired()
         
         for metric in utils.extract_member_list(metric_data):
-            dimensions = utils.extract_member_dict(metric.get('dimensions',
-                                                              {}))
+            try:
+                t_dimensions = metric.get('dimensions', {})
+                dimensions = utils.extract_member_dict(t_dimensions)
+            except KeyError:
+                err = "Unsuitable Dimensions Value - %s" % str(t_dimensions)
+                raise InvalidParameterValue(err)
                          
             metric_name = metric.get('metric_name')
             unit = metric.get('unit', 'None')
