@@ -129,7 +129,21 @@ synaps-api 설치 및 설정
   $ sudo mkdir /var/log/synaps
   $ sudo cp etc/synaps/* /etc/synaps
   $ sudo vi /etc/synaps/synaps.conf
-    
+
+
+운영체제의 최대 open 가능 file 수를 조정한다.
+
+.. code-block:: bash
+
+  $ ulimit -Hn 65535
+  $ ulimit -Sn 65535
+  $ vi /etc/security/limits.conf
+  
+  파일 하단에 다음의 내용을 추가한다.
+  
+  root            hard    nofile          65535
+  root            soft    nofile          65535
+     
 
 synaps-database 초기화
 ----------------------
