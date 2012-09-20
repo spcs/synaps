@@ -428,6 +428,7 @@ synaps-storm 클러스터 구축
 * Nimbus, UI 의 역할을 맡는 호스트의 경우 
 
   .. code-block:: bash
+  
    $ sudo update-rc.d storm-nimbus start 40 2 3 4 5 .
    $ /etc/init.d/storm-nimbus restart
    $ sudo update-rc.d storm-ui start 45 2 3 4 5 .
@@ -435,7 +436,8 @@ synaps-storm 클러스터 구축
       
 * Supervisor 의 역할을 맡는 호스트의 경우 
 
-  .. code-block:: bash   
+  .. code-block:: bash
+  
    $ sudo update-rc.d storm-supervisor start 50 2 3 4 5 .
    $ /etc/init.d/storm-supervisor restart
 

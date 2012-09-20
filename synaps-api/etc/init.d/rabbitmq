@@ -6,7 +6,7 @@
 # Short-Description: Example initscript
 # Description:       This file should be used to construct scripts to be
 #                    placed in /etc/init.d.
-### END INIT INFO 
+### END INIT INFO  
 
 # Author: Foo Bar <foobar@baz.org> 
 #
@@ -24,7 +24,7 @@ DAEMON_ARGS=-detached
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
-# Exit if the package is not installed
+# Exit if the package is not installed 
 [ -x "$DAEMON" ] || exit 0
 
 # Read configuration variable file if it is present
