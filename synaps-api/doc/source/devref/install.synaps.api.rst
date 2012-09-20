@@ -203,3 +203,17 @@ synaps 프로젝트를 clone 해서 synaps-api를 설치하는 과정만 되풀�
   $ sudo python setup.py install
   
   
+
+synaps-api 업그레이드
+-----------------------
+synaps-api 를 업그레이드 할 경우, 위의 과정을 전부 반복할 필요 없이, 아래와 같이
+synaps 프로젝트를 clone 해서 synaps-api를 설치하는 과정만 되풀이하면 된다.
+
+.. code-block:: bash
+
+  $ cd ~  
+  $ git clone ssh://git@redmine.dev/home/git/synaps -b master
+  $ cd synaps/synaps-api
+  $ sudo python setup.py install
+  
+  
