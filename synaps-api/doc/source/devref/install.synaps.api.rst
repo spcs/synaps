@@ -112,7 +112,7 @@ boto 설치
   $ sudo python setup.py install
   
   
-synaps 설치
+synaps 설치 
 ```````````
 synaps-api 설치 및 설정
 -----------------------

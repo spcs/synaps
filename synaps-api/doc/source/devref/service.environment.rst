@@ -12,7 +12,7 @@ synaps 는 다음과 같이 다섯가지 클러스터 그룹으로 구성된다.
 #. synaps-storm - 실시간 분산 처리
 #. synaps-database - 카산드라 데이터베이스
 #. synaps-mail - Mail 및 SMS 서버
-
+ 
 .. image:: /images/synaps-deployment.jpg
    :width: 100%
 

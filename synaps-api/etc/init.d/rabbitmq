@@ -6,9 +6,9 @@
 # Short-Description: Example initscript
 # Description:       This file should be used to construct scripts to be
 #                    placed in /etc/init.d.
-### END INIT INFO
+### END INIT INFO 
 
-# Author: Foo Bar <foobar@baz.org>
+# Author: Foo Bar <foobar@baz.org> 
 #
 # Please remove the "Author" lines above and replace them
 # with your own name if you copy and modify this script.
