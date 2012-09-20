@@ -3,9 +3,14 @@
 synaps-api 설치하기
 ===================
 
-Ubuntu(11.04)상에서 synaps-api를 설치 및 설정 방법에 대해 설명한다.
+Ubuntu 상에서 synaps-api를 설치 및 설정 방법에 대해 설명한다.
 
-
+.. DANGER::
+ 
+ 본 문서의 설치 작업은 root 권한을 가지고 있는 사용자 환경에서 
+ 진행하는 것으로 가정한다.
+ 
+ 
 의존모듈 설치
 `````````````
 
@@ -178,9 +183,23 @@ synaps-api 부팅 시 자동 실행
 
 .. code-block:: bash
 
-  $ vi /etc/init.d/rc.local
+  $ sudo update-rc.d synaps-api start 55 2 3 4 5 .
+  $ /etc/init.d/synaps-api restart
   
-  파일의 제일 아래에 다음의 내용 추가.
   
-  /etc/init.d/synaps-api start
+synaps 업그레이드
+`````````````````
+
+synaps-api 업그레이드
+-----------------------
+synaps-api 를 업그레이드 할 경우, 위의 과정을 전부 반복할 필요 없이, 아래와 같이
+synaps 프로젝트를 clone 해서 synaps-api를 설치하는 과정만 되풀이하면 된다.
+
+.. code-block:: bash
+
+  $ cd ~  
+  $ git clone ssh://git@redmine.dev/home/git/synaps -b master
+  $ cd synaps/synaps-api
+  $ sudo python setup.py install
+  
   

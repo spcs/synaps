@@ -1,0 +1,428 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x0098658f, pid=23503, tid=3078138736
+#
+# JRE version: 6.0_24-b24
+# Java VM: OpenJDK Server VM (20.0-b12 mixed mode linux-x86 )
+# Derivative: IcedTea6 1.11.3
+# Distribution: Ubuntu 11.10, package 6b24-1.11.3-1ubuntu0.11.10.1
+# Problematic frame:
+# C  [libzip.so+0x458f]  Java_java_util_zip_ZipEntry_initFields+0xfef
+#
+# If you would like to submit a bug report, please include
+# instructions how to reproduce the bug and visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-6/
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x08fa7000):  JavaThread "main" [_thread_in_native, id=23511, stack(0xb773a000,0xb778b000)]
+
+siginfo:si_signo=SIGSEGV: si_errno=0, si_code=1 (SEGV_MAPERR), si_addr=0xb18ee169
+
+Registers:
+EAX=0x73cdfd60, EBX=0x00989ff4, ECX=0xb18ee14c, EDX=0x74c00010
+ESP=0xb77884e0, EBP=0xb7788528, ESI=0x73c86174, EDI=0x73cdfd60
+EIP=0x0098658f, EFLAGS=0x00010282, CR2=0xb18ee169
+
+Top of Stack: (sp=0xb77884e0)
+0xb77884e0:   00000030 73cdfd60 b7788528 0120717d
+0xb77884f0:   74c97aa0 0168eff4 b7788548 011d2c09
+0xb7788500:   b7788548 73cdfd60 00989ff4 73f15d90
+0xb7788510:   74c97aa0 00000041 0098654d 00989ff4
+0xb7788520:   73c86170 73cdfd60 b7788568 00986f92
+0xb7788530:   73cdfd10 b77885ba 08fa7000 00000000
+0xb7788540:   b778855c 08fa7000 73cdfbf0 2ce73e5e
+0xb7788550:   2d796c62 67756c70 08fa7000 00989ff4 
+
+Instructions: (pc=0x0098658f)
+0x0098656f:   00 c7 00 00 00 00 00 c7 40 24 00 00 00 00 c7 40
+0x0098657f:   20 00 00 00 00 8b 45 dc 8b 0e 2b 48 1c 03 48 10
+0x0098658f:   0f b6 51 1d 0f b6 41 1c 0f b6 71 0e c1 e2 08 09
+0x0098659f:   c2 0f b6 41 0d 89 55 e0 0f b6 51 1e c1 e0 08 88 
+
+Register to memory mapping:
+
+EAX=0x73cdfd60 is an unknown value
+EBX=0x00989ff4: <offset 0x7ff4> in /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libzip.so at 0x00982000
+ECX=0xb18ee14c is an unallocated location in the heap
+EDX=0x74c00010 is an unknown value
+ESP=0xb77884e0 is pointing into the stack for thread: 0x08fa7000
+EBP=0xb7788528 is pointing into the stack for thread: 0x08fa7000
+ESI=0x73c86174 is an unknown value
+EDI=0x73cdfd60 is an unknown value
+
+
+Stack: [0xb773a000,0xb778b000],  sp=0xb77884e0,  free space=313k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [libzip.so+0x458f]  Java_java_util_zip_ZipEntry_initFields+0xfef
+C  [libzip.so+0x4f92]  ZIP_GetEntry+0xb2
+C  [libzip.so+0x2fe4]  Java_java_util_zip_ZipFile_getEntry+0x104
+J  java.util.zip.ZipFile.getEntry(JLjava/lang/String;Z)J
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+J  java.util.zip.ZipFile.getEntry(JLjava/lang/String;Z)J
+J  java.util.jar.JarFile.getEntry(Ljava/lang/String;)Ljava/util/zip/ZipEntry;
+J  sun.misc.URLClassPath.getResource(Ljava/lang/String;Z)Lsun/misc/Resource;
+j  java.net.URLClassLoader$1.run()Ljava/lang/Object;+26
+v  ~StubRoutines::call_stub
+j  java.security.AccessController.doPrivileged(Ljava/security/PrivilegedExceptionAction;Ljava/security/AccessControlContext;)Ljava/lang/Object;+0
+J  java.net.URLClassLoader.findClass(Ljava/lang/String;)Ljava/lang/Class;
+J  java.lang.ClassLoader.loadClass(Ljava/lang/String;Z)Ljava/lang/Class;
+j  org.codehaus.classworlds.RealmClassLoader.loadClassDirect(Ljava/lang/String;)Ljava/lang/Class;+3
+j  org.codehaus.classworlds.DefaultClassRealm.loadClass(Ljava/lang/String;)Ljava/lang/Class;+51
+j  org.codehaus.classworlds.RealmClassLoader.loadClass(Ljava/lang/String;Z)Ljava/lang/Class;+5
+j  java.lang.ClassLoader.loadClass(Ljava/lang/String;)Ljava/lang/Class;+3
+v  ~StubRoutines::call_stub
+j  org.apache.maven.plugin.assembly.artifact.ResolutionManagementInfo.<init>(Lorg/apache/maven/project/MavenProject;)V+5
+j  org.apache.maven.plugin.assembly.artifact.DefaultDependencyResolver.buildManagedVersionMap(Lorg/apache/maven/plugin/assembly/model/Assembly;Lorg/apache/maven/plugin/assembly/AssemblerConfigurationSource;)Ljava/util/Map;+12
+j  org.apache.maven.plugin.assembly.archive.DefaultAssemblyArchiver.createArchive(Lorg/apache/maven/plugin/assembly/model/Assembly;Ljava/lang/String;Ljava/lang/String;Lorg/apache/maven/plugin/assembly/AssemblerConfigurationSource;)Ljava/io/File;+172
+j  org.apache.maven.plugin.assembly.mojos.AbstractAssemblyMojo.execute()V+212
+j  org.apache.maven.plugin.DefaultPluginManager.executeMojo(Lorg/apache/maven/project/MavenProject;Lorg/apache/maven/plugin/MojoExecution;Lorg/apache/maven/execution/MavenSession;)V+412
+j  org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoals(Ljava/util/List;Ljava/util/Stack;Lorg/apache/maven/execution/MavenSession;Lorg/apache/maven/project/MavenProject;)V+513
+j  org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoalWithLifecycle(Ljava/lang/String;Ljava/util/Stack;Lorg/apache/maven/execution/MavenSession;Ljava/util/Map;Lorg/apache/maven/project/MavenProject;Lorg/apache/maven/lifecycle/Lifecycle;)V+28
+j  org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoal(Ljava/lang/String;Lorg/apache/maven/execution/MavenSession;Lorg/apache/maven/project/MavenProject;)V+50
+j  org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoalAndHandleFailures(Ljava/lang/String;Lorg/apache/maven/execution/MavenSession;Lorg/apache/maven/project/MavenProject;Lorg/apache/maven/monitor/event/EventDispatcher;Ljava/lang/String;Lorg/apache/maven/execution/ReactorManager;JLjava/lang/String;)V+4
+j  org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeTaskSegments(Ljava/util/List;Lorg/apache/maven/execution/ReactorManager;Lorg/apache/maven/execution/MavenSession;Lorg/apache/maven/project/MavenProject;Lorg/apache/maven/monitor/event/EventDispatcher;)V+584
+j  org.apache.maven.lifecycle.DefaultLifecycleExecutor.execute(Lorg/apache/maven/execution/MavenSession;Lorg/apache/maven/execution/ReactorManager;Lorg/apache/maven/monitor/event/EventDispatcher;)V+241
+j  org.apache.maven.DefaultMaven.doExecute(Lorg/apache/maven/execution/MavenExecutionRequest;Lorg/apache/maven/monitor/event/EventDispatcher;)Lorg/apache/maven/execution/ReactorManager;+365
+j  org.apache.maven.DefaultMaven.execute(Lorg/apache/maven/execution/MavenExecutionRequest;)V+26
+j  org.apache.maven.cli.MavenCli.main([Ljava/lang/String;Lorg/codehaus/classworlds/ClassWorld;)I+1022
+j  org.apache.maven.cli.compat.CompatibleMain.main([Ljava/lang/String;Lorg/codehaus/classworlds/ClassWorld;)I+81
+v  ~StubRoutines::call_stub
+j  sun.reflect.NativeMethodAccessorImpl.invoke0(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;+0
+j  sun.reflect.NativeMethodAccessorImpl.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;+87
+j  sun.reflect.DelegatingMethodAccessorImpl.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;+6
+j  java.lang.reflect.Method.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;+161
+j  org.codehaus.classworlds.Launcher.launchEnhanced([Ljava/lang/String;)V+50
+j  org.codehaus.classworlds.Launcher.launch([Ljava/lang/String;)V+2
+j  org.codehaus.classworlds.Launcher.mainWithExitCode([Ljava/lang/String;)I+99
+j  org.codehaus.classworlds.Launcher.main([Ljava/lang/String;)V+1
+v  ~StubRoutines::call_stub
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x090eb000 JavaThread "pool-1-thread-5" [_thread_blocked, id=23532, stack(0x738af000,0x73900000)]
+  0x090ea000 JavaThread "pool-1-thread-4" [_thread_blocked, id=23531, stack(0x7420d000,0x7425e000)]
+  0x090e8c00 JavaThread "pool-1-thread-3" [_thread_blocked, id=23530, stack(0x7425e000,0x742af000)]
+  0x090e8400 JavaThread "pool-1-thread-2" [_thread_blocked, id=23529, stack(0x742af000,0x74300000)]
+  0x090e8000 JavaThread "pool-1-thread-1" [_thread_blocked, id=23528, stack(0x74422000,0x74473000)]
+  0x0906d800 JavaThread "Low Memory Detector" daemon [_thread_blocked, id=23522, stack(0x74535000,0x74586000)]
+  0x0906a400 JavaThread "C2 CompilerThread1" daemon [_thread_blocked, id=23521, stack(0x74586000,0x74607000)]
+  0x09068000 JavaThread "C2 CompilerThread0" daemon [_thread_blocked, id=23520, stack(0x74607000,0x74688000)]
+  0x09066c00 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=23519, stack(0x74688000,0x746d9000)]
+  0x09057400 JavaThread "Finalizer" daemon [_thread_blocked, id=23518, stack(0x7491a000,0x7496b000)]
+  0x09052800 JavaThread "Reference Handler" daemon [_thread_blocked, id=23517, stack(0x7496b000,0x749bc000)]
+=>0x08fa7000 JavaThread "main" [_thread_in_native, id=23511, stack(0xb773a000,0xb778b000)]
+
+Other Threads:
+  0x0904ec00 VMThread [stack: 0x749bc000,0x74a3d000] [id=23516]
+  0x0906f400 WatcherThread [stack: 0x744b4000,0x74535000] [id=23523]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ PSYoungGen      total 119744K, used 116564K [0xa1fd0000, 0xaa0b0000, 0xb4670000)
+  eden space 112128K, 97% used [0xa1fd0000,0xa8a37ce8,0xa8d50000)
+  from space 7616K, 99% used [0xa9640000,0xa9dad580,0xa9db0000)
+  to   space 9152K, 0% used [0xa8d50000,0xa8d50000,0xa9640000)
+ PSOldGen        total 37696K, used 27232K [0x7d270000, 0x7f740000, 0xa1fd0000)
+  object space 37696K, 72% used [0x7d270000,0x7ed080c8,0x7f740000)
+ PSPermGen       total 16384K, used 10473K [0x75270000, 0x76270000, 0x7d270000)
+  object space 16384K, 63% used [0x75270000,0x75caa5d0,0x76270000)
+
+Code Cache  [0xb473a000, 0xb497a000, 0xb773a000)
+ total_blobs=533 nmethods=411 adapters=76 free_code_cache=48917184 largest_free_block=87040
+
+Dynamic libraries:
+00110000-00286000 r-xp 00000000 08:01 1049510    /lib/i386-linux-gnu/libc-2.13.so
+00286000-00288000 r--p 00176000 08:01 1049510    /lib/i386-linux-gnu/libc-2.13.so
+00288000-00289000 rw-p 00178000 08:01 1049510    /lib/i386-linux-gnu/libc-2.13.so
+00289000-0028c000 rw-p 00000000 00:00 0 
+0028c000-00294000 r-xp 00000000 08:01 1049547    /lib/i386-linux-gnu/libnss_compat-2.13.so
+00294000-00295000 r--p 00007000 08:01 1049547    /lib/i386-linux-gnu/libnss_compat-2.13.so
+00295000-00296000 rw-p 00008000 08:01 1049547    /lib/i386-linux-gnu/libnss_compat-2.13.so
+0031c000-00331000 r-xp 00000000 08:01 1049545    /lib/i386-linux-gnu/libnsl-2.13.so
+00331000-00332000 r--p 00015000 08:01 1049545    /lib/i386-linux-gnu/libnsl-2.13.so
+00332000-00333000 rw-p 00016000 08:01 1049545    /lib/i386-linux-gnu/libnsl-2.13.so
+00333000-00335000 rw-p 00000000 00:00 0 
+00347000-0036d000 r-xp 00000000 08:01 936960     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libjava.so
+0036d000-0036e000 r--p 00025000 08:01 936960     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libjava.so
+0036e000-00370000 rw-p 00026000 08:01 936960     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libjava.so
+00397000-0039a000 r-xp 00000000 08:01 1049521    /lib/i386-linux-gnu/libdl-2.13.so
+0039a000-0039b000 r--p 00002000 08:01 1049521    /lib/i386-linux-gnu/libdl-2.13.so
+0039b000-0039c000 rw-p 00003000 08:01 1049521    /lib/i386-linux-gnu/libdl-2.13.so
+00467000-00471000 r-xp 00000000 08:01 1049555    /lib/i386-linux-gnu/libnss_nis-2.13.so
+00471000-00472000 r--p 00009000 08:01 1049555    /lib/i386-linux-gnu/libnss_nis-2.13.so
+00472000-00473000 rw-p 0000a000 08:01 1049555    /lib/i386-linux-gnu/libnss_nis-2.13.so
+00536000-0054d000 r-xp 00000000 08:01 1049570    /lib/i386-linux-gnu/libpthread-2.13.so
+0054d000-0054e000 r--p 00016000 08:01 1049570    /lib/i386-linux-gnu/libpthread-2.13.so
+0054e000-0054f000 rw-p 00017000 08:01 1049570    /lib/i386-linux-gnu/libpthread-2.13.so
+0054f000-00551000 rw-p 00000000 00:00 0 
+0065d000-00664000 r-xp 00000000 08:01 1049574    /lib/i386-linux-gnu/librt-2.13.so
+00664000-00665000 r--p 00006000 08:01 1049574    /lib/i386-linux-gnu/librt-2.13.so
+00665000-00666000 rw-p 00007000 08:01 1049574    /lib/i386-linux-gnu/librt-2.13.so
+00711000-00739000 r-xp 00000000 08:01 1049540    /lib/i386-linux-gnu/libm-2.13.so
+00739000-0073a000 r--p 00028000 08:01 1049540    /lib/i386-linux-gnu/libm-2.13.so
+0073a000-0073b000 rw-p 00029000 08:01 1049540    /lib/i386-linux-gnu/libm-2.13.so
+007c4000-007c8000 r-xp 00000000 08:01 936956     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/jli/libjli.so
+007c8000-007c9000 r--p 00003000 08:01 936956     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/jli/libjli.so
+007c9000-007ca000 rw-p 00004000 08:01 936956     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/jli/libjli.so
+00850000-0092e000 r-xp 00000000 08:01 792108     /usr/lib/i386-linux-gnu/libstdc++.so.6.0.16
+0092e000-0092f000 ---p 000de000 08:01 792108     /usr/lib/i386-linux-gnu/libstdc++.so.6.0.16
+0092f000-00933000 r--p 000de000 08:01 792108     /usr/lib/i386-linux-gnu/libstdc++.so.6.0.16
+00933000-00934000 rw-p 000e2000 08:01 792108     /usr/lib/i386-linux-gnu/libstdc++.so.6.0.16
+00934000-0093b000 rw-p 00000000 00:00 0 
+00982000-00989000 r-xp 00000000 08:01 936940     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libzip.so
+00989000-0098a000 r--p 00006000 08:01 936940     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libzip.so
+0098a000-0098b000 rw-p 00007000 08:01 936940     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libzip.so
+00add000-00af0000 r-xp 00000000 08:01 1049593    /lib/i386-linux-gnu/libz.so.1.2.3.4
+00af0000-00af1000 r--p 00012000 08:01 1049593    /lib/i386-linux-gnu/libz.so.1.2.3.4
+00af1000-00af2000 rw-p 00013000 08:01 1049593    /lib/i386-linux-gnu/libz.so.1.2.3.4
+00b25000-00b30000 r-xp 00000000 08:01 1049551    /lib/i386-linux-gnu/libnss_files-2.13.so
+00b30000-00b31000 r--p 0000a000 08:01 1049551    /lib/i386-linux-gnu/libnss_files-2.13.so
+00b31000-00b32000 rw-p 0000b000 08:01 1049551    /lib/i386-linux-gnu/libnss_files-2.13.so
+00b32000-00b3d000 r-xp 00000000 08:01 936947     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libverify.so
+00b3d000-00b3e000 ---p 0000b000 08:01 936947     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libverify.so
+00b3e000-00b3f000 r--p 0000b000 08:01 936947     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libverify.so
+00b3f000-00b40000 rw-p 0000c000 08:01 936947     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/libverify.so
+00d32000-00d4e000 r-xp 00000000 08:01 1049531    /lib/i386-linux-gnu/libgcc_s.so.1
+00d4e000-00d4f000 r--p 0001b000 08:01 1049531    /lib/i386-linux-gnu/libgcc_s.so.1
+00d4f000-00d50000 rw-p 0001c000 08:01 1049531    /lib/i386-linux-gnu/libgcc_s.so.1
+00de2000-00de3000 r-xp 00000000 00:00 0          [vdso]
+00e0c000-00e2a000 r-xp 00000000 08:01 1049497    /lib/i386-linux-gnu/ld-2.13.so
+00e2a000-00e2b000 r--p 0001d000 08:01 1049497    /lib/i386-linux-gnu/ld-2.13.so
+00e2b000-00e2c000 rw-p 0001e000 08:01 1049497    /lib/i386-linux-gnu/ld-2.13.so
+00e2c000-0164a000 r-xp 00000000 08:01 936942     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/server/libjvm.so
+0164a000-0168f000 r--p 0081e000 08:01 936942     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/server/libjvm.so
+0168f000-0169e000 rw-p 00863000 08:01 936942     /usr/lib/jvm/java-6-openjdk/jre/lib/i386/server/libjvm.so
+0169e000-01ab8000 rw-p 00000000 00:00 0 
+08048000-08051000 r-xp 00000000 08:01 934838     /usr/lib/jvm/java-6-openjdk/jre/bin/java
+08051000-08052000 r--p 00008000 08:01 934838     /usr/lib/jvm/java-6-openjdk/jre/bin/java
+08052000-08053000 rw-p 00009000 08:01 934838     /usr/lib/jvm/java-6-openjdk/jre/bin/java
+08fa0000-0a1d6000 rw-p 00000000 00:00 0          [heap]
+73300000-733fc000 rw-p 00000000 00:00 0 
+733fc000-73400000 ---p 00000000 00:00 0 
+73400000-734fa000 rw-p 00000000 00:00 0 
+734fa000-73500000 ---p 00000000 00:00 0 
+73500000-735f6000 rw-p 00000000 00:00 0 
+735f6000-73600000 ---p 00000000 00:00 0 
+736fb000-736ff000 r--s 0002f000 08:01 545680     /home/kd52/.m2/repository/org/apache/maven/plugins/maven-assembly-plugin/2.2-beta-4/maven-assembly-plugin-2.2-beta-4.jar
+736ff000-73700000 r--s 00005000 08:01 545672     /home/kd52/.m2/repository/org/apache/maven/plugins/maven-install-plugin/2.3/maven-install-plugin-2.3.jar
+73700000-737f9000 rw-p 00000000 00:00 0 
+737f9000-73800000 ---p 00000000 00:00 0 
+7384f000-738af000 r--s 00d92000 08:01 935480     /usr/lib/jvm/java-6-openjdk/lib/tools.jar
+738af000-738b2000 ---p 00000000 00:00 0 
+738b2000-73900000 rw-p 00000000 00:00 0 
+73900000-739ff000 rw-p 00000000 00:00 0 
+739ff000-73a00000 ---p 00000000 00:00 0 
+73a00000-73af1000 rw-p 00000000 00:00 0 
+73af1000-73b00000 ---p 00000000 00:00 0 
+73b00000-73cf9000 rw-p 00000000 00:00 0 
+73cf9000-73d00000 ---p 00000000 00:00 0 
+73d00000-73f00000 rw-p 00000000 00:00 0 
+73f00000-73ffc000 rw-p 00000000 00:00 0 
+73ffc000-74000000 ---p 00000000 00:00 0 
+74000000-74100000 rw-p 00000000 00:00 0 
+74100000-741f5000 rw-p 00000000 00:00 0 
+741f5000-74200000 ---p 00000000 00:00 0 
+7420d000-74210000 ---p 00000000 00:00 0 
+74210000-7425e000 rw-p 00000000 00:00 0 
+7425e000-74261000 ---p 00000000 00:00 0 
+74261000-742af000 rw-p 00000000 00:00 0 
+742af000-742b2000 ---p 00000000 00:00 0 
+742b2000-74300000 rw-p 00000000 00:00 0 
+74300000-743f9000 rw-p 00000000 00:00 0 
+743f9000-74400000 ---p 00000000 00:00 0 
+7440c000-7440d000 r--s 00003000 08:01 411644     /home/kd52/.m2/repository/org/codehaus/plexus/plexus-compiler-javac/1.5.3/plexus-compiler-javac-1.5.3.jar
+7440d000-7440f000 r--s 00000000 08:01 411641     /home/kd52/.m2/repository/org/codehaus/plexus/plexus-compiler-manager/1.5.3/plexus-compiler-manager-1.5.3.jar
+7440f000-74410000 r--s 00004000 08:01 661453     /home/kd52/.m2/repository/org/codehaus/plexus/plexus-compiler-api/1.5.3/plexus-compiler-api-1.5.3.jar
+74410000-74412000 r--s 00026000 08:01 411638     /home/kd52/.m2/repository/org/codehaus/plexus/plexus-utils/1.0.4/plexus-utils-1.0.4.jar
+74412000-74414000 r--s 0000b000 08:01 661434     /home/kd52/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.6/plexus-interpolation-1.6.jar
+74414000-74416000 r--s 00007000 08:01 545740     /home/kd52/.m2/repository/org/apache/maven/shared/maven-filtering/1.0-beta-2/maven-filtering-1.0-beta-2.jar
+74416000-7441b000 r--s 00039000 08:01 545739     /home/kd52/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.6/plexus-utils-1.5.6.jar
+7441b000-7441d000 r--s 00005000 08:01 545664     /home/kd52/.m2/repository/org/apache/maven/plugins/maven-jar-plugin/2.2/maven-jar-plugin-2.2.jar
+7441d000-7441e000 r--s 00005000 08:01 545656     /home/kd52/.m2/repository/org/apache/maven/plugins/maven-surefire-plugin/2.4.3/maven-surefire-plugin-2.4.3.jar
+7441e000-74422000 r--s 00034000 08:01 411263     /home/kd52/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.15/plexus-utils-1.5.15.jar
+74422000-74425000 ---p 00000000 00:00 0 
+74425000-74473000 rw-p 00000000 00:00 0 
+74473000-744b4000 r--s 0032f000 08:01 936717     /usr/share/maven2/lib/maven-debian-uber.jar
+744b4000-744b5000 ---p 00000000 00:00 0 
+744b5000-74535000 rw-p 00000000 00:00 0 
+74535000-74538000 ---p 00000000 00:00 0 
+74538000-74586000 rw-p 00000000 00:00 0 
+74586000-74589000 ---p 00000000 00:00 0 
+74589000-74607000 rw-p 00000000 00:00 0 
+74607000-7460a000 ---p 00000000 00:00 0 
+7460a000-74688000 rw-p 00000000 00:00 0 
+74688000-7468b000 ---p 00000000 00:00 0 
+7468b000-746d9000 rw-p 00000000 00:00 0 
+746d9000-746da000 r--p 0043a000 08:01 795198     /usr/lib/locale/locale-archive
+746da000-7471a000 r--p 002bd000 08:01 795198     /usr/lib/locale/locale-archive
+7471a000-7491a000 r--p 00000000 08:01 795198     /usr/lib/locale/locale-archive
+7491a000-7491d000 ---p 00000000 00:00 0 
+7491d000-7496b000 rw-p 00000000 00:00 0 
+7496b000-7496e000 ---p 00000000 00:00 0 
+7496e000-749bc000 rw-p 00000000 00:00 0 
+749bc000-749bd000 ---p 00000000 00:00 0 
+749bd000-74a70000 rw-p 00000000 00:00 0 
+74a70000-74c00000 r--s 037bc000 08:01 934870     /usr/lib/jvm/java-6-openjdk/jre/lib/rt.jar
+74c00000-74cfd000 rw-p 00000000 00:00 0 
+74cfd000-74d00000 ---p 00000000 00:00 0 
+74d00000-74d02000 r--s 00004000 08:01 545642     /home/kd52/.m2/repository/org/apache/maven/plugins/maven-resources-plugin/2.3/maven-resources-plugin-2.3.jar
+74d02000-74d07000 r--s 00040000 08:01 411248     /home/kd52/.m2/repository/commons-lang/commons-lang/2.5/commons-lang-2.5.jar
+74d07000-74d0a000 r--s 00013000 08:01 411247     /home/kd52/.m2/repository/org/apache/commons/commons-io/1.3.2/commons-io-1.3.2.jar
+74d0a000-74d0b000 ---p 00000000 00:00 0 
+74d0b000-74d8b000 rw-p 00000000 00:00 0 
+74d8b000-74d8c000 ---p 00000000 00:00 0 
+74d8c000-74e0c000 rw-p 00000000 00:00 0 
+74e0c000-74e0d000 ---p 00000000 00:00 0 
+74e0d000-74e8d000 rw-p 00000000 00:00 0 
+74e8d000-74e8e000 ---p 00000000 00:00 0 
+74e8e000-74f16000 rw-p 00000000 00:00 0 
+74f16000-74f4e000 rw-p 00000000 00:00 0 
+74f4e000-74f61000 rw-p 00000000 00:00 0 
+74f61000-75075000 rw-p 00000000 00:00 0 
+75075000-7507d000 rw-p 00000000 00:00 0 
+7507d000-750b5000 rw-p 00000000 00:00 0 
+750b5000-750c8000 rw-p 00000000 00:00 0 
+750c8000-751db000 rw-p 00000000 00:00 0 
+751db000-7521d000 rw-p 00000000 00:00 0 
+7521d000-7526f000 rw-p 00000000 00:00 0 
+7526f000-76270000 rw-p 00000000 00:00 0 
+76270000-7d270000 rw-p 00000000 00:00 0 
+7d270000-7f740000 rw-p 00000000 00:00 0 
+7f740000-a1fd0000 rw-p 00000000 00:00 0 
+a1fd0000-aa0b0000 rw-p 00000000 00:00 0 
+b1ee9000-b1eec000 ---p 00000000 00:00 0 
+b1eec000-b1f3a000 rw-p 00000000 00:00 0 
+b1f3a000-b1f3b000 r--s 00005000 08:01 661836     /home/kd52/.m2/repository/org/apache/maven/shared/maven-repository-builder/1.0-alpha-2/maven-repository-builder-1.0-alpha-2.jar
+b1f3b000-b1f3c000 r--s 00004000 08:01 661808     /home/kd52/.m2/repository/org/apache/maven/maven-archiver/2.4/maven-archiver-2.4.jar
+b1f3c000-b1f3e000 r--s 00004000 08:01 661824     /home/kd52/.m2/repository/org/codehaus/plexus/plexus-active-collections/1.0-beta-2/plexus-active-collections-1.0-beta-2.jar
+b1f3e000-b1f40000 r--s 00008000 08:01 661833     /home/kd52/.m2/repository/org/apache/maven/shared/maven-shared-io/1.1/maven-shared-io-1.1.jar
+b1f40000-b1f42000 r--s 00006000 08:01 661830     /home/kd52/.m2/repository/org/apache/maven/shared/file-management/1.1/file-management-1.1.jar
+b1f42000-b1f44000 r--s 0000a000 08:01 661821     /home/kd52/.m2/repository/org/codehaus/plexus/plexus-io/1.0-alpha-4/plexus-io-1.0-alpha-4.jar
+b1f44000-b1f46000 r--s 0000b000 08:01 661818     /home/kd52/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.7/plexus-interpolation-1.7.jar
+b1f46000-b1f4a000 r--s 00028000 08:01 661815     /home/kd52/.m2/repository/org/codehaus/plexus/plexus-archiver/1.0-alpha-12/plexus-archiver-1.0-alpha-12.jar
+b1f4a000-b1f4b000 r--s 00007000 08:01 661827     /home/kd52/.m2/repository/org/apache/maven/shared/maven-plugin-testing-harness/1.1/maven-plugin-testing-harness-1.1.jar
+b1f4b000-b1f50000 r--s 00040000 08:01 661807     /home/kd52/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.12/plexus-utils-1.5.12.jar
+b1f50000-b4670000 rw-p 00000000 00:00 0 
+b4670000-b4671000 r--s 00004000 08:01 411599     /home/kd52/.m2/repository/org/apache/maven/plugins/maven-compiler-plugin/2.0.2/maven-compiler-plugin-2.0.2.jar
+b4671000-b4672000 r--s 00004000 08:01 411266     /home/kd52/.m2/repository/org/codehaus/plexus/plexus-compiler-api/1.8.1/plexus-compiler-api-1.8.1.jar
+b4672000-b4675000 r--s 0000a000 08:01 411246     /home/kd52/.m2/repository/org/apache/commons/commons-exec/1.0.1/commons-exec-1.0.1.jar
+b4675000-b4677000 r--s 00009000 08:01 411245     /home/kd52/.m2/repository/com/theoryinpractise/clojure-maven-plugin/1.3.8/clojure-maven-plugin-1.3.8.jar
+b4677000-b467a000 r--s 0007d000 08:01 936938     /usr/lib/jvm/java-6-openjdk/jre/lib/jsse.jar
+b467a000-b4683000 rw-p 00000000 00:00 0 
+b4683000-b473a000 rw-p 00000000 00:00 0 
+b473a000-b497a000 rwxp 00000000 00:00 0 
+b497a000-b773a000 rw-p 00000000 00:00 0 
+b773a000-b773d000 ---p 00000000 00:00 0 
+b773d000-b778e000 rw-p 00000000 00:00 0 
+b778e000-b778f000 r--p 00000000 00:00 0 
+b778f000-b7791000 r--s 00008000 08:01 1202845    /usr/share/java/classworlds-1.1.jar
+b7791000-b7793000 r--s 0000f000 08:01 936918     /usr/lib/jvm/java-6-openjdk/jre/lib/ext/pulse-java.jar
+b7793000-b779b000 rw-s 00000000 08:01 280095     /tmp/hsperfdata_kd52/23503
+b779b000-b779c000 rw-p 00000000 00:00 0 
+b779c000-b779d000 r--p 00000000 00:00 0 
+b779d000-b779f000 rw-p 00000000 00:00 0 
+bfa34000-bfa55000 rw-p 00000000 00:00 0          [stack]
+
+VM Arguments:
+jvm_args: -Dclassworlds.conf=/usr/share/maven2/bin/m2.conf -Dmaven.home=/usr/share/maven2 
+java_command: org.codehaus.classworlds.Launcher "install"
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+PATH=/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+USERNAME=kd52
+LD_LIBRARY_PATH=/usr/lib/jvm/java-6-openjdk/jre/lib/i386/server:/usr/lib/jvm/java-6-openjdk/jre/lib/i386:/usr/lib/jvm/java-6-openjdk/jre/../lib/i386
+SHELL=/bin/bash
+DISPLAY=:1
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0x66a730], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGBUS: [libjvm.so+0x66a730], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGFPE: [libjvm.so+0x52e360], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGPIPE: [libjvm.so+0x52e360], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGXFSZ: [libjvm.so+0x52e360], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGILL: [libjvm.so+0x52e360], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGUSR1: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGUSR2: [libjvm.so+0x52e1f0], sa_mask[0]=0x00000000, sa_flags=0x10000004
+SIGHUP: [libjvm.so+0x531290], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGINT: [libjvm.so+0x531290], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGTERM: [libjvm.so+0x531290], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGQUIT: [libjvm.so+0x531290], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+
+
+---------------  S Y S T E M  ---------------
+
+OS:Ubuntu 11.10 (oneiric)
+uname:Linux 3.0.0-12-generic #20-Ubuntu SMP Fri Oct 7 14:50:42 UTC 2011 i686
+libc:glibc 2.13 NPTL 2.13 
+rlimit: STACK 8192k, CORE 0k, NPROC 28145, NOFILE 4096, AS infinity
+load average:12.90 10.95 8.28
+
+/proc/meminfo:
+MemTotal:        3616588 kB
+MemFree:          173888 kB
+Buffers:            4016 kB
+Cached:            39732 kB
+SwapCached:        20156 kB
+Active:          2300660 kB
+Inactive:         842652 kB
+Active(anon):    2291188 kB
+Inactive(anon):   820408 kB
+Active(file):       9472 kB
+Inactive(file):    22244 kB
+Unevictable:      250692 kB
+Mlocked:          250692 kB
+HighTotal:       2760648 kB
+HighFree:          18160 kB
+LowTotal:         855940 kB
+LowFree:          155728 kB
+SwapTotal:        522236 kB
+SwapFree:              0 kB
+Dirty:                80 kB
+Writeback:             0 kB
+AnonPages:       3330540 kB
+Mapped:            29668 kB
+Shmem:               772 kB
+Slab:              25376 kB
+SReclaimable:      11752 kB
+SUnreclaim:        13624 kB
+KernelStack:        3736 kB
+PageTables:        10044 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     2330528 kB
+Committed_AS:    5087084 kB
+VmallocTotal:     122880 kB
+VmallocUsed:       53016 kB
+VmallocChunk:      64904 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       4096 kB
+DirectMap4k:       12280 kB
+DirectMap4M:      897024 kB
+
+
+CPU:total 4 (4 cores per cpu, 1 threads per core) family 6 model 42 stepping 7, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3
+
+Memory: 4k page, physical 3616588k(173888k free), swap 522236k(0k free)
+
+vm_info: OpenJDK Server VM (20.0-b12) for linux-x86 JRE (1.6.0_24-b24), built on Jun 28 2012 20:46:19 by "buildd" with gcc 4.6.1
+
+time: Mon Aug 27 17:33:14 2012
+elapsed time: 82 seconds
+

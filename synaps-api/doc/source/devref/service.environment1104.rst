@@ -369,10 +369,7 @@ synaps-storm 클러스터 구축
 
 * storm build
 
-  .. code-block:: bash
-
-   $ cd ~/synaps/synaps-storm/
-   $ mvn install
+  TBD
    
 
 * storm run(At nimbus)
