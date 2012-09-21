@@ -66,8 +66,9 @@ Synaps Development Guide
     :maxdepth: 2
 
     devref/development.environment
-    devref/service.environment
-    devref/install.synaps.api
+    devref/install/installation.guide
+    devref/deploy.synaps
+    devref/oper.synaps.common
 
 
 Module References
