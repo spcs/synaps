@@ -42,7 +42,7 @@ Application Programming Interface
 SPCS Synaps API의 사용자는 일반 사용자(User)와 관리자(Admin)으로 구분된다. 
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 3 
 
     apispec/user.api.rst   
     apispec/admin.api.rst
@@ -66,8 +66,9 @@ Synaps Development Guide
     :maxdepth: 2
 
     devref/development.environment
-    devref/service.environment
-    devref/install.synaps.api
+    devref/install/installation.guide
+    devref/deploy.synaps
+    devref/oper.synaps.common
 
 
 Module References
