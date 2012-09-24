@@ -91,6 +91,8 @@ UNIT_CONV_MAP = {
     'Terabits/Second':2.0 ** 37, # std: Bytes/Second
 }
 
+UNITS = UNIT_CONV_MAP.keys()
+
 def validate_email(email):
     try:
         ret = RE_EMAIL.match(email) is not None

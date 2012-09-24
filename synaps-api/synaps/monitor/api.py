@@ -315,35 +315,19 @@ class API(object):
 
         return {}
     
-    def put_metric_data(self, project_id, namespace, metric_data,
-                        is_admin=False):
+    def put_metric_data(self, project_id, namespace, metric_name, dimensions,
+                        value, unit, timestamp, is_admin=False):
         """
         metric data 를 입력받아 MQ 에 넣고 값이 빈 dictionary 를 반환한다.        
         """
         if namespace.startswith("SPCS/") and not is_admin:
             raise AdminRequired()
+
+        message = {'project_id': project_id, 'namespace':namespace,
+                   'metric_name': metric_name, 'dimensions': dimensions,
+                   'value':value, 'unit':unit, 'timestamp':timestamp}
         
-        for metric in utils.extract_member_list(metric_data):
-            try:
-                t_dimensions = metric.get('dimensions', {})
-                dimensions = utils.extract_member_dict(t_dimensions)
-            except KeyError:
-                err = "Unsuitable Dimensions Value - %s" % str(t_dimensions)
-                raise InvalidParameterValue(err)
-                         
-            metric_name = metric.get('metric_name')
-            unit = metric.get('unit', 'None')
-            value = metric.get('value')
-            req_timestamp = metric.get('timestamp')
-            timestamp = req_timestamp if req_timestamp \
-                        else utils.strtime(utils.utcnow()) 
-            
-            # pack message
-            message = {'project_id': project_id, 'namespace':namespace,
-                       'metric_name': metric_name, 'dimensions': dimensions,
-                       'value':value, 'unit':unit, 'timestamp':timestamp}
-            
-            self.rpc.send_msg(rpc.PUT_METRIC_DATA_MSG_ID, message)
-            LOG.info("PUT_METRIC_DATA_MSG sent")
+        self.rpc.send_msg(rpc.PUT_METRIC_DATA_MSG_ID, message)
+        LOG.info("PUT_METRIC_DATA_MSG sent")
             
         return {}

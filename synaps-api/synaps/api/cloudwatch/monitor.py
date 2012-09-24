@@ -11,6 +11,8 @@ from synaps import log as logging
 from synaps import monitor
 from synaps import exception
 from synaps import utils
+from synaps.exception import InvalidParameterValue
+from synaps import db
 
 LOG = logging.getLogger(__name__)
 
@@ -373,13 +375,45 @@ class MonitorController(object):
         Publishes metric data points to Synaps. If specified metric does not
         exist, Synaps creates the metric.
         """
+        def parse_metric_data(metric):
+            try:
+                dimensions_ = metric.get('dimensions', {})
+                dimensions = utils.extract_member_dict(dimensions_)
+            except KeyError:
+                err = "Unsuitable Dimensions Value - %s" % str(dimensions_)
+                raise InvalidParameterValue(err)
+        
+            metric_name = metric.get('metric_name')
+            unit = metric.get('unit', 'None')
+            value = metric.get('value')
+            req_timestamp = metric.get('timestamp')
+            timestamp = req_timestamp if req_timestamp \
+                        else utils.strtime(utils.utcnow())
+
+            self.check_metric_name(metric_name)
+            self.check_unit(unit)
+            
+            return metric_name, dimensions, value, unit, timestamp 
+                
+        
         if not (project_id and context.is_admin):
             project_id = context.project_id
         
         self.check_namespace(namespace)
         
-        self.monitor_api.put_metric_data(project_id, namespace, metric_data,
-                                         context.is_admin)
+        metrics = [parse_metric_data(metric) for metric 
+                   in utils.extract_member_list(metric_data)]
+
+        for metric in metrics:
+            metric_name, dimensions, value, unit, timestamp = metric
+            self.monitor_api.put_metric_data(project_id=project_id,
+                                             namespace=namespace,
+                                             metric_name=metric_name,
+                                             dimensions=dimensions,
+                                             value=value,
+                                             unit=unit,
+                                             timestamp=timestamp,
+                                             is_admin=context.is_admin)           
         return {}
 
     def set_alarm_state(self, context, alarm_name, state_reason, state_value,
@@ -487,8 +521,7 @@ class MonitorController(object):
         return True
     
     def check_statistic(self, statistic):
-        statistic_sample = ['SampleCount', 'Average', 'Sum', 'Minimum',
-                            'Maximum']
+        statistic_sample = db.Cassandra.STATISTICS
         if statistic and (statistic not in statistic_sample):
             err = "Unsuitable Statistic Value %s" % statistic
             raise exception.InvalidParameterValue(err)
@@ -496,8 +529,7 @@ class MonitorController(object):
         return True 
     
     def check_statistics(self, statistics):
-        statistic_sample = ['SampleCount', 'Average', 'Sum', 'Minimum',
-                            'Maximum']
+        statistic_sample = db.Cassandra.STATISTICS
         if statistics:
             if (not (0 < len(statistics) <= 5)):
                 err = "The length of Namespace is 1~5."
@@ -511,14 +543,7 @@ class MonitorController(object):
         return True
                     
     def check_unit(self, unit):
-        unit_sample = ['Seconds', 'Microseconds', 'Milliseconds', 'Bytes',
-                       'Kilobytes', 'Megabytes', 'Gigabytes', 'Terabytes',
-                       'Bits', 'Kilobits', 'Megabits', 'Gigabits', 'Terabits',
-                       'Percent', 'Count', 'Bytes/Second', 'Kilobytes/Second',
-                       'Megabytes/Second', 'Gigabytes/Second',
-                       'Terabytes/Second', 'Bits/Second', 'Kilobits/Second',
-                       'Megabits/Second', 'Gigabits/Second', 'Terabits/Second',
-                       'Count/Second', 'None']
+        unit_sample = utils.UNITS
         if unit and (unit not in unit_sample):
             err = "Unsuitable Unit Value"
             raise exception.InvalidParameterValue(err)

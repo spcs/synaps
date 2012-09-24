@@ -165,6 +165,7 @@ class MetricAlarm(object):
               '<':'LessThanThreshold',
               '<=':'LessThanOrEqualToThreshold'}
     STATISTICS = ('SampleCount', 'Average', 'Sum', 'Minimum', 'Maximum')
+    OP_VALUES = OP_MAP.values()
     
     def __init__(self, alarm_name, comparison_operator, evaluation_periods,
                  metric_name, namespace, period, statistic, threshold,
