@@ -477,6 +477,7 @@ class MonitorController(object):
         if not next_token:
             return True
         else:
+            next_token = next_token.replace(' ', '')
             try:
                 uuid.UUID(next_token)
             except ValueError:
