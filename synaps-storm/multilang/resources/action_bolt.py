@@ -1,5 +1,20 @@
 #!/usr/bin/env python
-# Copyright 2012 Samsung SDS
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
+
+# Copyright (c) 2012 Samsung SDS Co., LTD
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
 
 import os
 import sys
@@ -22,6 +37,10 @@ from synaps.utils import validate_email, validate_international_phonenumber
 
 threshhold = 10000
 FLAGS = flags.FLAGS
+
+flags.FLAGS(sys.argv)
+utils.default_flagfile()
+logging.setup()
 
 class ActionBolt(storm.BasicBolt):
     BOLT_NAME = "ActionBolt"
@@ -98,7 +117,7 @@ class ActionBolt(storm.BasicBolt):
         message_buf = tup.values[1]
         message = json.loads(message_buf)
         self.log("message received: %s " % message_buf)
-
+        
         alarm = self.cass.get_metric_alarm(UUID(alarm_key))
         actions_enabled = alarm['actions_enabled']
         if message['state'] == 'OK':
@@ -107,7 +126,7 @@ class ActionBolt(storm.BasicBolt):
             actions = json.loads(alarm['insufficient_data_actions'])
         elif message['state'] == 'ALARM':
             actions = json.loads(alarm['alarm_actions'])
-
+        
         self.log("actions enabled: %s actions: %s " % (actions_enabled,
                                                        actions))
         if actions_enabled and actions:
@@ -130,7 +149,7 @@ class ActionBolt(storm.BasicBolt):
             if self.ENABLE_SEND_SMS:
                 sms_receivers = [action for action in actions
                                  if self.get_action_type(action) == "SMS"]
-
+                
                 notification_message = {
                     'method': "SMS",
                     'receivers': sms_receivers,
@@ -150,7 +169,4 @@ class ActionBolt(storm.BasicBolt):
             storm.fail(tup)
 
 if __name__ == "__main__":
-    flags.FLAGS(sys.argv)
-    utils.default_flagfile()
-    logging.setup()
     ActionBolt().run()

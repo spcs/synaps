@@ -1,5 +1,19 @@
 # -*- coding:utf-8 -*-
-# Copyright 2012 Samsung SDS
+
+# Copyright (c) 2012 Samsung SDS Co., LTD
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
 
 import os
 import sys
@@ -30,8 +44,12 @@ from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
                         DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID,
                         CHECK_METRIC_ALARM_MSG_ID)
 from synaps import exception
-FLAGS = flags.FLAGS
 
+FLAGS = flags.FLAGS
+flags.FLAGS(sys.argv)
+utils.default_flagfile()
+logging.setup()
+    
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
     STATISTICS_TTL = Cassandra.STATISTICS_TTL
@@ -577,7 +595,4 @@ class PutMetricBolt(storm.BasicBolt):
             storm.fail(tup)
 
 if __name__ == "__main__":
-    flags.FLAGS(sys.argv)
-    utils.default_flagfile()
-    logging.setup()
     PutMetricBolt().run()
