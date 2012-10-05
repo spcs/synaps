@@ -21,14 +21,10 @@ Disk I/O, Network I/O 등)을 사용할 수 있다.
 설정해두고 임계치가 넘은 경우 전자메일이나 문자메시지를 받아 볼 수 있으며, Auto 
 Scaling 서비스와 연동하여 서버를 추가하거나 줄일 수 있다. (10월 연동 예정)
 
-.. toctree::
-    :maxdepth: 3
 
-    intro/concept.rst
-    intro/defaultmetrics.rst
+Design Decisions
+----------------
 
-설계 결정 사항
---------------
 SPCS는 다음과 같은 특징을 갖는다. 
 
 * **선형 확장성**: 극한의 부하에도 작동할 수 있어야한다.
@@ -68,15 +64,6 @@ Synaps Development Guide
     devref/development.environment
     devref/install/installation.guide
     devref/deploy.synaps
-    devref/oper.synaps.common
-
-
-Module References
------------------    
-.. toctree::
-    :maxdepth: 1
-
-    ../api/autoindex
 
 Indices and tables
 ------------------

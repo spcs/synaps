@@ -1,5 +1,6 @@
-{% extends "sphinxdoc/layout.html" %}
+{% extends "basic/layout.html" %}
 {% set css_files = css_files + ['_static/tweaks.css'] %}
+{% set script_files = script_files + ['_static/jquery.tweet.js'] %}
 
 {%- macro sidebar() %}
       {%- if not embedded %}{% if not theme_nosidebar|tobool %}
@@ -57,15 +58,26 @@
               </p>
           </div>
           <script type="text/javascript">$('#searchbox').show(0);</script>
-          
-          <p class="triangle-border right">
-          		Hello, SPCS
-  		</p>
-          
           {%- endif %}
-
           {%- endblock %}
         </div>
       </div>
       {%- endif %}{% endif %}
 {%- endmacro %}
+
+{% block relbar1 %}{% endblock relbar1 %}
+
+{% block header %}
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+{% endblock %}

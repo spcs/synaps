@@ -26,13 +26,14 @@ sys.path.insert(0, os.path.abspath('./'))
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx',
+              'ext.synaps_todo',
               'sphinx.ext.coverage', 'sphinx.ext.pngmath',
               'sphinx.ext.ifconfig', 'sphinx.ext.graphviz']
 
 # autodoc generation is a bit aggressive and a nuisance when doing heavy text edit cycles.
 # execute "export SPHINX_DEBUG=1" in your terminal to disable
-if not os.getenv('SPHINX_DEBUG'):
-    extensions += ['ext.synaps_autodoc']
+#if not os.getenv('SPHINX_DEBUG'):
+#    extensions += ['ext.synaps_autodoc']
 
 todo_include_todos = True
 
@@ -55,8 +56,8 @@ source_encoding = 'utf-8'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Synaps'
-copyright = u'2012, Samsung SDS'
+project = u'synaps'
+copyright = u'2012-present, Samsung SDS'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -94,7 +95,7 @@ exclude_trees = []
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-#add_module_names = True
+add_module_names = False
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
@@ -155,6 +156,8 @@ html_static_path = ['_static']
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
 #html_last_updated_fmt = '%b %d, %Y'
+git_cmd = "git log --pretty=format:'%ad, commit %h' --date=local -n1"
+html_last_updated_fmt = os.popen(git_cmd).read()
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
