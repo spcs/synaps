@@ -40,6 +40,8 @@ PutMetricAlarm
        자료 형: String
 
        길이 제한: 최소 1자 ~ 최대 255자
+              
+       형식 제한: 숫자로만 이루어진 값 사용 불가
      - No
    * - AlarmName
      - 알람 이름. 이 이름은 SPCS 프로젝트에 한해 유일해야한다.
@@ -47,6 +49,8 @@ PutMetricAlarm
        자료 형: String
 
        길이 제한: 최소 1자 ~ 최대 255자
+              
+       형식 제한: 숫자로만 이루어진 값 사용 불가
      - Yes
 
    * - ComparisonOperator
@@ -97,6 +101,8 @@ PutMetricAlarm
        자료 형: String
 
        길이 제한: 최소 1자 ~ 최대 255자
+              
+       형식 제한: 숫자로만 이루어진 값 사용 불가
      - Yes
    * - Namespace
      - 알람에 관련된 메트릭의 namespace
@@ -104,6 +110,8 @@ PutMetricAlarm
        자료 형: String
 
        길이 제한: 최소 1자 ~ 최대 255자
+              
+       형식 제한: 숫자로만 이루어진 값 사용 불가
      - Yes
    * - OKActions.member.N
      - 알람 상태가 OK로 변경된 경우 SMS를 보낼 전화번호(국제전화번호 형식) 또는 

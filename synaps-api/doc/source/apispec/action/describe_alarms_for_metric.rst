@@ -32,6 +32,8 @@ DescribeAlarmsForMetric
        자료 형: String
 
        길이 제한: 최소 1자 ~ 최대 255자
+              
+       형식 제한: 숫자로만 이루어진 값 사용 불가
      - Yes
    * - Namespace
      - 메트릭의 namespace
@@ -39,6 +41,8 @@ DescribeAlarmsForMetric
        자료 형: String
 
        길이 제한: 최소 1자 ~ 최대 255자
+              
+       형식 제한: 숫자로만 이루어진 값 사용 불가
      - Yes
    * - Period	
      - 통계를 적용할 기간 (초 단위)

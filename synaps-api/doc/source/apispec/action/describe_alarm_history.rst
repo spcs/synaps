@@ -29,6 +29,8 @@ DescribeAlarmHistory
        자료 형: String
        
        길이 제한: 최소 1자 ~ 최대 255자
+              
+       형식 제한: 숫자로만 이루어진 값 사용 불가
      - No
    * - EndDate	
      - 알람 히스토리를 조회할 기간의 끝
