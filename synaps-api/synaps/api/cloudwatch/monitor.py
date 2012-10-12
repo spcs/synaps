@@ -518,21 +518,21 @@ class MonitorController(object):
     
     def check_metric_name(self, metric_name):
         
-        if unicode(metric_name) and unicode(metric_name != u"None"):
+        if unicode(metric_name) and unicode(metric_name) != u"None":
             try:
                 if (not (0 < len(metric_name) <= 255)):
                     err = "The length of Metric Name is 1~255."
                     raise exception.InvalidParameterValue(err)
                 
             except TypeError:
-                err = "Metric Name should not be consist only of numbers. "
+                err = "Metric Name should not be consist only of numbers. " + unicode(metric_name) + " " + u"None"
                 raise exception.InvalidParameterValue(err)
         
         return True 
     
     def check_namespace(self, namespace):
 
-        if unicode(namespace) and unicode(namespace != u"None"):
+        if unicode(namespace) and unicode(namespace) != u"None":
             try:
                 if (not (0 < len(namespace) <= 255)):
                     err = "The length of Namespace is 1~255."
