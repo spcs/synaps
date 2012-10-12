@@ -19,7 +19,7 @@
 
 """Wrappers around standard crypto data elements.
 
-Includes root and intermediate CAs, SSH key_pairs and x509 certificates.
+Includes root and intermediate CAs and SSH key_pairs.
 
 """
 

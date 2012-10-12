@@ -138,6 +138,7 @@ class User(AuthBase):
     ``admin``
       ???
     ``project``
+      ???
     """
 
     def __init__(self, id, name, access, secret, admin, project):
@@ -214,9 +215,6 @@ class Project(AuthBase):
 
     def has_role(self, user, role):
         return AuthManager().has_role(user, role, self)
-
-    def get_credentials(self, user):
-        return AuthManager().get_credentials(user, self)
 
     def __repr__(self):
         return "Project('%s', '%s')" % (self.id, self.name)
@@ -745,55 +743,6 @@ class AuthManager(object):
                     " for user %(uid)s") % locals())
         with self.driver() as drv:
             drv.modify_user(uid, access_key, secret_key, admin)
-
-    def get_credentials(self, user, project=None, use_dmz=True):
-        """Get credential zip for user in project"""
-        if not isinstance(user, User):
-            user = self.get_user(user)
-        if project is None:
-            project = user.id
-        pid = Project.safe_id(project)
-        private_key, signed_cert = crypto.generate_x509_cert(user.id, pid)
-
-        with utils.tempdir() as tmpdir:
-            zf = os.path.join(tmpdir, "temp.zip")
-            zippy = zipfile.ZipFile(zf, 'w')
-            if use_dmz and FLAGS.region_list:
-                regions = {}
-                for item in FLAGS.region_list:
-                    region, _sep, region_host = item.partition("=")
-                    regions[region] = region_host
-            else:
-                regions = {'synaps': FLAGS.cloudwatch_host}
-            for region, host in regions.iteritems():
-                rc = self.__generate_rc(user,
-                                        pid,
-                                        use_dmz,
-                                        host)
-                zippy.writestr(FLAGS.credential_rc_file % region, rc)
-
-            zippy.writestr(FLAGS.credential_key_file, private_key)
-            zippy.writestr(FLAGS.credential_cert_file, signed_cert)
-
-            (vpn_ip, vpn_port) = self.get_project_vpn_data(project)
-            if vpn_ip:
-                configfile = open(FLAGS.vpn_client_template, "r")
-                s = string.Template(configfile.read())
-                configfile.close()
-                config = s.substitute(keyfile=FLAGS.credential_key_file,
-                                      certfile=FLAGS.credential_cert_file,
-                                      ip=vpn_ip,
-                                      port=vpn_port)
-                zippy.writestr(FLAGS.credential_vpn_file, config)
-            else:
-                LOG.warn(_("No vpn data for project %s"), pid)
-
-            zippy.writestr(FLAGS.ca_file, crypto.fetch_ca(pid))
-            zippy.close()
-            with open(zf, 'rb') as f:
-                read_buffer = f.read()
-
-        return read_buffer
 
     def get_environment_rc(self, user, project=None, use_dmz=True):
         """Get environment rc for user in project"""
