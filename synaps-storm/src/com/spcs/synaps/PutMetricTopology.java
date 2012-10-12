@@ -13,6 +13,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.utils.Utils;
 
 import java.util.Map;
+import java.util.Properties;
 
 public class PutMetricTopology {
 	public static class ApiSpout extends ShellSpout implements IRichSpout {
@@ -101,24 +102,51 @@ public class PutMetricTopology {
 	 */
 	public static void main(String[] args) throws Exception {
 		TopologyBuilder builder = new TopologyBuilder();
-		builder.setSpout("api_spout", new ApiSpout(), 2);
-		builder.setSpout("check_spout", new CheckSpout(), 1);
-		builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 2)
-				.shuffleGrouping("api_spout");
-		builder.setBolt("putmetric_bolt", new PutMetricBolt(), 4)
-				.fieldsGrouping("unpack_bolt", new Fields("metric_key"))
-				.allGrouping("check_spout");
-		builder.setBolt("action_bolt", new ActionBolt(), 2).shuffleGrouping(
-				"putmetric_bolt");
+		Properties properties = new Properties();
+
+		properties.load(PutMetricTopology.class
+				.getResourceAsStream("synapsstorm.properties"));
+
+		String topology_name = properties.getProperty("topology_name");
+		int n_workers = Integer.parseInt(properties.getProperty("n_workers"));
+		int n_api_spout = Integer.parseInt(properties
+				.getProperty("n_api_spout"));
+		int n_check_spout = Integer.parseInt(properties
+				.getProperty("n_check_spout"));
+		int n_unpack_bolt = Integer.parseInt(properties
+				.getProperty("n_unpack_bolt"));
+		int n_putmetric_bolt = Integer.parseInt(properties
+				.getProperty("n_putmetric_bolt"));
+		int n_action_bolt = Integer.parseInt(properties
+				.getProperty("n_action_bolt"));
 
 		Config conf = new Config();
 		conf.setDebug(true);
 
 		if (args != null && args.length > 0) {
-			conf.setNumWorkers(8);
-			StormSubmitter.submitTopology(args[0], conf,
+			conf.setNumWorkers(n_workers);
+			builder.setSpout("api_spout", new ApiSpout(), n_api_spout);
+			builder.setSpout("check_spout", new CheckSpout(), n_check_spout);
+			builder.setBolt("unpack_bolt", new UnpackMessageBolt(),
+					n_unpack_bolt).shuffleGrouping("api_spout");
+			builder.setBolt("putmetric_bolt", new PutMetricBolt(),
+					n_putmetric_bolt)
+					.fieldsGrouping("unpack_bolt", new Fields("metric_key"))
+					.allGrouping("check_spout");
+			builder.setBolt("action_bolt", new ActionBolt(), n_action_bolt)
+					.shuffleGrouping("putmetric_bolt");
+			StormSubmitter.submitTopology(topology_name + args[0], conf,
 					builder.createTopology());
 		} else {
+			builder.setSpout("api_spout", new ApiSpout(), 2);
+			builder.setSpout("check_spout", new CheckSpout(), 1);
+			builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 2)
+					.shuffleGrouping("api_spout");
+			builder.setBolt("putmetric_bolt", new PutMetricBolt(), 4)
+					.fieldsGrouping("unpack_bolt", new Fields("metric_key"))
+					.allGrouping("check_spout");
+			builder.setBolt("action_bolt", new ActionBolt(), 2)
+					.shuffleGrouping("putmetric_bolt");
 			LocalCluster cluster = new LocalCluster();
 			cluster.submitTopology("metric", conf, builder.createTopology());
 			Utils.sleep(3 * 60 * 1000); // 3 min
