@@ -23,8 +23,7 @@ def to_alarm(v):
         'alarm_actions': json.loads(v['alarm_actions']),
         'alarm_arn': v['alarm_arn'],
         'alarm_configuration_updated_timestamp':
-            utils.strtime(v['alarm_configuration_updated_timestamp'],
-                          "%Y-%m-%dT%H:%M:%S.%fZ"),
+            utils.strtime_trunk(v['alarm_configuration_updated_timestamp']),
         'alarm_description': v['alarm_description'],
         'alarm_name': v['alarm_name'],
         'comparison_operator': v['comparison_operator'],
@@ -41,8 +40,7 @@ def to_alarm(v):
         'state_reason': v['state_reason'],
         'state_reason_data': v['state_reason_data'],
         'state_updated_timestamp':
-            utils.strtime(v['state_updated_timestamp'],
-                          "%Y-%m-%dT%H:%M:%S.%fZ"),
+            utils.strtime_trunk(v['state_updated_timestamp']),
         'state_value': v['state_value'],
         'statistic': v['statistic'],
         'threshold': v['threshold'],
@@ -82,8 +80,7 @@ class MonitorController(object):
                 'history_data': v['history_data'],
                 'history_item_type': v['history_item_type'],
                 'history_summary': v['history_summary'],
-                'timestamp': utils.strtime(v['timestamp'],
-                                           "%Y-%m-%dT%H:%M:%S.%fZ")
+                'timestamp': utils.strtime_trunk(v['timestamp'])
             }
             return ret
 

@@ -51,6 +51,7 @@ from synaps.openstack.common import cfg
 LOG = logging.getLogger(__name__)
 ISO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 PERFECT_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
+PERFECT_TIME_FORMAT_Z = "%Y-%m-%dT%H:%M:%S.%fZ"
 NO_MS_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 FLAGS = flags.FLAGS
 
@@ -258,6 +259,11 @@ def strtime(at=None, fmt=PERFECT_TIME_FORMAT):
     if not at:
         at = utcnow()
     return at.strftime(fmt)
+
+def strtime_trunk(at=None):
+    """Returns formatted utcnow."""
+    strt = strtime(at,PERFECT_TIME_FORMAT_Z)
+    return strt[:-5]+"Z"
 
 def to_ascii(utf8):
     if isinstance(utf8, unicode):
