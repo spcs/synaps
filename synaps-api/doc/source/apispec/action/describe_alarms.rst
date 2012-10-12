@@ -27,6 +27,8 @@ DescribeAlarms
        Type: String
 
        길이 제한: 최소 1자, 최대 1024자.
+              
+       형식 제한: 숫자로만 이루어진 값 사용 불가
      - No
    * - AlarmNamePrefix
      - 알람 이름의 시작 문자열. AlarmNames 매개변수를 사용한 경우 본 매개변수는
@@ -35,6 +37,8 @@ DescribeAlarms
        Type: String
 
        길이 제한: 최소 1자, 최대 255자.
+              
+       형식 제한: 숫자로만 이루어진 값 사용 불가
      - No
    * - AlarmNames.member.N
      - 알람 정보를 얻어올 알람 이름의 리스트.
