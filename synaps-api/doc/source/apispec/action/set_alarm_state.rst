@@ -25,6 +25,8 @@ SetAlarmState
        자료 형: String
 
        길이 제한: 최소 1자 ~ 최대 255자
+              
+       형식 제한: 숫자로만 이루어진 값 사용 불가
      - Yes
    * - StateReason
      - 사람이 읽기 좋은 텍스트 형식으로 알람의 상태가 변경된 이유를 기술함 
@@ -32,6 +34,8 @@ SetAlarmState
        자료 형: String
 
        길이 제한: 최소 1자 ~ 최대 1203자
+              
+       형식 제한: 숫자로만 이루어진 값 사용 불가
      - Yes
    * - StateReasonData
      - JSON 형식으로 알람의 상태가 변경된 이유를 기술함
@@ -39,6 +43,8 @@ SetAlarmState
        자료 형: String
 
        길이 제한: 최소 0자 ~ 최대 4000자
+              
+       형식 제한: 숫자로만 이루어진 값 사용 불가
      - No
    * - StateValue
      - 상태 값
