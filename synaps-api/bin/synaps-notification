@@ -30,6 +30,7 @@ SMTP_SERVER = FLAGS.get('smtp_server')
 MAIL_SENDER = FLAGS.get('mail_sender')
 SMS_SENDER = FLAGS.get('sms_sender')
 SMS_DB_HOST = FLAGS.get('sms_database_host')
+SMS_DB_PORT = FLAGS.get('sms_database_port')
 SMS_DB = FLAGS.get('sms_database')
 SMS_DB_USERNAME = FLAGS.get('sms_db_username')
 SMS_DB_PASSWORD = FLAGS.get('sms_db_password')
@@ -77,8 +78,9 @@ def send_sms(message):
     #     'subject': u'AlarmActionTest state has been changed from OK to ALARM at 2012-08-28T10:17:50.494902'}
     #
 
-    conn = db.connect(host=SMS_DB_HOST, db=SMS_DB, user=SMS_DB_USERNAME,
-                      passwd=SMS_DB_PASSWORD, connect_timeout=3)
+    conn = db.connect(host=SMS_DB_HOST, port=SMS_DB_PORT, db=SMS_DB,
+                      user=SMS_DB_USERNAME, passwd=SMS_DB_PASSWORD,
+                      connect_timeout=3)
     c = conn.cursor()
     for receiver in message['receivers']:
         q = build_query(receiver, message['subject'])
