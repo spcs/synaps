@@ -18,7 +18,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-
 from synaps.monitor.api import API
 from synaps.utils import validate_email, validate_international_phonenumber
 import json

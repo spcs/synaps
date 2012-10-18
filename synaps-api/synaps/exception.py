@@ -1,9 +1,10 @@
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
-# Copyright (c) 2012 Samsung SDS Co., LTD
 # Copyright 2010 United States Government as represented by the
 # Administrator of the National Aeronautics and Space Administration.
 # All Rights Reserved.
+# Copyright 2012 Red Hat, Inc.
+# Copyright (c) 2012 Samsung SDS Co., LTD
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -216,6 +217,56 @@ class InvalidParameterValue(Invalid):
     message = _("%(err)s")
 
 
+class NotFound(SynapsException):
+    message = _("Resource could not be found.")
+    code = 404
+    
+
+class Duplicate(SynapsException):
+    pass
+
+
+class KeyPairExists(Duplicate):
+    message = _("Key pair %(key_name)s already exists.")
+
+
+class UserExists(Duplicate):
+    message = _("User %(user)s already exists.")
+
+
+class LDAPObjectNotFound(NotFound):
+    message = _("LDAP object could not be found")
+
+
+class LDAPUserNotFound(LDAPObjectNotFound):
+    message = _("LDAP user %(user_id)s could not be found.")
+
+
+class LDAPGroupNotFound(LDAPObjectNotFound):
+    message = _("LDAP group %(group_id)s could not be found.")
+
+
+class LDAPGroupMembershipNotFound(NotFound):
+    message = _("LDAP user %(user_id)s is not a member of group %(group_id)s.")
+
+
+class LDAPUserExists(UserExists):
+    message = _("LDAP user %(user)s already exists.")
+
+
+class LDAPGroupExists(Duplicate):
+    message = _("LDAP group %(group)s already exists.")
+
+
+class LDAPMembershipExists(Duplicate):
+    message = _("User %(uid)s is already a member of "
+                "the group %(group_dn)s")
+
+
+class ProjectExists(Duplicate):
+    message = _("Project %(project)s already exists.")
+    
+    
 class ResourceNotFound(SynapsException):
     message = _("Resource could not be found.")
     code = 404
