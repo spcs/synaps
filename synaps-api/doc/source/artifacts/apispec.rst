@@ -12,4 +12,3 @@ Synaps API의 사용자는 일반 사용자(User)와 관리자(Admin)으로 구�
 
     apispec/user.api.rst   
     apispec/admin.api.rst
-    apispec/endpoints.rst

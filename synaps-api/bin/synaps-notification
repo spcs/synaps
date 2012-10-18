@@ -44,67 +44,9 @@ logging.setup()
 
 SMTP_SERVER = FLAGS.get('smtp_server')
 MAIL_SENDER = FLAGS.get('mail_sender')
-SMS_SENDER = FLAGS.get('sms_sender')
-SMS_DB_HOST = FLAGS.get('sms_database_host')
-SMS_DB_PORT = FLAGS.get('sms_database_port')
-SMS_DB = FLAGS.get('sms_database')
-SMS_DB_USERNAME = FLAGS.get('sms_db_username')
-SMS_DB_PASSWORD = FLAGS.get('sms_db_password')
 
 def send_sms(message):
-    Q_LOCAL = """insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, MESSAGE) 
-    values (now()+0, '%s','%s','%s','%s')
-    """
-    Q_NAT = """insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, MESSAGE, NAT_CODE) 
-    values (now()+0, '%s','%s','%s','%s', %d)
-    """
-
-    def build_query(receiver, subject):
-        nat, local_no = parse_number(receiver)
-        if nat == None:
-            ret = Q_LOCAL % (str(uuid4())[:15], local_no, SMS_SENDER,
-                             subject[:80])
-        else:
-            ret = Q_NAT % (str(uuid4())[:15], local_no, SMS_SENDER,
-                           subject[:80], nat)
-        return ret
-        
-    def parse_number(no):
-        nat, local_no = no.split(' ', 1)
-        if nat.startswith("+"):
-            nat = int(nat[1:])
-        else:
-            nat = int(nat)
-        
-        if nat == 82: # Korean national code
-            nat = None
-            local_no = '0' + local_no.replace(' ', '')
-        else:
-            local_no = local_no.replace(' ', '')
-        
-        return nat, local_no
-    
-    LOG.info("SMS: %s" % str(message))
-    
-    # message example.
-    #
-    #    {'body': u'Threshold Crossed: 3 datapoints were greater than the threshold(50.000000). The most recent datapoints: [110.0, 110.0, 60.0]. at 2012-08-28T10:17:50.494902',
-    #     'receivers': [u'+82 1093145616'],
-    #     'method': 'SMS',
-    #     'subject': u'AlarmActionTest state has been changed from OK to ALARM at 2012-08-28T10:17:50.494902'}
-    #
-
-    conn = db.connect(host=SMS_DB_HOST, port=SMS_DB_PORT, db=SMS_DB,
-                      user=SMS_DB_USERNAME, passwd=SMS_DB_PASSWORD,
-                      connect_timeout=3)
-    c = conn.cursor()
-    for receiver in message['receivers']:
-        q = build_query(receiver, message['subject'])
-        c.execute(q)
-    
-    c.close()
-    conn.commit()
-    conn.close()
+    pass
     
 
 def send_email(message):
