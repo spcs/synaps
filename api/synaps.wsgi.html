@@ -1,0 +1,257 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The synaps.wsgi Module &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-synaps.wsgi">
+<span id="the-synaps-wsgi-module"></span><h1>The <a class="reference internal" href="#module-synaps.wsgi" title="synaps.wsgi"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.wsgi</span></tt></a> Module<a class="headerlink" href="#module-synaps.wsgi" title="Permalink to this headline">¶</a></h1>
+<p>Utility methods for working with WSGI servers.</p>
+<dl class="class">
+<dt id="synaps.wsgi.Application">
+<em class="property">class </em><tt class="descname">Application</tt><a class="headerlink" href="#synaps.wsgi.Application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Base WSGI application wrapper. Subclasses need to implement __call__.</p>
+<dl class="classmethod">
+<dt id="synaps.wsgi.Application.factory">
+<em class="property">classmethod </em><tt class="descname">factory</tt><big>(</big><em>global_config</em>, <em>**local_config</em><big>)</big><a class="headerlink" href="#synaps.wsgi.Application.factory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for paste app factories in paste.deploy config files.</p>
+<p>Any local configuration (that is, values under the [app:APPNAME]
+section of the paste config) will be passed into the <cite>__init__</cite> method
+as kwargs.</p>
+<p>A hypothetical configuration would look like:</p>
+<blockquote>
+<div>[app:wadl]
+latest_version = 1.3
+paste.app_factory = synaps.api.fancy_api:Wadl.factory</div></blockquote>
+<p>which would result in a call to the <cite>Wadl</cite> class as</p>
+<blockquote>
+<div>import synaps.api.fancy_api
+fancy_api.Wadl(latest_version=&#8216;1.3&#8217;)</div></blockquote>
+<p>You could of course re-implement the <cite>factory</cite> method in subclasses,
+but using the kwarg passing it shouldn&#8217;t be necessary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.wsgi.Loader">
+<em class="property">class </em><tt class="descname">Loader</tt><big>(</big><em>config_path=None</em><big>)</big><a class="headerlink" href="#synaps.wsgi.Loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Used to load WSGI applications from paste configurations.</p>
+<dl class="method">
+<dt id="synaps.wsgi.Loader.load_app">
+<tt class="descname">load_app</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#synaps.wsgi.Loader.load_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the paste URLMap wrapped WSGI application.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; Name of the application to load.</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">Paste URLMap object wrapping the requested application.</td>
+</tr>
+<tr class="field"><th class="field-name">Raises :</th><td class="field-body"><cite>nova.exception.PasteAppNotFound</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.wsgi.Middleware">
+<em class="property">class </em><tt class="descname">Middleware</tt><big>(</big><em>application</em><big>)</big><a class="headerlink" href="#synaps.wsgi.Middleware" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.wsgi.Application" title="synaps.wsgi.Application"><tt class="xref py py-class docutils literal"><span class="pre">synaps.wsgi.Application</span></tt></a></p>
+<p>Base WSGI middleware.</p>
+<p>These classes require an application to be
+initialized that will be called next.  By default the middleware will
+simply call its wrapped app, or you can override __call__ to customize its
+behavior.</p>
+<dl class="classmethod">
+<dt id="synaps.wsgi.Middleware.factory">
+<em class="property">classmethod </em><tt class="descname">factory</tt><big>(</big><em>global_config</em>, <em>**local_config</em><big>)</big><a class="headerlink" href="#synaps.wsgi.Middleware.factory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for paste app factories in paste.deploy config files.</p>
+<p>Any local configuration (that is, values under the [filter:APPNAME]
+section of the paste config) will be passed into the <cite>__init__</cite> method
+as kwargs.</p>
+<p>A hypothetical configuration would look like:</p>
+<blockquote>
+<div>[filter:analytics]
+redis_host = 127.0.0.1
+paste.filter_factory = synaps.api.analytics:Analytics.factory</div></blockquote>
+<p>which would result in a call to the <cite>Analytics</cite> class as</p>
+<blockquote>
+<div>import synaps.api.analytics
+analytics.Analytics(app_from_paste, redis_host=&#8216;127.0.0.1&#8217;)</div></blockquote>
+<p>You could of course re-implement the <cite>factory</cite> method in subclasses,
+but using the kwarg passing it shouldn&#8217;t be necessary.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.wsgi.Middleware.process_request">
+<tt class="descname">process_request</tt><big>(</big><em>req</em><big>)</big><a class="headerlink" href="#synaps.wsgi.Middleware.process_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called on each request.</p>
+<p>If this returns None, the next application down the stack will be
+executed. If it returns a response then that response will be returned
+and execution will stop here.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.wsgi.Middleware.process_response">
+<tt class="descname">process_response</tt><big>(</big><em>response</em><big>)</big><a class="headerlink" href="#synaps.wsgi.Middleware.process_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do whatever you&#8217;d like to the response.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.wsgi.Server">
+<em class="property">class </em><tt class="descname">Server</tt><big>(</big><em>name</em>, <em>app</em>, <em>host=None</em>, <em>port=None</em>, <em>pool_size=None</em>, <em>protocol=&lt;class eventlet.wsgi.HttpProtocol at 0xadd4d7c&gt;</em><big>)</big><a class="headerlink" href="#synaps.wsgi.Server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Server class to manage a WSGI server, serving a WSGI application.</p>
+<dl class="method">
+<dt id="synaps.wsgi.Server.start">
+<tt class="descname">start</tt><big>(</big><em>backlog=128</em><big>)</big><a class="headerlink" href="#synaps.wsgi.Server.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start serving a WSGI application.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>backlog</strong> &#8211; Maximum number of queued connections.</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.wsgi.Server.start_tcp">
+<tt class="descname">start_tcp</tt><big>(</big><em>listener</em>, <em>port</em>, <em>host='0.0.0.0'</em>, <em>key=None</em>, <em>backlog=128</em><big>)</big><a class="headerlink" href="#synaps.wsgi.Server.start_tcp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a raw TCP server with the given application.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.wsgi.Server.stop">
+<tt class="descname">stop</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.wsgi.Server.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop this server.</p>
+<p>This is not a very nice action, as currently the method by which a
+server is stopped is by killing it&#8217;s eventlet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.wsgi.Server.wait">
+<tt class="descname">wait</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.wsgi.Server.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Block, until the server has stopped.</p>
+<p>Waits on the server&#8217;s eventlet to finish, then returns.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/api/synaps.wsgi.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

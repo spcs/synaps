@@ -1,0 +1,227 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The synaps.service Module &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-synaps.service">
+<span id="the-synaps-service-module"></span><h1>The <a class="reference internal" href="#module-synaps.service" title="synaps.service"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.service</span></tt></a> Module<a class="headerlink" href="#module-synaps.service" title="Permalink to this headline">¶</a></h1>
+<p>Generic Node base class for all workers that run on hosts.</p>
+<dl class="class">
+<dt id="synaps.service.Launcher">
+<em class="property">class </em><tt class="descname">Launcher</tt><a class="headerlink" href="#synaps.service.Launcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Launch one or more services and wait for them to complete.</p>
+<dl class="method">
+<dt id="synaps.service.Launcher.launch_server">
+<tt class="descname">launch_server</tt><big>(</big><em>server</em><big>)</big><a class="headerlink" href="#synaps.service.Launcher.launch_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load and start the given server.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>server</strong> &#8211; The server you would like to start.</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="synaps.service.Launcher.run_server">
+<em class="property">static </em><tt class="descname">run_server</tt><big>(</big><em>server</em><big>)</big><a class="headerlink" href="#synaps.service.Launcher.run_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start and wait for a server to finish.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>service</strong> &#8211; Server to run and wait for.</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.service.Launcher.stop">
+<tt class="descname">stop</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.service.Launcher.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop all services which are currently running.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.service.Launcher.wait">
+<tt class="descname">wait</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.service.Launcher.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Waits until all services have been stopped, and then returns.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.service.WSGIService">
+<em class="property">class </em><tt class="descname">WSGIService</tt><big>(</big><em>name</em>, <em>loader=None</em><big>)</big><a class="headerlink" href="#synaps.service.WSGIService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Provides ability to launch API from a &#8216;paste&#8217; configuration.</p>
+<dl class="method">
+<dt id="synaps.service.WSGIService.start">
+<tt class="descname">start</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.service.WSGIService.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start serving this service using loaded configuration.</p>
+<p>Also, retrieve updated port number in case &#8216;0&#8217; was passed in, which
+indicates a random port should be used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.service.WSGIService.stop">
+<tt class="descname">stop</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.service.WSGIService.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop serving this API.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.service.WSGIService.wait">
+<tt class="descname">wait</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.service.WSGIService.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait for the service to stop serving this API.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.service.serve">
+<tt class="descname">serve</tt><big>(</big><em>*servers</em><big>)</big><a class="headerlink" href="#synaps.service.serve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.service.wait">
+<tt class="descname">wait</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.service.wait" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/api/synaps.service.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

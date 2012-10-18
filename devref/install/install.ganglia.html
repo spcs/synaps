@@ -1,0 +1,187 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Ganglia 설치하기 &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="ganglia">
+<span id="install-ganglia"></span><h1>Ganglia 설치하기<a class="headerlink" href="#ganglia" title="Permalink to this headline">¶</a></h1>
+<p>본 문서에서는 기본적인 설치 방법만 가이드 한다. 보다 자세한 설치 및 설정관련
+정보는 Ganglia 홈페이지를 참조한다.</p>
+<div class="section" id="gmetad">
+<h2>서버(gmetad) 설치<a class="headerlink" href="#gmetad" title="Permalink to this headline">¶</a></h2>
+<p>아래와 같이 Ganglia Server 를 설치한다. (gmetad 노드)</p>
+<div class="highlight-bash"><div class="highlight"><pre>apt-get install gmetad
+apt-get install ganglia-webfrontend
+cp /etc/ganglia-webfrontend/apache.conf /etc/apache2/sites-enabled/
+</pre></div>
+</div>
+<p>Ganglia 서버 설정(/etc/ganglia/gmetad.conf)은 아래와 같다. 구성한 클러스터의
+이름을 등록 해주며, 클러스터의 main node를 등록</p>
+<div class="highlight-python"><pre>data_source "Cluster Name1" 30 ###.###.###.###:8662
+data_source "Cluster Name2" 30 ###.###.###.###:8663
+
+gridname "Cluster GRID NAME"</pre>
+</div>
+</div>
+<div class="section" id="main-node-gmond">
+<h2>Main Node(gmond) 설치 (전체 노드 중 하나)<a class="headerlink" href="#main-node-gmond" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre>apt-get install gmetad
+</pre></div>
+</div>
+<p>Main Node 설정(/etc/ganglia/gmond.conf)</p>
+<p>data_source는 ganglia agent가 설치된 모든 노드를 등록해주며, trusted_hosts
+nagios 의 모든 노드를 등록해준다.</p>
+<div class="highlight-python"><pre>data_source "Cluster Name" 30 ###.###.###.###:8663 ###.###.###.###:8663 ###.###.###.###:8663 ###.###.###.###:8663
+
+trusted_hosts nagios1 nagios2</pre>
+</div>
+</div>
+<div class="section" id="agent">
+<h2>Agent 설치 (전체 노드)<a class="headerlink" href="#agent" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre>apt-get install ganglia-monitor
+</pre></div>
+</div>
+<p>Ganglia Agent 설정은 아래와 같다. 클러스터 이름과 포트는 클러스터별로 다르게
+정해주며, Host는 Ganglia Main node로 지정.</p>
+<div class="highlight-python"><pre>globals {
+daemonize = yes
+setuid = yes
+user = nobody
+debug_level = 0
+max_udp_msg_len = 1472
+mute = no
+deaf = no
+host_dmax = 0 /*secs */
+cleanup_threshold = 300 /*secs */
+gexec = no
+send_metadata_interval = 30
+}
+
+cluster {
+name = "Cluster name"
+owner = "unspecified"
+latlong = "unspecified"
+url = "unspecified"
+}
+
+/* Feel free to specify as many udp_send_channels as you like.  Gmond
+used to only support having a single channel */
+udp_send_channel {
+host = ###.###.###.###
+port = 8663
+ttl = 1
+}
+
+/* You can specify as many udp_recv_channels as you like as well. */
+udp_recv_channel {
+port = 8663
+}
+
+/* You can specify as many tcp_accept_channels as you like to share
+an xml description of the state of the cluster */
+tcp_accept_channel {
+port = 8663
+}</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">Ganglia 설치하기</a><ul>
+<li><a class="reference internal" href="#gmetad">서버(gmetad) 설치</a></li>
+<li><a class="reference internal" href="#main-node-gmond">Main Node(gmond) 설치 (전체 노드 중 하나)</a></li>
+<li><a class="reference internal" href="#agent">Agent 설치 (전체 노드)</a></li>
+</ul>
+</li>
+</ul>
+
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/devref/install/install.ganglia.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

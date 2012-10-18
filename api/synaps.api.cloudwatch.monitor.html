@@ -1,0 +1,277 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The synaps.api.cloudwatch.monitor Module &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-synaps.api.cloudwatch.monitor">
+<span id="the-synaps-api-cloudwatch-monitor-module"></span><h1>The <a class="reference internal" href="#module-synaps.api.cloudwatch.monitor" title="synaps.api.cloudwatch.monitor"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.api.cloudwatch.monitor</span></tt></a> Module<a class="headerlink" href="#module-synaps.api.cloudwatch.monitor" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController">
+<em class="property">class </em><tt class="descname">MonitorController</tt><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>MonitorController provides the critical dispatch between inbound API
+calls through the endpoint and messages sent to the other nodes.</p>
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_action_prefix">
+<tt class="descname">check_action_prefix</tt><big>(</big><em>action_prefix</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_action_prefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_alarm_description">
+<tt class="descname">check_alarm_description</tt><big>(</big><em>alarm_description</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_alarm_description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_alarm_name">
+<tt class="descname">check_alarm_name</tt><big>(</big><em>alarm_name</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_alarm_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_alarm_name_prefix">
+<tt class="descname">check_alarm_name_prefix</tt><big>(</big><em>alarm_name_prefix</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_alarm_name_prefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_alarm_names">
+<tt class="descname">check_alarm_names</tt><big>(</big><em>alarm_names</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_alarm_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_comparison_operator">
+<tt class="descname">check_comparison_operator</tt><big>(</big><em>comparison_operator</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_comparison_operator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_dimensions">
+<tt class="descname">check_dimensions</tt><big>(</big><em>dimensions</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_dimensions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_evaluation_periods">
+<tt class="descname">check_evaluation_periods</tt><big>(</big><em>evaluation_periods</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_evaluation_periods" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_history_item_type">
+<tt class="descname">check_history_item_type</tt><big>(</big><em>history_item_type</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_history_item_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_metric_name">
+<tt class="descname">check_metric_name</tt><big>(</big><em>metric_name</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_metric_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_namespace">
+<tt class="descname">check_namespace</tt><big>(</big><em>namespace</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_namespace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_next_token">
+<tt class="descname">check_next_token</tt><big>(</big><em>next_token</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_next_token" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_period">
+<tt class="descname">check_period</tt><big>(</big><em>period</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_period" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_state_reason">
+<tt class="descname">check_state_reason</tt><big>(</big><em>state_reason</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_state_reason" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_state_reason_data">
+<tt class="descname">check_state_reason_data</tt><big>(</big><em>state_reason_data</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_state_reason_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_state_value">
+<tt class="descname">check_state_value</tt><big>(</big><em>state_value</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_state_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_statistic">
+<tt class="descname">check_statistic</tt><big>(</big><em>statistic</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_statistic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_statistics">
+<tt class="descname">check_statistics</tt><big>(</big><em>statistics</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_statistics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.check_unit">
+<tt class="descname">check_unit</tt><big>(</big><em>unit</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.check_unit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.delete_alarms">
+<tt class="descname">delete_alarms</tt><big>(</big><em>context</em>, <em>alarm_names</em>, <em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.delete_alarms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.describe_alarm_history">
+<tt class="descname">describe_alarm_history</tt><big>(</big><em>context</em>, <em>alarm_name=None</em>, <em>end_date=None</em>, <em>history_item_type=None</em>, <em>max_records=None</em>, <em>next_token=None</em>, <em>start_date=None</em>, <em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.describe_alarm_history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.describe_alarms">
+<tt class="descname">describe_alarms</tt><big>(</big><em>context</em>, <em>action_prefix=None</em>, <em>alarm_name_prefix=None</em>, <em>alarm_names=None</em>, <em>max_records=None</em>, <em>next_token=None</em>, <em>state_value=None</em>, <em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.describe_alarms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.describe_alarms_for_metric">
+<tt class="descname">describe_alarms_for_metric</tt><big>(</big><em>context</em>, <em>namespace</em>, <em>metric_name</em>, <em>dimensions=None</em>, <em>period=None</em>, <em>statistic=None</em>, <em>unit=None</em>, <em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.describe_alarms_for_metric" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.disable_alarm_actions">
+<tt class="descname">disable_alarm_actions</tt><big>(</big><em>context</em>, <em>alarm_names=None</em>, <em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.disable_alarm_actions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.enable_alarm_actions">
+<tt class="descname">enable_alarm_actions</tt><big>(</big><em>context</em>, <em>alarm_names=None</em>, <em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.enable_alarm_actions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.get_metric_statistics">
+<tt class="descname">get_metric_statistics</tt><big>(</big><em>context</em>, <em>end_time</em>, <em>metric_name</em>, <em>namespace</em>, <em>period</em>, <em>start_time</em>, <em>statistics</em>, <em>unit=None</em>, <em>dimensions=None</em>, <em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.get_metric_statistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets statistics for the specified metric.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.list_metrics">
+<tt class="descname">list_metrics</tt><big>(</big><em>context</em>, <em>next_token=None</em>, <em>dimensions=None</em>, <em>metric_name=None</em>, <em>namespace=None</em>, <em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.list_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of valid metrics stored for the Synaps account owner. 
+Returned metrics can be used with get_metric_statics to obtain 
+statistical data for a given metric.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.put_metric_alarm">
+<tt class="descname">put_metric_alarm</tt><big>(</big><em>context</em>, <em>alarm_name</em>, <em>comparison_operator</em>, <em>evaluation_periods</em>, <em>metric_name</em>, <em>namespace</em>, <em>period</em>, <em>statistic</em>, <em>threshold</em>, <em>alarm_actions=</em><span class="optional">[</span><span class="optional">]</span>, <em>insufficient_data_actions=</em><span class="optional">[</span><span class="optional">]</span>, <em>ok_actions=</em><span class="optional">[</span><span class="optional">]</span>, <em>actions_enabled=True</em>, <em>alarm_description=''</em>, <em>dimensions={}</em>, <em>unit=''</em>, <em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.put_metric_alarm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create or updates an alarm and associates it with the specified
+SPCS Synaps metric.</p>
+<p>When this operation creates an alarm, the alarm state is immediately 
+set to INSUFFICIENT_DATA. The alarm is evaluated and its StateVale is 
+set appropriately.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.put_metric_data">
+<tt class="descname">put_metric_data</tt><big>(</big><em>context</em>, <em>namespace</em>, <em>metric_data</em>, <em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.put_metric_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Publishes metric data points to Synaps. If specified metric does not
+exist, Synaps creates the metric.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.api.cloudwatch.monitor.MonitorController.set_alarm_state">
+<tt class="descname">set_alarm_state</tt><big>(</big><em>context</em>, <em>alarm_name</em>, <em>state_reason</em>, <em>state_value</em>, <em>state_reason_data=None</em>, <em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.MonitorController.set_alarm_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Temporarily sets the state of an alarm. When the updated StateValue
+differs from the previous value, the action configured for the 
+appropriate state is invoked. This is not a permanent change. The next 
+periodic alarm check (in about a minute) will set the alarm to its 
+actual state.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.api.cloudwatch.monitor.to_alarm">
+<tt class="descname">to_alarm</tt><big>(</big><em>v</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.monitor.to_alarm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/api/synaps.api.cloudwatch.monitor.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

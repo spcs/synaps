@@ -1,0 +1,238 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Program Specification &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../index.html" />
+    <link rel="next" title="Database Model" href="dbmodel.html" />
+    <link rel="prev" title="Synaps Documentation" href="../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="program-specification">
+<h1>Program Specification<a class="headerlink" href="#program-specification" title="Permalink to this headline">¶</a></h1>
+<p>Synaps is an cloud monitoring system that collects metric data, provides
+statistics data, monitors and notifies based on user defined alarms.</p>
+<p>It supports users to collect and monitor their default metrics (eg.
+CPUUtilization, DiskReadOps, DiskWriteOps, DiskReadBytes, DiskWriteBytes,
+NetworkReadBytes and NetworkWriteBytes) and their own custom metrics also.</p>
+<p>It is used to monitor tenant&#8217;s applications and services on the OpenStack are
+working well. If CPUUtiliztion of an instance running their service is greater
+than the threshold they have been set, they can be notified.</p>
+<p>Synaps is linear scalable so that it might be suitable for deploying on the
+virtual machines as a SaaS(software as a service).</p>
+<div class="section" id="program-architecture">
+<h2>Program Architecture<a class="headerlink" href="#program-architecture" title="Permalink to this headline">¶</a></h2>
+<p>Synaps API is frontend of the system. It uses RabbitMQ for asynchronous
+processing requested messages. And the messages are passed to Synaps Strom.</p>
+<p>Synaps Storm is a topology implementation which is aimed to run on the Twitter
+Storm, real-time distributed stream processing system. Synaps Storm is based on
+the message driven architecture. Most of the messages are came from RabbitMQ.
+It notifies using Notification Queue. Any other notification system can
+interoperate with the queue.</p>
+<p>Both Synaps API and Storm programs are use Cassandra no-sql database to store
+persistent data.</p>
+<p>Following is Architecture of Synaps.</p>
+<blockquote>
+<div><img alt="../_images/SynapsSystemOverview.jpg" src="../_images/SynapsSystemOverview.jpg" style="width: 100%;" />
+</div></blockquote>
+<p>Following is an example of an integrated system.</p>
+<p>Externally, Synaps interoperates with agents which inputs metric data
+periodically, such as VMMON which can get information from VM Hyperisor with
+libvirt library and Nova API, and custom agent also.</p>
+<p>Synaps Notification is a program to send E-mail or SMS.</p>
+<blockquote>
+<div><img alt="../_images/IntegratedSystemOverview.jpg" src="../_images/IntegratedSystemOverview.jpg" style="width: 100%;" />
+</div></blockquote>
+</div>
+<div class="section" id="program-synaps-api">
+<h2>Program: Synaps API<a class="headerlink" href="#program-synaps-api" title="Permalink to this headline">¶</a></h2>
+<p>Synaps API is WSGI based Web Server which provides AWS CloudWatch compatible
+API.</p>
+<div class="section" id="asynchrous-request-processing">
+<h3>Asynchrous request processing<a class="headerlink" href="#asynchrous-request-processing" title="Permalink to this headline">¶</a></h3>
+<p>Requests below are processed asynchrously.</p>
+<ul class="simple">
+<li>DeleteAlarms</li>
+<li>PutMetricAlarm</li>
+<li>PutMetricData</li>
+</ul>
+<p>For example,</p>
+<blockquote>
+<div><img alt="../_images/SynapsAPI-PutMetricData.jpg" src="../_images/SynapsAPI-PutMetricData.jpg" style="width: 100%;" />
+</div></blockquote>
+</div>
+<div class="section" id="synchrous-request-processing">
+<h3>Synchrous request processing<a class="headerlink" href="#synchrous-request-processing" title="Permalink to this headline">¶</a></h3>
+<p>Requests below are processed synchrously.</p>
+<ul class="simple">
+<li>DescribeAlarmHistory</li>
+<li>DescribeAlarms</li>
+<li>DescribeAlarmsForMetric</li>
+<li>DisableAlarmActions</li>
+<li>EnableAlarmActions</li>
+<li>GetMetricStatistics</li>
+<li>ListMetrics</li>
+<li>SetAlarmState</li>
+</ul>
+<p>For example,</p>
+<blockquote>
+<div><img alt="../_images/SynapsAPI-GetMetricStatistics.jpg" src="../_images/SynapsAPI-GetMetricStatistics.jpg" style="width: 100%;" />
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="program-synaps-storm">
+<h2>Program: Synaps Storm<a class="headerlink" href="#program-synaps-storm" title="Permalink to this headline">¶</a></h2>
+<p>Synaps Storm is a topology implementation which is aimed to run on the Twitter
+Storm, real-time distributed stream processing system.</p>
+<blockquote>
+<div><img alt="../_images/SynapsStorm-Topology.jpg" src="../_images/SynapsStorm-Topology.jpg" style="width: 100%;" />
+</div></blockquote>
+<div class="section" id="putmetricdata-message-processing">
+<h3>PutMetricData message processing<a class="headerlink" href="#putmetricdata-message-processing" title="Permalink to this headline">¶</a></h3>
+<p>This function is the most important part of Synaps. When the PutMetricData
+message is received via RabbitMQ message queue, it reads its in-memory sliding
+windows or database to aggregate its datapoints and evalutate status of
+its alarms. If the status is changed, it sends action message to notification
+queue.</p>
+<blockquote>
+<div><img alt="../_images/SynapsStorm-PutMetricData.jpg" src="../_images/SynapsStorm-PutMetricData.jpg" style="width: 100%;" />
+</div></blockquote>
+</div>
+<div class="section" id="putmetricalarm-message-processing">
+<h3>PutMetricAlarm message processing<a class="headerlink" href="#putmetricalarm-message-processing" title="Permalink to this headline">¶</a></h3>
+<p>When the PutMetricAlarm message is received via RabbitMQ message queue, it
+find its metric and update its in-memory alarm data and update it into
+database.</p>
+<blockquote>
+<div><img alt="../_images/SynapsStormPutMetricAlarm.jpg" src="../_images/SynapsStormPutMetricAlarm.jpg" style="width: 100%;" />
+</div></blockquote>
+</div>
+<div class="section" id="periodicmonitoring-message-processing">
+<h3>PeriodicMonitoring message processing<a class="headerlink" href="#periodicmonitoring-message-processing" title="Permalink to this headline">¶</a></h3>
+<p>&#8216;check_spout&#8217; generates PeriodicMonitoring message every 1 minute. When this is
+generated, it checks their whole alarms if they are not evaluated alarms
+recently PutMetricData message processing.</p>
+<blockquote>
+<div><img alt="../_images/SynapsStormPeriodicMonitoring.jpg" src="../_images/SynapsStormPeriodicMonitoring.jpg" style="width: 100%;" />
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">Program Specification</a><ul>
+<li><a class="reference internal" href="#program-architecture">Program Architecture</a></li>
+<li><a class="reference internal" href="#program-synaps-api">Program: Synaps API</a><ul>
+<li><a class="reference internal" href="#asynchrous-request-processing">Asynchrous request processing</a></li>
+<li><a class="reference internal" href="#synchrous-request-processing">Synchrous request processing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#program-synaps-storm">Program: Synaps Storm</a><ul>
+<li><a class="reference internal" href="#putmetricdata-message-processing">PutMetricData message processing</a></li>
+<li><a class="reference internal" href="#putmetricalarm-message-processing">PutMetricAlarm message processing</a></li>
+<li><a class="reference internal" href="#periodicmonitoring-message-processing">PeriodicMonitoring message processing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="../index.html"
+                                  title="previous chapter">Synaps Documentation</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="dbmodel.html"
+                                  title="next chapter">Database Model</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/artifacts/programspec.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dbmodel.html" title="Database Model"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Synaps Documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

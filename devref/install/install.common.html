@@ -1,0 +1,184 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>공통 설치 및 설정 &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="install-common">
+<span id="id1"></span><h1>공통 설치 및 설정<a class="headerlink" href="#install-common" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="synaps">
+<h2>Synaps 설정<a class="headerlink" href="#synaps" title="Permalink to this headline">¶</a></h2>
+<p>다운 받은 synaps api 패키지에서 설정파일을 복사한다. /etc/synaps/synaps.conf
+에서 환경에 맞는 설정을 적용한다. 설정 파일은 클러스터 내 노드 모두 동일해야
+한다. (synaps-api, synaps-storm, synaps-noti 노드에 해당)</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo mkdir /etc/synaps
+sudo mkdir /var/log/synaps
+sudo cp etc/synaps/api-paste.ini /etc/synaps/api-paste.ini
+sudo cp etc/synaps/synaps.conf /etc/synaps/synaps.conf
+sudo vi /etc/synaps/synaps.conf
+</pre></div>
+</div>
+</div>
+<div class="section" id="database">
+<h2>Database 초기 셋업<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h2>
+<p>데이터베이스에 keyspace 및 column family 가 정의되지 않은 경우, 아래 명령을
+통해 데이터베이스의 초기 셋업을 수행한다. (synaps-api 에서 초기 한 번만 수행)</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo synaps-syncdb
+</pre></div>
+</div>
+</div>
+<div class="section" id="api">
+<h2>API 실행 및 정지<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<p>아래와 같이 synaps-api 를 실행 및 정지시킬 수 있다. 로그는 /var/log/synaps 에
+위치한다.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo /etc/init.d/synaps-api start
+sudo /etc/init.d/synaps-api stop
+</pre></div>
+</div>
+</div>
+<div class="section" id="os">
+<h2>OS 설정<a class="headerlink" href="#os" title="Permalink to this headline">¶</a></h2>
+<p>운영체제의 최대 open 가능 file 수를 조정한다.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">ulimit</span> -Hn 65535
+<span class="nb">ulimit</span> -Sn 65535
+vi /etc/security/limits.conf
+</pre></div>
+</div>
+<p>파일 하단에 다음의 내용을 추가한다.</p>
+<div class="highlight-bash"><div class="highlight"><pre>root            hard    nofile          65535
+root            soft    nofile          65535
+</pre></div>
+</div>
+<p>OS 시작 및 종료 시 자동으로 시작, 종료 되도록 rc.d 등록</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo update-rc.d synaps-api defaults 80
+/etc/init.d/synaps-api restart
+</pre></div>
+</div>
+</div>
+<div class="section" id="ntp">
+<h2>NTP 설정<a class="headerlink" href="#ntp" title="Permalink to this headline">¶</a></h2>
+<p>ntpd 를 설치하고 NTP Client 설정을 한다.</p>
+<div class="highlight-bash"><div class="highlight"><pre>apt-get install ntp
+</pre></div>
+</div>
+<p>아래와 같이 설정파일 /etc/ntpd.conf 를 수정한다.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># /etc/ntp.conf, configuration for ntpd; see ntp.conf(5) for help</span>
+driftfile /var/lib/ntp/ntp.drift
+<span class="c"># Use Ubuntu&#39;s ntp server as a fallback.</span>
+server <span class="s2">&quot;ntp host&quot;</span>
+<span class="c"># Local users may interrogate the ntp server more closely.</span>
+restrict 127.0.0.1
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">위 설정파일의 &#8220;ntp host&#8221; 대신 NTP 서버의 호스트이름 또는 IP로 서버
+등록한다.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">ntp 를 사용하기 위해서는 udp 123포트 오픈 필요.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">공통 설치 및 설정</a><ul>
+<li><a class="reference internal" href="#synaps">Synaps 설정</a></li>
+<li><a class="reference internal" href="#database">Database 초기 셋업</a></li>
+<li><a class="reference internal" href="#api">API 실행 및 정지</a></li>
+<li><a class="reference internal" href="#os">OS 설정</a></li>
+<li><a class="reference internal" href="#ntp">NTP 설정</a></li>
+</ul>
+</li>
+</ul>
+
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/devref/install/install.common.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

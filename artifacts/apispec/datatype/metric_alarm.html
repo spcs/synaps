@@ -1,0 +1,286 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MetricAlarm &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../../../index.html" />
+    <link rel="up" title="사용자 API 규격" href="../user.api.html" />
+    <link rel="next" title="MetricDatum" href="metric_datum.html" />
+    <link rel="prev" title="Metric" href="metric.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="metricalarm">
+<span id="metric-alarm"></span><h1>MetricAlarm<a class="headerlink" href="#metricalarm" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>설명<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#metric-alarm"><em>MetricAlarm</em></a> 자료형은 알람을 나타낸다. <a class="reference internal" href="../action/put_metric_alarm.html#put-metric-alarm"><em>PutMetricAlarm</em></a> 액션으로
+알람을 생성하고 갱신할 수 있다.</p>
+</div>
+<div class="section" id="id2">
+<h2>내용<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">이름</th>
+<th class="head">설명</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>ActionsEnabled</td>
+<td><p class="first">알람의 상태 변화에 따른 액션 수행 여부</p>
+<p class="last">자료 형: Boolean</p>
+</td>
+</tr>
+<tr><td>AlarmActions</td>
+<td><p class="first">알람 상태가 된 경우 SMS를 보낼 전화번호(국제전화번호 형식) 또는 전자우편
+을 보낼 E-Mail 주소의 리스트.</p>
+<p class="last">자료 형: String 리스트</p>
+</td>
+</tr>
+<tr><td>AlarmArn</td>
+<td><p class="first">알람의 자원 번호</p>
+<p>자료 형: String</p>
+<p class="last">길이 제한: 최소 1자, 최대 1000자</p>
+</td>
+</tr>
+<tr><td>AlarmConfigurationUpdatedTimestamp</td>
+<td><p class="first">알람 설정이 변경된 가장 최근의 시간</p>
+<p class="last">자료 형: DateTime</p>
+</td>
+</tr>
+<tr><td>AlarmDescription</td>
+<td><p class="first">알람 설명</p>
+<p>자료 형: String</p>
+<p class="last">길이 제한: 최소 0자, 최대 255자</p>
+</td>
+</tr>
+<tr><td>AlarmName</td>
+<td><p class="first">알람 이름</p>
+<p>자료 형: String</p>
+<p class="last">길이 제한: 최소 1자, 최대 255자</p>
+</td>
+</tr>
+<tr><td>ComparisonOperator</td>
+<td><p class="first">특정 통계 자료와 임계치를 비교하기 위해 사용하는 산술 연산자. 통계 자료
+가 좌변 변수로 적용 된다.</p>
+<p>자료 형: String</p>
+<p class="last">유효 값: GreaterThanOrEqualToThreshold | GreaterThanThreshold |
+LessThanThreshold | LessThanOrEqualToThreshold</p>
+</td>
+</tr>
+<tr><td>Dimensions</td>
+<td><p class="first">알람 대상 메트릭의 dimensions 리스트</p>
+<p>자료 형: <a class="reference internal" href="dimension.html#dimension"><em>Dimension</em></a> 리스트</p>
+<p class="last">길이 제한: 0개부터 10개의 아이템</p>
+</td>
+</tr>
+<tr><td>EvaluationPeriods</td>
+<td><p class="first">임계치와 비교할 데이터의 갯수</p>
+<p class="last">자료 형: Integer</p>
+</td>
+</tr>
+<tr><td>InsufficientDataActions</td>
+<td><p class="first">알람 상태가 된 경우 SMS를 보낼 전화번호(국제전화번호 형식) 또는 전자우편
+을 보낼 E-Mail 주소의 리스트.</p>
+<p class="last">자료 형: String 리스트</p>
+</td>
+</tr>
+<tr><td>MetricName</td>
+<td><p class="first">알람 대상 메트릭의 이름</p>
+<p>자료 형: String</p>
+<p class="last">길이 제한: 최소 1자, 최대 255자</p>
+</td>
+</tr>
+<tr><td>Namespace</td>
+<td><p class="first">알람 대상 메트릭의 namespace</p>
+<p>Type: String</p>
+<p class="last">길이 제한: 최소 1자, 최대 255자</p>
+</td>
+</tr>
+<tr><td>OKActions</td>
+<td><p class="first">알람 상태가 된 경우 SMS를 보낼 전화번호(국제전화번호 형식) 또는 전자우편
+을 보낼 E-Mail 주소의 리스트.</p>
+<p class="last">자료 형: String 리스트</p>
+</td>
+</tr>
+<tr><td>Period</td>
+<td><p class="first">통계 자료 계산에 적용될 기간 (초단위)</p>
+<p class="last">자료 형: Integer</p>
+</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<caption>cont&#8217;</caption>
+<colgroup>
+<col width="38%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">이름</th>
+<th class="head">설명</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>StateReason</td>
+<td><p class="first">알람 상태의 이유 (사람이 읽기 좋은 형식)</p>
+<p>자료 형: String</p>
+<p class="last">길이 제한: 최소 0자, 최대 1023자</p>
+</td>
+</tr>
+<tr><td>StateReasonData</td>
+<td><p class="first">알람 상태의 이유 (JSON 형식)</p>
+<p>자료 형: String</p>
+<p class="last">길이 제한: 최소 0자, 최대 4000자</p>
+</td>
+</tr>
+<tr><td>StateUpdatedTimestamp</td>
+<td><p class="first">알람의 상태가 변경된 최근의 timestamp</p>
+<p class="last">자료 형: DateTime</p>
+</td>
+</tr>
+<tr><td>StateValue</td>
+<td><p class="first">알람의 상태 값</p>
+<p>자료 형: String</p>
+<p class="last">유효 값: OK | ALARM | INSUFFICIENT_DATA</p>
+</td>
+</tr>
+<tr><td>Statistic</td>
+<td><p class="first">알람 대상 메트릭의 통계</p>
+<p>자료 형: String</p>
+<p class="last">유효 값: SampleCount | Average | Sum | Minimum | Maximum</p>
+</td>
+</tr>
+<tr><td>Threshold</td>
+<td><p class="first">통계자료와 비교할 임계치</p>
+<p class="last">자료 형: Double</p>
+</td>
+</tr>
+<tr><td>Unit</td>
+<td><p class="first">알람 대상 메트릭의 단위</p>
+<p>자료 형: String</p>
+<p class="last">유효 값: Seconds | Microseconds | Milliseconds | Bytes |
+Kilobytes | Megabytes | Gigabytes | Terabytes | Bits | Kilobits |
+Megabits | Gigabits | Terabits | Percent | Count | Bytes/Second |
+Kilobytes/Second | Megabytes/Second | Gigabytes/Second |
+Terabytes/Second | Bits/Second | Kilobits/Second | Megabits/Second |
+Gigabits/Second | Terabits/Second | Count/Second | None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">MetricAlarm</a><ul>
+<li><a class="reference internal" href="#id1">설명</a></li>
+<li><a class="reference internal" href="#id2">내용</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="metric.html"
+                                  title="previous chapter">Metric</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="metric_datum.html"
+                                  title="next chapter">MetricDatum</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../../_sources/artifacts/apispec/datatype/metric_alarm.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="metric_datum.html" title="MetricDatum"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="metric.html" title="Metric"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li>
+          <li><a href="../../apispec.html" >Application Programming Interface</a> &raquo;</li>
+          <li><a href="../user.api.html" accesskey="U">사용자 API 규격</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

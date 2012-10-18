@@ -1,0 +1,194 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The synaps.crypto Module &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-synaps.crypto">
+<span id="the-synaps-crypto-module"></span><h1>The <a class="reference internal" href="#module-synaps.crypto" title="synaps.crypto"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.crypto</span></tt></a> Module<a class="headerlink" href="#module-synaps.crypto" title="Permalink to this headline">¶</a></h1>
+<p>Wrappers around standard crypto data elements.</p>
+<p>Includes root and intermediate CAs and SSH key_pairs.</p>
+<dl class="function">
+<dt id="synaps.crypto.ca_folder">
+<tt class="descname">ca_folder</tt><big>(</big><em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.crypto.ca_folder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.ca_path">
+<tt class="descname">ca_path</tt><big>(</big><em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.crypto.ca_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.compute_md5">
+<tt class="descname">compute_md5</tt><big>(</big><em>fp</em><big>)</big><a class="headerlink" href="#synaps.crypto.compute_md5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute an md5 hash.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fp</strong> (<em>file</em>) &#8211; File pointer to the file to MD5 hash.  The file pointer will be
+reset to the beginning of the file before the method returns.</td>
+</tr>
+<tr class="field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">the hex digest version of the MD5 hash</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.crl_path">
+<tt class="descname">crl_path</tt><big>(</big><em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.crypto.crl_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.decrypt_text">
+<tt class="descname">decrypt_text</tt><big>(</big><em>project_id</em>, <em>text</em><big>)</big><a class="headerlink" href="#synaps.crypto.decrypt_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.decryptor">
+<tt class="descname">decryptor</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#synaps.crypto.decryptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple symmetric key decryption.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.encryptor">
+<tt class="descname">encryptor</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#synaps.crypto.encryptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple symmetric key encryption.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.ensure_ca_filesystem">
+<tt class="descname">ensure_ca_filesystem</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.crypto.ensure_ca_filesystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure the CA filesystem exists.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.fetch_ca">
+<tt class="descname">fetch_ca</tt><big>(</big><em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.crypto.fetch_ca" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.fetch_crl">
+<tt class="descname">fetch_crl</tt><big>(</big><em>project_id</em><big>)</big><a class="headerlink" href="#synaps.crypto.fetch_crl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get crl file for project.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.generate_fingerprint">
+<tt class="descname">generate_fingerprint</tt><big>(</big><em>public_key</em><big>)</big><a class="headerlink" href="#synaps.crypto.generate_fingerprint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.generate_key_pair">
+<tt class="descname">generate_key_pair</tt><big>(</big><em>bits=1024</em><big>)</big><a class="headerlink" href="#synaps.crypto.generate_key_pair" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.key_path">
+<tt class="descname">key_path</tt><big>(</big><em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.crypto.key_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.revoke_cert">
+<tt class="descname">revoke_cert</tt><big>(</big><em>project_id</em>, <em>file_name</em><big>)</big><a class="headerlink" href="#synaps.crypto.revoke_cert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Revoke a cert by file name.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.crypto.sign_csr">
+<tt class="descname">sign_csr</tt><big>(</big><em>csr_text</em>, <em>project_id=None</em><big>)</big><a class="headerlink" href="#synaps.crypto.sign_csr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/api/synaps.crypto.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

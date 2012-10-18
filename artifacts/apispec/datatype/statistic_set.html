@@ -1,0 +1,169 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>StatisticSet &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../../../index.html" />
+    <link rel="up" title="사용자 API 규격" href="../user.api.html" />
+    <link rel="next" title="공통 쿼리 매개변수" href="../common/common_query_parameters.html" />
+    <link rel="prev" title="MetricDatum" href="metric_datum.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="statisticset">
+<span id="statistic-set"></span><h1>StatisticSet<a class="headerlink" href="#statisticset" title="Permalink to this headline">¶</a></h1>
+<div class="admonition danger">
+<p class="first admonition-title">Danger</p>
+<p class="last">TBD - 아직 구현되지 않음</p>
+</div>
+<div class="section" id="id1">
+<h2>설명<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>StatisticSet 자료 형은 <a class="reference internal" href="metric_datum.html#metric-datum"><em>MetricDatum</em></a> 의 StatisticValues 에 해당함,
+특정 메트릭을 기술하는 통계자료를 나타냄</p>
+</div>
+<div class="section" id="id2">
+<h2>내용<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">이름</th>
+<th class="head">설명</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Maximum</td>
+<td><p class="first">샘플 셋의 최대값</p>
+<p class="last">자료 형: Double</p>
+</td>
+</tr>
+<tr><td>Minimum</td>
+<td><p class="first">샘플 셋의 최소값</p>
+<p class="last">자료 형: Double</p>
+</td>
+</tr>
+<tr><td>SampleCount</td>
+<td><p class="first">샘플의 갯수</p>
+<p class="last">자료 형: Double</p>
+</td>
+</tr>
+<tr><td>Sum</td>
+<td><p class="first">샘플 셋의 합</p>
+<p class="last">자료 형: Double</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">StatisticSet</a><ul>
+<li><a class="reference internal" href="#id1">설명</a></li>
+<li><a class="reference internal" href="#id2">내용</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="metric_datum.html"
+                                  title="previous chapter">MetricDatum</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="../common/common_query_parameters.html"
+                                  title="next chapter">공통 쿼리 매개변수</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../../_sources/artifacts/apispec/datatype/statistic_set.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../common/common_query_parameters.html" title="공통 쿼리 매개변수"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="metric_datum.html" title="MetricDatum"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li>
+          <li><a href="../../apispec.html" >Application Programming Interface</a> &raquo;</li>
+          <li><a href="../user.api.html" accesskey="U">사용자 API 규격</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

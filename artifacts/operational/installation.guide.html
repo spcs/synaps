@@ -1,0 +1,165 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation Guide &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../../index.html" />
+    <link rel="up" title="Operational Manual" href="../operatormanual.html" />
+    <link rel="next" title="Cassandra 설치하기" href="install.cassandra.html" />
+    <link rel="prev" title="Operational Manual" href="../operatormanual.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation-guide">
+<h1>Installation Guide<a class="headerlink" href="#installation-guide" title="Permalink to this headline">¶</a></h1>
+<p>본 문서에서는 Ubuntu 환경에서 서비스를 위해 synaps를 각각의 클러스터에 설치하는
+방법을 설명한다.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">본 문서에서 설치 작업은 root 권한을 가지고 있는 사용자 환경에서 진행하는
+것으로 가정한다.</p>
+</div>
+<p>Synaps 는 아래 그림과 같이 구성된다.</p>
+<img alt="../../_images/SynapsDeployment.jpg" src="../../_images/SynapsDeployment.jpg" style="width: 100%;" />
+<ol class="arabic simple">
+<li>DB Cluster (cassandraNN) - <a class="reference internal" href="../../devref/install/install.cassandra.html#install-cassandra"><em>Cassandra 설치하기</em></a></li>
+<li>MQ Cluster (mqNN) - <a class="reference internal" href="../../devref/install/install.rabbitmq.html#install-rabbitmq"><em>RabbitMQ 설치하기</em></a></li>
+<li>API Cluster (synaps-apiNN) - <a class="reference internal" href="../../devref/install/install.synaps.api.html#install-synaps-api"><em>synaps-api 및 synaps-noti 설치하기</em></a></li>
+<li>STORM Cluster (synaps-nimbus, synaps-sypervisorNN) - <a class="reference internal" href="../../devref/install/install.storm.html#install-storm"><em>Storm 설치하기</em></a></li>
+<li>synaps-noti Node (synaps-noti) - <a class="reference internal" href="../../devref/install/install.synaps.api.html#install-synaps-api"><em>synaps-api 및 synaps-noti 설치하기</em></a></li>
+</ol>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.cassandra.html">Cassandra 설치하기</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.rabbitmq.html">RabbitMQ 설치하기</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.rabbitmq.html#id1">설치</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.rabbitmq.html#id2">설정</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.rabbitmq.html#id3">운영</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install.storm.html">Storm 설치하기</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.storm.html#id1">설치</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.storm.html#id2">설정 및 운영</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install.synaps.api.html">synaps-api 및 synaps-noti 설치하기</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.synaps.api.html#id1">의존모듈 설치</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.synaps.api.html#id2">설치 또는 업그레이드</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install.ganglia.html">Ganglia 설치하기</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.ganglia.html#gmetad">서버(gmetad) 설치</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.ganglia.html#main-node-gmond">Main Node(gmond) 설치 (전체 노드 중 하나)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.ganglia.html#agent">Agent 설치 (전체 노드)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install.common.html">공통 설치 및 설정</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.common.html#synaps">Synaps 설정</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.common.html#database">Database 초기 셋업</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.common.html#api">API 실행 및 정지</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.common.html#os">OS 설정</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.common.html#ntp">NTP 설정</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="../operatormanual.html"
+                                  title="previous chapter">Operational Manual</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="install.cassandra.html"
+                                  title="next chapter">Cassandra 설치하기</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/artifacts/operational/installation.guide.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="install.cassandra.html" title="Cassandra 설치하기"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../operatormanual.html" title="Operational Manual"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li>
+          <li><a href="../operatormanual.html" accesskey="U">Operational Manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

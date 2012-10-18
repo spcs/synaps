@@ -1,0 +1,188 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>공통 쿼리 매개변수 &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="common-query-parameters">
+<span id="id1"></span><h1>공통 쿼리 매개변수<a class="headerlink" href="#common-query-parameters" title="Permalink to this headline">¶</a></h1>
+<p>모든 액션에서 사용하는 매개변수의 목록.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="63%" />
+<col width="13%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">매개변수 이름</th>
+<th class="head">설명</th>
+<th class="head">필수 여부</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Action</td>
+<td><p class="first">수행할 액션</p>
+<p>기본 값: None</p>
+<p class="last">자료 형: String</p>
+</td>
+<td>Yes</td>
+</tr>
+<tr><td>AuthParams</td>
+<td><p class="first">질의 요청을 인증하기 위한 매개변수.</p>
+<p>다음을 포함:</p>
+<p>AWSAccessKeyID</p>
+<p>SignatureVersion</p>
+<p>Timestamp</p>
+<p>Signature</p>
+<p class="last">기본 값: None</p>
+</td>
+<td>조건부</td>
+</tr>
+<tr><td>AWSAccessKeyId</td>
+<td><p class="first">요청에 서명할 AWS Secrete Access Key 와 짝을 이루는 Access Key ID</p>
+<p>기본 값: None</p>
+<p class="last">자료 형: String</p>
+</td>
+<td>Yes</td>
+</tr>
+<tr><td>Expires</td>
+<td><p class="first">요청 서명의 만기 일시. ISO 8601 표준에 명기된 대로 YYYY-MM-DDThh:mm:ssZ
+의 형식을 따른다.</p>
+<p>조건: 요청은 Timestamp 또는 Expires 둘 중 하나를 반드시 포함해야 하며,
+모두 포함할 수 없다.</p>
+<p>기본 값: None</p>
+<p class="last">자료 형: String</p>
+</td>
+<td>조건부</td>
+</tr>
+<tr><td>Signature</td>
+<td><p class="first">요청 시 생성하는 전자 서명.</p>
+<p>기본 값: None</p>
+<p class="last">자료 형: String</p>
+</td>
+<td>Yes</td>
+</tr>
+<tr><td>SignatureMethod</td>
+<td><p class="first">서명에 사용하는 해시 알고리즘</p>
+<p>기본 값: None</p>
+<p>유효 값: HmacSHA256 | HmacSHA1.</p>
+<p class="last">자료 형: String</p>
+</td>
+<td>Yes</td>
+</tr>
+<tr><td>SignatureVersion</td>
+<td><p class="first">요청에 서명할 때 사용한 서명의 버전</p>
+<p>기본 값: None</p>
+<p class="last">자료 형: String</p>
+</td>
+<td>Yes</td>
+</tr>
+<tr><td>Timestamp</td>
+<td><p class="first">요청에 서명하는 날짜 및 시간, ISO 8601 표준에 따라 YYYY-MM-DDThh:mm:ssZ
+와 같은 형식을 따른다.</p>
+<p>조건: 요청은 Timestamp 또는 Expires 둘 중 하나를 반드시 포함해야 하며,
+모두 포함할 수 없다.</p>
+<p>기본 값: None</p>
+<p class="last">자료 형: String</p>
+</td>
+<td>조건부</td>
+</tr>
+<tr><td>Version</td>
+<td><p class="first">사용할 API 버전, YYYY-MM-DD.</p>
+<p>기본 값: None</p>
+<p class="last">자료 형: String</p>
+</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/apispec/common/common_query_parameters.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

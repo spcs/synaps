@@ -1,0 +1,208 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The synaps.log Module &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-synaps.log">
+<span id="the-synaps-log-module"></span><h1>The <a class="reference internal" href="#module-synaps.log" title="synaps.log"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.log</span></tt></a> Module<a class="headerlink" href="#module-synaps.log" title="Permalink to this headline">¶</a></h1>
+<p>Synaps logging handler.</p>
+<p>This module adds to logging functionality by adding the option to specify
+a context object when calling the various log methods.  If the context object
+is not specified, default formatting is used. Additionally, an instance uuid
+may be passed as part of the log message, which is intended to make it easier
+for admins to find messages related to a specific instance.</p>
+<p>It also allows setting of formatting information through flags.</p>
+<dl class="class">
+<dt id="synaps.log.JSONFormatter">
+<em class="property">class </em><tt class="descname">JSONFormatter</tt><big>(</big><em>fmt=None</em>, <em>datefmt=None</em><big>)</big><a class="headerlink" href="#synaps.log.JSONFormatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">logging.Formatter</span></tt></p>
+<dl class="method">
+<dt id="synaps.log.JSONFormatter.format">
+<tt class="descname">format</tt><big>(</big><em>record</em><big>)</big><a class="headerlink" href="#synaps.log.JSONFormatter.format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.log.JSONFormatter.formatException">
+<tt class="descname">formatException</tt><big>(</big><em>ei</em>, <em>strip_newlines=True</em><big>)</big><a class="headerlink" href="#synaps.log.JSONFormatter.formatException" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.log.LegacyNovaFormatter">
+<em class="property">class </em><tt class="descname">LegacyNovaFormatter</tt><big>(</big><em>fmt=None</em>, <em>datefmt=None</em><big>)</big><a class="headerlink" href="#synaps.log.LegacyNovaFormatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">logging.Formatter</span></tt></p>
+<p>A synaps.context.RequestContext aware formatter configured through flags.</p>
+<p>The flags used to set format strings are: logging_context_format_string
+and logging_default_format_string.  You can also specify
+logging_debug_format_suffix to append extra formatting if the log level is
+debug.</p>
+<p>For information about what variables are available for the formatter see:
+<a class="reference external" href="http://docs.python.org/library/logging.html#formatter">http://docs.python.org/library/logging.html#formatter</a></p>
+<dl class="method">
+<dt id="synaps.log.LegacyNovaFormatter.format">
+<tt class="descname">format</tt><big>(</big><em>record</em><big>)</big><a class="headerlink" href="#synaps.log.LegacyNovaFormatter.format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses contextstring if request_id is set, otherwise default.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.log.LegacyNovaFormatter.formatException">
+<tt class="descname">formatException</tt><big>(</big><em>exc_info</em>, <em>record=None</em><big>)</big><a class="headerlink" href="#synaps.log.LegacyNovaFormatter.formatException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format exception output with FLAGS.logging_exception_prefix.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.log.PublishErrorsHandler">
+<em class="property">class </em><tt class="descname">PublishErrorsHandler</tt><big>(</big><em>level=0</em><big>)</big><a class="headerlink" href="#synaps.log.PublishErrorsHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">logging.Handler</span></tt></p>
+<dl class="method">
+<dt id="synaps.log.PublishErrorsHandler.emit">
+<tt class="descname">emit</tt><big>(</big><em>record</em><big>)</big><a class="headerlink" href="#synaps.log.PublishErrorsHandler.emit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.log.SynapsContextAdapter">
+<em class="property">class </em><tt class="descname">SynapsContextAdapter</tt><big>(</big><em>logger</em><big>)</big><a class="headerlink" href="#synaps.log.SynapsContextAdapter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">logging.LoggerAdapter</span></tt></p>
+<dl class="method">
+<dt id="synaps.log.SynapsContextAdapter.audit">
+<tt class="descname">audit</tt><big>(</big><em>msg</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.log.SynapsContextAdapter.audit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.log.SynapsContextAdapter.process">
+<tt class="descname">process</tt><big>(</big><em>msg</em>, <em>kwargs</em><big>)</big><a class="headerlink" href="#synaps.log.SynapsContextAdapter.process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.log.SynapsContextAdapter.warn">
+<tt class="descname">warn</tt><big>(</big><em>msg</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.log.SynapsContextAdapter.warn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delegate a warning call to the underlying logger, after adding
+contextual information from this adapter instance.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.log.WritableLogger">
+<em class="property">class </em><tt class="descname">WritableLogger</tt><big>(</big><em>logger</em>, <em>level=20</em><big>)</big><a class="headerlink" href="#synaps.log.WritableLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A thin wrapper that responds to <cite>write</cite> and logs.</p>
+<dl class="method">
+<dt id="synaps.log.WritableLogger.write">
+<tt class="descname">write</tt><big>(</big><em>msg</em><big>)</big><a class="headerlink" href="#synaps.log.WritableLogger.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.log.getLogger">
+<tt class="descname">getLogger</tt><big>(</big><em>name='synaps'</em><big>)</big><a class="headerlink" href="#synaps.log.getLogger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.log.handle_exception">
+<tt class="descname">handle_exception</tt><big>(</big><em>type</em>, <em>value</em>, <em>tb</em><big>)</big><a class="headerlink" href="#synaps.log.handle_exception" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.log.setup">
+<tt class="descname">setup</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.log.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup synaps logging.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/api/synaps.log.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

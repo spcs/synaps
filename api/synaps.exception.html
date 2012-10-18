@@ -1,0 +1,353 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The synaps.exception Module &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-synaps.exception">
+<span id="the-synaps-exception-module"></span><h1>The <a class="reference internal" href="#module-synaps.exception" title="synaps.exception"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.exception</span></tt></a> Module<a class="headerlink" href="#module-synaps.exception" title="Permalink to this headline">¶</a></h1>
+<p>Synaps base exception handling.</p>
+<p>Includes decorator for re-raising Synaps-type exceptions.</p>
+<p>SHOULD include dedicated exception logging.</p>
+<dl class="exception">
+<dt id="synaps.exception.AccessKeyNotFound">
+<em class="property">exception </em><tt class="descname">AccessKeyNotFound</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.AccessKeyNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.ResourceNotFound" title="synaps.exception.ResourceNotFound"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.ResourceNotFound</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.AdminRequired">
+<em class="property">exception </em><tt class="descname">AdminRequired</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.AdminRequired" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.NotAuthorized" title="synaps.exception.NotAuthorized"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.NotAuthorized</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.ClassNotFound">
+<em class="property">exception </em><tt class="descname">ClassNotFound</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.ClassNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.ResourceNotFound" title="synaps.exception.ResourceNotFound"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.ResourceNotFound</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.CloudwatchAPIError">
+<em class="property">exception </em><tt class="descname">CloudwatchAPIError</tt><big>(</big><em>message='Unknown'</em>, <em>code=None</em><big>)</big><a class="headerlink" href="#synaps.exception.CloudwatchAPIError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.Error" title="synaps.exception.Error"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.Error</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.ConfigNotFound">
+<em class="property">exception </em><tt class="descname">ConfigNotFound</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.ConfigNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.ResourceNotFound" title="synaps.exception.ResourceNotFound"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.ResourceNotFound</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.ConvertedException">
+<em class="property">exception </em><tt class="descname">ConvertedException</tt><big>(</big><em>code=0</em>, <em>title=''</em>, <em>explanation=''</em><big>)</big><a class="headerlink" href="#synaps.exception.ConvertedException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">webob.exc.WSGIHTTPException</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.DBError">
+<em class="property">exception </em><tt class="descname">DBError</tt><big>(</big><em>inner_exception=None</em><big>)</big><a class="headerlink" href="#synaps.exception.DBError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.Error" title="synaps.exception.Error"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.Error</span></tt></a></p>
+<p>Wraps an implementation specific exception.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.DecryptionFailure">
+<em class="property">exception </em><tt class="descname">DecryptionFailure</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.DecryptionFailure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.SynapsException" title="synaps.exception.SynapsException"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.SynapsException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.Duplicate">
+<em class="property">exception </em><tt class="descname">Duplicate</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.Duplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.SynapsException" title="synaps.exception.SynapsException"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.SynapsException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.Error">
+<em class="property">exception </em><tt class="descname">Error</tt><a class="headerlink" href="#synaps.exception.Error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.GlobalRoleNotAllowed">
+<em class="property">exception </em><tt class="descname">GlobalRoleNotAllowed</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.GlobalRoleNotAllowed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.NotAllowed" title="synaps.exception.NotAllowed"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.NotAllowed</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.Invalid">
+<em class="property">exception </em><tt class="descname">Invalid</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.Invalid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.SynapsException" title="synaps.exception.SynapsException"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.SynapsException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.InvalidFormat">
+<em class="property">exception </em><tt class="descname">InvalidFormat</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.InvalidFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.Invalid" title="synaps.exception.Invalid"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.Invalid</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.InvalidKeypair">
+<em class="property">exception </em><tt class="descname">InvalidKeypair</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.InvalidKeypair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.Invalid" title="synaps.exception.Invalid"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.Invalid</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.InvalidNextToken">
+<em class="property">exception </em><tt class="descname">InvalidNextToken</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.InvalidNextToken" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.Invalid" title="synaps.exception.Invalid"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.Invalid</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.InvalidParameterValue">
+<em class="property">exception </em><tt class="descname">InvalidParameterValue</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.InvalidParameterValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.Invalid" title="synaps.exception.Invalid"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.Invalid</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.InvalidRequest">
+<em class="property">exception </em><tt class="descname">InvalidRequest</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.InvalidRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.Invalid" title="synaps.exception.Invalid"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.Invalid</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.InvalidSignature">
+<em class="property">exception </em><tt class="descname">InvalidSignature</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.InvalidSignature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.Invalid" title="synaps.exception.Invalid"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.Invalid</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.KeyPairExists">
+<em class="property">exception </em><tt class="descname">KeyPairExists</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.KeyPairExists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.Duplicate" title="synaps.exception.Duplicate"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.Duplicate</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.LDAPGroupExists">
+<em class="property">exception </em><tt class="descname">LDAPGroupExists</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.LDAPGroupExists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.Duplicate" title="synaps.exception.Duplicate"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.Duplicate</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.LDAPGroupMembershipNotFound">
+<em class="property">exception </em><tt class="descname">LDAPGroupMembershipNotFound</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.LDAPGroupMembershipNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.NotFound" title="synaps.exception.NotFound"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.NotFound</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.LDAPGroupNotFound">
+<em class="property">exception </em><tt class="descname">LDAPGroupNotFound</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.LDAPGroupNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.LDAPObjectNotFound" title="synaps.exception.LDAPObjectNotFound"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.LDAPObjectNotFound</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.LDAPMembershipExists">
+<em class="property">exception </em><tt class="descname">LDAPMembershipExists</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.LDAPMembershipExists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.Duplicate" title="synaps.exception.Duplicate"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.Duplicate</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.LDAPObjectNotFound">
+<em class="property">exception </em><tt class="descname">LDAPObjectNotFound</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.LDAPObjectNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.NotFound" title="synaps.exception.NotFound"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.NotFound</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.LDAPUserExists">
+<em class="property">exception </em><tt class="descname">LDAPUserExists</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.LDAPUserExists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.UserExists" title="synaps.exception.UserExists"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.UserExists</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.LDAPUserNotFound">
+<em class="property">exception </em><tt class="descname">LDAPUserNotFound</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.LDAPUserNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.LDAPObjectNotFound" title="synaps.exception.LDAPObjectNotFound"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.LDAPObjectNotFound</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.NotAllowed">
+<em class="property">exception </em><tt class="descname">NotAllowed</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.NotAllowed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.SynapsException" title="synaps.exception.SynapsException"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.SynapsException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.NotAuthorized">
+<em class="property">exception </em><tt class="descname">NotAuthorized</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.NotAuthorized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.SynapsException" title="synaps.exception.SynapsException"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.SynapsException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.NotFound">
+<em class="property">exception </em><tt class="descname">NotFound</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.NotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.SynapsException" title="synaps.exception.SynapsException"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.SynapsException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.PasteAppNotFound">
+<em class="property">exception </em><tt class="descname">PasteAppNotFound</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.PasteAppNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.ResourceNotFound" title="synaps.exception.ResourceNotFound"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.ResourceNotFound</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.ProcessExecutionError">
+<em class="property">exception </em><tt class="descname">ProcessExecutionError</tt><big>(</big><em>stdout=None</em>, <em>stderr=None</em>, <em>exit_code=None</em>, <em>cmd=None</em>, <em>description=None</em><big>)</big><a class="headerlink" href="#synaps.exception.ProcessExecutionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.IOError</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.ProjectExists">
+<em class="property">exception </em><tt class="descname">ProjectExists</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.ProjectExists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.Duplicate" title="synaps.exception.Duplicate"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.Duplicate</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.ProjectMembershipNotFound">
+<em class="property">exception </em><tt class="descname">ProjectMembershipNotFound</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.ProjectMembershipNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.ResourceNotFound" title="synaps.exception.ResourceNotFound"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.ResourceNotFound</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.ProjectNotFound">
+<em class="property">exception </em><tt class="descname">ProjectNotFound</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.ProjectNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.ResourceNotFound" title="synaps.exception.ResourceNotFound"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.ResourceNotFound</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.ResourceNotFound">
+<em class="property">exception </em><tt class="descname">ResourceNotFound</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.ResourceNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.SynapsException" title="synaps.exception.SynapsException"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.SynapsException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.RpcInvokeException">
+<em class="property">exception </em><tt class="descname">RpcInvokeException</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.RpcInvokeException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.SynapsException" title="synaps.exception.SynapsException"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.SynapsException</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.SynapsException">
+<em class="property">exception </em><tt class="descname">SynapsException</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.SynapsException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>Base Synaps Exception</p>
+<p>To correctly use this class, inherit from it and define
+a &#8216;message&#8217; property. That message will get printf&#8217;d
+with the keyword arguments provided to the constructor.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.UserExists">
+<em class="property">exception </em><tt class="descname">UserExists</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.UserExists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.Duplicate" title="synaps.exception.Duplicate"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.Duplicate</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.exception.UserRoleNotFound">
+<em class="property">exception </em><tt class="descname">UserRoleNotFound</tt><big>(</big><em>message=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.exception.UserRoleNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.exception.ResourceNotFound" title="synaps.exception.ResourceNotFound"><tt class="xref py py-class docutils literal"><span class="pre">synaps.exception.ResourceNotFound</span></tt></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.exception.wrap_db_error">
+<tt class="descname">wrap_db_error</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#synaps.exception.wrap_db_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.exception.wrap_exception">
+<tt class="descname">wrap_exception</tt><big>(</big><em>notifier=None</em>, <em>publisher_id=None</em>, <em>event_type=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#synaps.exception.wrap_exception" title="Permalink to this definition">¶</a></dt>
+<dd><p>This decorator wraps a method to catch any exceptions that may
+get thrown. It logs the exception as well as optionally sending
+it to the notification system.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/api/synaps.exception.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

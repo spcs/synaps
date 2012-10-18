@@ -1,0 +1,218 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Synaps Documentation &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="#" />
+    <link rel="next" title="Program Specification" href="artifacts/programspec.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="synaps-documentation">
+<h1>Synaps Documentation<a class="headerlink" href="#synaps-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>Synaps is a cloud monitoring system.</p>
+<ul class="simple">
+<li>linear scalable</li>
+<li>AWS CloudWatch API Compatible</li>
+<li>real-time monitoring system</li>
+</ul>
+</div>
+<div class="section" id="synaps-artifacts">
+<h2>Synaps Artifacts<a class="headerlink" href="#synaps-artifacts" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/programspec.html">Program Specification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/programspec.html#program-architecture">Program Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/programspec.html#program-synaps-api">Program: Synaps API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/programspec.html#asynchrous-request-processing">Asynchrous request processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/programspec.html#synchrous-request-processing">Synchrous request processing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/programspec.html#program-synaps-storm">Program: Synaps Storm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/programspec.html#putmetricdata-message-processing">PutMetricData message processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/programspec.html#putmetricalarm-message-processing">PutMetricAlarm message processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/programspec.html#periodicmonitoring-message-processing">PeriodicMonitoring message processing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/dbmodel.html">Database Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/dbmodel.html#keyspace-description">Keyspace Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/dbmodel.html#columnfamily-description">ColumnFamily Description</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/dbmodel.html#alarmhistory">AlarmHistory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/dbmodel.html#metric">Metric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/dbmodel.html#metricalarm">MetricAlarm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/dbmodel.html#statarchive">StatArchive</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/apispec.html">Application Programming Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/apispec/user.api.html">사용자 API 규격</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/apispec/user.api.html#id1">액션</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/apispec/user.api.html#id2">자료 형</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/apispec/user.api.html#id3">공통</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/apispec/admin.api.html">관리자 API 규격</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/sdkspec.html">SDK(Software Development Toolkit) specification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/sdkspec.html#user-sdk">User SDK</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/sdkspec.html#java-sdk">Java SDK</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/sdkspec.html#python-sdk">Python SDK</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/sdkspec.html#admin-sdk">Admin SDK</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/sdkspec.html#id1">Java SDK</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/sdkspec.html#sdk-user-guide">SDK User Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/sdk/user.sdk.example.html">SDK User Guide</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/usermanual.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/operatormanual.html">Operational Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/operational/installation.guide.html">Installation Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.cassandra.html">Cassandra 설치하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.rabbitmq.html">RabbitMQ 설치하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.storm.html">Storm 설치하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.synaps.api.html">synaps-api 및 synaps-noti 설치하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.ganglia.html">Ganglia 설치하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.common.html">공통 설치 및 설정</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/operational/deploy.synaps.html">synaps-api, synaps-noti, synaps-storm 배포</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/deploy.synaps.html#synaps-api-synaps-noti">synaps-api, synaps-noti 배포</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/deploy.synaps.html#synaps-storm">synaps-storm 배포</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/developersguide.html">Developer Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/devref/development.environment.html">로컬 개발 환경 구축하기</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/devref/development.environment.html#id2">환경 구성하기</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="#">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">Synaps Documentation</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#synaps-artifacts">Synaps Artifacts</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Next topic</h4>
+            <p class="topless"><a href="artifacts/programspec.html"
+                                  title="next chapter">Program Specification</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/index.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="artifacts/programspec.html" title="Program Specification"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

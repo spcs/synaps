@@ -1,0 +1,153 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>로컬 개발 환경 구축하기 &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../../index.html" />
+    <link rel="up" title="Developer Guide" href="../developersguide.html" />
+    <link rel="prev" title="Developer Guide" href="../developersguide.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="development-environment">
+<span id="id1"></span><h1>로컬 개발 환경 구축하기<a class="headerlink" href="#development-environment" title="Permalink to this headline">¶</a></h1>
+<p>Ubuntu 상에서 SPCS Synaps를 개발하기 위한 환경을 구축하는 방법을 설명한다.
+본 지침에서 독자는 이미 GIT 에 익숙하다고 가정한다.</p>
+<div class="section" id="id2">
+<h2>환경 구성하기<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h3>카산드라 데이터베이스 설치<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>synaps는 metric 통계자료 및 alarm 을 저장하기 위해서 카산드라를 사용한다.
+로컬 개발 환경을 구축하기 위해서 카산드라를 설치해야한다. 카산드라를 설치하는
+여러 방법 중 <a class="reference external" href="http://wiki.apache.org/cassandra/DebianPackaging">Debian 패키지를 통한 설치</a> 를 권장한다. 현재 synaps는
+카산드라 1.0.8 에서 개발 중이다.</p>
+</div>
+<div class="section" id="storm">
+<h3>Storm 설치<a class="headerlink" href="#storm" title="Permalink to this headline">¶</a></h3>
+<p>synaps는 metric의 스트림을 실시간으로 모니터하기 위해서 실시간 분산 처리 엔진인
+<a class="reference external" href="https://github.com/nathanmarz/storm/wiki">Storm</a> 을 사용한다. <a class="reference external" href="https://github.com/nathanmarz/storm/wiki/Setting-up-development-environment">Storm의 개발환경 설정에 관련한 문서</a> 를 참고해서 Storm을
+설치한다.</p>
+</div>
+<div class="section" id="rabbitmq">
+<h3>RabbitMQ 설치<a class="headerlink" href="#rabbitmq" title="Permalink to this headline">¶</a></h3>
+<p>synaps는 웹서버에서 Storm으로 메시지를 넘겨주기 위해 <a class="reference external" href="http://www.rabbitmq.com/">RabbitMQ</a> 를 사용한다.
+<a class="reference external" href="http://www.rabbitmq.com/install-debian.html">데비안 설치문서</a> 를 참고해서 RabbitMQ를 설치한다.</p>
+</div>
+<div class="section" id="synaps-api">
+<h3>synaps-api 빌드, 설치 및 실행<a class="headerlink" href="#synaps-api" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="../../devref/install/install.synaps.api.html#install-synaps-api"><em>synaps-api 및 synaps-noti 설치하기</em></a> 참고</p>
+</div>
+<div class="section" id="synaps-storm">
+<h3>synaps-storm 빌드 및 실행<a class="headerlink" href="#synaps-storm" title="Permalink to this headline">¶</a></h3>
+<p>TBD</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">로컬 개발 환경 구축하기</a><ul>
+<li><a class="reference internal" href="#id2">환경 구성하기</a><ul>
+<li><a class="reference internal" href="#id3">카산드라 데이터베이스 설치</a></li>
+<li><a class="reference internal" href="#storm">Storm 설치</a></li>
+<li><a class="reference internal" href="#rabbitmq">RabbitMQ 설치</a></li>
+<li><a class="reference internal" href="#synaps-api">synaps-api 빌드, 설치 및 실행</a></li>
+<li><a class="reference internal" href="#synaps-storm">synaps-storm 빌드 및 실행</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="../developersguide.html"
+                                  title="previous chapter">Developer Guide</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/artifacts/devref/development.environment.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../developersguide.html" title="Developer Guide"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li>
+          <li><a href="../developersguide.html" accesskey="U">Developer Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

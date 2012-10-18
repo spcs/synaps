@@ -1,0 +1,713 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The synaps.openstack.common.cfg Module &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-synaps.openstack.common.cfg">
+<span id="the-synaps-openstack-common-cfg-module"></span><h1>The <a class="reference internal" href="#module-synaps.openstack.common.cfg" title="synaps.openstack.common.cfg"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.openstack.common.cfg</span></tt></a> Module<a class="headerlink" href="#module-synaps.openstack.common.cfg" title="Permalink to this headline">¶</a></h1>
+<p>Configuration options which may be set on the command line or in config files.</p>
+<p>The schema for each option is defined using the Opt sub-classes e.g.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>common_opts = [</dt>
+<dd><dl class="first last docutils">
+<dt>cfg.StrOpt(&#8216;bind_host&#8217;,</dt>
+<dd>default=&#8216;0.0.0.0&#8217;,
+help=&#8217;IP address to listen on&#8217;),</dd>
+<dt>cfg.IntOpt(&#8216;bind_port&#8217;,</dt>
+<dd>default=9292,
+help=&#8217;Port number to listen on&#8217;)</dd>
+</dl>
+</dd>
+</dl>
+<p>]</p>
+</div></blockquote>
+<p>Options can be strings, integers, floats, booleans, lists or &#8216;multi strings&#8217;:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>enabled_apis_opt = cfg.ListOpt(&#8216;enabled_apis&#8217;,</dt>
+<dd>default=[&#8216;cloudwatch&#8217;, &#8216;osapi_compute&#8217;],
+help=&#8217;List of APIs to enable by default&#8217;)</dd>
+<dt>DEFAULT_EXTENSIONS = [</dt>
+<dd>&#8216;synaps.api.openstack.contrib.standard_extensions&#8217;</dd>
+</dl>
+<p>]
+osapi_compute_extension_opt = cfg.MultiStrOpt(&#8216;osapi_compute_extension&#8217;,</p>
+<blockquote>
+<div>default=DEFAULT_EXTENSIONS)</div></blockquote>
+</div></blockquote>
+<p>Option schemas are registered with with the config manager at runtime, but
+before the option is referenced:</p>
+<blockquote>
+<div><p>class ExtensionManager(object):</p>
+<blockquote>
+<div><p>enabled_apis_opt = cfg.ListOpt(...)</p>
+<dl class="docutils">
+<dt>def __init__(self, conf):</dt>
+<dd>self.conf = conf
+self.conf.register_opt(enabled_apis_opt)
+...</dd>
+<dt>def _load_extensions(self):</dt>
+<dd><dl class="first last docutils">
+<dt>for ext_factory in self.conf.osapi_compute_extension:</dt>
+<dd></dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+<p>A common usage pattern is for each option schema to be defined in the module or
+class which uses the option:</p>
+<blockquote>
+<div><p>opts = ...</p>
+<dl class="docutils">
+<dt>def add_common_opts(conf):</dt>
+<dd>conf.register_opts(opts)</dd>
+<dt>def get_bind_host(conf):</dt>
+<dd>return conf.bind_host</dd>
+<dt>def get_bind_port(conf):</dt>
+<dd>return conf.bind_port</dd>
+</dl>
+</div></blockquote>
+<p>An option may optionally be made available via the command line. Such options
+must registered with the config manager before the command line is parsed (for
+the purposes of &#8211;help and CLI arg validation):</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>cli_opts = [</dt>
+<dd><dl class="first last docutils">
+<dt>cfg.BoolOpt(&#8216;verbose&#8217;,</dt>
+<dd>short=&#8217;v&#8217;,
+default=False,
+help=&#8217;Print more verbose output&#8217;),</dd>
+<dt>cfg.BoolOpt(&#8216;debug&#8217;,</dt>
+<dd>short=&#8217;d&#8217;,
+default=False,
+help=&#8217;Print debugging output&#8217;),</dd>
+</dl>
+</dd>
+</dl>
+<p>]</p>
+<dl class="docutils">
+<dt>def add_common_opts(conf):</dt>
+<dd>conf.register_cli_opts(cli_opts)</dd>
+</dl>
+</div></blockquote>
+<p>The config manager has a single CLI option defined by default, &#8211;config-file:</p>
+<blockquote>
+<div><p>class ConfigOpts(object):</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>config_file_opt = MultiStrOpt(&#8216;config-file&#8217;,</dt>
+<dd>...</dd>
+<dt>def __init__(self, ...):</dt>
+<dd>...
+self.register_cli_opt(self.config_file_opt)</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+<p>Option values are parsed from any supplied config files using SafeConfigParser.
+If none are specified, a default set is used e.g. glance-api.conf and
+glance-common.conf:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>glance-api.conf:</dt>
+<dd>[DEFAULT]
+bind_port = 9292</dd>
+<dt>glance-common.conf:</dt>
+<dd>[DEFAULT]
+bind_host = 0.0.0.0</dd>
+</dl>
+</div></blockquote>
+<p>Option values in config files override those on the command line. Config files
+are parsed in order, with values in later files overriding those in earlier
+files.</p>
+<p>The parsing of CLI args and config files is initiated by invoking the config
+manager e.g.</p>
+<blockquote>
+<div><p>conf = ConfigOpts()
+conf.register_opt(BoolOpt(&#8216;verbose&#8217;, ...))
+conf(sys.argv[1:])
+if conf.verbose:</p>
+<blockquote>
+<div>...</div></blockquote>
+</div></blockquote>
+<p>Options can be registered as belonging to a group:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>rabbit_group = cfg.OptionGroup(name=&#8217;rabbit&#8217;,</dt>
+<dd>title=&#8217;RabbitMQ options&#8217;)</dd>
+<dt>rabbit_host_opt = cfg.StrOpt(&#8216;host&#8217;,</dt>
+<dd>default=&#8217;localhost&#8217;,
+help=&#8217;IP/hostname to listen on&#8217;),</dd>
+<dt>rabbit_port_opt = cfg.IntOpt(&#8216;port&#8217;,</dt>
+<dd>default=5672,
+help=&#8217;Port number to listen on&#8217;)</dd>
+<dt>def register_rabbit_opts(conf):</dt>
+<dd>conf.register_group(rabbit_group)
+# options can be registered under a group in either of these ways:
+conf.register_opt(rabbit_host_opt, group=rabbit_group)
+conf.register_opt(rabbit_port_opt, group=&#8217;rabbit&#8217;)</dd>
+</dl>
+</div></blockquote>
+<p>If no group is specified, options belong to the &#8216;DEFAULT&#8217; section of config
+files:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>glance-api.conf:</dt>
+<dd><p class="first">[DEFAULT]
+bind_port = 9292
+...</p>
+<p class="last">[rabbit]
+host = localhost
+port = 5672
+use_ssl = False
+userid = guest
+password = guest
+virtual_host = /</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Command-line options in a group are automatically prefixed with the group name:</p>
+<blockquote>
+<div>&#8211;rabbit-host localhost &#8211;rabbit-port 9999</div></blockquote>
+<p>Option values in the default group are referenced as attributes/properties on
+the config manager; groups are also attributes on the config manager, with
+attributes for each of the options associated with the group:</p>
+<blockquote>
+<div><p>server.start(app, conf.bind_port, conf.bind_host, conf)</p>
+<dl class="docutils">
+<dt>self.connection = kombu.connection.BrokerConnection(</dt>
+<dd>hostname=conf.rabbit.host,
+port=conf.rabbit.port,
+...)</dd>
+</dl>
+</div></blockquote>
+<p>Option values may reference other values using PEP 292 string substitution:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>opts = [</dt>
+<dd><dl class="first last docutils">
+<dt>cfg.StrOpt(&#8216;state_path&#8217;,</dt>
+<dd>default=os.path.join(os.path.dirname(__file__), &#8216;../&#8217;),
+help=&#8217;Top-level directory for maintaining synaps state&#8217;),</dd>
+<dt>cfg.StrOpt(&#8216;sqlite_db&#8217;,</dt>
+<dd>default=&#8217;synaps.sqlite&#8217;,
+help=&#8217;file name for sqlite&#8217;),</dd>
+<dt>cfg.StrOpt(&#8216;sql_connection&#8217;,</dt>
+<dd>default=&#8217;sqlite:///$state_path/$sqlite_db&#8217;,
+help=&#8217;connection string for sql database&#8217;),</dd>
+</dl>
+</dd>
+</dl>
+<p>]</p>
+</div></blockquote>
+<p>Note that interpolation can be avoided by using &#8216;$$&#8217;.</p>
+<p>For command line utilities that dispatch to other command line utilities, the
+disable_interspersed_args() method is available. If this this method is called,
+then parsing e.g.</p>
+<blockquote>
+<div>script &#8211;verbose cmd &#8211;debug /tmp/mything</div></blockquote>
+<p>will no longer return:</p>
+<blockquote>
+<div>[&#8216;cmd&#8217;, &#8216;/tmp/mything&#8217;]</div></blockquote>
+<p>as the leftover arguments, but will instead return:</p>
+<blockquote>
+<div>[&#8216;cmd&#8217;, &#8216;&#8211;debug&#8217;, &#8216;/tmp/mything&#8217;]</div></blockquote>
+<p>i.e. argument parsing is stopped at the first non-option argument.</p>
+<dl class="exception">
+<dt id="synaps.openstack.common.cfg.ArgsAlreadyParsedError">
+<em class="property">exception </em><tt class="descname">ArgsAlreadyParsedError</tt><big>(</big><em>msg=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ArgsAlreadyParsedError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Error" title="synaps.openstack.common.cfg.Error"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Error</span></tt></a></p>
+<p>Raised if a CLI opt is registered after parsing.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.openstack.common.cfg.BoolOpt">
+<em class="property">class </em><tt class="descname">BoolOpt</tt><big>(</big><em>name</em>, <em>dest=None</em>, <em>short=None</em>, <em>default=None</em>, <em>metavar=None</em>, <em>help=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.BoolOpt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Opt" title="synaps.openstack.common.cfg.Opt"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Opt</span></tt></a></p>
+<p>Bool opts are set to True or False on the command line using &#8211;optname or
+&#8211;noopttname respectively.</p>
+<p>In config files, boolean values are case insensitive and can be set using
+1/0, yes/no, true/false or on/off.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.openstack.common.cfg.CommonConfigOpts">
+<em class="property">class </em><tt class="descname">CommonConfigOpts</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.CommonConfigOpts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.ConfigOpts" title="synaps.openstack.common.cfg.ConfigOpts"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.ConfigOpts</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.openstack.common.cfg.ConfigFileParseError">
+<em class="property">exception </em><tt class="descname">ConfigFileParseError</tt><big>(</big><em>config_file</em>, <em>msg</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigFileParseError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Error" title="synaps.openstack.common.cfg.Error"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Error</span></tt></a></p>
+<p>Raised if there is an error parsing a config file.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.openstack.common.cfg.ConfigFileValueError">
+<em class="property">exception </em><tt class="descname">ConfigFileValueError</tt><big>(</big><em>msg=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigFileValueError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Error" title="synaps.openstack.common.cfg.Error"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Error</span></tt></a></p>
+<p>Raised if a config file value does not match its opt type.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.openstack.common.cfg.ConfigFilesNotFoundError">
+<em class="property">exception </em><tt class="descname">ConfigFilesNotFoundError</tt><big>(</big><em>config_files</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigFilesNotFoundError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Error" title="synaps.openstack.common.cfg.Error"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Error</span></tt></a></p>
+<p>Raised if one or more config files are not found.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.openstack.common.cfg.ConfigOpts">
+<em class="property">class </em><tt class="descname">ConfigOpts</tt><big>(</big><em>project=None</em>, <em>prog=None</em>, <em>version=None</em>, <em>usage=None</em>, <em>default_config_files=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">_abcoll.Mapping</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Config options which may be set on the command line or in config files.</p>
+<p>ConfigOpts is a configuration option manager with APIs for registering
+option schemas, grouping options, parsing option values and retrieving
+the values of options.</p>
+<dl class="class">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.GroupAttr">
+<em class="property">class </em><tt class="descname">GroupAttr</tt><big>(</big><em>conf</em>, <em>group</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.GroupAttr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">_abcoll.Mapping</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A helper class representing the option values of a group as a mapping
+and attributes.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.StrSubWrapper">
+<em class="property">class </em><tt class="descclassname">ConfigOpts.</tt><tt class="descname">StrSubWrapper</tt><big>(</big><em>conf</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.StrSubWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A helper class exposing opt values as a dict for string substitution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.disable_interspersed_args">
+<tt class="descclassname">ConfigOpts.</tt><tt class="descname">disable_interspersed_args</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.disable_interspersed_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set parsing to stop on the first non-option.</p>
+<p>If this this method is called, then parsing e.g.</p>
+<blockquote>
+<div>script &#8211;verbose cmd &#8211;debug /tmp/mything</div></blockquote>
+<p>will no longer return:</p>
+<blockquote>
+<div>[&#8216;cmd&#8217;, &#8216;/tmp/mything&#8217;]</div></blockquote>
+<p>as the leftover arguments, but will instead return:</p>
+<blockquote>
+<div>[&#8216;cmd&#8217;, &#8216;&#8211;debug&#8217;, &#8216;/tmp/mything&#8217;]</div></blockquote>
+<p>i.e. argument parsing is stopped at the first non-option argument.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.enable_interspersed_args">
+<tt class="descclassname">ConfigOpts.</tt><tt class="descname">enable_interspersed_args</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.enable_interspersed_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set parsing to not stop on the first non-option.</p>
+<p>This it the default behaviour.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.log_opt_values">
+<tt class="descclassname">ConfigOpts.</tt><tt class="descname">log_opt_values</tt><big>(</big><em>logger</em>, <em>lvl</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.log_opt_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log the value of all registered opts.</p>
+<p>It&#8217;s often useful for an app to log its configuration to a log file at
+startup for debugging. This method dumps to the entire config state to
+the supplied logger at a given log level.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>logger</strong> &#8211; a logging.Logger object</li>
+<li><strong>lvl</strong> &#8211; the log level (e.g. logging.DEBUG) arg to logger.log()</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.print_usage">
+<tt class="descclassname">ConfigOpts.</tt><tt class="descname">print_usage</tt><big>(</big><em>file=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.print_usage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the usage message for the current program.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.register_cli_opt">
+<tt class="descclassname">ConfigOpts.</tt><tt class="descname">register_cli_opt</tt><big>(</big><em>opt</em>, <em>group=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.register_cli_opt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a CLI option schema.</p>
+<p>CLI option schemas must be registered before the command line and
+config files are parsed. This is to ensure that all CLI options are
+show in &#8211;help and option validation works as expected.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>opt</strong> &#8211; an instance of an Opt sub-class</li>
+<li><strong>group</strong> &#8211; an optional OptGroup object or group name</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">False if the opt was already register, True otherwise</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">DuplicateOptError, ArgsAlreadyParsedError</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.register_cli_opts">
+<tt class="descclassname">ConfigOpts.</tt><tt class="descname">register_cli_opts</tt><big>(</big><em>opts</em>, <em>group=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.register_cli_opts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register multiple CLI option schemas at once.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.register_group">
+<tt class="descclassname">ConfigOpts.</tt><tt class="descname">register_group</tt><big>(</big><em>group</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.register_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register an option group.</p>
+<p>An option group must be registered before options can be registered
+with the group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>group</strong> &#8211; an OptGroup object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.register_opt">
+<tt class="descclassname">ConfigOpts.</tt><tt class="descname">register_opt</tt><big>(</big><em>opt</em>, <em>group=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.register_opt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register an option schema.</p>
+<p>Registering an option schema makes any option value which is previously
+or subsequently parsed from the command line or config files available
+as an attribute of this object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>opt</strong> &#8211; an instance of an Opt sub-class</li>
+<li><strong>group</strong> &#8211; an optional OptGroup object or group name</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">False if the opt was already register, True otherwise</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">DuplicateOptError</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.register_opts">
+<tt class="descclassname">ConfigOpts.</tt><tt class="descname">register_opts</tt><big>(</big><em>opts</em>, <em>group=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.register_opts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register multiple option schemas at once.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.reset">
+<tt class="descclassname">ConfigOpts.</tt><tt class="descname">reset</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the state of the object to before it was called.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.set_default">
+<tt class="descclassname">ConfigOpts.</tt><tt class="descname">set_default</tt><big>(</big><em>name</em>, <em>default</em>, <em>group=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.set_default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override an opt&#8217;s default value.</p>
+<p>Override the default value of given option. A command line or
+config file value will still take precedence over this default.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; the name/dest of the opt</li>
+<li><strong>default</strong> &#8211; the default value</li>
+<li><strong>group</strong> &#8211; an option OptGroup object or group name</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">NoSuchOptError, NoSuchGroupError</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.openstack.common.cfg.ConfigOpts.set_override">
+<tt class="descclassname">ConfigOpts.</tt><tt class="descname">set_override</tt><big>(</big><em>name</em>, <em>override</em>, <em>group=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ConfigOpts.set_override" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override an opt value.</p>
+<p>Override the command line, config file and default values of a
+given option.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; the name/dest of the opt</li>
+<li><strong>override</strong> &#8211; the override value</li>
+<li><strong>group</strong> &#8211; an option OptGroup object or group name</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">NoSuchOptError, NoSuchGroupError</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.openstack.common.cfg.DuplicateOptError">
+<em class="property">exception </em><tt class="descname">DuplicateOptError</tt><big>(</big><em>opt_name</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.DuplicateOptError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Error" title="synaps.openstack.common.cfg.Error"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Error</span></tt></a></p>
+<p>Raised if multiple opts with the same name are registered.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.openstack.common.cfg.Error">
+<em class="property">exception </em><tt class="descname">Error</tt><big>(</big><em>msg=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.Error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>Base class for cfg exceptions.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.openstack.common.cfg.FloatOpt">
+<em class="property">class </em><tt class="descname">FloatOpt</tt><big>(</big><em>name</em>, <em>dest=None</em>, <em>short=None</em>, <em>default=None</em>, <em>metavar=None</em>, <em>help=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.FloatOpt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Opt" title="synaps.openstack.common.cfg.Opt"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Opt</span></tt></a></p>
+<p>Float opt values are converted to floats using the float() builtin.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.openstack.common.cfg.IntOpt">
+<em class="property">class </em><tt class="descname">IntOpt</tt><big>(</big><em>name</em>, <em>dest=None</em>, <em>short=None</em>, <em>default=None</em>, <em>metavar=None</em>, <em>help=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.IntOpt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Opt" title="synaps.openstack.common.cfg.Opt"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Opt</span></tt></a></p>
+<p>Int opt values are converted to integers using the int() builtin.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.openstack.common.cfg.ListOpt">
+<em class="property">class </em><tt class="descname">ListOpt</tt><big>(</big><em>name</em>, <em>dest=None</em>, <em>short=None</em>, <em>default=None</em>, <em>metavar=None</em>, <em>help=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.ListOpt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Opt" title="synaps.openstack.common.cfg.Opt"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Opt</span></tt></a></p>
+<p>List opt values are simple string values separated by commas. The opt value
+is a list containing these strings.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.openstack.common.cfg.MultiStrOpt">
+<em class="property">class </em><tt class="descname">MultiStrOpt</tt><big>(</big><em>name</em>, <em>dest=None</em>, <em>short=None</em>, <em>default=None</em>, <em>metavar=None</em>, <em>help=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.MultiStrOpt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Opt" title="synaps.openstack.common.cfg.Opt"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Opt</span></tt></a></p>
+<p>Multistr opt values are string opts which may be specified multiple times.
+The opt value is a list containing all the string values specified.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.openstack.common.cfg.NoSuchGroupError">
+<em class="property">exception </em><tt class="descname">NoSuchGroupError</tt><big>(</big><em>group_name</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.NoSuchGroupError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Error" title="synaps.openstack.common.cfg.Error"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Error</span></tt></a></p>
+<p>Raised if a group which doesn&#8217;t exist is referenced.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.openstack.common.cfg.NoSuchOptError">
+<em class="property">exception </em><tt class="descname">NoSuchOptError</tt><big>(</big><em>opt_name</em>, <em>group=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.NoSuchOptError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Error" title="synaps.openstack.common.cfg.Error"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Error</span></tt></a>, <tt class="xref py py-class docutils literal"><span class="pre">exceptions.AttributeError</span></tt></p>
+<p>Raised if an opt which doesn&#8217;t exist is referenced.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.openstack.common.cfg.Opt">
+<em class="property">class </em><tt class="descname">Opt</tt><big>(</big><em>name</em>, <em>dest=None</em>, <em>short=None</em>, <em>default=None</em>, <em>metavar=None</em>, <em>help=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.Opt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Base class for all configuration options.</p>
+<p>An Opt object has no public methods, but has a number of public string
+properties:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>name:</dt>
+<dd>the name of the option, which may include hyphens</dd>
+<dt>dest:</dt>
+<dd>the (hyphen-less) ConfigOpts property which contains the option value</dd>
+<dt>short:</dt>
+<dd>a single character CLI option name</dd>
+<dt>default:</dt>
+<dd>the default value of the option</dd>
+<dt>metavar:</dt>
+<dd>the name shown as the argument to a CLI option in &#8211;help output</dd>
+<dt>help:</dt>
+<dd>an string explaining how the options value is used</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.openstack.common.cfg.OptGroup">
+<em class="property">class </em><tt class="descname">OptGroup</tt><big>(</big><em>name</em>, <em>title=None</em>, <em>help=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.OptGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Represents a group of opts.</p>
+<p>CLI opts in the group are automatically prefixed with the group name.</p>
+<p>Each group corresponds to a section in config files.</p>
+<p>An OptGroup object has no public methods, but has a number of public string
+properties:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>name:</dt>
+<dd>the name of the group</dd>
+<dt>title:</dt>
+<dd>the group title as displayed in &#8211;help</dd>
+<dt>help:</dt>
+<dd>the group description as displayed in &#8211;help</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.openstack.common.cfg.StrOpt">
+<em class="property">class </em><tt class="descname">StrOpt</tt><big>(</big><em>name</em>, <em>dest=None</em>, <em>short=None</em>, <em>default=None</em>, <em>metavar=None</em>, <em>help=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.StrOpt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Opt" title="synaps.openstack.common.cfg.Opt"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Opt</span></tt></a></p>
+<p>String opts do not have their values transformed and are returned as
+str objects.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.openstack.common.cfg.TemplateSubstitutionError">
+<em class="property">exception </em><tt class="descname">TemplateSubstitutionError</tt><big>(</big><em>msg=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.TemplateSubstitutionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#synaps.openstack.common.cfg.Error" title="synaps.openstack.common.cfg.Error"><tt class="xref py py-class docutils literal"><span class="pre">synaps.openstack.common.cfg.Error</span></tt></a></p>
+<p>Raised if an error occurs substituting a variable in an opt value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.cfg.find_config_files">
+<tt class="descname">find_config_files</tt><big>(</big><em>project=None</em>, <em>prog=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.cfg.find_config_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of default configuration files.</p>
+<p>We default to two config files: [${project}.conf, ${prog}.conf]</p>
+<p>And we look for those config files in the following directories:</p>
+<blockquote>
+<div>~/.${project}/
+~/
+/etc/${project}/
+/etc/</div></blockquote>
+<p>We return an absolute path for (at most) one of each the default config
+files, for the topmost directory it exists in.</p>
+<p>For example, if project=foo, prog=bar and /etc/foo/foo.conf, /etc/bar.conf
+and ~/.foo/bar.conf all exist, then we return [&#8216;/etc/foo/foo.conf&#8217;,
+&#8216;~/.foo/bar.conf&#8217;]</p>
+<p>If no project name is supplied, we only look for ${prog.conf}.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>project</strong> &#8211; an optional project name</li>
+<li><strong>prog</strong> &#8211; the program name, defaulting to the basename of sys.argv[0]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/api/synaps.openstack.common.cfg.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

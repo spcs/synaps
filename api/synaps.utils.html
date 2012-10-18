@@ -1,0 +1,385 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The synaps.utils Module &mdash; synaps v12.09.b2-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '12.09.b2-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-synaps.utils">
+<span id="the-synaps-utils-module"></span><h1>The <a class="reference internal" href="#module-synaps.utils" title="synaps.utils"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.utils</span></tt></a> Module<a class="headerlink" href="#module-synaps.utils" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="synaps.utils.abspath">
+<tt class="descname">abspath</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#synaps.utils.abspath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.align_metrictime">
+<tt class="descname">align_metrictime</tt><big>(</big><em>timestamp</em>, <em>resolution=60</em><big>)</big><a class="headerlink" href="#synaps.utils.align_metrictime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Align timestamp of metric for statistics</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">align_metrictime</span><span class="p">(</span><span class="mf">35.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">)</span>
+<span class="go">60.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">align_metrictime</span><span class="p">(</span><span class="mf">60.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">)</span>
+<span class="go">120.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">align_metrictime</span><span class="p">(</span><span class="mf">150.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">)</span>
+<span class="go">180.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">align_metrictime</span><span class="p">(</span><span class="mf">150.1</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">)</span>
+<span class="go">180.0       </span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.cleanup_file_locks">
+<tt class="descname">cleanup_file_locks</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.utils.cleanup_file_locks" title="Permalink to this definition">¶</a></dt>
+<dd><p>clean up stale locks left behind by process failures</p>
+<p>The lockfile module, used by &#64;synchronized, can leave stale lockfiles
+behind after process failure. These locks can cause process hangs
+at startup, when a process deadlocks on a lock which will never
+be unlocked.</p>
+<p>Intended to be called at service startup.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.datetime_to_timestamp">
+<tt class="descname">datetime_to_timestamp</tt><big>(</big><em>dt</em><big>)</big><a class="headerlink" href="#synaps.utils.datetime_to_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.default_flagfile">
+<tt class="descname">default_flagfile</tt><big>(</big><em>filename='synaps.conf'</em>, <em>args=None</em><big>)</big><a class="headerlink" href="#synaps.utils.default_flagfile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.delete_if_exists">
+<tt class="descname">delete_if_exists</tt><big>(</big><em>pathname</em><big>)</big><a class="headerlink" href="#synaps.utils.delete_if_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>delete a file, but ignore file not found error</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.dict_to_aws">
+<tt class="descname">dict_to_aws</tt><big>(</big><em>pydict</em><big>)</big><a class="headerlink" href="#synaps.utils.dict_to_aws" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.dumps">
+<tt class="descname">dumps</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#synaps.utils.dumps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.execute">
+<tt class="descname">execute</tt><big>(</big><em>*cmd</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.utils.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method to execute command with optional retry.</p>
+<p>:cmd                Passed to subprocess.Popen.
+:process_input      Send to opened process.
+:check_exit_code    Defaults to 0. Raise exception.ProcessExecutionError</p>
+<blockquote>
+<div>unless program exits with this code.</div></blockquote>
+<dl class="docutils">
+<dt>:delay_on_retry     True | False. Defaults to True. If set to True, wait a</dt>
+<dd>short amount of time before retrying.</dd>
+</dl>
+<p>:attempts           How many times to retry cmd.
+:run_as_root        True | False. Defaults to False. If set to True,</p>
+<blockquote>
+<div>the command is prefixed by the command specified
+in the root_helper FLAG.</div></blockquote>
+<p>:raises exception.Error on receiving unknown arguments
+:raises exception.ProcessExecutionError</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.extract_member_dict">
+<tt class="descname">extract_member_dict</tt><big>(</big><em>aws_dict</em>, <em>key='member'</em><big>)</big><a class="headerlink" href="#synaps.utils.extract_member_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>it will convert from</p>
+<dl class="docutils">
+<dt>{&#8216;member&#8217;: {&#8216;1&#8217;: {&#8216;name&#8217;: u&#8217;member1&#8217;, &#8216;value&#8217;: u&#8217;value1&#8217;}},</dt>
+<dd>{&#8216;2&#8217;: {&#8216;name&#8217;: u&#8217;member2&#8217;, &#8216;value&#8217;: u&#8217;value2&#8217;}}}</dd>
+</dl>
+<p>to</p>
+<p>{u&#8217;member1&#8217;: u&#8217;value1&#8217;, u&#8217;member2&#8217;: u&#8217;value2&#8217;}</p>
+<p>this is useful for processing dimension.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.extract_member_list">
+<tt class="descname">extract_member_list</tt><big>(</big><em>aws_list</em>, <em>key='member'</em><big>)</big><a class="headerlink" href="#synaps.utils.extract_member_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>ex) if key is &#8216;member&#8217;, it will convert from</p>
+<dl class="docutils">
+<dt>{&#8216;member&#8217;: {&#8216;1&#8217;: &#8216;something1&#8217;,</dt>
+<dd>&#8216;2&#8217;: &#8216;something2&#8217;,
+&#8216;3&#8217;: &#8216;something3&#8217;}}</dd>
+</dl>
+<p>to</p>
+<p>[&#8216;something1&#8217;, &#8216;something2&#8217;, &#8216;something3&#8217;]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.find_config">
+<tt class="descname">find_config</tt><big>(</big><em>config_path</em><big>)</big><a class="headerlink" href="#synaps.utils.find_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a configuration file using the given hint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config_path</strong> &#8211; Full or relative path to the config.</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">Full path of the config, if it exists.</td>
+</tr>
+<tr class="field"><th class="field-name">Raises :</th><td class="field-body"><cite>synaps.exception.ConfigNotFound</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.gen_uuid">
+<tt class="descname">gen_uuid</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.utils.gen_uuid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.import_class">
+<tt class="descname">import_class</tt><big>(</big><em>import_str</em><big>)</big><a class="headerlink" href="#synaps.utils.import_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a class from a string including module and class.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.import_object">
+<tt class="descname">import_object</tt><big>(</big><em>import_str</em><big>)</big><a class="headerlink" href="#synaps.utils.import_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an object including a module or module and class.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.isotime">
+<tt class="descname">isotime</tt><big>(</big><em>at=None</em><big>)</big><a class="headerlink" href="#synaps.utils.isotime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns iso formatted utcnow.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.monkey_patch">
+<tt class="descname">monkey_patch</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.utils.monkey_patch" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the Flags.monkey_patch set as True,
+this function patches a decorator
+for all functions in specified modules.
+You can set decorators for each modules
+using FLAGS.monkey_patch_modules.
+The format is &#8220;Module path:Decorator function&#8221;.
+Example: &#8216;nova.api.ec2.cloud:nova.notifier.api.notify_decorator&#8217;</p>
+<p>Parameters of the decorator is as follows.
+(See nova.notifier.api.notify_decorator)</p>
+<p>name - name of the function
+function - object of the function</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.parse_server_string">
+<tt class="descname">parse_server_string</tt><big>(</big><em>server_str</em><big>)</big><a class="headerlink" href="#synaps.utils.parse_server_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses the given server_string and returns a list of host and port.
+If it&#8217;s not a combination of host part and port, the port element
+is a null string. If the input is invalid expression, return a null
+list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.parse_strtime">
+<tt class="descname">parse_strtime</tt><big>(</big><em>timestr</em>, <em>fmt='%Y-%m-%dT%H:%M:%S.%f'</em><big>)</big><a class="headerlink" href="#synaps.utils.parse_strtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn a formatted time back into a datetime.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.prefix_end">
+<tt class="descname">prefix_end</tt><big>(</big><em>buf</em><big>)</big><a class="headerlink" href="#synaps.utils.prefix_end" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.str_to_timestamp">
+<tt class="descname">str_to_timestamp</tt><big>(</big><em>timestr</em>, <em>fmt='%Y-%m-%dT%H:%M:%S.%f'</em><big>)</big><a class="headerlink" href="#synaps.utils.str_to_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.strcmp_const_time">
+<tt class="descname">strcmp_const_time</tt><big>(</big><em>s1</em>, <em>s2</em><big>)</big><a class="headerlink" href="#synaps.utils.strcmp_const_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constant-time string comparison.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Params s1:</th><td class="field-body">the first string</td>
+</tr>
+<tr class="field"><th class="field-name">Params s2:</th><td class="field-body">the second string</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True if the strings are equal.</td>
+</tr>
+</tbody>
+</table>
+<p>This function takes two strings and compares them.  It is intended to be
+used when doing a comparison for authentication purposes to help guard
+against timing attacks.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.strtime">
+<tt class="descname">strtime</tt><big>(</big><em>at=None</em>, <em>fmt='%Y-%m-%dT%H:%M:%S.%f'</em><big>)</big><a class="headerlink" href="#synaps.utils.strtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns formatted utcnow.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.strtime_trunk">
+<tt class="descname">strtime_trunk</tt><big>(</big><em>at=None</em><big>)</big><a class="headerlink" href="#synaps.utils.strtime_trunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns formatted utcnow.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.tempdir">
+<tt class="descname">tempdir</tt><big>(</big><em>*args</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#synaps.utils.tempdir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.to_ascii">
+<tt class="descname">to_ascii</tt><big>(</big><em>utf8</em><big>)</big><a class="headerlink" href="#synaps.utils.to_ascii" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.to_default_unit">
+<tt class="descname">to_default_unit</tt><big>(</big><em>value</em>, <em>unit</em><big>)</big><a class="headerlink" href="#synaps.utils.to_default_unit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.to_primitive">
+<tt class="descname">to_primitive</tt><big>(</big><em>value</em>, <em>convert_instances=False</em>, <em>level=0</em><big>)</big><a class="headerlink" href="#synaps.utils.to_primitive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a complex object into primitives.</p>
+<p>Handy for JSON serialization. We can optionally handle instances,
+but since this is a recursive function, we could have cyclical
+data structures.</p>
+<p>To handle cyclical data structures we could track the actual objects
+visited in a set, but not all objects are hashable. Instead we just
+track the depth of the object inspections and don&#8217;t go too deep.</p>
+<p>Therefore, convert_instances=True is lossy ... be aware.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.to_unit">
+<tt class="descname">to_unit</tt><big>(</big><em>value</em>, <em>unit</em><big>)</big><a class="headerlink" href="#synaps.utils.to_unit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.utcnow">
+<tt class="descname">utcnow</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.utils.utcnow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overridable version of utils.utcnow.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.utcnow_ts">
+<tt class="descname">utcnow_ts</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.utils.utcnow_ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Timestamp version of our utcnow function.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.utf8">
+<tt class="descname">utf8</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#synaps.utils.utf8" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to turn a string into utf-8 if possible.</p>
+<p>Code is directly from the utf8 function in
+<a class="reference external" href="http://github.com/facebook/tornado/blob/master/tornado/escape.py">http://github.com/facebook/tornado/blob/master/tornado/escape.py</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.validate_email">
+<tt class="descname">validate_email</tt><big>(</big><em>email</em><big>)</big><a class="headerlink" href="#synaps.utils.validate_email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.validate_international_phonenumber">
+<tt class="descname">validate_international_phonenumber</tt><big>(</big><em>number</em><big>)</big><a class="headerlink" href="#synaps.utils.validate_international_phonenumber" title="Permalink to this definition">¶</a></dt>
+<dd><p>International Telecommunication Union ITU-T Rec. E.123 (02/2001)</p>
+<p>Notation for national and international telephone numbers, e-mail addresses 
+and web addresses</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/api/synaps.utils.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
