@@ -162,11 +162,7 @@ class ActionBolt(storm.BasicBolt):
                 self.alarm_history_state_update(alarm_key, alarm,
                                                 notification_message)    
     def process(self, tup):
-        try:
-            self.process_action(tup)
-        except Exception as e:
-            self.tracelog(e)
-            storm.fail(tup)
+        self.process_action(tup)
 
 if __name__ == "__main__":
     ActionBolt().run()

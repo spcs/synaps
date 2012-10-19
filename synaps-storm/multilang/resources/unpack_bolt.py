@@ -84,39 +84,35 @@ class UnpackMessageBolt(storm.BasicBolt):
         message_buf = tup.values[0]
         message = json.loads(message_buf)
 
-        try:
-            message_id = message.get('message_id')
-            if message_id == PUT_METRIC_DATA_MSG_ID:
-                metric_key = str(self.get_metric_key(message))
-                storm.emit([metric_key, message_buf])
-            elif message_id == PUT_METRIC_ALARM_MSG_ID:
-                metric_key = message.get('metric_key')
-                storm.emit([metric_key, message_buf])
-            elif message_id == DELETE_ALARMS_MSG_ID:
-                project_id = message.get('project_id')
-                alarmkeys = message.get('alarmkeys')
-                for alarmkey in alarmkeys:
-                    try:
-                        alarmkey_uuid = UUID(alarmkey)
-                        metric_key = self.get_alarm_metric_key(alarmkey_uuid)
-                        metric_key = str(metric_key)
-                        if metric_key:
-                            message['alarmkey'] = alarmkey
-                            storm.emit([metric_key, json.dumps(message)])
-                    except Exception as e:
-                        storm.log("Alarm %s does not exists" % alarmkey)
-                        storm.log(traceback.format_exc(e))
-            elif message_id == SET_ALARM_STATE_MSG_ID:
-                project_id = message.get('project_id')
-                alarm_name = message.get('alarm_name')
-                alarm_key = self.cass.get_metric_alarm_key(project_id,
-                                                           alarm_name)
-                alarm = self.cass.get_metric_alarm(alarm_key)
-                metric_key = str(alarm.get('metric_key'))
-                storm.emit([metric_key, json.dumps(message)])
-        except Exception as e:
-            storm.log(traceback.format_exc(e))
-            storm.fail(tup)
+        message_id = message.get('message_id')
+        if message_id == PUT_METRIC_DATA_MSG_ID:
+            metric_key = str(self.get_metric_key(message))
+            storm.emit([metric_key, message_buf])
+        elif message_id == PUT_METRIC_ALARM_MSG_ID:
+            metric_key = message.get('metric_key')
+            storm.emit([metric_key, message_buf])
+        elif message_id == DELETE_ALARMS_MSG_ID:
+            project_id = message.get('project_id')
+            alarmkeys = message.get('alarmkeys')
+            for alarmkey in alarmkeys:
+                try:
+                    alarmkey_uuid = UUID(alarmkey)
+                    metric_key = self.get_alarm_metric_key(alarmkey_uuid)
+                    metric_key = str(metric_key)
+                    if metric_key:
+                        message['alarmkey'] = alarmkey
+                        storm.emit([metric_key, json.dumps(message)])
+                except Exception as e:
+                    storm.log("Alarm %s does not exists" % alarmkey)
+                    storm.log(traceback.format_exc(e))
+        elif message_id == SET_ALARM_STATE_MSG_ID:
+            project_id = message.get('project_id')
+            alarm_name = message.get('alarm_name')
+            alarm_key = self.cass.get_metric_alarm_key(project_id,
+                                                       alarm_name)
+            alarm = self.cass.get_metric_alarm(alarm_key)
+            metric_key = str(alarm.get('metric_key'))
+            storm.emit([metric_key, json.dumps(message)])
 
 if __name__ == "__main__":
     UnpackMessageBolt().run()

@@ -54,16 +54,12 @@ class CheckSpout(Spout):
             self.log("TRACE: " + line)
     
     def nextTuple(self):
-        try:
-            id = "periodic_%s" % str(uuid4())
-            body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID})
-            message = "Periodic monitoring message sent [%s] %s"
-            self.log(message % (id, body))
-            emit([None, body], id=id)
-            time.sleep(60)
-                
-        except Exception as e:
-            self.tracelog(e)
+        id = "periodic_%s" % str(uuid4())
+        body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID})
+        message = "Periodic monitoring message sent [%s] %s"
+        self.log(message % (id, body))
+        emit([None, body], id=id)
+        time.sleep(60)
 
 if __name__ == "__main__":
     CheckSpout().run()

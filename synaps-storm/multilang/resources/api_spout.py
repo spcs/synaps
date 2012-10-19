@@ -81,24 +81,20 @@ class ApiSpout(Spout):
             self.log("discard failed message [%s]" % id)
     
     def nextTuple(self):
-        try:
-            (method_frame, header_frame, body) = self.channel.basic_get(
-                queue="metric_queue"
-            )
-    
-            if not method_frame.NAME == 'Basic.GetEmpty':
-                try:
-                    id = str(uuid4())
-                    message = "Start processing message in the queue - [%s] %s"
-                    self.log(message % (id, body))
-                    self.delivery_tags[id] = (method_frame.delivery_tag, 0)
-                    emit([body], id=id)
-                except Exception as e:
-                    self.tracelog(e)
-                    self.fail(id)
-                
-        except Exception as e:
-            self.tracelog(e)
+        (method_frame, header_frame, body) = self.channel.basic_get(
+            queue="metric_queue"
+        )
+
+        if not method_frame.NAME == 'Basic.GetEmpty':
+            try:
+                id = str(uuid4())
+                message = "Start processing message in the queue - [%s] %s"
+                self.log(message % (id, body))
+                self.delivery_tags[id] = (method_frame.delivery_tag, 0)
+                emit([body], id=id)
+            except Exception as e:
+                self.tracelog(e)
+                self.fail(id)
 
 if __name__ == "__main__":
     ApiSpout().run()

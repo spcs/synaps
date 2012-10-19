@@ -210,11 +210,7 @@ class MetricMonitor(object):
             for v in stat:
                 if v == None: v = float('nan')                    
                  
-            storm.log("index is found in memory.")
-
         except KeyError:
-            msg = "index %s is not in memory."
-            storm.log(msg % time_idx)
             stat = self.cass.get_metric_statistics_for_key(metric_key, time_idx)
             if [{}, {}, {}, {}, {}] == stat:
                 storm.log("index %s is not in DB." % time_idx)
@@ -314,7 +310,6 @@ class MetricMonitor(object):
                         json.loads(alarm.get('reason_data', "{}"))}
         json_reason_data = json.dumps(reason_data)
 
-        storm.log("data \n %s" % data)
         if len(data) < evaluation_periods:
             if state_value != 'INSUFFICIENT_DATA':
                 template = _("Insufficient Data: %d datapoints were unknown.")
@@ -377,10 +372,6 @@ class MetricMonitor(object):
                                          query_date)                            
                     storm.log("OK alarm")
             
-            storm.log("check %s %f" % (alarm['comparison_operator'],
-                                       threshold))
-            storm.log("result \n %s" % crossed)
-    
     
     def do_alarm_action(self, alarmkey, alarm, new_state, old_state,
                         query_date):
@@ -556,7 +547,6 @@ class PutMetricBolt(storm.BasicBolt):
         
     def process_check_metric_alarms_msg(self):
         now = datetime.utcnow()
-        msg = "Periodic check started. lastchecked: %s, now: %s, min_start_period: %s"
 
         for metric in self.metrics.itervalues():
             min_start_period = timedelta(seconds=metric.MIN_START_PERIOD)
@@ -564,7 +554,6 @@ class PutMetricBolt(storm.BasicBolt):
             if ((metric.lastchecked and 
                  (now - metric.lastchecked > min_start_period))
                 or (metric.lastchecked == None)):
-                self.log(msg % (metric.lastchecked, now, min_start_period))
                 metric.check_alarms()
         
     def process(self, tup):
@@ -572,27 +561,23 @@ class PutMetricBolt(storm.BasicBolt):
         message = json.loads(tup.values[1])
         message_id = message.get('message_id')
         
-        try:
-            if message_id == PUT_METRIC_DATA_MSG_ID:
-                self.log("process put_metric_data_msg (%s)" % message)
-                self.process_put_metric_data_msg(metric_key, message)
-            elif message_id == PUT_METRIC_ALARM_MSG_ID:
-                self.log("process put_metric_alarm_msg (%s)" % message)
-                self.process_put_metric_alarm_msg(metric_key, message)
-            elif message_id == DELETE_ALARMS_MSG_ID:
-                self.log("process put_metric_alarm_msg (%s)" % message)
-                self.process_delete_metric_alarms_msg(metric_key, message)
-            elif message_id == SET_ALARM_STATE_MSG_ID:
-                self.log("process set_alarm_state_msg (%s)" % message)
-                self.process_set_alarm_state_msg(metric_key, message)
-            elif message_id == CHECK_METRIC_ALARM_MSG_ID:
-                self.log("process check_metric_alarm_msg (%s)" % message)
-                self.process_check_metric_alarms_msg()
-            else:
-                self.log("unknown message")
-        except Exception as e:
-            self.tracelog(e)
-            storm.fail(tup)
+        if message_id == PUT_METRIC_DATA_MSG_ID:
+            self.log("process put_metric_data_msg (%s)" % message)
+            self.process_put_metric_data_msg(metric_key, message)
+        elif message_id == PUT_METRIC_ALARM_MSG_ID:
+            self.log("process put_metric_alarm_msg (%s)" % message)
+            self.process_put_metric_alarm_msg(metric_key, message)
+        elif message_id == DELETE_ALARMS_MSG_ID:
+            self.log("process put_metric_alarm_msg (%s)" % message)
+            self.process_delete_metric_alarms_msg(metric_key, message)
+        elif message_id == SET_ALARM_STATE_MSG_ID:
+            self.log("process set_alarm_state_msg (%s)" % message)
+            self.process_set_alarm_state_msg(metric_key, message)
+        elif message_id == CHECK_METRIC_ALARM_MSG_ID:
+            self.log("process check_metric_alarm_msg (%s)" % message)
+            self.process_check_metric_alarms_msg()
+        else:
+            self.log("unknown message")
 
 if __name__ == "__main__":
     PutMetricBolt().run()
