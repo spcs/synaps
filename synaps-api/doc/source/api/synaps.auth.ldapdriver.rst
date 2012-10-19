@@ -1,6 +1,6 @@
-The :mod:`synaps.tests.api.test_monitor` Module
+The :mod:`synaps.auth.ldapdriver` Module
 ==============================================================================
-.. automodule:: synaps.tests.api.test_monitor
+.. automodule:: synaps.auth.ldapdriver
   :members:
   :undoc-members:
   :show-inheritance:

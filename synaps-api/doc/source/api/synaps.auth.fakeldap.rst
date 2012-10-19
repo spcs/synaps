@@ -1,6 +1,6 @@
-The :mod:`synaps.tests.api.test_auth` Module
+The :mod:`synaps.auth.fakeldap` Module
 ==============================================================================
-.. automodule:: synaps.tests.api.test_auth
+.. automodule:: synaps.auth.fakeldap
   :members:
   :undoc-members:
   :show-inheritance:
