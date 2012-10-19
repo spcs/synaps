@@ -33,8 +33,8 @@ ASYNC_WAIT = 3
 
 class SynapsTestCase(unittest.TestCase):
     def setUp(self):
-        access_key = 'changeme'
-        secret_key = 'changeme'
+        access_key = '58ca1eb7-eb69-4f3f-890d-c640cc6b3965'
+        secret_key = 'ebe4a1c3-6b4f-4fe1-8767-92a79532ee5c'
         self.synaps = CloudWatchConnection(
             # oss key pair
             aws_access_key_id=access_key, aws_secret_access_key=secret_key,
