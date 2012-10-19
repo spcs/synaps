@@ -1,18 +1,18 @@
 .. _user_sdk_example:
 
-User SDK 사용 예제
-==================
+User SDK guide
+==============
 
-Synaps SDK 계정 설정 방법
--------------------------
-1. SpcsCredentials.properties 파일에 아래와 같이 계정정보를 입력한다.
+Setting credentials
+-------------------
+1. write your credentials in the SpcsCredentials.properties file.
 
   .. code-block:: bash
   
     accessKey = df6ad231-23f9-4622-810c-acd6ae3e9e67
     secretKey = c142f025-aa84-4cc3-a97e-12bf86c561dc
 
-2. 다음과 같이 클라이언트 객체를 생성한다.
+2. Initiate an AmazonCloudWatchClient object as below,
 
   .. code-block:: java
 
@@ -23,13 +23,11 @@ Synaps SDK 계정 설정 방법
      );
      cw.setEndpoint("http://182.194.1.163:8773/monitor/");
 
-Action별 SDK 사용 예제
-----------------------
+Examples
+--------
 
-메트릭 관련 Action
-``````````````````
-ListMetrics Action 
-~~~~~~~~~~~~~~~~~~ 
+ListMetrics
+~~~~~~~~~~~
 
   .. code-block:: java
 
@@ -38,10 +36,10 @@ ListMetrics Action
      System.out.println(LMR.getMetrics());
      
 * API reference: :ref:`list_metrics`
-* SDK reference: `ListMetrics`_    
 
-PutMetricData Action   
-~~~~~~~~~~~~~~~~~~~~
+PutMetricData
+~~~~~~~~~~~~~
+
 "MetricName"이라는 Metric을 특정시간(2012년 6월 28일 14시 ~ 17시)동안 매초마다 
 일정값(30)을 입력하는 예제
 
@@ -82,10 +80,10 @@ PutMetricData Action
 	 }
 
 * API reference: :ref:`put_metric_data`
-* SDK reference: `PutMetricData`_    
    
-GetMetricStatistics Action
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+GetMetricStatistics
+~~~~~~~~~~~~~~~~~~~
+
 아래 예제에서는 SPCS Nova 의 가상머신 인스턴스 instance-0000000f의 CPU 사용률의
 2012년 7월 5일 10시부터 한 시간 동안의 3분(180초) 주기의 평균, 최대, 최소, 샘플 
 갯수를 조회한다.
@@ -150,12 +148,10 @@ GetMetricStatistics Action
 	  Maximum: 0.197889178604, Unit: Percent, }, ... ]
 
 * API reference: :ref:`get_metric_statistics`
-* SDK reference: `GetMetricStatistics`_   
 
-알람 관련 Action
-````````````````
-DeleteAlarms Action
-~~~~~~~~~~~~~~~~~~~
+DeleteAlarms
+~~~~~~~~~~~~
+
 "AlarmName" 이라는 이름을 갖는 알람을 삭제하는 예제
 
   .. code-block:: java
@@ -167,10 +163,9 @@ DeleteAlarms Action
      cw.deleteAlarms(DAR);
 
 * API reference: :ref:`delete_alarms`
-* SDK reference: `DeleteAlarms`_     
    
-DescribeAlarms Action
-~~~~~~~~~~~~~~~~~~~~~
+DescribeAlarms
+~~~~~~~~~~~~~~
 모든 또는 특정 알람에 대한 모든 정보리스트를 반환한다. 
 
   .. code-block:: java
@@ -179,10 +174,9 @@ DescribeAlarms Action
      System.out.println(DAR);
 
 * API reference: :ref:`describe_alarm_history`
-* SDK reference: `DescribeAlarmHistory`_     
    
-DescribeAlarmsForMetric Action
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+DescribeAlarmsForMetric
+~~~~~~~~~~~~~~~~~~~~~~~
 특정 Metric 에 대한 모든 알람정보를 반환한다. 
 
   .. code-block:: java
@@ -194,10 +188,9 @@ DescribeAlarmsForMetric Action
      System.out.println(DAR.getMetricAlarms());
 
 * API reference: :ref:`describe_alarms_for_metric`
-* SDK reference: `DescribeAlarmsForMetric`_
    
-PutMetricAlarm Action 
-~~~~~~~~~~~~~~~~~~~~~
+PutMetricAlarm
+~~~~~~~~~~~~~~
 
   .. code-block:: java
 
@@ -213,25 +206,22 @@ PutMetricAlarm Action
      cw.putMetricAlarm(PMAR);
 
 * API reference: :ref:`put_metric_alarm`
-* SDK reference: `PutMetricAlarm`_
 
-SetAlarmState Action
+SetAlarmState
+~~~~~~~~~~~~~
+TBD
+   
+DisableAlarmActions
+~~~~~~~~~~~~~~~~~~~
+TBD
+   
+EnableAlarmActions
+~~~~~~~~~~~~~~~~~~
+TBD
+
+
+DescribeAlarmHistory
 ~~~~~~~~~~~~~~~~~~~~
-TBD
-   
-DisableAlarmActions Action
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-TBD
-   
-EnableAlarmActions Action
-~~~~~~~~~~~~~~~~~~~~~~~~~
-TBD
-
-
-알람 히스토리 관련 Action
-````````````````````````` 
-DescribeAlarmHistory Action
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
 프로젝트의 모든 알람 히스토리를 조회하는 예제
 
   .. code-block:: java
@@ -240,17 +230,3 @@ DescribeAlarmHistory Action
      System.out.println(DAHR);
 
 * API reference: :ref:`describe_alarm_history`
-* SDK reference: `DescribeAlarmHistory`_     
-
-										
-.. _`DeleteAlarms`: http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_DeleteAlarms.html
-.. _`DescribeAlarmHistory`: http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_DescribeAlarmHistory.html
-.. _`DescribeAlarms`: http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_DescribeAlarms.html
-.. _`DescribeAlarmsForMetric`: http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_DescribeAlarmsForMetric.html
-.. _`DisableAlarmActions`: http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_DisableAlarmActions.html
-.. _`SetAlarmState`: http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_SetAlarmState.html
-.. _`GetMetricStatistics`: http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_GetMetricStatistics.html
-.. _`EnableAlarmActions`: http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_EnableAlarmActions.html
-.. _`PutMetricAlarm`: http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_PutMetricAlarm.html
-.. _`ListMetrics`: http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_ListMetrics.html
-.. _`PutMetricData`: http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_PutMetricData.html

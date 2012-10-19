@@ -1,0 +1,209 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The synaps.auth.fakeldap Module &mdash; synaps v12.09.b3-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '12.09.b3-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b3-dev documentation" href="../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-synaps.auth.fakeldap">
+<span id="the-synaps-auth-fakeldap-module"></span><h1>The <a class="reference internal" href="#module-synaps.auth.fakeldap" title="synaps.auth.fakeldap"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.auth.fakeldap</span></tt></a> Module<a class="headerlink" href="#module-synaps.auth.fakeldap" title="Permalink to this headline">¶</a></h1>
+<p>Fake LDAP server for test harness.</p>
+<p>This class does very little error checking, and knows nothing about ldap
+class definitions.  It implements the minimum emulation of the python ldap
+library to work with nova.</p>
+<dl class="class">
+<dt id="synaps.auth.fakeldap.FakeLDAP">
+<em class="property">class </em><tt class="descname">FakeLDAP</tt><a class="headerlink" href="#synaps.auth.fakeldap.FakeLDAP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Fake LDAP connection.</p>
+<dl class="method">
+<dt id="synaps.auth.fakeldap.FakeLDAP.add_s">
+<tt class="descname">add_s</tt><big>(</big><em>dn</em>, <em>attr</em><big>)</big><a class="headerlink" href="#synaps.auth.fakeldap.FakeLDAP.add_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an object with the specified attributes at dn.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.auth.fakeldap.FakeLDAP.delete_s">
+<tt class="descname">delete_s</tt><big>(</big><em>dn</em><big>)</big><a class="headerlink" href="#synaps.auth.fakeldap.FakeLDAP.delete_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the ldap object at specified dn.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.auth.fakeldap.FakeLDAP.modify_s">
+<tt class="descname">modify_s</tt><big>(</big><em>dn</em>, <em>attrs</em><big>)</big><a class="headerlink" href="#synaps.auth.fakeldap.FakeLDAP.modify_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify the object at dn using the attribute list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dn</strong> &#8211; a dn</li>
+<li><strong>attrs</strong> &#8211; <p>a list of tuples in the following form:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">([</span><span class="n">MOD_ADD</span> <span class="o">|</span> <span class="n">MOD_DELETE</span> <span class="o">|</span> <span class="n">MOD_REPACE</span><span class="p">],</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.auth.fakeldap.FakeLDAP.modrdn_s">
+<tt class="descname">modrdn_s</tt><big>(</big><em>dn</em>, <em>newrdn</em><big>)</big><a class="headerlink" href="#synaps.auth.fakeldap.FakeLDAP.modrdn_s" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.auth.fakeldap.FakeLDAP.search_s">
+<tt class="descname">search_s</tt><big>(</big><em>dn</em>, <em>scope</em>, <em>query=None</em>, <em>fields=None</em><big>)</big><a class="headerlink" href="#synaps.auth.fakeldap.FakeLDAP.search_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for all matching objects under dn using the query.</p>
+<p>Args:
+dn &#8211; dn to search under
+scope &#8211; only SCOPE_BASE and SCOPE_SUBTREE are supported
+query &#8211; query to filter objects by
+fields &#8211; fields to return. Returns all fields if not specified</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.auth.fakeldap.FakeLDAP.simple_bind_s">
+<tt class="descname">simple_bind_s</tt><big>(</big><em>dn</em>, <em>password</em><big>)</big><a class="headerlink" href="#synaps.auth.fakeldap.FakeLDAP.simple_bind_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is ignored, but provided for compatibility.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.auth.fakeldap.FakeLDAP.unbind_s">
+<tt class="descname">unbind_s</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.auth.fakeldap.FakeLDAP.unbind_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is ignored, but provided for compatibility.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.auth.fakeldap.NO_SUCH_OBJECT">
+<em class="property">exception </em><tt class="descname">NO_SUCH_OBJECT</tt><a class="headerlink" href="#synaps.auth.fakeldap.NO_SUCH_OBJECT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>Duplicate exception class from real LDAP module.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.auth.fakeldap.OBJECT_CLASS_VIOLATION">
+<em class="property">exception </em><tt class="descname">OBJECT_CLASS_VIOLATION</tt><a class="headerlink" href="#synaps.auth.fakeldap.OBJECT_CLASS_VIOLATION" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>Duplicate exception class from real LDAP module.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="synaps.auth.fakeldap.SERVER_DOWN">
+<em class="property">exception </em><tt class="descname">SERVER_DOWN</tt><a class="headerlink" href="#synaps.auth.fakeldap.SERVER_DOWN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>Duplicate exception class from real LDAP module.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.auth.fakeldap.Store">
+<em class="property">class </em><tt class="descname">Store</tt><a class="headerlink" href="#synaps.auth.fakeldap.Store" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="classmethod">
+<dt id="synaps.auth.fakeldap.Store.instance">
+<em class="property">classmethod </em><tt class="descname">instance</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.auth.fakeldap.Store.instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.auth.fakeldap.initialize">
+<tt class="descname">initialize</tt><big>(</big><em>_uri</em><big>)</big><a class="headerlink" href="#synaps.auth.fakeldap.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a fake connection with an LDAP server.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/api/synaps.auth.fakeldap.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

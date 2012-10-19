@@ -6,14 +6,14 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>사용자 API 규격 &mdash; synaps v12.09.b2-dev documentation</title>
+    <title>User API Specification &mdash; synaps v12.09.b3-dev documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '12.09.b2-dev',
+        VERSION:     '12.09.b3-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../../index.html" />
+    <link rel="top" title="synaps v12.09.b3-dev documentation" href="../../index.html" />
     <link rel="up" title="Application Programming Interface" href="../apispec.html" />
     <link rel="next" title="DeleteAlarms" href="action/delete_alarms.html" />
     <link rel="prev" title="Application Programming Interface" href="../apispec.html" /> 
@@ -48,11 +48,11 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="api">
-<span id="user-api"></span><h1>사용자 API 규격<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="id1">
-<h2>액션<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>다음의 액션을 지원한다.</p>
+  <div class="section" id="user-api-specification">
+<span id="user-api"></span><h1>User API Specification<a class="headerlink" href="#user-api-specification" title="Permalink to this headline">¶</a></h1>
+<p>Synaps provides AWS CloudWatch compatible API.</p>
+<div class="section" id="actions">
+<h2>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="action/delete_alarms.html">DeleteAlarms</a></li>
@@ -69,14 +69,11 @@
 </ul>
 </div>
 </div>
-<div class="section" id="id2">
-<h2>자료 형<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>SPCS Synaps API 는 액션 별로 다양한 자료 형을 사용한다. 이 장에서는 각각의
-자료 형을 자세히 소개한다.</p>
+<div class="section" id="data-types">
+<h2>Data Types<a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
-<dt>알림:</dt>
-<dd>응답으로 전달되는 각각의 요소의 순서는 보장되지 않으므로 응용 프로그램은
-특정 순서를 가정해서는 안된다.</dd>
+<dt>Note:</dt>
+<dd>The elements in the response are not sorted.</dd>
 </dl>
 <div class="toctree-wrapper compound">
 <ul>
@@ -96,8 +93,8 @@
 </ul>
 </div>
 </div>
-<div class="section" id="id3">
-<h2>공통<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="common">
+<h2>Common<a class="headerlink" href="#common" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="common/common_query_parameters.html">공통 쿼리 매개변수</a></li>
@@ -115,14 +112,14 @@
         <div class="sphinxsidebarwrapper">
             <h3><a href="../../index.html">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference internal" href="#">사용자 API 규격</a><ul>
-<li><a class="reference internal" href="#id1">액션</a><ul>
+<li><a class="reference internal" href="#">User API Specification</a><ul>
+<li><a class="reference internal" href="#actions">Actions</a><ul>
 </ul>
 </li>
-<li><a class="reference internal" href="#id2">자료 형</a><ul>
+<li><a class="reference internal" href="#data-types">Data Types</a><ul>
 </ul>
 </li>
-<li><a class="reference internal" href="#id3">공통</a><ul>
+<li><a class="reference internal" href="#common">Common</a><ul>
 </ul>
 </li>
 </ul>
@@ -172,13 +169,13 @@
         <li class="right" >
           <a href="../apispec.html" title="Application Programming Interface"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li>
+        <li><a href="../../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li>
           <li><a href="../apispec.html" accesskey="U">Application Programming Interface</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

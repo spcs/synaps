@@ -6,14 +6,14 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>User SDK 사용 예제 &mdash; synaps v12.09.b2-dev documentation</title>
+    <title>User SDK guide &mdash; synaps v12.09.b3-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '12.09.b2-dev',
+        VERSION:     '12.09.b3-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../index.html" /> 
+    <link rel="top" title="synaps v12.09.b3-dev documentation" href="../index.html" /> 
   </head>
   <body>
   <div id="header">
@@ -45,12 +45,12 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="user-sdk">
-<span id="user-sdk-example"></span><h1>User SDK 사용 예제<a class="headerlink" href="#user-sdk" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="synaps-sdk">
-<h2>Synaps SDK 계정 설정 방법<a class="headerlink" href="#synaps-sdk" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="user-sdk-guide">
+<span id="user-sdk-example"></span><h1>User SDK guide<a class="headerlink" href="#user-sdk-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="setting-credentials">
+<h2>Setting credentials<a class="headerlink" href="#setting-credentials" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>SpcsCredentials.properties 파일에 아래와 같이 계정정보를 입력한다.</li>
+<li>write your credentials in the SpcsCredentials.properties file.</li>
 </ol>
 <blockquote>
 <div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">accessKey</span> <span class="o">=</span> df6ad231-23f9-4622-810c-acd6ae3e9e67
@@ -59,7 +59,7 @@
 </div>
 </div></blockquote>
 <ol class="arabic simple" start="2">
-<li>다음과 같이 클라이언트 객체를 생성한다.</li>
+<li>Initiate an AmazonCloudWatchClient object as below,</li>
 </ol>
 <blockquote>
 <div><div class="highlight-java"><div class="highlight"><pre><span class="n">AmazonCloudWatch</span> <span class="n">cw</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AmazonCloudWatchClient</span><span class="o">(</span>
@@ -72,12 +72,10 @@
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="action-sdk">
-<h2>Action별 SDK 사용 예제<a class="headerlink" href="#action-sdk" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="action">
-<h3>메트릭 관련 Action<a class="headerlink" href="#action" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="listmetrics-action">
-<h4>ListMetrics Action<a class="headerlink" href="#listmetrics-action" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="listmetrics">
+<h3>ListMetrics<a class="headerlink" href="#listmetrics" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><div class="highlight-java"><div class="highlight"><pre><span class="n">ListMetricsRequest</span> <span class="n">LM</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ListMetricsRequest</span><span class="o">();</span>
 <span class="n">ListMetricsResult</span> <span class="n">LMR</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">listMetrics</span><span class="o">(</span><span class="n">LM</span><span class="o">);</span>
@@ -87,11 +85,10 @@
 </div></blockquote>
 <ul class="simple">
 <li>API reference: <a class="reference internal" href="../artifacts/apispec/action/list_metrics.html#list-metrics"><em>ListMetrics</em></a></li>
-<li>SDK reference: <a class="reference external" href="http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_ListMetrics.html">ListMetrics</a></li>
 </ul>
 </div>
-<div class="section" id="putmetricdata-action">
-<h4>PutMetricData Action<a class="headerlink" href="#putmetricdata-action" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="putmetricdata">
+<h3>PutMetricData<a class="headerlink" href="#putmetricdata" title="Permalink to this headline">¶</a></h3>
 <p>&#8220;MetricName&#8221;이라는 Metric을 특정시간(2012년 6월 28일 14시 ~ 17시)동안 매초마다
 일정값(30)을 입력하는 예제</p>
 <blockquote>
@@ -133,11 +130,10 @@
 </div></blockquote>
 <ul class="simple">
 <li>API reference: <a class="reference internal" href="../artifacts/apispec/action/put_metric_data.html#put-metric-data"><em>PutMetricData</em></a></li>
-<li>SDK reference: <a class="reference external" href="http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_PutMetricData.html">PutMetricData</a></li>
 </ul>
 </div>
-<div class="section" id="getmetricstatistics-action">
-<h4>GetMetricStatistics Action<a class="headerlink" href="#getmetricstatistics-action" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="getmetricstatistics">
+<h3>GetMetricStatistics<a class="headerlink" href="#getmetricstatistics" title="Permalink to this headline">¶</a></h3>
 <p>아래 예제에서는 SPCS Nova 의 가상머신 인스턴스 instance-0000000f의 CPU 사용률의
 2012년 7월 5일 10시부터 한 시간 동안의 3분(180초) 주기의 평균, 최대, 최소, 샘플
 갯수를 조회한다.</p>
@@ -203,14 +199,10 @@
 </div></blockquote>
 <ul class="simple">
 <li>API reference: <a class="reference internal" href="../artifacts/apispec/action/get_metric_statistics.html#get-metric-statistics"><em>GetMetricStatistics</em></a></li>
-<li>SDK reference: <a class="reference external" href="http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_GetMetricStatistics.html">GetMetricStatistics</a></li>
 </ul>
 </div>
-</div>
-<div class="section" id="id1">
-<h3>알람 관련 Action<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="deletealarms-action">
-<h4>DeleteAlarms Action<a class="headerlink" href="#deletealarms-action" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="deletealarms">
+<h3>DeleteAlarms<a class="headerlink" href="#deletealarms" title="Permalink to this headline">¶</a></h3>
 <p>&#8220;AlarmName&#8221; 이라는 이름을 갖는 알람을 삭제하는 예제</p>
 <blockquote>
 <div><div class="highlight-java"><div class="highlight"><pre><span class="n">DeleteAlarmsRequest</span> <span class="n">DAR</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DeleteAlarmsRequest</span><span class="o">();</span>
@@ -223,11 +215,10 @@
 </div></blockquote>
 <ul class="simple">
 <li>API reference: <a class="reference internal" href="../artifacts/apispec/action/delete_alarms.html#delete-alarms"><em>DeleteAlarms</em></a></li>
-<li>SDK reference: <a class="reference external" href="http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_DeleteAlarms.html">DeleteAlarms</a></li>
 </ul>
 </div>
-<div class="section" id="describealarms-action">
-<h4>DescribeAlarms Action<a class="headerlink" href="#describealarms-action" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="describealarms">
+<h3>DescribeAlarms<a class="headerlink" href="#describealarms" title="Permalink to this headline">¶</a></h3>
 <p>모든 또는 특정 알람에 대한 모든 정보리스트를 반환한다.</p>
 <blockquote>
 <div><div class="highlight-java"><div class="highlight"><pre><span class="n">DescribeAlarmsResult</span> <span class="n">DAR</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">describeAlarms</span><span class="o">();</span>
@@ -237,11 +228,10 @@
 </div></blockquote>
 <ul class="simple">
 <li>API reference: <a class="reference internal" href="../artifacts/apispec/action/describe_alarm_history.html#describe-alarm-history"><em>DescribeAlarmHistory</em></a></li>
-<li>SDK reference: <a class="reference external" href="http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_DescribeAlarmHistory.html">DescribeAlarmHistory</a></li>
 </ul>
 </div>
-<div class="section" id="describealarmsformetric-action">
-<h4>DescribeAlarmsForMetric Action<a class="headerlink" href="#describealarmsformetric-action" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="describealarmsformetric">
+<h3>DescribeAlarmsForMetric<a class="headerlink" href="#describealarmsformetric" title="Permalink to this headline">¶</a></h3>
 <p>특정 Metric 에 대한 모든 알람정보를 반환한다.</p>
 <blockquote>
 <div><div class="highlight-java"><div class="highlight"><pre><span class="n">DescribeAlarmsForMetricRequest</span> <span class="n">DAFMR</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DescribeAlarmsForMetricRequest</span><span class="o">();</span>
@@ -254,11 +244,10 @@
 </div></blockquote>
 <ul class="simple">
 <li>API reference: <a class="reference internal" href="../artifacts/apispec/action/describe_alarms_for_metric.html#describe-alarms-for-metric"><em>DescribeAlarmsForMetric</em></a></li>
-<li>SDK reference: <a class="reference external" href="http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_DescribeAlarmsForMetric.html">DescribeAlarmsForMetric</a></li>
 </ul>
 </div>
-<div class="section" id="putmetricalarm-action">
-<h4>PutMetricAlarm Action<a class="headerlink" href="#putmetricalarm-action" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="putmetricalarm">
+<h3>PutMetricAlarm<a class="headerlink" href="#putmetricalarm" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><div class="highlight-java"><div class="highlight"><pre><span class="n">PutMetricAlarmRequest</span> <span class="n">PMAR</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PutMetricAlarmRequest</span><span class="o">();</span>
 <span class="n">PMAR</span><span class="o">.</span><span class="na">setAlarmName</span><span class="o">(</span><span class="s">&quot;AlarmName&quot;</span><span class="o">);</span>
@@ -275,26 +264,22 @@
 </div></blockquote>
 <ul class="simple">
 <li>API reference: <a class="reference internal" href="../artifacts/apispec/action/put_metric_alarm.html#put-metric-alarm"><em>PutMetricAlarm</em></a></li>
-<li>SDK reference: <a class="reference external" href="http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_PutMetricAlarm.html">PutMetricAlarm</a></li>
 </ul>
 </div>
-<div class="section" id="setalarmstate-action">
-<h4>SetAlarmState Action<a class="headerlink" href="#setalarmstate-action" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="setalarmstate">
+<h3>SetAlarmState<a class="headerlink" href="#setalarmstate" title="Permalink to this headline">¶</a></h3>
 <p>TBD</p>
 </div>
-<div class="section" id="disablealarmactions-action">
-<h4>DisableAlarmActions Action<a class="headerlink" href="#disablealarmactions-action" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="disablealarmactions">
+<h3>DisableAlarmActions<a class="headerlink" href="#disablealarmactions" title="Permalink to this headline">¶</a></h3>
 <p>TBD</p>
 </div>
-<div class="section" id="enablealarmactions-action">
-<h4>EnableAlarmActions Action<a class="headerlink" href="#enablealarmactions-action" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="enablealarmactions">
+<h3>EnableAlarmActions<a class="headerlink" href="#enablealarmactions" title="Permalink to this headline">¶</a></h3>
 <p>TBD</p>
 </div>
-</div>
-<div class="section" id="id2">
-<h3>알람 히스토리 관련 Action<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="describealarmhistory-action">
-<h4>DescribeAlarmHistory Action<a class="headerlink" href="#describealarmhistory-action" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="describealarmhistory">
+<h3>DescribeAlarmHistory<a class="headerlink" href="#describealarmhistory" title="Permalink to this headline">¶</a></h3>
 <p>프로젝트의 모든 알람 히스토리를 조회하는 예제</p>
 <blockquote>
 <div><div class="highlight-java"><div class="highlight"><pre><span class="n">DescribeAlarmHistoryResult</span> <span class="n">DAHR</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">describeAlarmHistory</span><span class="o">();</span>
@@ -304,9 +289,7 @@
 </div></blockquote>
 <ul class="simple">
 <li>API reference: <a class="reference internal" href="../artifacts/apispec/action/describe_alarm_history.html#describe-alarm-history"><em>DescribeAlarmHistory</em></a></li>
-<li>SDK reference: <a class="reference external" href="http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_DescribeAlarmHistory.html">DescribeAlarmHistory</a></li>
 </ul>
-</div>
 </div>
 </div>
 </div>
@@ -319,29 +302,20 @@
         <div class="sphinxsidebarwrapper">
             <h3><a href="../index.html">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference internal" href="#">User SDK 사용 예제</a><ul>
-<li><a class="reference internal" href="#synaps-sdk">Synaps SDK 계정 설정 방법</a></li>
-<li><a class="reference internal" href="#action-sdk">Action별 SDK 사용 예제</a><ul>
-<li><a class="reference internal" href="#action">메트릭 관련 Action</a><ul>
-<li><a class="reference internal" href="#listmetrics-action">ListMetrics Action</a></li>
-<li><a class="reference internal" href="#putmetricdata-action">PutMetricData Action</a></li>
-<li><a class="reference internal" href="#getmetricstatistics-action">GetMetricStatistics Action</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id1">알람 관련 Action</a><ul>
-<li><a class="reference internal" href="#deletealarms-action">DeleteAlarms Action</a></li>
-<li><a class="reference internal" href="#describealarms-action">DescribeAlarms Action</a></li>
-<li><a class="reference internal" href="#describealarmsformetric-action">DescribeAlarmsForMetric Action</a></li>
-<li><a class="reference internal" href="#putmetricalarm-action">PutMetricAlarm Action</a></li>
-<li><a class="reference internal" href="#setalarmstate-action">SetAlarmState Action</a></li>
-<li><a class="reference internal" href="#disablealarmactions-action">DisableAlarmActions Action</a></li>
-<li><a class="reference internal" href="#enablealarmactions-action">EnableAlarmActions Action</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id2">알람 히스토리 관련 Action</a><ul>
-<li><a class="reference internal" href="#describealarmhistory-action">DescribeAlarmHistory Action</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">User SDK guide</a><ul>
+<li><a class="reference internal" href="#setting-credentials">Setting credentials</a></li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#listmetrics">ListMetrics</a></li>
+<li><a class="reference internal" href="#putmetricdata">PutMetricData</a></li>
+<li><a class="reference internal" href="#getmetricstatistics">GetMetricStatistics</a></li>
+<li><a class="reference internal" href="#deletealarms">DeleteAlarms</a></li>
+<li><a class="reference internal" href="#describealarms">DescribeAlarms</a></li>
+<li><a class="reference internal" href="#describealarmsformetric">DescribeAlarmsForMetric</a></li>
+<li><a class="reference internal" href="#putmetricalarm">PutMetricAlarm</a></li>
+<li><a class="reference internal" href="#setalarmstate">SetAlarmState</a></li>
+<li><a class="reference internal" href="#disablealarmactions">DisableAlarmActions</a></li>
+<li><a class="reference internal" href="#enablealarmactions">EnableAlarmActions</a></li>
+<li><a class="reference internal" href="#describealarmhistory">DescribeAlarmHistory</a></li>
 </ul>
 </li>
 </ul>
@@ -379,12 +353,12 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+        <li><a href="../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

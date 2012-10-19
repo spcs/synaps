@@ -6,14 +6,14 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Synaps Documentation &mdash; synaps v12.09.b2-dev documentation</title>
+    <title>Synaps Documentation &mdash; synaps v12.09.b3-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/tweaks.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '12.09.b2-dev',
+        VERSION:     '12.09.b3-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps v12.09.b2-dev documentation" href="#" />
+    <link rel="top" title="synaps v12.09.b3-dev documentation" href="#" />
     <link rel="next" title="Program Specification" href="artifacts/programspec.html" /> 
   </head>
   <body>
@@ -52,9 +52,9 @@
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>Synaps is a cloud monitoring system.</p>
 <ul class="simple">
-<li>linear scalable</li>
+<li>Linear scalable</li>
 <li>AWS CloudWatch API Compatible</li>
-<li>real-time monitoring system</li>
+<li>Real-time monitoring system</li>
 </ul>
 </div>
 <div class="section" id="synaps-artifacts">
@@ -88,13 +88,13 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="artifacts/apispec.html">Application Programming Interface</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/apispec/user.api.html">사용자 API 규격</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/apispec/user.api.html#id1">액션</a></li>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/apispec/user.api.html#id2">자료 형</a></li>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/apispec/user.api.html#id3">공통</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/apispec/user.api.html">User API Specification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/apispec/user.api.html#actions">Actions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/apispec/user.api.html#data-types">Data Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/apispec/user.api.html#common">Common</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/apispec/admin.api.html">관리자 API 규격</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/apispec/admin.api.html">Admin API Specificaton</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="artifacts/sdkspec.html">SDK(Software Development Toolkit) specification</a><ul>
@@ -119,7 +119,7 @@
 <li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.cassandra.html">Cassandra 설치하기</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.rabbitmq.html">RabbitMQ 설치하기</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.storm.html">Storm 설치하기</a></li>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.synaps.api.html">synaps-api 및 synaps-noti 설치하기</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.synaps.api.html">Install synaps-api and synaps-noti</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.ganglia.html">Ganglia 설치하기</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.common.html">공통 설치 및 설정</a></li>
 </ul>
@@ -131,11 +131,10 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="artifacts/developersguide.html">Developer Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/devref/development.environment.html">로컬 개발 환경 구축하기</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/devref/development.environment.html#id2">환경 구성하기</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/general.installation.guide.html">Installation Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/general.installation.guide.html#pre-installation-requirements">Pre-installation Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/general.installation.guide.html#install-synaps-from-github">Install Synaps from Github</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/general.installation.guide.html#running-synaps">Running Synaps</a></li>
 </ul>
 </li>
 </ul>
@@ -206,12 +205,12 @@
         <li class="right" >
           <a href="artifacts/programspec.html" title="Program Specification"
              accesskey="N">next</a> |</li>
-        <li><a href="#">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+        <li><a href="#">synaps v12.09.b3-dev documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

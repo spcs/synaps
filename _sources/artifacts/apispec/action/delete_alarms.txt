@@ -1,15 +1,15 @@
 .. _delete_alarms:
 
 DeleteAlarms
-=============
+============
 
-설명
-----
+Description
+-----------
 지정된 모든 알람을 지운다. 알람 이름이 하나라도 데이터베이스에 없는 경우,
 어떤 알람도 지워지지 않는다.
 
-요청 매개변수
--------------
+Parameters
+----------
 공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
@@ -27,8 +27,8 @@ DeleteAlarms
        길이 제한: 최소 0개 부터 100개까지의 알람.
      - No
 
-에러
-----
+Errors
+------
 공통으로 발생하는 에러는 :ref:`common_errors` 를 참고한다.
 
 .. list-table:: 

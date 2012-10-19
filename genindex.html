@@ -6,14 +6,14 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Index &mdash; synaps v12.09.b2-dev documentation</title>
+    <title>Index &mdash; synaps v12.09.b3-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/tweaks.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '12.09.b2-dev',
+        VERSION:     '12.09.b3-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps v12.09.b2-dev documentation" href="index.html" /> 
+    <link rel="top" title="synaps v12.09.b3-dev documentation" href="index.html" /> 
   </head>
   <body>
   <div id="header">
@@ -59,13 +59,18 @@
     <dt><a href="api/synaps.common.memorycache.html#synaps.common.memorycache.Client.add">add() (Client method)</a></dt>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.add_role">add_role() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.add_role">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.Project.add_role">(Project method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.add_role">(SDSLdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.User.add_role">(User method)</a></dt>
   </dl></dd>
-    <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.LDAPWrapper.add_s">add_s() (LDAPWrapper method)</a></dt>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.FakeLDAP.add_s">add_s() (FakeLDAP method)</a></dt>
+    <dd><dl>
+      <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.LDAPWrapper.add_s">(LDAPWrapper method)</a>, <a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LDAPWrapper.add_s">[1]</a></dt>
+  </dl></dd>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.add_to_project">add_to_project() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.add_to_project">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.add_to_project">(SDSLdapDriver method)</a></dt>
   </dl></dd>
     <dt><a href="api/synaps.exception.html#synaps.exception.AdminRequired">AdminRequired</a></dt>
@@ -131,14 +136,16 @@
     <dt><a href="api/synaps.openstack.common.cfg.html#synaps.openstack.common.cfg.ConfigOpts">ConfigOpts (class in synaps.openstack.common.cfg)</a></dt>
     <dt><a href="api/synaps.openstack.common.cfg.html#synaps.openstack.common.cfg.ConfigOpts.GroupAttr">ConfigOpts.GroupAttr (class in synaps.openstack.common.cfg)</a></dt>
     <dt><a href="api/synaps.openstack.common.cfg.html#synaps.openstack.common.cfg.ConfigOpts.StrSubWrapper">ConfigOpts.StrSubWrapper (class in synaps.openstack.common.cfg)</a></dt>
-    <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.LDAPWrapper.connect">connect() (LDAPWrapper method)</a></dt>
+    <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.LDAPWrapper.connect">connect() (LDAPWrapper method)</a>, <a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LDAPWrapper.connect">[1]</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.ConvertedException">ConvertedException</a></dt>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.create_project">create_project() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.create_project">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.create_project">(SDSLdapDriver method)</a></dt>
   </dl></dd>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.create_user">create_user() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.create_user">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.create_user">(SDSLdapDriver method)</a></dt>
   </dl></dd>
     <dt><a href="api/synaps.crypto.html#synaps.crypto.crl_path">crl_path() (in module synaps.crypto)</a></dt>
@@ -162,12 +169,19 @@
     <dt><a href="api/synaps.utils.html#synaps.utils.delete_if_exists">delete_if_exists() (in module synaps.utils)</a></dt>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.delete_project">delete_project() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.delete_project">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.delete_project">(SDSLdapDriver method)</a></dt>
   </dl></dd>
-    <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.LDAPWrapper.delete_s">delete_s() (LDAPWrapper method)</a></dt>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.FakeLDAP.delete_s">delete_s() (FakeLDAP method)</a></dt>
+    <dd><dl>
+      <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.LDAPWrapper.delete_s">(LDAPWrapper method)</a>, <a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LDAPWrapper.delete_s">[1]</a></dt>
+  </dl></dd>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
-    <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.delete_user">delete_user() (SDSLdapDriver method)</a></dt>
+    <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.delete_user">delete_user() (LdapDriver method)</a></dt>
+    <dd><dl>
+      <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.delete_user">(SDSLdapDriver method)</a></dt>
+  </dl></dd>
     <dt><a href="api/synaps.monitor.api.html#synaps.monitor.api.API.describe_alarm_history">describe_alarm_history() (API method)</a></dt>
     <dd><dl>
       <dt><a href="api/synaps.api.cloudwatch.monitor.html#synaps.api.cloudwatch.monitor.MonitorController.describe_alarm_history">(MonitorController method)</a></dt>
@@ -215,12 +229,14 @@
     <dd><dl>
       <dt><a href="api/synaps.wsgi.html#synaps.wsgi.Middleware.factory">(synaps.wsgi.Middleware class method)</a></dt>
   </dl></dd>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.FakeLDAP">FakeLDAP (class in synaps.auth.fakeldap)</a></dt>
+    <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.FakeLdapDriver">FakeLdapDriver (class in synaps.auth.ldapdriver)</a></dt>
     <dt><a href="api/synaps.api.cloudwatch.faults.html#synaps.api.cloudwatch.faults.Fault">Fault</a></dt>
     <dt><a href="api/synaps.crypto.html#synaps.crypto.fetch_ca">fetch_ca() (in module synaps.crypto)</a></dt>
     <dt><a href="api/synaps.crypto.html#synaps.crypto.fetch_crl">fetch_crl() (in module synaps.crypto)</a></dt>
-    <dt><a href="api/synaps.utils.html#synaps.utils.find_config">find_config() (in module synaps.utils)</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
+    <dt><a href="api/synaps.utils.html#synaps.utils.find_config">find_config() (in module synaps.utils)</a></dt>
     <dt><a href="api/synaps.openstack.common.cfg.html#synaps.openstack.common.cfg.find_config_files">find_config_files() (in module synaps.openstack.common.cfg)</a></dt>
     <dt><a href="api/synaps.openstack.common.cfg.html#synaps.openstack.common.cfg.FloatOpt">FloatOpt (class in synaps.openstack.common.cfg)</a></dt>
     <dt><a href="api/synaps.log.html#synaps.log.JSONFormatter.format">format() (JSONFormatter method)</a></dt>
@@ -256,27 +272,33 @@
   </dl></dd>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.get_project">get_project() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.get_project">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.get_project">(SDSLdapDriver method)</a></dt>
   </dl></dd>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.get_projects">get_projects() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.get_projects">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.get_projects">(SDSLdapDriver method)</a></dt>
   </dl></dd>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.get_roles">get_roles() (AuthManager static method)</a></dt>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.get_user">get_user() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.get_user">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.get_user">(SDSLdapDriver method)</a></dt>
   </dl></dd>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.get_user_from_access_key">get_user_from_access_key() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.get_user_from_access_key">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.get_user_from_access_key">(SDSLdapDriver method)</a></dt>
   </dl></dd>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.get_user_roles">get_user_roles() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.get_user_roles">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.get_user_roles">(SDSLdapDriver method)</a></dt>
   </dl></dd>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.get_users">get_users() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.get_users">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.get_users">(SDSLdapDriver method)</a></dt>
   </dl></dd>
     <dt><a href="api/synaps.log.html#synaps.log.getLogger">getLogger() (in module synaps.log)</a></dt>
@@ -296,6 +318,7 @@
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.Project.has_member">has_member() (Project method)</a></dt>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.has_role">has_role() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.has_role">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.Project.has_role">(Project method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.has_role">(SDSLdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.User.has_role">(User method)</a></dt>
@@ -309,15 +332,17 @@
     <dt><a href="api/synaps.utils.html#synaps.utils.import_class">import_class() (in module synaps.utils)</a></dt>
     <dt><a href="api/synaps.utils.html#synaps.utils.import_object">import_object() (in module synaps.utils)</a></dt>
     <dt><a href="api/synaps.common.memorycache.html#synaps.common.memorycache.Client.incr">incr() (Client method)</a></dt>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.initialize">initialize() (in module synaps.auth.fakeldap)</a></dt>
     <dt><a href="api/synaps.api.auth.html#synaps.api.auth.InjectContext">InjectContext (class in synaps.api.auth)</a></dt>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.Store.instance">instance() (synaps.auth.fakeldap.Store class method)</a></dt>
     <dt><a href="api/synaps.openstack.common.cfg.html#synaps.openstack.common.cfg.IntOpt">IntOpt (class in synaps.openstack.common.cfg)</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.Invalid">Invalid</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.InvalidFormat">InvalidFormat</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.InvalidKeypair">InvalidKeypair</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.InvalidNextToken">InvalidNextToken</a></dt>
-    <dt><a href="api/synaps.exception.html#synaps.exception.InvalidParameterValue">InvalidParameterValue</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
+    <dt><a href="api/synaps.exception.html#synaps.exception.InvalidParameterValue">InvalidParameterValue</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.InvalidRequest">InvalidRequest</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.InvalidSignature">InvalidSignature</a></dt>
     <dt><a href="api/synaps.api.cloudwatch.apirequest.html#synaps.api.cloudwatch.apirequest.APIRequest.invoke">invoke() (APIRequest method)</a></dt>
@@ -325,7 +350,10 @@
     <dd><dl>
       <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.User.is_admin">(User method)</a></dt>
   </dl></dd>
-    <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.is_in_project">is_in_project() (SDSLdapDriver method)</a></dt>
+    <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.is_in_project">is_in_project() (LdapDriver method)</a></dt>
+    <dd><dl>
+      <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.is_in_project">(SDSLdapDriver method)</a></dt>
+  </dl></dd>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.is_project_manager">is_project_manager() (AuthManager method)</a></dt>
     <dd><dl>
       <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.User.is_project_manager">(User method)</a></dt>
@@ -364,16 +392,20 @@
   <td style="width: 33%" valign="top"><dl>
     <dt><a href="api/synaps.service.html#synaps.service.Launcher.launch_server">launch_server() (Launcher method)</a></dt>
     <dt><a href="api/synaps.service.html#synaps.service.Launcher">Launcher (class in synaps.service)</a></dt>
+    <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver">LdapDriver (class in synaps.auth.ldapdriver)</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.LDAPGroupExists">LDAPGroupExists</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.LDAPGroupMembershipNotFound">LDAPGroupMembershipNotFound</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.LDAPGroupNotFound">LDAPGroupNotFound</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.LDAPMembershipExists">LDAPMembershipExists</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.LDAPObjectNotFound">LDAPObjectNotFound</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.LDAPUserExists">LDAPUserExists</a></dt>
-    <dt><a href="api/synaps.exception.html#synaps.exception.LDAPUserNotFound">LDAPUserNotFound</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
-    <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.LDAPWrapper">LDAPWrapper (class in synaps.auth.sdsldapdriver)</a></dt>
+    <dt><a href="api/synaps.exception.html#synaps.exception.LDAPUserNotFound">LDAPUserNotFound</a></dt>
+    <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LDAPWrapper">LDAPWrapper (class in synaps.auth.ldapdriver)</a></dt>
+    <dd><dl>
+      <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.LDAPWrapper">(class in synaps.auth.sdsldapdriver)</a></dt>
+  </dl></dd>
     <dt><a href="api/synaps.log.html#synaps.log.LegacyNovaFormatter">LegacyNovaFormatter (class in synaps.log)</a></dt>
     <dt><a href="api/synaps.monitor.api.html#synaps.monitor.api.API.list_metrics">list_metrics() (API method)</a></dt>
     <dd><dl>
@@ -393,15 +425,21 @@
     <dt><a href="api/synaps.wsgi.html#synaps.wsgi.Middleware">Middleware (class in synaps.wsgi)</a></dt>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.modify_project">modify_project() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.modify_project">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.modify_project">(SDSLdapDriver method)</a></dt>
   </dl></dd>
-    <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.LDAPWrapper.modify_s">modify_s() (LDAPWrapper method)</a></dt>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.FakeLDAP.modify_s">modify_s() (FakeLDAP method)</a></dt>
+    <dd><dl>
+      <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.LDAPWrapper.modify_s">(LDAPWrapper method)</a>, <a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LDAPWrapper.modify_s">[1]</a></dt>
+  </dl></dd>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.modify_user">modify_user() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.modify_user">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.modify_user">(SDSLdapDriver method)</a></dt>
   </dl></dd>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.FakeLDAP.modrdn_s">modrdn_s() (FakeLDAP method)</a></dt>
     <dt><a href="api/synaps.api.cloudwatch.monitor.html#synaps.api.cloudwatch.monitor.MonitorController">MonitorController (class in synaps.api.cloudwatch.monitor)</a></dt>
     <dt><a href="api/synaps.utils.html#synaps.utils.monkey_patch">monkey_patch() (in module synaps.utils)</a></dt>
     <dt><a href="api/synaps.openstack.common.cfg.html#synaps.openstack.common.cfg.MultiStrOpt">MultiStrOpt (class in synaps.openstack.common.cfg)</a></dt>
@@ -411,11 +449,12 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.NO_SUCH_OBJECT">NO_SUCH_OBJECT</a></dt>
     <dt><a href="api/synaps.openstack.common.cfg.html#synaps.openstack.common.cfg.NoSuchGroupError">NoSuchGroupError</a></dt>
     <dt><a href="api/synaps.openstack.common.cfg.html#synaps.openstack.common.cfg.NoSuchOptError">NoSuchOptError</a></dt>
-    <dt><a href="api/synaps.exception.html#synaps.exception.NotAllowed">NotAllowed</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
+    <dt><a href="api/synaps.exception.html#synaps.exception.NotAllowed">NotAllowed</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.NotAuthorized">NotAuthorized</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.NotFound">NotFound</a></dt>
 </dl></td>
@@ -424,6 +463,7 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.OBJECT_CLASS_VIOLATION">OBJECT_CLASS_VIOLATION</a></dt>
     <dt><a href="api/synaps.openstack.common.cfg.html#synaps.openstack.common.cfg.Opt">Opt (class in synaps.openstack.common.cfg)</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
@@ -472,10 +512,12 @@
     <dt><a href="api/synaps.openstack.common.cfg.html#synaps.openstack.common.cfg.ConfigOpts.register_opts">register_opts() (ConfigOpts method)</a></dt>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.remove_from_project">remove_from_project() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.remove_from_project">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.remove_from_project">(SDSLdapDriver method)</a></dt>
   </dl></dd>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthManager.remove_role">remove_role() (AuthManager method)</a></dt>
     <dd><dl>
+      <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LdapDriver.remove_role">(LdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.Project.remove_role">(Project method)</a></dt>
       <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver.remove_role">(SDSLdapDriver method)</a></dt>
       <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.User.remove_role">(User method)</a></dt>
@@ -497,11 +539,18 @@
   <td style="width: 33%" valign="top"><dl>
     <dt><a href="api/synaps.auth.signer.html#synaps.auth.signer.Signer.s3_authorization">s3_authorization() (Signer method)</a></dt>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.AuthBase.safe_id">safe_id() (synaps.auth.manager.AuthBase class method)</a></dt>
-    <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.sanitize">sanitize() (in module synaps.auth.sdsldapdriver)</a></dt>
+    <dt><a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.sanitize">sanitize() (in module synaps.auth.ldapdriver)</a></dt>
+    <dd><dl>
+      <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.sanitize">(in module synaps.auth.sdsldapdriver)</a></dt>
+  </dl></dd>
     <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.SDSLdapDriver">SDSLdapDriver (class in synaps.auth.sdsldapdriver)</a></dt>
-    <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.LDAPWrapper.search_s">search_s() (LDAPWrapper method)</a></dt>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.FakeLDAP.search_s">search_s() (FakeLDAP method)</a></dt>
+    <dd><dl>
+      <dt><a href="api/synaps.auth.sdsldapdriver.html#synaps.auth.sdsldapdriver.LDAPWrapper.search_s">(LDAPWrapper method)</a>, <a href="api/synaps.auth.ldapdriver.html#synaps.auth.ldapdriver.LDAPWrapper.search_s">[1]</a></dt>
+  </dl></dd>
     <dt><a href="api/synaps.service.html#synaps.service.serve">serve() (in module synaps.service)</a></dt>
     <dt><a href="api/synaps.wsgi.html#synaps.wsgi.Server">Server (class in synaps.wsgi)</a></dt>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.SERVER_DOWN">SERVER_DOWN</a></dt>
     <dt><a href="api/synaps.common.memorycache.html#synaps.common.memorycache.Client.set">set() (Client method)</a></dt>
     <dt><a href="api/synaps.monitor.api.html#synaps.monitor.api.API.set_alarm_actions">set_alarm_actions() (API method)</a></dt>
     <dt><a href="api/synaps.monitor.api.html#synaps.monitor.api.API.set_alarm_state">set_alarm_state() (API method)</a></dt>
@@ -515,6 +564,7 @@
     <dt><a href="api/synaps.tests.test_cloudwatch.html#synaps.tests.test_cloudwatch.ShortCase">ShortCase (class in synaps.tests.test_cloudwatch)</a></dt>
     <dt><a href="api/synaps.crypto.html#synaps.crypto.sign_csr">sign_csr() (in module synaps.crypto)</a></dt>
     <dt><a href="api/synaps.auth.signer.html#synaps.auth.signer.Signer">Signer (class in synaps.auth.signer)</a></dt>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.FakeLDAP.simple_bind_s">simple_bind_s() (FakeLDAP method)</a></dt>
     <dt><a href="api/synaps.wsgi.html#synaps.wsgi.Server.start">start() (Server method)</a></dt>
     <dd><dl>
       <dt><a href="api/synaps.service.html#synaps.service.WSGIService.start">(WSGIService method)</a></dt>
@@ -525,18 +575,21 @@
       <dt><a href="api/synaps.wsgi.html#synaps.wsgi.Server.stop">(Server method)</a></dt>
       <dt><a href="api/synaps.service.html#synaps.service.WSGIService.stop">(WSGIService method)</a></dt>
   </dl></dd>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.Store">Store (class in synaps.auth.fakeldap)</a></dt>
     <dt><a href="api/synaps.utils.html#synaps.utils.str_to_timestamp">str_to_timestamp() (in module synaps.utils)</a></dt>
     <dt><a href="api/synaps.utils.html#synaps.utils.strcmp_const_time">strcmp_const_time() (in module synaps.utils)</a></dt>
     <dt><a href="api/synaps.openstack.common.cfg.html#synaps.openstack.common.cfg.StrOpt">StrOpt (class in synaps.openstack.common.cfg)</a></dt>
     <dt><a href="api/synaps.utils.html#synaps.utils.strtime">strtime() (in module synaps.utils)</a></dt>
     <dt><a href="api/synaps.utils.html#synaps.utils.strtime_trunk">strtime_trunk() (in module synaps.utils)</a></dt>
     <dt><a href="api/synaps.api.auth.html#module-synaps.api.auth">synaps.api.auth (module)</a></dt>
-    <dt><a href="api/synaps.api.cloudwatch.apirequest.html#module-synaps.api.cloudwatch.apirequest">synaps.api.cloudwatch.apirequest (module)</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
+    <dt><a href="api/synaps.api.cloudwatch.apirequest.html#module-synaps.api.cloudwatch.apirequest">synaps.api.cloudwatch.apirequest (module)</a></dt>
     <dt><a href="api/synaps.api.cloudwatch.cloudwatch2utils.html#module-synaps.api.cloudwatch.cloudwatch2utils">synaps.api.cloudwatch.cloudwatch2utils (module)</a></dt>
     <dt><a href="api/synaps.api.cloudwatch.faults.html#module-synaps.api.cloudwatch.faults">synaps.api.cloudwatch.faults (module)</a></dt>
     <dt><a href="api/synaps.api.cloudwatch.monitor.html#module-synaps.api.cloudwatch.monitor">synaps.api.cloudwatch.monitor (module)</a></dt>
+    <dt><a href="api/synaps.auth.fakeldap.html#module-synaps.auth.fakeldap">synaps.auth.fakeldap (module)</a></dt>
+    <dt><a href="api/synaps.auth.ldapdriver.html#module-synaps.auth.ldapdriver">synaps.auth.ldapdriver (module)</a></dt>
     <dt><a href="api/synaps.auth.manager.html#module-synaps.auth.manager">synaps.auth.manager (module)</a></dt>
     <dt><a href="api/synaps.auth.sdsldapdriver.html#module-synaps.auth.sdsldapdriver">synaps.auth.sdsldapdriver (module)</a></dt>
     <dt><a href="api/synaps.auth.signer.html#module-synaps.auth.signer">synaps.auth.signer (module)</a></dt>
@@ -603,12 +656,13 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
+    <dt><a href="api/synaps.auth.fakeldap.html#synaps.auth.fakeldap.FakeLDAP.unbind_s">unbind_s() (FakeLDAP method)</a></dt>
     <dt><a href="api/synaps.flags.html#synaps.flags.UnrecognizedFlag">UnrecognizedFlag</a></dt>
     <dt><a href="api/synaps.auth.manager.html#synaps.auth.manager.User">User (class in synaps.auth.manager)</a></dt>
     <dt><a href="api/synaps.exception.html#synaps.exception.UserExists">UserExists</a></dt>
-    <dt><a href="api/synaps.exception.html#synaps.exception.UserRoleNotFound">UserRoleNotFound</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
+    <dt><a href="api/synaps.exception.html#synaps.exception.UserRoleNotFound">UserRoleNotFound</a></dt>
     <dt><a href="api/synaps.utils.html#synaps.utils.utcnow">utcnow() (in module synaps.utils)</a></dt>
     <dt><a href="api/synaps.utils.html#synaps.utils.utcnow_ts">utcnow_ts() (in module synaps.utils)</a></dt>
     <dt><a href="api/synaps.utils.html#synaps.utils.utf8">utf8() (in module synaps.utils)</a></dt>
@@ -687,12 +741,12 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li> 
+        <li><a href="index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

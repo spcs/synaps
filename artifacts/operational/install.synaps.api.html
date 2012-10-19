@@ -6,14 +6,14 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>synaps-api 및 synaps-noti 설치하기 &mdash; synaps v12.09.b2-dev documentation</title>
+    <title>Install synaps-api and synaps-noti &mdash; synaps v12.09.b3-dev documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '12.09.b2-dev',
+        VERSION:     '12.09.b3-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps v12.09.b2-dev documentation" href="../../index.html" />
+    <link rel="top" title="synaps v12.09.b3-dev documentation" href="../../index.html" />
     <link rel="up" title="Installation Guide" href="installation.guide.html" />
     <link rel="next" title="Ganglia 설치하기" href="install.ganglia.html" />
     <link rel="prev" title="Storm 설치하기" href="install.storm.html" /> 
@@ -48,11 +48,12 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="synaps-api-synaps-noti">
-<span id="install-synaps-api"></span><h1>synaps-api 및 synaps-noti 설치하기<a class="headerlink" href="#synaps-api-synaps-noti" title="Permalink to this headline">¶</a></h1>
-<p>Ubuntu 상에서 synaps-api를 설치하고 설정하는 방법에 대해 설명한다.</p>
-<div class="section" id="id1">
-<h2>의존모듈 설치<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="install-synaps-api-and-synaps-noti">
+<span id="install-synaps-api-ubuntu"></span><h1>Install synaps-api and synaps-noti<a class="headerlink" href="#install-synaps-api-and-synaps-noti" title="Permalink to this headline">¶</a></h1>
+<p>This document describes how to install synaps-api and synaps-noti on the
+Ubuntu machine.</p>
+<div class="section" id="pre-installation-requirements">
+<h2>Pre-installation requirements<a class="headerlink" href="#pre-installation-requirements" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-bash"><div class="highlight"><pre><span class="c"># install apt packages</span>
 sudo apt-get install build-essential python-dev memcached
 sudo apt-get install python-setuptools python-eventlet python-pastedeploy
@@ -112,12 +113,11 @@ sudo python setup.py install
 </pre></div>
 </div>
 </div>
-<div class="section" id="id2">
-<h2>설치 또는 업그레이드<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>synaps-api 를 SPCS Synaps 저장소에서 다운받아 아래와 같이 설치한다.</p>
-<div class="highlight-bash"><div class="highlight"><pre>wget http://182.194.3.195:8080/synaps-package/product/synaps-yy.mm.dd.tar.gz
-tar xvfz synaps-yy.mm.dd.tar.gz
-<span class="nb">cd </span>synaps-yy.mm.dd
+<div class="section" id="install-synaps-api">
+<h2>Install synaps-api<a class="headerlink" href="#install-synaps-api" title="Permalink to this headline">¶</a></h2>
+<p>Clone synaps source code from Github.</p>
+<div class="highlight-bash"><div class="highlight"><pre>git clone https://github.com/spcs/synaps.git
+<span class="nb">cd </span>synaps/synaps-api
 sudo python setup.py install
 </pre></div>
 </div>
@@ -132,9 +132,9 @@ sudo python setup.py install
         <div class="sphinxsidebarwrapper">
             <h3><a href="../../index.html">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference internal" href="#">synaps-api 및 synaps-noti 설치하기</a><ul>
-<li><a class="reference internal" href="#id1">의존모듈 설치</a></li>
-<li><a class="reference internal" href="#id2">설치 또는 업그레이드</a></li>
+<li><a class="reference internal" href="#">Install synaps-api and synaps-noti</a><ul>
+<li><a class="reference internal" href="#pre-installation-requirements">Pre-installation requirements</a></li>
+<li><a class="reference internal" href="#install-synaps-api">Install synaps-api</a></li>
 </ul>
 </li>
 </ul>
@@ -182,14 +182,14 @@ sudo python setup.py install
         <li class="right" >
           <a href="install.storm.html" title="Storm 설치하기"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">synaps v12.09.b2-dev documentation</a> &raquo;</li>
+        <li><a href="../../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li>
           <li><a href="../operatormanual.html" >Operational Manual</a> &raquo;</li>
           <li><a href="installation.guide.html" accesskey="U">Installation Guide</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Thu Oct 18 21:26:54 2012, commit abfbad6.
+      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>
