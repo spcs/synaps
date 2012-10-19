@@ -143,11 +143,11 @@ public class PutMetricTopology {
 
 		if (args != null && args.length > 0) {
 			conf.setNumWorkers(20);
-			builder.setSpout("api_spout", new ApiSpout(), 2);
+			builder.setSpout("api_spout", new ApiSpout(), 8);
 			builder.setSpout("check_spout", new CheckSpout(), 1);
-			builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 4)
+			builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 8)
 					.shuffleGrouping("api_spout");
-			builder.setBolt("putmetric_bolt", new PutMetricBolt(), 10)
+			builder.setBolt("putmetric_bolt", new PutMetricBolt(), 20)
 					.fieldsGrouping("unpack_bolt", new Fields("metric_key"))
 					.allGrouping("check_spout");
 			builder.setBolt("action_bolt", new ActionBolt(), 2)
