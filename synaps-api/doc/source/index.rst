@@ -10,9 +10,9 @@ Overview
 
 Synaps is a cloud monitoring system.
 
-* linear scalable
+* Linear scalable
 * AWS CloudWatch API Compatible
-* real-time monitoring system
+* Real-time monitoring system
 
 Synaps Artifacts
 ----------------
@@ -26,7 +26,7 @@ Synaps Artifacts
     artifacts/sdkspec.rst
     artifacts/usermanual.rst
     artifacts/operatormanual.rst
-    artifacts/developersguide.rst
+    artifacts/general.installation.guide.rst
       
 Indices and tables
 ------------------

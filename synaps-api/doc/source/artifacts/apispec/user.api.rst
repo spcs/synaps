@@ -1,11 +1,13 @@
 .. _user_api:
 
-사용자 API 규격
-===============
+User API Specification
+======================
 
-액션
-----
-다음의 액션을 지원한다.
+Synaps provides AWS CloudWatch compatible API.
+
+
+Actions
+-------
 
 .. toctree::
    :maxdepth: 1
@@ -22,14 +24,11 @@
    action/put_metric_data
    action/set_alarm_state
    
-자료 형
--------
-SPCS Synaps API 는 액션 별로 다양한 자료 형을 사용한다. 이 장에서는 각각의 
-자료 형을 자세히 소개한다.
+Data Types
+----------
 
-알림:
-  응답으로 전달되는 각각의 요소의 순서는 보장되지 않으므로 응용 프로그램은 
-  특정 순서를 가정해서는 안된다. 
+Note:
+  The elements in the response are not sorted.   
 
 .. toctree::
    :maxdepth: 1
@@ -48,11 +47,11 @@ SPCS Synaps API 는 액션 별로 다양한 자료 형을 사용한다. 이 장�
    datatype/metric_datum
    datatype/statistic_set
    
-공통
-----
+Common
+------
+
 .. toctree::
    :maxdepth: 1
 
    common/common_query_parameters
    common/common_errors
-

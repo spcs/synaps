@@ -1,12 +1,15 @@
-.. _install.synaps.api:
+.. _install.synaps.api.ubuntu:
 
-synaps-api 및 synaps-noti 설치하기
+Install synaps-api and synaps-noti
 ==================================
 
-Ubuntu 상에서 synaps-api를 설치하고 설정하는 방법에 대해 설명한다.
+This document describes how to install synaps-api and synaps-noti on the 
+Ubuntu machine.
+
  
-의존모듈 설치
--------------
+Pre-installation requirements
+-----------------------------
+
 .. code-block:: bash
 
    # install apt packages
@@ -67,14 +70,13 @@ Ubuntu 상에서 synaps-api를 설치하고 설정하는 방법에 대해 설명
    cd ..
   
   
-설치 또는 업그레이드
---------------------
+Install synaps-api
+------------------
 
-synaps-api 를 SPCS Synaps 저장소에서 다운받아 아래와 같이 설치한다.
+Clone synaps source code from Github.
 
 .. code-block:: bash
 
-  wget http://182.194.3.195:8080/synaps-package/product/synaps-yy.mm.dd.tar.gz 
-  tar xvfz synaps-yy.mm.dd.tar.gz
-  cd synaps-yy.mm.dd
+  git clone https://github.com/spcs/synaps.git
+  cd synaps/synaps-api
   sudo python setup.py install
