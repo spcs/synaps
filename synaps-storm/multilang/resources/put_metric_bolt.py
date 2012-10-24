@@ -530,9 +530,14 @@ class PutMetricBolt(storm.BasicBolt):
         alarm_name = message.get('alarm_name')
         state_reason_data = message.get('state_reason_data')
         alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
+        
+        if metric_key not in self.metrics:
+            self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
 
         metric = self.metrics[metric_key]
+        
         metricalarm = metric.alarms[alarm_key]
+                
         metricalarm['state_reason'] = message.get('state_reason')
         metricalarm['state_value'] = message.get('state_value')
         metricalarm['state_reason_data'] = message.get('state_reason_data')
