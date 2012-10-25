@@ -119,7 +119,15 @@ class ActionBolt(storm.BasicBolt):
         self.log("message received: %s " % message_buf)
         
         alarm = self.cass.get_metric_alarm(UUID(alarm_key))
-        actions_enabled = alarm['actions_enabled']
+        
+        try:        
+            actions_enabled = alarm['actions_enabled']
+        except TypeError:
+            msg = "alarm is not found [" + alarm_key + "]"
+            self.log(msg)
+            
+            return False
+                     
         if message['state'] == 'OK':
             actions = json.loads(alarm['ok_actions'])
         elif message['state'] == 'INSUFFICIENT_DATA':
