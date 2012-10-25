@@ -107,12 +107,18 @@ class MetricMonitor(object):
     def set_max_start_period(self, alarms):
         msp = self.MAX_START_PERIOD
         
-        self.MAX_START_PERIOD = max(v.get('period') for v 
-                                    in alarms.itervalues()) \
-                                if alarms else FLAGS.get('max_start_period') 
-        self.MIN_START_PERIOD = min(v.get('period') for v 
-                                    in alarms.itervalues()) \
-                                if alarms else 0
+        try:
+            self.MAX_START_PERIOD = max(v.get('period') for v 
+                                        in alarms.itervalues()) \
+                                    if alarms else FLAGS.get('max_start_period') 
+            self.MIN_START_PERIOD = min(v.get('period') for v 
+                                        in alarms.itervalues()) \
+                                    if alarms else 0
+        except AttributeError:
+            msg = "alarm is not found in alarms."
+            self.log(msg)
+            
+            return False 
                   
         msg = "MAX_START_PERIOD is changed %s -> %s"                 
         storm.log(msg % (str(msp), self.MAX_START_PERIOD))
