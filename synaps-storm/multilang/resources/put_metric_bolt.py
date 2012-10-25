@@ -185,11 +185,14 @@ class MetricMonitor(object):
         alarm_name = metricalarm.get('alarm_name')
         alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
         if alarm_key:
-            self.alarms[alarm_key] = self.cass.get_metric_alarm(alarm_key)
-            storm.log("alarm key is [%s]" % alarm_key)
+            ret = self.cass.get_metric_alarm(alarm_key)
+            if ret:
+                self.alarms[alarm_key] = ret
+                storm.log("alarm key is [%s]" % alarm_key)
+            else:
+                storm.log("alarm key [%s] is found, but alarm is not found." % alarm_key)
         else:
             storm.log("no alarm key [%s]" % alarm_key)
-            
 
         self.set_max_start_period(self.alarms)
         
