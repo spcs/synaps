@@ -107,12 +107,18 @@ class MetricMonitor(object):
     def set_max_start_period(self, alarms):
         msp = self.MAX_START_PERIOD
         
-        self.MAX_START_PERIOD = max(v.get('period') for v 
-                                    in alarms.itervalues()) \
-                                if alarms else FLAGS.get('max_start_period') 
-        self.MIN_START_PERIOD = min(v.get('period') for v 
-                                    in alarms.itervalues()) \
-                                if alarms else 0
+        try:
+            self.MAX_START_PERIOD = max(v.get('period') for v 
+                                        in alarms.itervalues()) \
+                                    if alarms else FLAGS.get('max_start_period') 
+            self.MIN_START_PERIOD = min(v.get('period') for v 
+                                        in alarms.itervalues()) \
+                                    if alarms else 0
+        except AttributeError:
+            msg = "alarm is not found in alarms."
+            self.log(msg)
+            
+            return False 
                   
         msg = "MAX_START_PERIOD is changed %s -> %s"                 
         storm.log(msg % (str(msp), self.MAX_START_PERIOD))
@@ -179,11 +185,14 @@ class MetricMonitor(object):
         alarm_name = metricalarm.get('alarm_name')
         alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
         if alarm_key:
-            self.alarms[alarm_key] = self.cass.get_metric_alarm(alarm_key)
-            storm.log("alarm key is [%s]" % alarm_key)
+            ret = self.cass.get_metric_alarm(alarm_key)
+            if ret:
+                self.alarms[alarm_key] = ret
+                storm.log("alarm key is [%s]" % alarm_key)
+            else:
+                storm.log("alarm key [%s] is found, but alarm is not found." % alarm_key)
         else:
             storm.log("no alarm key [%s]" % alarm_key)
-            
 
         self.set_max_start_period(self.alarms)
         
@@ -530,9 +539,14 @@ class PutMetricBolt(storm.BasicBolt):
         alarm_name = message.get('alarm_name')
         state_reason_data = message.get('state_reason_data')
         alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
+        
+        if metric_key not in self.metrics:
+            self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
 
         metric = self.metrics[metric_key]
+        
         metricalarm = metric.alarms[alarm_key]
+                
         metricalarm['state_reason'] = message.get('state_reason')
         metricalarm['state_value'] = message.get('state_value')
         metricalarm['state_reason_data'] = message.get('state_reason_data')
