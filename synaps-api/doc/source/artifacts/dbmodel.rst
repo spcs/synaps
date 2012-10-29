@@ -9,6 +9,13 @@ Database Model
 Synaps stores AlarmHistory, Metrics, MetricAlarm and StatArchive in Cassandra
 database.
 
+Following command line is for creating keyspace and column families. 
+
+.. code-block:: bash
+
+  synaps-syncdb
+
+
 Following is Cassandra Database model for Synaps.
 
  .. image:: ../images/diagrams/CassandraDatabaseModel.jpg
@@ -16,6 +23,11 @@ Following is Cassandra Database model for Synaps.
 
 Keyspace Description
 --------------------
+
+The concept of Keyspace is a namespace for ColumnFamilies, typically one per 
+application.
+
+The keyspace and replication factor are configurable.
 
 .. code-block:: bash
 
@@ -28,8 +40,18 @@ Keyspace Description
 ColumnFamily Description
 ------------------------
 
+ColumnFamilies contain multiple columns, each of which has a name, value, and a 
+timestamp, and which are referenced by row keys. SuperColumns can be thought of 
+as columns that themselves have subcolumns.
+
+Synaps has three ColumnFamilies(AlarmHistory, Metric and MetricAlarm) and one 
+SuperColumnFamily(StatArchive).
+
 AlarmHistory
 ,,,,,,,,,,,,
+
+When an alarm or its status is created or updated, alarm history data will be 
+added as a row.
 
 .. code-block:: bash
 
@@ -79,6 +101,8 @@ AlarmHistory
    
 Metric
 ,,,,,,
+
+
 
 .. code-block:: bash
 
