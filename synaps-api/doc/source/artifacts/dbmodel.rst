@@ -6,17 +6,11 @@
 Database Model
 ==============
 
-Synaps stores AlarmHistory, Metrics, MetricAlarm and StatArchive in Cassandra
-database.
+Synaps stores AlarmHistory, Metrics, MetricAlarm and StatArchive in the 
+Cassandra database.
 
-Following command line is for creating keyspace and column families. 
-
-.. code-block:: bash
-
-  synaps-syncdb
-
-
-Following is Cassandra Database model for Synaps.
+Following is Cassandra Database model for Synaps. The model can be set up by
+synaps-syncdb command.
 
  .. image:: ../images/diagrams/CassandraDatabaseModel.jpg
    :width: 100%
@@ -24,7 +18,7 @@ Following is Cassandra Database model for Synaps.
 Keyspace Description
 --------------------
 
-The concept of Keyspace is a namespace for ColumnFamilies, typically one per 
+The concept of keyspace is a namespace for ColumnFamilies, typically one per 
 application.
 
 The keyspace and replication factor are configurable.
@@ -102,7 +96,7 @@ added as a row.
 Metric
 ,,,,,,
 
-
+This column failmiy represents Metric.
 
 .. code-block:: bash
 
@@ -145,6 +139,8 @@ Metric
    
 MetricAlarm
 ,,,,,,,,,,,
+
+This column failmiy represents Metric.
 
 .. code-block:: bash
 
@@ -233,6 +229,10 @@ MetricAlarm
 StatArchive
 ,,,,,,,,,,,
 
+This super column failmiy is for storing metric statistics. It holds 
+time-series data aggregated per minute. Its super column key is AVERAGE, 
+MAXIMUM, MINIMUM, SAMPLECOUNT and SUM. 
+
 .. code-block:: bash
 
    create column family StatArchive
@@ -253,4 +253,3 @@ StatArchive
      and replicate_on_write = true
      and row_cache_provider = 'SerializingCacheProvider'
      and compaction_strategy = 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy';
-   

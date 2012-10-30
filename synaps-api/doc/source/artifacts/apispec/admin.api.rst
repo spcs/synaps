@@ -2,6 +2,7 @@
 
 Admin API Specificaton
 ======================
+
 Synaps Admin API is same with :ref:`user_api` except that could handle 
 additional parameter, ProjectId.
 
