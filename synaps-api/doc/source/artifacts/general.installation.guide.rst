@@ -6,15 +6,22 @@ Installation Guide
 This instruction describes how to install Synaps. It assumes that you are 
 familiar with GIT and Ubuntu.
 
+.. image:: ../images/diagrams/SynapsDeployment.jpg
+   :width: 100%
+
+
 Pre-installation Requirements
 -----------------------------
 
 You need to install softwares listed below. You can install all of them on 
 the single machine for development or multiple nodes.
  
-* Cassandra 1.0.8 - http://cassandra.apache.org/
-* Storm 0.8.0 - http://storm-project.net/
-* RabbitMQ - http://www.rabbitmq.com/
+* Cassandra 1.0.8 
+  see :ref:`install.cassandra`
+* Storm 0.8.0 
+  see :ref:`install.storm`
+* RabbitMQ
+  see :ref:`install.rabbitmq`
 * Memcached (only for WSGI Web Server nodes)
 * JDK and Maven2 (only for build storm topology)   
 
@@ -61,15 +68,13 @@ Next, you should build synaps-storm topology.
   mvn package
 
 Then, synaps-storm-yyyy.mm.xx.jar file could be found under 
-synaps/synaps-storm/target directory.
+"synaps/synaps-storm/target" directory.
 
 Install synaps-api and synaps-storm
 -----------------------------------
 
 Copy synaps-api build file(e.g. synaps-yy.mm.xx.tar.gz) to every Synaps web 
-servers and synaps storm machine.
-
-and install it.
+servers and synaps storm nodes and install it as below.
 
 .. code-block:: bash
 
@@ -128,8 +133,8 @@ pipeline.
    /monitor: cloudwatch_api_v1
    
    [pipeline:cloudwatch_api_v1]
-   #pipeline = fault_wrap log_request no_auth monitor_request authorizer cloudwatch_executor
-   pipeline = fault_wrap log_request authenticate monitor_request authorizer cloudwatch_executor
+   pipeline = fault_wrap log_request no_auth monitor_request authorizer cloudwatch_executor
+   #pipeline = fault_wrap log_request authenticate monitor_request authorizer cloudwatch_executor
    
    [filter:fault_wrap]
    paste.filter_factory = synaps.api.cloudwatch:FaultWrapper.factory
@@ -165,15 +170,20 @@ And then, need to set up cassandra for Synaps.
 
    sudo synaps-syncdb
 
-
 Running Synaps
 --------------
 
-You can run synaps-api as a service.
+You can run synaps-api as a service on the web server.
 
 .. code-block:: bash
 
-   sudo start synaps-api
+   sudo service synaps-api start
+   
+You also can run synaps-noti to execute alarm action.
+
+.. code-block:: bash
+
+   sudo service synaps-noti start
 
 To submit storm topology to Storm cluster,
 

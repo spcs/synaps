@@ -16,10 +16,4 @@ Synaps Documentation
     artifacts/usermanual.rst
     artifacts/general.installation.guide.rst
     artifacts/operatormanual.rst
-      
-Indices and tables
-------------------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+    artifacts/indices.rst
