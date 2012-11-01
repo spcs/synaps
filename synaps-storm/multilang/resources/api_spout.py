@@ -18,6 +18,8 @@ import os
 import sys
 import traceback
 import pika
+import time
+from pika.exceptions import AMQPConnectionError
 
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir, os.pardir))
@@ -81,9 +83,15 @@ class ApiSpout(Spout):
             self.log("discard failed message [%s]" % id)
     
     def nextTuple(self):
-        (method_frame, header_frame, body) = self.channel.basic_get(
-            queue="metric_queue"
-        )
+        try:
+            (method_frame, header_frame, body) = self.channel.basic_get(
+                queue="metric_queue"
+            )
+        except AMQPConnectionError:
+            self.log("RabbitMQ connection failed... retrying to connection")
+            time.sleep(10)            
+            self.connect()
+            return
 
         if not method_frame.NAME == 'Basic.GetEmpty':
             try:

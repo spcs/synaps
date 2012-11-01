@@ -3,9 +3,12 @@
       All Rights Reserved.
 
 
-Application Programming Interface
----------------------------------
-Synaps API의 사용자는 일반 사용자(User)와 관리자(Admin)으로 구분된다. 
+Application Programming Interface Specification
+-----------------------------------------------
+
+Synaps provides two kinds of API for user and admin. 
+
+
 
 .. toctree::
     :maxdepth: 3 

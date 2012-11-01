@@ -6,16 +6,22 @@
 Database Model
 ==============
 
-Synaps stores AlarmHistory, Metrics, MetricAlarm and StatArchive in Cassandra
-database.
+Synaps stores AlarmHistory, Metrics, MetricAlarm and StatArchive in the 
+Cassandra database.
 
-Following is Cassandra Database model for Synaps.
+Following is Cassandra Database model for Synaps. The model can be set up by
+synaps-syncdb command.
 
  .. image:: ../images/diagrams/CassandraDatabaseModel.jpg
    :width: 100%
 
 Keyspace Description
 --------------------
+
+The concept of keyspace is a namespace for ColumnFamilies, typically one per 
+application.
+
+The keyspace and replication factor are configurable.
 
 .. code-block:: bash
 
@@ -28,8 +34,18 @@ Keyspace Description
 ColumnFamily Description
 ------------------------
 
+ColumnFamilies contain multiple columns, each of which has a name, value, and a 
+timestamp, and which are referenced by row keys. SuperColumns can be thought of 
+as columns that themselves have subcolumns.
+
+Synaps has three ColumnFamilies(AlarmHistory, Metric and MetricAlarm) and one 
+SuperColumnFamily(StatArchive).
+
 AlarmHistory
 ,,,,,,,,,,,,
+
+When an alarm or its status is created or updated, alarm history data will be 
+added as a row.
 
 .. code-block:: bash
 
@@ -80,6 +96,8 @@ AlarmHistory
 Metric
 ,,,,,,
 
+This column failmiy represents Metric.
+
 .. code-block:: bash
 
    create column family Metric
@@ -121,6 +139,8 @@ Metric
    
 MetricAlarm
 ,,,,,,,,,,,
+
+This column failmiy represents Metric.
 
 .. code-block:: bash
 
@@ -209,6 +229,10 @@ MetricAlarm
 StatArchive
 ,,,,,,,,,,,
 
+This super column failmiy is for storing metric statistics. It holds 
+time-series data aggregated per minute. Its super column key is AVERAGE, 
+MAXIMUM, MINIMUM, SAMPLECOUNT and SUM. 
+
 .. code-block:: bash
 
    create column family StatArchive
@@ -229,4 +253,3 @@ StatArchive
      and replicate_on_write = true
      and row_cache_provider = 'SerializingCacheProvider'
      and compaction_strategy = 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy';
-   
