@@ -1,7 +1,7 @@
 .. _install.cassandra:
 
-Install Cassandra Example
--------------------------
+Install Cassandra
+-----------------
 
 This document describes basic installation guide example. For more details, see 
 http://cassandra.apache.org/
@@ -11,10 +11,10 @@ Download cassandra and unzip the tarball.
 
 .. code-block:: bash
 
-  tar xvfz apache-cassandra-1.0.8-bin.tar.gz /usr/local/
+  tar xvfz apache-cassandra-1.0.8-bin.tar.gz /DB/synaps/cassandra
 
 To config cassandra, edit configuration file as below. The default config file
-path is "/usr/local/apache-cassandra-1.0.8/conf/cassandra.yaml"
+path is "/SW/apache-cassandra-1.0.8/conf/cassandra.yaml"
 
 .. NOTE::
 
@@ -27,13 +27,13 @@ path is "/usr/local/apache-cassandra-1.0.8/conf/cassandra.yaml"
    
    # directories where Cassandra should store data on disk.
    data_file_directories:
-       - /var/log/cassandra/data
+       - /var/lib/cassandra/data
    
    # commit log
-   commitlog_directory: /var/log/cassandra/commitlog
+   commitlog_directory: /var/lib/cassandra/commitlog
    
    # saved caches
-   saved_caches_directory: /var/log/cassandra/saved_caches
+   saved_caches_directory: /var/lib/cassandra/saved_caches
    
    seed_provider:
        # Addresses of hosts that are deemed contact points.
