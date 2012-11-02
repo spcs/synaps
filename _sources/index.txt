@@ -2,8 +2,8 @@
       Copyright 2012 Samsung SDS.
       All Rights Reserved.
 
-Synaps Documentation
-====================
+Synaps
+======
 
 Overview
 --------
@@ -14,23 +14,25 @@ Synaps is a cloud monitoring system.
 * AWS CloudWatch API Compatible
 * Real-time monitoring system
 
-Synaps Artifacts
-----------------
+Artifacts
+---------
 
 .. toctree::
     :maxdepth: 3
-    
+
+    artifacts/overview.rst    
     artifacts/programspec.rst    
     artifacts/dbmodel.rst
     artifacts/apispec.rst
-    artifacts/sdkspec.rst
+    artifacts/sdkdescription.rst
     artifacts/usermanual.rst
-    artifacts/operatormanual.rst
+    artifacts/build.guide.rst
     artifacts/general.installation.guide.rst
-      
-Indices and tables
-------------------
-
+    artifacts/operatormanual.rst
+    
+Indices
+-------
+    
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`
+* :ref:`search`    

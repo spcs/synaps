@@ -25,7 +25,6 @@
     <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
     <link rel="top" title="synaps v12.09.b3-dev documentation" href="../../index.html" />
     <link rel="up" title="Operational Manual" href="../operatormanual.html" />
-    <link rel="next" title="Cassandra 설치하기" href="install.cassandra.html" />
     <link rel="prev" title="Operational Manual" href="../operatormanual.html" /> 
   </head>
   <body>
@@ -60,26 +59,14 @@
 <p>Synaps 는 아래 그림과 같이 구성된다.</p>
 <img alt="../../_images/SynapsDeployment.jpg" src="../../_images/SynapsDeployment.jpg" style="width: 100%;" />
 <ol class="arabic simple">
-<li>DB Cluster (cassandraNN) - <a class="reference internal" href="../../devref/install/install.cassandra.html#install-cassandra"><em>Cassandra 설치하기</em></a></li>
-<li>MQ Cluster (mqNN) - <a class="reference internal" href="../../devref/install/install.rabbitmq.html#install-rabbitmq"><em>RabbitMQ 설치하기</em></a></li>
+<li>DB Cluster (cassandraNN) - <a class="reference internal" href="../install/install.cassandra.html#install-cassandra"><em>Install Cassandra</em></a></li>
+<li>MQ Cluster (mqNN) - <a class="reference internal" href="../install/install.rabbitmq.html#install-rabbitmq"><em>Install RabbitMQ Example</em></a></li>
 <li>API Cluster (synaps-apiNN) - <em class="xref std std-ref">install.synaps.api</em></li>
-<li>STORM Cluster (synaps-nimbus, synaps-sypervisorNN) - <a class="reference internal" href="../../devref/install/install.storm.html#install-storm"><em>Storm 설치하기</em></a></li>
+<li>STORM Cluster (synaps-nimbus, synaps-sypervisorNN) - <a class="reference internal" href="../install/install.storm.html#install-storm"><em>Install Storm Example</em></a></li>
 <li>synaps-noti Node (synaps-noti) - <em class="xref std std-ref">install.synaps.api</em></li>
 </ol>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="install.cassandra.html">Cassandra 설치하기</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install.rabbitmq.html">RabbitMQ 설치하기</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="install.rabbitmq.html#id1">설치</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.rabbitmq.html#id2">설정</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.rabbitmq.html#id3">운영</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="install.storm.html">Storm 설치하기</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="install.storm.html#id1">설치</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.storm.html#id2">설정 및 운영</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="install.synaps.api.html">Install synaps-api and synaps-noti</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="install.synaps.api.html#pre-installation-requirements">Pre-installation requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="install.synaps.api.html#install-synaps-api">Install synaps-api</a></li>
@@ -89,14 +76,6 @@
 <li class="toctree-l2"><a class="reference internal" href="install.ganglia.html#gmetad">서버(gmetad) 설치</a></li>
 <li class="toctree-l2"><a class="reference internal" href="install.ganglia.html#main-node-gmond">Main Node(gmond) 설치 (전체 노드 중 하나)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="install.ganglia.html#agent">Agent 설치 (전체 노드)</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="install.common.html">공통 설치 및 설정</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="install.common.html#synaps">Synaps 설정</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.common.html#database">Database 초기 셋업</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.common.html#api">API 실행 및 정지</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.common.html#os">OS 설정</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.common.html#ntp">NTP 설정</a></li>
 </ul>
 </li>
 </ul>
@@ -112,9 +91,6 @@
             <h4>Previous topic</h4>
             <p class="topless"><a href="../operatormanual.html"
                                   title="previous chapter">Operational Manual</a></p>
-            <h4>Next topic</h4>
-            <p class="topless"><a href="install.cassandra.html"
-                                  title="next chapter">Cassandra 설치하기</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="../../_sources/artifacts/operational/installation.guide.txt"
@@ -147,9 +123,6 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="install.cassandra.html" title="Cassandra 설치하기"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
           <a href="../operatormanual.html" title="Operational Manual"
              accesskey="P">previous</a> |</li>
         <li><a href="../../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li>
@@ -158,7 +131,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
+      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

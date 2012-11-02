@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Synaps Documentation &mdash; synaps v12.09.b3-dev documentation</title>
+    <title>Synaps &mdash; synaps v12.09.b3-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/tweaks.css" type="text/css" />
@@ -46,8 +46,8 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="synaps-documentation">
-<h1>Synaps Documentation<a class="headerlink" href="#synaps-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="synaps">
+<h1>Synaps<a class="headerlink" href="#synaps" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>Synaps is a cloud monitoring system.</p>
@@ -57,8 +57,8 @@
 <li>Real-time monitoring system</li>
 </ul>
 </div>
-<div class="section" id="synaps-artifacts">
-<h2>Synaps Artifacts<a class="headerlink" href="#synaps-artifacts" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="artifacts">
+<h2>Artifacts<a class="headerlink" href="#artifacts" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="artifacts/programspec.html">Program Specification</a><ul>
@@ -87,7 +87,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="artifacts/apispec.html">Application Programming Interface</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/apispec.html">Application Programming Interface Specification</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="artifacts/apispec/user.api.html">User API Specification</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="artifacts/apispec/user.api.html#actions">Actions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifacts/apispec/user.api.html#data-types">Data Types</a></li>
@@ -97,51 +97,61 @@
 <li class="toctree-l2"><a class="reference internal" href="artifacts/apispec/admin.api.html">Admin API Specificaton</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="artifacts/sdkspec.html">SDK(Software Development Toolkit) specification</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/sdkspec.html#user-sdk">User SDK</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/sdkspec.html#java-sdk">Java SDK</a></li>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/sdkspec.html#python-sdk">Python SDK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/sdkdescription.html">SDK(Software Development Toolkit) description</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/sdkdescription.html#user-sdk">User SDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/sdkdescription.html#admin-sdk">Admin SDK</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/sdkspec.html#admin-sdk">Admin SDK</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/sdkspec.html#id1">Java SDK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/usermanual.html">Synaps SDK User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#configure-credentials">Configure Credentials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#listmetrics-example">ListMetrics Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#putmetricdata-example">PutMetricData Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#getmetricstatistics-example">GetMetricStatistics Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#deletealarms-example">DeleteAlarms Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#describealarms-example">DescribeAlarms Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#describealarmsformetric-example">DescribeAlarmsForMetric Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#putmetricalarm-example">PutMetricAlarm Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#setalarmstate-example">SetAlarmState Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#disablealarmactions-example">DisableAlarmActions Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#enablealarmactions-example">EnableAlarmActions Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#describealarmhistory-example">DescribeAlarmHistory Example</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/sdkspec.html#sdk-user-guide">SDK User Guide</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/sdk/user.sdk.example.html">SDK User Guide</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="artifacts/usermanual.html">User Manual</a></li>
-<li class="toctree-l1"><a class="reference internal" href="artifacts/operatormanual.html">Operational Manual</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/operational/installation.guide.html">Installation Guide</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.cassandra.html">Cassandra 설치하기</a></li>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.rabbitmq.html">RabbitMQ 설치하기</a></li>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.storm.html">Storm 설치하기</a></li>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.synaps.api.html">Install synaps-api and synaps-noti</a></li>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.ganglia.html">Ganglia 설치하기</a></li>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/install.common.html">공통 설치 및 설정</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/operational/deploy.synaps.html">synaps-api, synaps-noti, synaps-storm 배포</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/deploy.synaps.html#synaps-api-synaps-noti">synaps-api, synaps-noti 배포</a></li>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/operational/deploy.synaps.html#synaps-storm">synaps-storm 배포</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/build.guide.html">Build Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="artifacts/general.installation.guide.html">Installation Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/general.installation.guide.html#pre-installation-requirements">Pre-installation Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/general.installation.guide.html#install-synaps-from-github">Install Synaps from Github</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/general.installation.guide.html#running-synaps">Running Synaps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/install/preinstall.common.html">Common Pre-installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/install/preinstall.common.html#set-up-ntp">Set up NTP</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/install/install.synaps.html">Install Synaps module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/install/install.synaps.html#pre-installation-requirements">Pre-installation Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/install/install.synaps.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/install/install.synaps.html#configuration">Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/install/install.cassandra.html">Install Cassandra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/install/install.storm.html">Install Storm Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/install/install.storm.html#pre-installation-requirements">Pre-installation Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/install/install.storm.html#id1">Install Storm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/install/install.storm.html#configuration">Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/install/install.rabbitmq.html">Install RabbitMQ Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/install/postinstall.backend.html">Post-installation Synaps backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/install/postinstall.frontend.html">Post-installation Synaps frontend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/general.installation.guide.html#installaton-example">Installaton Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/operatormanual.html">Operational Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/operatormanual.html#starting-service-procedure">Starting Service Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/operatormanual.html#maintenance">Maintenance</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-<div class="section" id="indices-and-tables">
-<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="indices">
+<h2>Indices<a class="headerlink" href="#indices" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
 <li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
@@ -158,12 +168,12 @@
         <div class="sphinxsidebarwrapper">
             <h3><a href="#">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference internal" href="#">Synaps Documentation</a><ul>
+<li><a class="reference internal" href="#">Synaps</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#synaps-artifacts">Synaps Artifacts</a><ul>
+<li><a class="reference internal" href="#artifacts">Artifacts</a><ul>
 </ul>
 </li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#indices">Indices</a></li>
 </ul>
 </li>
 </ul>
@@ -210,7 +220,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
+      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

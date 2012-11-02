@@ -1,0 +1,141 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Post-installation Synaps frontend &mdash; synaps v12.09.b3-dev documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '12.09.b3-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b3-dev documentation" href="../../index.html" />
+    <link rel="up" title="Installation Guide" href="../general.installation.guide.html" />
+    <link rel="next" title="Operational Manual" href="../operatormanual.html" />
+    <link rel="prev" title="Post-installation Synaps backend" href="postinstall.backend.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="post-installation-synaps-frontend">
+<span id="postinstall-frontend"></span><h1>Post-installation Synaps frontend<a class="headerlink" href="#post-installation-synaps-frontend" title="Permalink to this headline">¶</a></h1>
+<p>To adjust maximum open files.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo <span class="nb">ulimit</span> -Hn 65535
+sudo <span class="nb">ulimit</span> -Sn 65535
+</pre></div>
+</div>
+<p>edit &#8216;/etc/security/limits.conf&#8217; file</p>
+<div class="highlight-bash"><div class="highlight"><pre>root            hard    nofile          65535
+root            soft    nofile          65535
+</pre></div>
+</div>
+<p>Update rc.d</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo update-rc.d synaps-api defaults 80
+</pre></div>
+</div>
+<p>Run synaps-api</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo service synaps-api start
+</pre></div>
+</div>
+<p>Then, you would have four synaps-cloudwatch-api processes running.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>ps -ef | grep synaps-api-cloudwatch
+root      1004     1  2 15:52 ?        00:08:19 /usr/bin/python /usr/local/bin/synaps-api-cloudwatch --cloudwatch_listen_port<span class="o">=</span>8776 --logfile<span class="o">=</span>synaps-api-1.log
+root      1008     1  1 15:52 ?        00:07:50 /usr/bin/python /usr/local/bin/synaps-api-cloudwatch --cloudwatch_listen_port<span class="o">=</span>8777 --logfile<span class="o">=</span>synaps-api-2.log
+root      1012     1  2 15:52 ?        00:09:21 /usr/bin/python /usr/local/bin/synaps-api-cloudwatch --cloudwatch_listen_port<span class="o">=</span>8778 --logfile<span class="o">=</span>synaps-api-3.log
+root      1016     1  1 15:52 ?        00:07:21 /usr/bin/python /usr/local/bin/synaps-api-cloudwatch --cloudwatch_listen_port<span class="o">=</span>8779 --logfile<span class="o">=</span>synaps-api-4.log
+me       17607 13193  0 22:29 pts/14   00:00:00 grep --color<span class="o">=</span>auto synaps-api-cloudwatch
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="postinstall.backend.html"
+                                  title="previous chapter">Post-installation Synaps backend</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="../operatormanual.html"
+                                  title="next chapter">Operational Manual</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/artifacts/install/postinstall.frontend.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../operatormanual.html" title="Operational Manual"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="postinstall.backend.html" title="Post-installation Synaps backend"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li>
+          <li><a href="../general.installation.guide.html" accesskey="U">Installation Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

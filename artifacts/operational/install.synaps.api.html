@@ -25,8 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
     <link rel="top" title="synaps v12.09.b3-dev documentation" href="../../index.html" />
     <link rel="up" title="Installation Guide" href="installation.guide.html" />
-    <link rel="next" title="Ganglia 설치하기" href="install.ganglia.html" />
-    <link rel="prev" title="Storm 설치하기" href="install.storm.html" /> 
+    <link rel="next" title="Ganglia 설치하기" href="install.ganglia.html" /> 
   </head>
   <body>
   <div id="header">
@@ -54,64 +53,6 @@
 Ubuntu machine.</p>
 <div class="section" id="pre-installation-requirements">
 <h2>Pre-installation requirements<a class="headerlink" href="#pre-installation-requirements" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span class="c"># install apt packages</span>
-sudo apt-get install build-essential python-dev memcached
-sudo apt-get install python-setuptools python-eventlet python-pastedeploy
-sudo apt-get install git python-gflags python-netaddr python-memcache
-sudo apt-get install python-numpy python-webob python-ldap
-
-<span class="c"># synaps-noti 사용하는 경우</span>
-sudo apt-get install python-mysqldb python-zmq
-
-<span class="c"># download 3rd-party packages</span>
-mkdir /tmp/packages
-<span class="nb">cd</span> /tmp/packages
-wget http://labix.org/download/python-dateutil/python-dateutil-1.5.tar.gz
-wget http://pypi.python.org/packages/source/p/pandas/pandas-0.7.3.tar.gz#md5<span class="o">=</span>e4876ea5882accce15f6f37750f3ffec
-wget http://pypi.python.org/packages/source/t/thrift/thrift-0.8.0.tar.gz
-wget https://github.com/downloads/pycassa/pycassa/pycassa-1.5.1.tar.gz
-wget http://pypi.python.org/packages/source/p/pika/pika-0.9.5.tar.gz
-wget http://boto.googlecode.com/files/boto-2.5.2.tar.gz
-
-<span class="c"># unzip packages</span>
-tar xvfz python-dateutil-1.5.tar.gz
-tar xvfz pandas-0.7.3.tar.gz
-tar xvfz thrift-0.8.0.tar.gz
-tar xvfz pycassa-1.5.1.tar.gz
-tar xvfz pika-0.9.5.tar.gz
-tar xvfz boto-2.5.2.tar.gz
-
-<span class="c"># install python-dateutil 1.5</span>
-<span class="nb">cd </span>python-dateutil-1.5
-sudo python setup.py install
-<span class="nb">cd</span> ..
-
-<span class="c"># install pandas 0.7.3</span>
-<span class="nb">cd </span>pandas-0.7.3/
-sudo python setup.py install
-<span class="nb">cd</span> ..
-
-<span class="c"># install thrift</span>
-<span class="nb">cd </span>thrift-0.8.0
-sudo python setup.py install
-<span class="nb">cd</span> ..
-
-<span class="c"># install pycassa</span>
-<span class="nb">cd </span>pycassa-1.5.1
-sudo python setup.py install
-<span class="nb">cd</span> ..
-
-<span class="c"># install pika</span>
-<span class="nb">cd </span>pika-0.9.5
-sudo python setup.py install
-<span class="nb">cd</span> ..
-
-<span class="c"># install boto</span>
-<span class="nb">cd </span>boto-2.5.2
-sudo python setup.py install
-<span class="nb">cd</span> ..
-</pre></div>
-</div>
 </div>
 <div class="section" id="install-synaps-api">
 <h2>Install synaps-api<a class="headerlink" href="#install-synaps-api" title="Permalink to this headline">¶</a></h2>
@@ -139,9 +80,6 @@ sudo python setup.py install
 </li>
 </ul>
 
-            <h4>Previous topic</h4>
-            <p class="topless"><a href="install.storm.html"
-                                  title="previous chapter">Storm 설치하기</a></p>
             <h4>Next topic</h4>
             <p class="topless"><a href="install.ganglia.html"
                                   title="next chapter">Ganglia 설치하기</a></p>
@@ -179,9 +117,6 @@ sudo python setup.py install
         <li class="right" >
           <a href="install.ganglia.html" title="Ganglia 설치하기"
              accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="install.storm.html" title="Storm 설치하기"
-             accesskey="P">previous</a> |</li>
         <li><a href="../../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li>
           <li><a href="../operatormanual.html" >Operational Manual</a> &raquo;</li>
           <li><a href="installation.guide.html" accesskey="U">Installation Guide</a> &raquo;</li> 
@@ -189,7 +124,7 @@ sudo python setup.py install
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
+      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

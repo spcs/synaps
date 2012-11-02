@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>공통 쿼리 매개변수 &mdash; synaps v12.09.b3-dev documentation</title>
+    <title>Common Qurey Parameters &mdash; synaps v12.09.b3-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/tweaks.css" type="text/css" />
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.tweet.js"></script>
     <link rel="top" title="synaps v12.09.b3-dev documentation" href="../../../index.html" />
     <link rel="up" title="User API Specification" href="../user.api.html" />
-    <link rel="next" title="공통 에러" href="common_errors.html" />
+    <link rel="next" title="Common Errors" href="common_errors.html" />
     <link rel="prev" title="StatisticSet" href="../datatype/statistic_set.html" /> 
   </head>
   <body>
@@ -48,9 +48,9 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="common-query-parameters">
-<span id="id1"></span><h1>공통 쿼리 매개변수<a class="headerlink" href="#common-query-parameters" title="Permalink to this headline">¶</a></h1>
-<p>모든 액션에서 사용하는 매개변수의 목록.</p>
+  <div class="section" id="common-qurey-parameters">
+<span id="common-query-parameters"></span><h1>Common Qurey Parameters<a class="headerlink" href="#common-qurey-parameters" title="Permalink to this headline">¶</a></h1>
+<p>It describes common query parameters for all API actions.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -58,34 +58,34 @@
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">매개변수 이름</th>
-<th class="head">설명</th>
-<th class="head">필수 여부</th>
+<tr><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Mandatory</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>Action</td>
-<td><p class="first">수행할 액션</p>
-<p>기본 값: None</p>
-<p class="last">자료 형: String</p>
+<td><p class="first">Action to execute</p>
+<p>Default Value: None</p>
+<p class="last">Data Type: String</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>AuthParams</td>
 <td><p class="first">질의 요청을 인증하기 위한 매개변수.</p>
-<p>다음을 포함:</p>
+<p>This includes the following:</p>
 <p>AWSAccessKeyID</p>
 <p>SignatureVersion</p>
 <p>Timestamp</p>
 <p>Signature</p>
-<p class="last">기본 값: None</p>
+<p class="last">Default Value: None</p>
 </td>
 <td>조건부</td>
 </tr>
 <tr><td>AWSAccessKeyId</td>
 <td><p class="first">요청에 서명할 AWS Secrete Access Key 와 짝을 이루는 Access Key ID</p>
-<p>기본 값: None</p>
-<p class="last">자료 형: String</p>
+<p>Default Value: None</p>
+<p class="last">Data Type: String</p>
 </td>
 <td>Yes</td>
 </tr>
@@ -94,30 +94,30 @@
 의 형식을 따른다.</p>
 <p>조건: 요청은 Timestamp 또는 Expires 둘 중 하나를 반드시 포함해야 하며,
 모두 포함할 수 없다.</p>
-<p>기본 값: None</p>
-<p class="last">자료 형: String</p>
+<p>Default Value: None</p>
+<p class="last">Data Type: String</p>
 </td>
 <td>조건부</td>
 </tr>
 <tr><td>Signature</td>
 <td><p class="first">요청 시 생성하는 전자 서명.</p>
-<p>기본 값: None</p>
-<p class="last">자료 형: String</p>
+<p>Default Value: None</p>
+<p class="last">Data Type: String</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>SignatureMethod</td>
 <td><p class="first">서명에 사용하는 해시 알고리즘</p>
-<p>기본 값: None</p>
+<p>Default Value: None</p>
 <p>유효 값: HmacSHA256 | HmacSHA1.</p>
-<p class="last">자료 형: String</p>
+<p class="last">Data Type: String</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>SignatureVersion</td>
 <td><p class="first">요청에 서명할 때 사용한 서명의 버전</p>
-<p>기본 값: None</p>
-<p class="last">자료 형: String</p>
+<p>Default Value: None</p>
+<p class="last">Data Type: String</p>
 </td>
 <td>Yes</td>
 </tr>
@@ -126,15 +126,15 @@
 와 같은 형식을 따른다.</p>
 <p>조건: 요청은 Timestamp 또는 Expires 둘 중 하나를 반드시 포함해야 하며,
 모두 포함할 수 없다.</p>
-<p>기본 값: None</p>
-<p class="last">자료 형: String</p>
+<p>Default Value: None</p>
+<p class="last">Data Type: String</p>
 </td>
 <td>조건부</td>
 </tr>
 <tr><td>Version</td>
 <td><p class="first">사용할 API 버전, YYYY-MM-DD.</p>
-<p>기본 값: None</p>
-<p class="last">자료 형: String</p>
+<p>Default Value: None</p>
+<p class="last">Data Type: String</p>
 </td>
 <td>Yes</td>
 </tr>
@@ -153,7 +153,7 @@
                                   title="previous chapter">StatisticSet</a></p>
             <h4>Next topic</h4>
             <p class="topless"><a href="common_errors.html"
-                                  title="next chapter">공통 에러</a></p>
+                                  title="next chapter">Common Errors</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="../../../_sources/artifacts/apispec/common/common_query_parameters.txt"
@@ -186,19 +186,19 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="common_errors.html" title="공통 에러"
+          <a href="common_errors.html" title="Common Errors"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../datatype/statistic_set.html" title="StatisticSet"
              accesskey="P">previous</a> |</li>
         <li><a href="../../../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li>
-          <li><a href="../../apispec.html" >Application Programming Interface</a> &raquo;</li>
+          <li><a href="../../apispec.html" >Application Programming Interface Specification</a> &raquo;</li>
           <li><a href="../user.api.html" accesskey="U">User API Specification</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
+      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

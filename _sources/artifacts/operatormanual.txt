@@ -4,10 +4,15 @@
 
 
 Operational Manual
-------------------
+==================
 
-.. toctree::
-    :maxdepth: 2
-    
-    operational/installation.guide.rst
-    operational/deploy.synaps.rst
+This manual describes tips for operation.  
+
+Starting Service Procedure
+--------------------------
+TBD
+
+Maintenance
+-----------
+TBD
+

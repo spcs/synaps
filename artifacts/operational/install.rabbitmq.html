@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>RabbitMQ 설치하기 &mdash; synaps v12.09.b3-dev documentation</title>
+    <title>Install RabbitMQ Example &mdash; synaps v12.09.b3-dev documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
     <link rel="top" title="synaps v12.09.b3-dev documentation" href="../../index.html" />
     <link rel="up" title="Installation Guide" href="installation.guide.html" />
-    <link rel="next" title="Storm 설치하기" href="install.storm.html" />
-    <link rel="prev" title="Cassandra 설치하기" href="install.cassandra.html" /> 
+    <link rel="next" title="Install Storm Example" href="install.storm.html" />
+    <link rel="prev" title="Install Cassandra Example" href="install.cassandra.html" /> 
   </head>
   <body>
   <div id="header">
@@ -48,54 +48,25 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="rabbitmq">
-<span id="install-rabbitmq"></span><h1>RabbitMQ 설치하기<a class="headerlink" href="#rabbitmq" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="id1">
-<h2>설치<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>본 문서에서는 기본적인 설치 방법만 가이드 한다. 보다 자세한 설치 및 설정관련
-정보는 RabbitMQ 홈페이지를 참조하기를 권장한다.</p>
+  <div class="section" id="install-rabbitmq-example">
+<span id="install-rabbitmq"></span><h1>Install RabbitMQ Example<a class="headerlink" href="#install-rabbitmq-example" title="Permalink to this headline">¶</a></h1>
+<p>This document describes basic installation guide example. For more details, see
+<a class="reference external" href="http://www.rabbitmq.com/">http://www.rabbitmq.com/</a></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">rabbitmq의 version은 2.8.2 버전 이상을 사용하여야, 이중화 구축이 가능.</p>
+<p class="last">To provide HA, the version of rabbitmq should be greater than 2.8.4.</p>
 </div>
-<p>아래와 같이 rabbitmq 를 다운받아 설치한다.</p>
-<div class="highlight-bash"><div class="highlight"><pre>dpkg -i rabbitmq-server_2.8.2-1_all.deb
+<p>Download and install rabbitmq as below.</p>
+<div class="highlight-bash"><div class="highlight"><pre>dpkg -i rabbitmq-server_2.8.4_all.deb
 </pre></div>
 </div>
+<p>To config rabbitmq, edit configuration file as below. The default config file
+path is &#8220;/etc/rabbitmq/rabbitmq.config&#8221;.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Replace example hostname(synaps-mq01 and synaps-mq02) to real hostname.</p>
 </div>
-<div class="section" id="id2">
-<h2>설정<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>아래와 같이 설정파일(/etc/rabbitmq/rabbitmq.config)을 수정한다. 아래 설정
-파일에서 synaps-mq01, synaps-mq02 를 클러스터링 되어있는 실제 호스트이름으로
-반영한다.</p>
 <div class="highlight-python"><pre>[{rabbit, [{cluster_nodes, ['rabbit@synaps-mq01', 'rabbit@synaps-mq02']}]}].</pre>
-</div>
-</div>
-<div class="section" id="id3">
-<h2>운영<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>RabbitMQ 실행 및 중지</p>
-<div class="highlight-bash"><div class="highlight"><pre>rabbitmq-server -detached
-</pre></div>
-</div>
-<div class="highlight-bash"><div class="highlight"><pre>rabbitmqctl stop
-</pre></div>
-</div>
-<p>RabbitMQ database 삭제</p>
-<div class="highlight-bash"><div class="highlight"><pre>rm -rf /var/lib/rabbitmq/mnesia
-</pre></div>
-</div>
-<p>erlang.cookie 파일 동기화</p>
-<div class="highlight-python"><pre>한 노드의 /var/lib/rabbitmq/.erlang.cookie 파일을 다른 노드에 overwrite</pre>
-</div>
-<p>클러스터 구성 현황 확인</p>
-<div class="highlight-bash"><div class="highlight"><pre>rabbitmqctl cluster_status
-
-Cluster status of node <span class="s1">&#39;rabbit@synaps-mq02&#39;</span> ...
-<span class="o">[{</span>nodes,<span class="o">[{</span>disc,<span class="o">[</span><span class="s1">&#39;rabbit@(RabbitMQ1_HostName)&#39;</span>,<span class="s1">&#39;rabbit@synaps-mq01&#39;</span><span class="o">]}]}</span>,
-<span class="o">{</span>running_nodes,<span class="o">[</span><span class="s1">&#39;rabbit@(RabbitMQ2_HostName)&#39;</span>,<span class="s1">&#39;rabbit@synaps-mq02&#39;</span><span class="o">]}]</span>
-...done.
-</pre></div>
-</div>
 </div>
 </div>
 
@@ -105,22 +76,12 @@ Cluster status of node <span class="s1">&#39;rabbit@synaps-mq02&#39;</span> ...
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-            <h3><a href="../../index.html">Table Of Contents</a></h3>
-            <ul>
-<li><a class="reference internal" href="#">RabbitMQ 설치하기</a><ul>
-<li><a class="reference internal" href="#id1">설치</a></li>
-<li><a class="reference internal" href="#id2">설정</a></li>
-<li><a class="reference internal" href="#id3">운영</a></li>
-</ul>
-</li>
-</ul>
-
             <h4>Previous topic</h4>
             <p class="topless"><a href="install.cassandra.html"
-                                  title="previous chapter">Cassandra 설치하기</a></p>
+                                  title="previous chapter">Install Cassandra Example</a></p>
             <h4>Next topic</h4>
             <p class="topless"><a href="install.storm.html"
-                                  title="next chapter">Storm 설치하기</a></p>
+                                  title="next chapter">Install Storm Example</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="../../_sources/artifacts/operational/install.rabbitmq.txt"
@@ -153,10 +114,10 @@ Cluster status of node <span class="s1">&#39;rabbit@synaps-mq02&#39;</span> ...
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="install.storm.html" title="Storm 설치하기"
+          <a href="install.storm.html" title="Install Storm Example"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="install.cassandra.html" title="Cassandra 설치하기"
+          <a href="install.cassandra.html" title="Install Cassandra Example"
              accesskey="P">previous</a> |</li>
         <li><a href="../../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li>
           <li><a href="../operatormanual.html" >Operational Manual</a> &raquo;</li>
@@ -165,7 +126,7 @@ Cluster status of node <span class="s1">&#39;rabbit@synaps-mq02&#39;</span> ...
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
+      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
     <link rel="top" title="synaps v12.09.b3-dev documentation" href="../index.html" />
-    <link rel="next" title="Application Programming Interface" href="apispec.html" />
+    <link rel="next" title="Application Programming Interface Specification" href="apispec.html" />
     <link rel="prev" title="Program Specification" href="programspec.html" /> 
   </head>
   <body>
@@ -49,14 +49,18 @@
             
   <div class="section" id="database-model">
 <h1>Database Model<a class="headerlink" href="#database-model" title="Permalink to this headline">¶</a></h1>
-<p>Synaps stores AlarmHistory, Metrics, MetricAlarm and StatArchive in Cassandra
-database.</p>
-<p>Following is Cassandra Database model for Synaps.</p>
+<p>Synaps stores AlarmHistory, Metrics, MetricAlarm and StatArchive in the
+Cassandra database.</p>
+<p>Following is Cassandra Database model for Synaps. The model can be set up by
+synaps-syncdb command.</p>
 <blockquote>
 <div><img alt="../_images/CassandraDatabaseModel.jpg" src="../_images/CassandraDatabaseModel.jpg" style="width: 100%;" />
 </div></blockquote>
 <div class="section" id="keyspace-description">
 <h2>Keyspace Description<a class="headerlink" href="#keyspace-description" title="Permalink to this headline">¶</a></h2>
+<p>The concept of keyspace is a namespace for ColumnFamilies, typically one per
+application.</p>
+<p>The keyspace and replication factor are configurable.</p>
 <div class="highlight-bash"><div class="highlight"><pre>create keyspace synaps
   with <span class="nv">placement_strategy</span> <span class="o">=</span> <span class="s1">&#39;SimpleStrategy&#39;</span>
   and <span class="nv">strategy_options</span> <span class="o">=</span> <span class="o">{</span>replication_factor : 2<span class="o">}</span>
@@ -66,8 +70,15 @@ database.</p>
 </div>
 <div class="section" id="columnfamily-description">
 <h2>ColumnFamily Description<a class="headerlink" href="#columnfamily-description" title="Permalink to this headline">¶</a></h2>
+<p>ColumnFamilies contain multiple columns, each of which has a name, value, and a
+timestamp, and which are referenced by row keys. SuperColumns can be thought of
+as columns that themselves have subcolumns.</p>
+<p>Synaps has three ColumnFamilies(AlarmHistory, Metric and MetricAlarm) and one
+SuperColumnFamily(StatArchive).</p>
 <div class="section" id="alarmhistory">
 <h3>AlarmHistory<a class="headerlink" href="#alarmhistory" title="Permalink to this headline">¶</a></h3>
+<p>When an alarm or its status is created or updated, alarm history data will be
+added as a row.</p>
 <div class="highlight-bash"><div class="highlight"><pre>create column family AlarmHistory
   with <span class="nv">column_type</span> <span class="o">=</span> <span class="s1">&#39;Standard&#39;</span>
   and <span class="nv">comparator</span> <span class="o">=</span> <span class="s1">&#39;BytesType&#39;</span>
@@ -115,6 +126,7 @@ database.</p>
 </div>
 <div class="section" id="metric">
 <h3>Metric<a class="headerlink" href="#metric" title="Permalink to this headline">¶</a></h3>
+<p>This column failmiy represents Metric.</p>
 <div class="highlight-bash"><div class="highlight"><pre>create column family Metric
   with <span class="nv">column_type</span> <span class="o">=</span> <span class="s1">&#39;Standard&#39;</span>
   and <span class="nv">comparator</span> <span class="o">=</span> <span class="s1">&#39;BytesType&#39;</span>
@@ -156,6 +168,7 @@ database.</p>
 </div>
 <div class="section" id="metricalarm">
 <h3>MetricAlarm<a class="headerlink" href="#metricalarm" title="Permalink to this headline">¶</a></h3>
+<p>This column failmiy represents Metric.</p>
 <div class="highlight-bash"><div class="highlight"><pre>create column family MetricAlarm
   with <span class="nv">column_type</span> <span class="o">=</span> <span class="s1">&#39;Standard&#39;</span>
   and <span class="nv">comparator</span> <span class="o">=</span> <span class="s1">&#39;BytesType&#39;</span>
@@ -241,6 +254,9 @@ database.</p>
 </div>
 <div class="section" id="statarchive">
 <h3>StatArchive<a class="headerlink" href="#statarchive" title="Permalink to this headline">¶</a></h3>
+<p>This super column failmiy is for storing metric statistics. It holds
+time-series data aggregated per minute. Its super column key is AVERAGE,
+MAXIMUM, MINIMUM, SAMPLECOUNT and SUM.</p>
 <div class="highlight-bash"><div class="highlight"><pre>create column family StatArchive
   with <span class="nv">column_type</span> <span class="o">=</span> <span class="s1">&#39;Super&#39;</span>
   and <span class="nv">comparator</span> <span class="o">=</span> <span class="s1">&#39;AsciiType&#39;</span>
@@ -291,7 +307,7 @@ database.</p>
                                   title="previous chapter">Program Specification</a></p>
             <h4>Next topic</h4>
             <p class="topless"><a href="apispec.html"
-                                  title="next chapter">Application Programming Interface</a></p>
+                                  title="next chapter">Application Programming Interface Specification</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="../_sources/artifacts/dbmodel.txt"
@@ -324,7 +340,7 @@ database.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="apispec.html" title="Application Programming Interface"
+          <a href="apispec.html" title="Application Programming Interface Specification"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="programspec.html" title="Program Specification"
@@ -334,7 +350,7 @@ database.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
+      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

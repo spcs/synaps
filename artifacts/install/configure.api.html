@@ -1,0 +1,194 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuration Synaps Module &mdash; synaps v12.09.b3-dev documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '12.09.b3-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b3-dev documentation" href="../../index.html" />
+    <link rel="up" title="Installation Guide" href="../general.installation.guide.html" />
+    <link rel="next" title="Operational Manual" href="../operatormanual.html" />
+    <link rel="prev" title="Install Synaps module" href="install.synaps.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configuration-synaps-module">
+<span id="configure-api"></span><h1>Configuration Synaps Module<a class="headerlink" href="#configuration-synaps-module" title="Permalink to this headline">¶</a></h1>
+<p>To configure Synaps, you&#8217;ll need to make configuration directory. The default
+path is &#8220;/etc/synaps&#8221;. <em>Those configuration files should be identical across the
+web servers and storm nodes.</em></p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo mkdir /etc/synaps
+</pre></div>
+</div>
+<p>And then, create or edit &#8220;synaps.conf&#8221; file. Following is an example.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>DEFAULT<span class="o">]</span>
+<span class="nv">cassandra_server_list</span> <span class="o">=</span> cassandra1:9160,cassandra2:9160,cassandra3:9160
+<span class="nv">cassandra_keyspace</span> <span class="o">=</span> synaps
+<span class="nv">cassandra_replication_factor</span> <span class="o">=</span> 3
+<span class="c"># 30 days in seconds</span>
+<span class="nv">statistics_ttl</span> <span class="o">=</span> 2592000
+
+<span class="nv">log_dir</span> <span class="o">=</span> /var/log/synaps/
+<span class="nv">api_paste_config</span> <span class="o">=</span> /etc/synaps/api-paste.ini
+
+<span class="c">### rabbit mq configuration</span>
+<span class="nv">rabbit_host</span> <span class="o">=</span> rabbitmq_host
+
+<span class="nv">smtp_server</span> <span class="o">=</span> mail.product
+<span class="nv">mail_sender</span> <span class="o">=</span> synaps@my.openstack
+<span class="nv">notification_bind_addr</span> <span class="o">=</span> tcp://*:31110
+<span class="nv">notification_server_addr</span> <span class="o">=</span> tcp://synapsnoti:31110
+</pre></div>
+</div>
+<p>Next, you&#8217;ll need to create &#8220;api-paste.ini&#8221; like below for setting up the WSGI
+pipeline.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c">##############</span>
+<span class="c"># CloudWatch #</span>
+<span class="c">##############</span>
+
+<span class="o">[</span>composite:cloudwatch<span class="o">]</span>
+<span class="nv">use</span> <span class="o">=</span> egg:Paste#urlmap
+/monitor: cloudwatch_api_v1
+
+<span class="o">[</span>pipeline:cloudwatch_api_v1<span class="o">]</span>
+<span class="nv">pipeline</span> <span class="o">=</span> fault_wrap log_request no_auth monitor_request authorizer cloudwatch_executor
+<span class="c">#pipeline = fault_wrap log_request authenticate monitor_request authorizer cloudwatch_executor</span>
+
+<span class="o">[</span>filter:fault_wrap<span class="o">]</span>
+paste.filter_factory <span class="o">=</span> synaps.api.cloudwatch:FaultWrapper.factory
+
+<span class="o">[</span>filter:log_request<span class="o">]</span>
+paste.filter_factory <span class="o">=</span> synaps.api.cloudwatch:RequestLogging.factory
+
+<span class="o">[</span>filter:no_auth<span class="o">]</span>
+paste.filter_factory <span class="o">=</span> synaps.api.cloudwatch:NoAuth.factory
+
+<span class="o">[</span>filter:authenticate<span class="o">]</span>
+paste.filter_factory <span class="o">=</span> synaps.api.cloudwatch:Authenticate.factory
+
+<span class="o">[</span>filter:monitor_request<span class="o">]</span>
+<span class="nv">controller</span> <span class="o">=</span> synaps.api.cloudwatch.monitor.MonitorController
+paste.filter_factory <span class="o">=</span> synaps.api.cloudwatch:Requestify.factory
+
+<span class="o">[</span>filter:authorizer<span class="o">]</span>
+paste.filter_factory <span class="o">=</span> synaps.api.cloudwatch:Authorizer.factory
+
+<span class="o">[</span>app:cloudwatch_executor<span class="o">]</span>
+paste.app_factory <span class="o">=</span> synaps.api.cloudwatch:Executor.factory
+</pre></div>
+</div>
+<p>You need to make directory for log file. Default path is &#8220;/var/log/synaps&#8221;.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo mkdir /var/log/synaps
+</pre></div>
+</div>
+</div>
+<div class="section" id="running-synaps-api">
+<h1>Running synaps-api<a class="headerlink" href="#running-synaps-api" title="Permalink to this headline">¶</a></h1>
+<p>To run synaps-api</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo service synaps-api start
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">Configuration Synaps Module</a></li>
+<li><a class="reference internal" href="#running-synaps-api">Running synaps-api</a></li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="install.synaps.html"
+                                  title="previous chapter">Install Synaps module</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="../operatormanual.html"
+                                  title="next chapter">Operational Manual</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/artifacts/install/configure.api.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../operatormanual.html" title="Operational Manual"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.synaps.html" title="Install Synaps module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li>
+          <li><a href="../general.installation.guide.html" accesskey="U">Installation Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

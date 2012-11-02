@@ -1,0 +1,130 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Post-installation Synaps backend &mdash; synaps v12.09.b3-dev documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '12.09.b3-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b3-dev documentation" href="../../index.html" />
+    <link rel="up" title="Installation Guide" href="../general.installation.guide.html" />
+    <link rel="next" title="Post-installation Synaps frontend" href="postinstall.frontend.html" />
+    <link rel="prev" title="Install RabbitMQ Example" href="install.rabbitmq.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="post-installation-synaps-backend">
+<span id="postinstall-backend"></span><h1>Post-installation Synaps backend<a class="headerlink" href="#post-installation-synaps-backend" title="Permalink to this headline">¶</a></h1>
+<p>Register zookeeper /etc/init.d</p>
+<div class="highlight-bash"><div class="highlight"><pre>ln -s /usr/share/zookeeper/bin/zkServer.sh /etc/init.d/
+</pre></div>
+</div>
+<p>For Nimbus node(synaps01), update rc.d as below.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo update-rc.d zkServer.sh defaluts 80 20
+sudo update-rc.d storm-nimbus defaluts 81 19
+sudo update-rc.d storm-ui defaluts 82 18
+sudo update-rc.d synaps-noti defaluts 80
+</pre></div>
+</div>
+<p>For Supervisor nodes(synaps02 ~ nn), update rc.d as below.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo update-rc.d zkServer.sh defaluts 80 20
+sudo update-rc.d storm-supervisor defaluts 83 17
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="install.rabbitmq.html"
+                                  title="previous chapter">Install RabbitMQ Example</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="postinstall.frontend.html"
+                                  title="next chapter">Post-installation Synaps frontend</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/artifacts/install/postinstall.backend.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="postinstall.frontend.html" title="Post-installation Synaps frontend"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.rabbitmq.html" title="Install RabbitMQ Example"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li>
+          <li><a href="../general.installation.guide.html" accesskey="U">Installation Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

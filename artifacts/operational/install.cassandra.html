@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Cassandra 설치하기 &mdash; synaps v12.09.b3-dev documentation</title>
+    <title>Install Cassandra Example &mdash; synaps v12.09.b3-dev documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
@@ -25,7 +25,6 @@
     <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
     <link rel="top" title="synaps v12.09.b3-dev documentation" href="../../index.html" />
     <link rel="up" title="Installation Guide" href="installation.guide.html" />
-    <link rel="next" title="RabbitMQ 설치하기" href="install.rabbitmq.html" />
     <link rel="prev" title="Installation Guide" href="installation.guide.html" /> 
   </head>
   <body>
@@ -48,51 +47,49 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="cassandra">
-<span id="install-cassandra"></span><h1>Cassandra 설치하기<a class="headerlink" href="#cassandra" title="Permalink to this headline">¶</a></h1>
-<p>본 문서에서는 기본적인 설치 방법만 가이드한다. 보다 자세한 설치 및 설정관련
-정보는 Cassandra 홈페이지를 참조한다.</p>
-<p>설치
-&#8211;</p>
-<p>아래와 같이 카산드라를 설치한다.</p>
+  <div class="section" id="install-cassandra-example">
+<span id="install-cassandra"></span><h1>Install Cassandra Example<a class="headerlink" href="#install-cassandra-example" title="Permalink to this headline">¶</a></h1>
+<p>This document describes basic installation guide example. For more details, see
+<a class="reference external" href="http://cassandra.apache.org/">http://cassandra.apache.org/</a></p>
+<p>Download cassandra and unzip the tarball.</p>
 <div class="highlight-bash"><div class="highlight"><pre>tar xvfz apache-cassandra-1.0.8-bin.tar.gz /usr/local/
 </pre></div>
 </div>
-<p>설정
-&#8211;</p>
-<p>아래와 같이 설정 파일(/usr/local/apache-cassandra-1.0.8/conf/cassandra.yaml) 편집</p>
+<p>To config cassandra, edit configuration file as below. The default config file
+path is &#8220;/usr/local/apache-cassandra-1.0.8/conf/cassandra.yaml&#8221;</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>seeds 에 카산드라 노드의 호스트이름 리스트를 등록한다.</p>
-<p class="last">listen_address 에 해당 노드의 카산드라 호스트이름을 등록한다.</p>
+<p class="last">Set &#8216;seeds&#8217; as all your cassandra node list and &#8216;listen_address&#8217; as hostname
+of local machine.</p>
 </div>
-<div class="highlight-python"><pre>cluster_name: 'Synaps Product Cluster'
+<div class="highlight-bash"><div class="highlight"><pre>cluster_name: <span class="s1">&#39;Synaps Product Cluster&#39;</span>
 
-# directories where Cassandra should store data on disk.
+<span class="c"># directories where Cassandra should store data on disk.</span>
 data_file_directories:
     - /var/log/cassandra/data
 
-# commit log
+<span class="c"># commit log</span>
 commitlog_directory: /var/log/cassandra/commitlog
 
-# saved caches
+<span class="c"># saved caches</span>
 saved_caches_directory: /var/log/cassandra/saved_caches
 
 seed_provider:
-    # Addresses of hosts that are deemed contact points.
-    # Cassandra nodes use this list of hosts to find each other and learn
-    # the topology of the ring.  You must change this if you are running
-    # multiple nodes!
+    <span class="c"># Addresses of hosts that are deemed contact points.</span>
+    <span class="c"># Cassandra nodes use this list of hosts to find each other and learn</span>
+    <span class="c"># the topology of the ring.  You must change this if you are running</span>
+    <span class="c"># multiple nodes!</span>
     - class_name: org.apache.cassandra.locator.SimpleSeedProvider
       parameters:
-          # seeds is actually a comma-delimited list of addresses.
-          # Ex: "&lt;ip1&gt;,&lt;ip2&gt;,&lt;ip3&gt;"
-          - seeds: "(Cassandra_HostName1),(Cassandra_HostName2),(Cassandra_HostName3)"
+          <span class="c"># seeds is actually a comma-delimited list of addresses.</span>
+          <span class="c"># Ex: &quot;&lt;ip1&gt;,&lt;ip2&gt;,&lt;ip3&gt;&quot;</span>
+          - seeds: <span class="s2">&quot;(Cassandra_HostName1),(Cassandra_HostName2),(Cassandra_HostName3)&quot;</span>
 
-# Setting this to 0.0.0.0 is always wrong.
-listen_address: (Local_HostName)
+<span class="c"># Setting this to 0.0.0.0 is always wrong.</span>
+listen_address: <span class="o">(</span>Local_HostName<span class="o">)</span>
 
-rpc_address: 0.0.0.0</pre>
+rpc_address: 0.0.0.0
+</pre></div>
 </div>
 </div>
 
@@ -105,9 +102,6 @@ rpc_address: 0.0.0.0</pre>
             <h4>Previous topic</h4>
             <p class="topless"><a href="installation.guide.html"
                                   title="previous chapter">Installation Guide</a></p>
-            <h4>Next topic</h4>
-            <p class="topless"><a href="install.rabbitmq.html"
-                                  title="next chapter">RabbitMQ 설치하기</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="../../_sources/artifacts/operational/install.cassandra.txt"
@@ -140,9 +134,6 @@ rpc_address: 0.0.0.0</pre>
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="install.rabbitmq.html" title="RabbitMQ 설치하기"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
           <a href="installation.guide.html" title="Installation Guide"
              accesskey="P">previous</a> |</li>
         <li><a href="../../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li>
@@ -152,7 +143,7 @@ rpc_address: 0.0.0.0</pre>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
+      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

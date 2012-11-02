@@ -24,7 +24,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
     <link rel="top" title="synaps v12.09.b3-dev documentation" href="../index.html" />
-    <link rel="prev" title="synaps-api, synaps-noti, synaps-storm 배포" href="operational/deploy.synaps.html" /> 
+    <link rel="next" title="Common Pre-installation" href="install/preinstall.common.html" />
+    <link rel="prev" title="Build Guide" href="build.guide.html" /> 
   </head>
   <body>
   <div id="header">
@@ -50,74 +51,53 @@
 <span id="general-installation-guide"></span><h1>Installation Guide<a class="headerlink" href="#installation-guide" title="Permalink to this headline">¶</a></h1>
 <p>This instruction describes how to install Synaps. It assumes that you are
 familiar with GIT and Ubuntu.</p>
-<div class="section" id="pre-installation-requirements">
-<h2>Pre-installation Requirements<a class="headerlink" href="#pre-installation-requirements" title="Permalink to this headline">¶</a></h2>
-<p>You need to install softwares listed belows. You can install all of them on
-the single machine for development or multiple nodes.</p>
-<ul class="simple">
-<li>Cassandra 1.0.8 - <a class="reference external" href="http://cassandra.apache.org/">http://cassandra.apache.org/</a></li>
-<li>Storm 0.8.0 - <a class="reference external" href="http://storm-project.net/">http://storm-project.net/</a></li>
-<li>RabbitMQ - <a class="reference external" href="http://www.rabbitmq.com/">http://www.rabbitmq.com/</a></li>
-<li>Memcached (only for WSGI Web Server nodes)</li>
-<li>JDK and Maven2 (only for build storm topology)</li>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install/preinstall.common.html">Common Pre-installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install/preinstall.common.html#set-up-ntp">Set up NTP</a></li>
 </ul>
-<p>And for each Storm and WSGI Web Server nodes, you will need python packages
-listed below.</p>
-<ul class="simple">
-<li>setuptools</li>
-<li>eventlet</li>
-<li>pastedeploy</li>
-<li>gflags</li>
-<li>netaddr</li>
-<li>python-memcache</li>
-<li>numpy</li>
-<li>webob</li>
-<li>ldap</li>
-<li>zmq</li>
-<li>dateutil-1.5</li>
-<li>pandas-0.7.3 (currently, it doesn&#8217;t support more recent version)</li>
-<li>thrift-0.8.0</li>
-<li>pycassa-1.5.1</li>
-<li>pika-0.9.5</li>
-<li>boto-2.5.3</li>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install/install.synaps.html">Install Synaps module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install/install.synaps.html#pre-installation-requirements">Pre-installation Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install/install.synaps.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install/install.synaps.html#configuration">Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install/install.cassandra.html">Install Cassandra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install/install.storm.html">Install Storm Example</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install/install.storm.html#pre-installation-requirements">Pre-installation Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install/install.storm.html#id1">Install Storm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install/install.storm.html#configuration">Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install/install.rabbitmq.html">Install RabbitMQ Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install/postinstall.backend.html">Post-installation Synaps backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install/postinstall.frontend.html">Post-installation Synaps frontend</a></li>
 </ul>
 </div>
-<div class="section" id="install-synaps-from-github">
-<h2>Install Synaps from Github<a class="headerlink" href="#install-synaps-from-github" title="Permalink to this headline">¶</a></h2>
-<p>&#8216;synaps&#8217; module should be installed for all of your Synaps WSGI Web Servers
-and Storm nodes. see <a class="reference internal" href="operational/install.synaps.api.html#install-synaps-api-ubuntu"><em>Install synaps-api and synaps-noti</em></a> for more easy guide for Ubuntu.</p>
-<div class="highlight-bash"><div class="highlight"><pre>git clone https://github.com/spcs/synaps.git
-<span class="nb">cd </span>synaps/synaps-api
-sudo python setup.py install
-</pre></div>
-</div>
-<p>Next, you should build synaps-storm topology.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nb">cd </span>synaps/synaps-storm
-mvn package
-</pre></div>
-</div>
-<p>Then, synaps-storm-yyyy.mm.xx.jar file could be found under
-synaps/synaps-storm/target directory.</p>
-</div>
-<div class="section" id="running-synaps">
-<h2>Running Synaps<a class="headerlink" href="#running-synaps" title="Permalink to this headline">¶</a></h2>
-<p>Once you install the python &#8216;synaps&#8217; module, you can run WSGI web server just
-like below.</p>
-<div class="highlight-bash"><div class="highlight"><pre>synaps-api-cloudwach
-</pre></div>
-</div>
-<p>or you can run synaps-api as a service.</p>
-<div class="highlight-bash"><div class="highlight"><pre>service synaps-api start
-</pre></div>
-</div>
-<p>To submit storm topology to Storm cluster,</p>
-<div class="highlight-bash"><div class="highlight"><pre>storm jar synaps-storm-yyyy.mm.xx.jar com.spcs.synaps.PutMetricTopology topology_name
-</pre></div>
-</div>
-<p>or you can run storm totpology local mode.</p>
-<div class="highlight-bash"><div class="highlight"><pre>storm jar synaps-storm-yyyy.mm.xx.jar com.spcs.synaps.PutMetricTopology
-</pre></div>
-</div>
+<div class="section" id="installaton-example">
+<h2>Installaton Example<a class="headerlink" href="#installaton-example" title="Permalink to this headline">¶</a></h2>
+<p>Below image is an example of Synaps deployment.</p>
+<img alt="../_images/SynapsDeployment1.jpg" src="../_images/SynapsDeployment1.jpg" style="width: 100%;" />
+<p>For Synaps Frontend cluster(api01 ~ nn),</p>
+<ul class="simple">
+<li><a class="reference internal" href="install/preinstall.common.html#preinstall-common"><em>Common Pre-installation</em></a></li>
+<li><a class="reference internal" href="install/install.synaps.html#install-synaps"><em>Install Synaps module</em></a></li>
+<li><a class="reference internal" href="install/postinstall.frontend.html#postinstall-frontend"><em>Post-installation Synaps frontend</em></a></li>
+</ul>
+<p>For Synaps Backend cluster(synaps01 ~ nn),</p>
+<ul class="simple">
+<li><a class="reference internal" href="install/preinstall.common.html#preinstall-common"><em>Common Pre-installation</em></a></li>
+<li><a class="reference internal" href="install/install.synaps.html#install-synaps"><em>Install Synaps module</em></a></li>
+<li><a class="reference internal" href="install/install.cassandra.html#install-cassandra"><em>Install Cassandra</em></a></li>
+<li><a class="reference internal" href="install/install.storm.html#install-storm"><em>Install Storm Example</em></a></li>
+<li><a class="reference internal" href="install/postinstall.backend.html#postinstall-backend"><em>Post-installation Synaps backend</em></a></li>
+</ul>
+<p>For Synaps Message Bus(mq00..nn),</p>
+<ul class="simple">
+<li><a class="reference internal" href="install/preinstall.common.html#preinstall-common"><em>Common Pre-installation</em></a></li>
+<li><a class="reference internal" href="install/install.rabbitmq.html#install-rabbitmq"><em>Install RabbitMQ Example</em></a></li>
+</ul>
 </div>
 </div>
 
@@ -130,16 +110,17 @@ like below.</p>
             <h3><a href="../index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference internal" href="#">Installation Guide</a><ul>
-<li><a class="reference internal" href="#pre-installation-requirements">Pre-installation Requirements</a></li>
-<li><a class="reference internal" href="#install-synaps-from-github">Install Synaps from Github</a></li>
-<li><a class="reference internal" href="#running-synaps">Running Synaps</a></li>
+<li><a class="reference internal" href="#installaton-example">Installaton Example</a></li>
 </ul>
 </li>
 </ul>
 
             <h4>Previous topic</h4>
-            <p class="topless"><a href="operational/deploy.synaps.html"
-                                  title="previous chapter">synaps-api, synaps-noti, synaps-storm 배포</a></p>
+            <p class="topless"><a href="build.guide.html"
+                                  title="previous chapter">Build Guide</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="install/preinstall.common.html"
+                                  title="next chapter">Common Pre-installation</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="../_sources/artifacts/general.installation.guide.txt"
@@ -172,14 +153,17 @@ like below.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="operational/deploy.synaps.html" title="synaps-api, synaps-noti, synaps-storm 배포"
+          <a href="install/preinstall.common.html" title="Common Pre-installation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="build.guide.html" title="Build Guide"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Fri Oct 19 14:33:22 2012, commit 52445ea.
+      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

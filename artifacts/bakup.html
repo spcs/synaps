@@ -1,0 +1,295 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Build synaps-api and synaps-storm from source code &mdash; synaps v12.09.b3-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '12.09.b3-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b3-dev documentation" href="../index.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="build-synaps-api-and-synaps-storm-from-source-code">
+<h1>Build synaps-api and synaps-storm from source code<a class="headerlink" href="#build-synaps-api-and-synaps-storm-from-source-code" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="install-synaps-storm">
+<h1>install synaps-storm<a class="headerlink" href="#install-synaps-storm" title="Permalink to this headline">¶</a></h1>
+<p>For synaps-storm, you only need to copy synaps-storm build file(e.g.
+synaps-storm-yyyy.mm.xx.jar) to the Nimbus node. Because storm will deploy and
+distribute the build.</p>
+</div>
+<div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>To configure Synaps, you&#8217;ll need to make configuration directory. The default
+path is &#8220;/etc/synaps&#8221;. <em>Those configuration files should be identical across the
+web servers and storm nodes.</em></p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo mkdir /etc/synaps
+</pre></div>
+</div>
+<p>And then, create or edit &#8220;synaps.conf&#8221; file. Following is an example.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>DEFAULT<span class="o">]</span>
+<span class="nv">cassandra_server_list</span> <span class="o">=</span> cassandra1:9160,cassandra2:9160,cassandra3:9160
+<span class="nv">cassandra_keyspace</span> <span class="o">=</span> synaps
+<span class="nv">cassandra_replication_factor</span> <span class="o">=</span> 3
+<span class="c"># 30 days in seconds</span>
+<span class="nv">statistics_ttl</span> <span class="o">=</span> 2592000
+
+<span class="nv">log_dir</span> <span class="o">=</span> /var/log/synaps/
+<span class="nv">api_paste_config</span> <span class="o">=</span> /etc/synaps/api-paste.ini
+
+<span class="c">### rabbit mq configuration</span>
+<span class="nv">rabbit_host</span> <span class="o">=</span> rabbitmq_host
+
+<span class="nv">smtp_server</span> <span class="o">=</span> mail.product
+<span class="nv">mail_sender</span> <span class="o">=</span> synaps@my.openstack
+<span class="nv">notification_bind_addr</span> <span class="o">=</span> tcp://*:31110
+<span class="nv">notification_server_addr</span> <span class="o">=</span> tcp://synapsnoti:31110
+</pre></div>
+</div>
+<p>Next, you&#8217;ll need to create &#8220;api-paste.ini&#8221; like below for setting up the WSGI
+pipeline.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c">##############</span>
+<span class="c"># CloudWatch #</span>
+<span class="c">##############</span>
+
+<span class="o">[</span>composite:cloudwatch<span class="o">]</span>
+<span class="nv">use</span> <span class="o">=</span> egg:Paste#urlmap
+/monitor: cloudwatch_api_v1
+
+<span class="o">[</span>pipeline:cloudwatch_api_v1<span class="o">]</span>
+<span class="nv">pipeline</span> <span class="o">=</span> fault_wrap log_request no_auth monitor_request authorizer cloudwatch_executor
+<span class="c">#pipeline = fault_wrap log_request authenticate monitor_request authorizer cloudwatch_executor</span>
+
+<span class="o">[</span>filter:fault_wrap<span class="o">]</span>
+paste.filter_factory <span class="o">=</span> synaps.api.cloudwatch:FaultWrapper.factory
+
+<span class="o">[</span>filter:log_request<span class="o">]</span>
+paste.filter_factory <span class="o">=</span> synaps.api.cloudwatch:RequestLogging.factory
+
+<span class="o">[</span>filter:no_auth<span class="o">]</span>
+paste.filter_factory <span class="o">=</span> synaps.api.cloudwatch:NoAuth.factory
+
+<span class="o">[</span>filter:authenticate<span class="o">]</span>
+paste.filter_factory <span class="o">=</span> synaps.api.cloudwatch:Authenticate.factory
+
+<span class="o">[</span>filter:monitor_request<span class="o">]</span>
+<span class="nv">controller</span> <span class="o">=</span> synaps.api.cloudwatch.monitor.MonitorController
+paste.filter_factory <span class="o">=</span> synaps.api.cloudwatch:Requestify.factory
+
+<span class="o">[</span>filter:authorizer<span class="o">]</span>
+paste.filter_factory <span class="o">=</span> synaps.api.cloudwatch:Authorizer.factory
+
+<span class="o">[</span>app:cloudwatch_executor<span class="o">]</span>
+paste.app_factory <span class="o">=</span> synaps.api.cloudwatch:Executor.factory
+</pre></div>
+</div>
+<p>You need to make directory for log file. Default path is &#8220;/var/log/synaps&#8221;.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo mkdir /var/log/synaps
+</pre></div>
+</div>
+<p>And then, need to set up cassandra for Synaps.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo synaps-syncdb
+</pre></div>
+</div>
+</div>
+<div class="section" id="running-synaps">
+<h1>Running Synaps<a class="headerlink" href="#running-synaps" title="Permalink to this headline">¶</a></h1>
+<p>You can run synaps-api as a service on the web server.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo service synaps-api start
+</pre></div>
+</div>
+<p>You also can run synaps-noti to execute alarm action.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo service synaps-noti start
+</pre></div>
+</div>
+<p>To submit storm topology to Storm cluster,</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo storm jar synaps-storm-yyyy.mm.xx.jar com.spcs.synaps.PutMetricTopology topology_name
+</pre></div>
+</div>
+<p>or you can run storm totpology local mode for devlopement.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo storm jar synaps-storm-yyyy.mm.xx.jar com.spcs.synaps.PutMetricTopology
+</pre></div>
+</div>
+<p>And then, need to set up cassandra for Synaps. (It can be done only once.)</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo synaps-syncdb
+</pre></div>
+</div>
+</div>
+<div class="section" id="synaps-api-synaps-noti">
+<h1>synaps-api, synaps-noti 배포<a class="headerlink" href="#synaps-api-synaps-noti" title="Permalink to this headline">¶</a></h1>
+<p>synaps-api 를 SPCS Synaps 저장소에서 다운받아 아래와 같이 설치한다.</p>
+<div class="highlight-bash"><div class="highlight"><pre>wget http://182.194.3.195:8080/synaps-package/product/synaps-yy.mm.dd.tar.gz
+tar xvfz synaps-yy.mm.dd.tar.gz
+<span class="nb">cd </span>synaps-yy.mm.dd
+sudo python setup.py install
+</pre></div>
+</div>
+</div>
+<div class="section" id="synaps-storm">
+<h1>synaps-storm 배포<a class="headerlink" href="#synaps-storm" title="Permalink to this headline">¶</a></h1>
+<p>synaps-nimbus 노드에서 다음과 같이 synaps-storm 을 내려받아 아래와 같이
+실행하면 synaps-supervisor 에 자동으로 코드가 배포되고 실행된다.</p>
+<div class="highlight-bash"><div class="highlight"><pre>wget http://182.194.3.195:8080/synaps-package/product/synaps-storm-yy.mm.dd.jar
+storm jar synaps-storm-yy.mm.dd.jar com.spcs.synaps.PutMetricTopology synapsstorm
+</pre></div>
+</div>
+</div>
+<div class="section" id="rabbit-mq">
+<h1>Rabbit MQ<a class="headerlink" href="#rabbit-mq" title="Permalink to this headline">¶</a></h1>
+<p>Start and stop RabbitMQ</p>
+<div class="highlight-bash"><div class="highlight"><pre>rabbitmq-server -detached
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre>rabbitmqctl stop
+</pre></div>
+</div>
+<p>Delete RabbitMQ database</p>
+<div class="highlight-bash"><div class="highlight"><pre>rm -rf /var/lib/rabbitmq/mnesia
+</pre></div>
+</div>
+<p>Sync erlang.cookie file</p>
+<div class="highlight-python"><pre>Share same /var/lib/rabbitmq/.erlang.cookie file across nodes.</pre>
+</div>
+<p>To show cluster status</p>
+<div class="highlight-bash"><div class="highlight"><pre>rabbitmqctl cluster_status
+
+Cluster status of node <span class="s1">&#39;rabbit@synaps-mq02&#39;</span> ...
+<span class="o">[{</span>nodes,<span class="o">[{</span>disc,<span class="o">[</span><span class="s1">&#39;rabbit@(RabbitMQ1_HostName)&#39;</span>,<span class="s1">&#39;rabbit@synaps-mq01&#39;</span><span class="o">]}]}</span>,
+<span class="o">{</span>running_nodes,<span class="o">[</span><span class="s1">&#39;rabbit@(RabbitMQ2_HostName)&#39;</span>,<span class="s1">&#39;rabbit@synaps-mq02&#39;</span><span class="o">]}]</span>
+...done.
+</pre></div>
+</div>
+</div>
+<div class="section" id="storm">
+<h1>Storm<a class="headerlink" href="#storm" title="Permalink to this headline">¶</a></h1>
+<p>Create symbolic link for log file directory.</p>
+<div class="highlight-bash"><div class="highlight"><pre>rm -rf /usr/local/storm/logs/
+mkdir /var/log/storm
+ln -s /var/log/storm /usr/local/storm/logs
+</pre></div>
+</div>
+<p>Register zookeeper as a service.</p>
+<div class="highlight-bash"><div class="highlight"><pre>ln -s /usr/share/zookeeper/bin/zkServer.sh /etc/init.d/
+</pre></div>
+</div>
+<p>For Nimbus node, update rc.d as below. Before doing this, you need to install
+synaps-api.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo update-rc.d zkServer.sh defaluts 80 20
+sudo update-rc.d storm-nimbus defaluts 81 19
+sudo update-rc.d storm-ui defaluts 82 18
+</pre></div>
+</div>
+<p>For Supervisor node, update rc.d as below. Before doing this, you need to
+install synaps-api.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo update-rc.d zkServer.sh defaluts 80 20
+sudo update-rc.d storm-supervisor defaluts 83 17
+</pre></div>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="operational/deploy.synaps.html">synaps-api, synaps-noti, synaps-storm 배포</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="operational/deploy.synaps.html#synaps-api-synaps-noti">synaps-api, synaps-noti 배포</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operational/deploy.synaps.html#synaps-storm">synaps-storm 배포</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">Build synaps-api and synaps-storm from source code</a></li>
+<li><a class="reference internal" href="#install-synaps-storm">install synaps-storm</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#running-synaps">Running Synaps</a></li>
+<li><a class="reference internal" href="#synaps-api-synaps-noti">synaps-api, synaps-noti 배포</a></li>
+<li><a class="reference internal" href="#synaps-storm">synaps-storm 배포</a></li>
+<li><a class="reference internal" href="#rabbit-mq">Rabbit MQ</a></li>
+<li><a class="reference internal" href="#storm">Storm</a><ul>
+</ul>
+</li>
+</ul>
+
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/artifacts/bakup.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

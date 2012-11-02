@@ -1,0 +1,147 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>SDK(Software Development Toolkit) description &mdash; synaps v12.09.b3-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '12.09.b3-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps v12.09.b3-dev documentation" href="../index.html" />
+    <link rel="next" title="Synaps SDK User Guide" href="usermanual.html" />
+    <link rel="prev" title="Admin API Specificaton" href="apispec/admin.api.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="sdk-software-development-toolkit-description">
+<h1>SDK(Software Development Toolkit) description<a class="headerlink" href="#sdk-software-development-toolkit-description" title="Permalink to this headline">¶</a></h1>
+<p>Synaps provides following two types of SDK.</p>
+<div class="section" id="user-sdk">
+<h2>User SDK<a class="headerlink" href="#user-sdk" title="Permalink to this headline">¶</a></h2>
+<p>Synaps provides AWS CloudWatch compatible APIs so that users can use AWS
+CloudWatch SDKs. Synaps does not provide Synaps-specialized SDK for users.</p>
+<ul class="simple">
+<li>Java SDK: Synaps is compatible with AWS SDK for Java (ver 1.3.12). But, it
+doesn&#8217;t support more recent version. Synaps does not supports AWS Signature
+v4 yet. see <a class="reference external" href="http://aws.amazon.com/sdkforjava/">http://aws.amazon.com/sdkforjava/</a></li>
+<li>Python SDK: Synaps is compatible with AWS SDK for Python, Boto. (tested with
+ver 2.5.2) see <a class="reference external" href="https://github.com/boto/boto">https://github.com/boto/boto</a></li>
+</ul>
+</div>
+<div class="section" id="admin-sdk">
+<h2>Admin SDK<a class="headerlink" href="#admin-sdk" title="Permalink to this headline">¶</a></h2>
+<p>Synaps has its own SDK which is spined off from AWS SDK for Java (v1.3.12) to
+call admin APIs. If a user who does not have novaadmin role calls Synaps APIs,
+he (or she) will get 400 error message.</p>
+<p>Administrators can</p>
+<ul class="simple">
+<li>pass ProjectId parameter for every APIs, so that they can access data in any
+project.</li>
+<li>put metric data which have their namespace start with reserved word for thier
+services (e.g. &#8220;OPENSTACK/&#8221; or &#8220;SPCS/&#8221;). see <a class="reference internal" href="apispec/action/put_metric_data.html#put-metric-data"><em>PutMetricData</em></a>.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">SDK(Software Development Toolkit) description</a><ul>
+<li><a class="reference internal" href="#user-sdk">User SDK</a></li>
+<li><a class="reference internal" href="#admin-sdk">Admin SDK</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="apispec/admin.api.html"
+                                  title="previous chapter">Admin API Specificaton</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="usermanual.html"
+                                  title="next chapter">Synaps SDK User Guide</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/artifacts/sdkdescription.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usermanual.html" title="Synaps SDK User Guide"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="apispec/admin.api.html" title="Admin API Specificaton"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
