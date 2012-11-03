@@ -37,8 +37,8 @@ Errors
    :widths: 20 50 10
    :header-rows: 1
    
-   * - error
-     - description
+   * - Error
+     - Description
      - HTTP Status Code
    * - ResourceNotFound
      - Requested alarms are not found 

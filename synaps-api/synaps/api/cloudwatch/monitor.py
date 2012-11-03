@@ -245,16 +245,16 @@ class MonitorController(object):
             """
             timestamp, values = stat
             ret = {}
-            ret['Timestamp'] = timestamp
-            for statistic, value in values.iteritems():
+            ret['Timestamp'] = timestamp 
+            for statistic, value in values.iteritems(): 
                 if statistic == "SampleCount":
                     ret['Unit'] = "Count"
+                    ret[statistic] = value
                 else:
                     ret['Unit'] = unit
-                ret[statistic] = utils.to_unit(value, unit)
+                    ret[statistic] = utils.to_unit(value, unit)
+                    
             return ret
-                
-        
 
         if not (project_id and context.is_admin):
             project_id = context.project_id

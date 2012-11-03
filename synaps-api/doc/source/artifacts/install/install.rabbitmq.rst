@@ -27,4 +27,3 @@ path is "/etc/rabbitmq/rabbitmq.config".
 
    [{rabbit, [{cluster_nodes, ['rabbit@synaps-mq01', 'rabbit@synaps-mq02']}]}].
 
-

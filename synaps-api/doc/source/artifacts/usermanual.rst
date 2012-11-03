@@ -13,7 +13,7 @@ Put your credentials on SpcsCredentials.properties file.
   accessKey = df6ad231-23f9-4622-810c-acd6ae3e9e67
   secretKey = c142f025-aa84-4cc3-a97e-12bf86c561dc
 
-You can create CloudWatch object as follow.
+You can initiate CloudWatch object as below.
 
 .. code-block:: java
 
@@ -87,10 +87,6 @@ GetMetricStatistics Example
 
 Following code is an example for using :ref:`get_metric_statistics`.
 
-아래 예제에서는 SPCS Nova 의 가상머신 인스턴스 instance-0000000f의 CPU 사용률의
-2012년 7월 5일 10시부터 한 시간 동안의 3분(180초) 주기의 평균, 최대, 최소, 샘플 
-갯수를 조회한다.
-
 It retreives CPUUtilization statistics of instance-0000000f (average, maximum, 
 minimum and sample count) in the time frame from 2010-07-05 10:00 to 2010-07-05 
 11:00.  
@@ -156,87 +152,82 @@ The result is described below.
      Maximum: 0.197889178604, Unit: Percent, }, ... ]
 
 
-알람 관련 Action
-````````````
-DeleteAlarms Action
-~~~~~~~~~~~~~~~~~~~
-"AlarmName" 이라는 이름을 갖는 알람을 삭제하는 예제
+DeleteAlarms Example
+--------------------
 
-  .. code-block:: java
+Following code is an example for using :ref:`delete_alarms`.
 
-     DeleteAlarmsRequest DAR = new DeleteAlarmsRequest();
-     ArrayList<String> DARList = new ArrayList<String>();
-     DARList.add("AlarmName");
-     DAR.setAlarmNames(DARList);
-     cw.deleteAlarms(DAR);
+.. code-block:: java
 
-* API reference: :ref:`delete_alarms`
+   DeleteAlarmsRequest DAR = new DeleteAlarmsRequest();
+   ArrayList<String> DARList = new ArrayList<String>();
+   DARList.add("AlarmName");
+   DAR.setAlarmNames(DARList);
+   cw.deleteAlarms(DAR);
    
-DescribeAlarms Action
-~~~~~~~~~~~~~~~~~~~~~
-모든 또는 특정 알람에 대한 모든 정보리스트를 반환한다. 
+DescribeAlarms Example
+----------------------
 
-  .. code-block:: java
+Following code is an example for using :ref:`describe_alarm_history` 
 
-     DescribeAlarmsResult DAR = cw.describeAlarms();
-     System.out.println(DAR);
+.. code-block:: java
 
-* API reference: :ref:`describe_alarm_history`
+   DescribeAlarmsResult DAR = cw.describeAlarms();
+   System.out.println(DAR);
 
-DescribeAlarmsForMetric Action
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-특정 Metric 에 대한 모든 알람정보를 반환한다. 
 
-  .. code-block:: java
+DescribeAlarmsForMetric Example
+-------------------------------
 
-     DescribeAlarmsForMetricRequest DAFMR = new DescribeAlarmsForMetricRequest();
-     DAFMR.setMetricName("MetricName");
-     DAFMR.setNamespace("NameSpace");
-     DescribeAlarmsForMetricResult DAR = cw.describeAlarmsForMetric(DAFMR);
-     System.out.println(DAR.getMetricAlarms());
+Following code is an example for using :ref:`describe_alarms_for_metric`
 
-* API reference: :ref:`describe_alarms_for_metric`
+.. code-block:: java
+   
+   DescribeAlarmsForMetricRequest DAFMR = new DescribeAlarmsForMetricRequest();
+   DAFMR.setMetricName("MetricName");
+   DAFMR.setNamespace("NameSpace");
+   DescribeAlarmsForMetricResult DAR = cw.describeAlarmsForMetric(DAFMR);
+   System.out.println(DAR.getMetricAlarms());
 
-PutMetricAlarm Action
-~~~~~~~~~~~~~~~~~~~~~
 
-  .. code-block:: java
+PutMetricAlarm Example
+----------------------
 
-     PutMetricAlarmRequest PMAR = new PutMetricAlarmRequest();
-     PMAR.setAlarmName("AlarmName");
-     PMAR.setComparisonOperator("GreaterThanThreshold");
-     PMAR.setEvaluationPeriods(10);
-     PMAR.setMetricName("MetricName");
-     PMAR.setNamespace("NameSpace");
-     PMAR.setPeriod(60);
-     PMAR.setStatistic("SampleCount");
-     PMAR.setThreshold(300.0);
-     cw.putMetricAlarm(PMAR);
+Following code is an example for using :ref:`put_metric_alarm`
 
-* API reference: :ref:`put_metric_alarm`
+.. code-block:: java
+   
+   PutMetricAlarmRequest PMAR = new PutMetricAlarmRequest();
+   PMAR.setAlarmName("AlarmName");
+   PMAR.setComparisonOperator("GreaterThanThreshold");
+   PMAR.setEvaluationPeriods(10);
+   PMAR.setMetricName("MetricName");
+   PMAR.setNamespace("NameSpace");
+   PMAR.setPeriod(60);
+   PMAR.setStatistic("SampleCount");
+   PMAR.setThreshold(300.0);
+   cw.putMetricAlarm(PMAR);
 
-SetAlarmState Action
-~~~~~~~~~~~~~~~~~~~~
+
+SetAlarmState Example
+---------------------
 TBD
    
-DisableAlarmActions Action
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+DisableAlarmActions Example
+---------------------------
 TBD
    
-EnableAlarmActions Action
-~~~~~~~~~~~~~~~~~~~~~~~~~
+EnableAlarmActions Example
+--------------------------
 TBD
 
 
-알람 히스토리 관련 Action
-````````````````````````` 
-DescribeAlarmHistory Action
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-프로젝트의 모든 알람 히스토리를 조회하는 예제
+DescribeAlarmHistory Example
+----------------------------
 
-  .. code-block:: java
+Following code is an example for using :ref:`describe_alarm_history`
 
-     DescribeAlarmHistoryResult DAHR = cw.describeAlarmHistory();
-     System.out.println(DAHR);
+.. code-block:: java
 
-* API reference: :ref:`describe_alarm_history`
+   DescribeAlarmHistoryResult DAHR = cw.describeAlarmHistory();
+   System.out.println(DAHR);

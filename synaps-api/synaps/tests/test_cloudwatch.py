@@ -291,6 +291,52 @@ class ShortCase(SynapsTestCase):
         
         self.assertRaises(BotoServerError, self.synaps.put_metric_alarm, alarm)
     
+    def test_samplecount(self):
+
+        now = datetime.datetime.utcnow()
+        now_idx = now.replace(second=0, microsecond=0)
+        start_time = now - datetime.timedelta(hours=0.1)
+        end_time = now
+
+        # Input metric
+        ret = self.synaps.put_metric_data(
+            namespace=self.namespace, name="SampleCountTest",
+            value=1000, unit="Bytes", dimensions=self.dimensions,
+            timestamp=now_idx,
+        )
+
+        time.sleep(ASYNC_WAIT)
+        
+        
+        # input metric      
+        ret = self.synaps.put_metric_data(
+            namespace=self.namespace, name="SampleCountTest",
+            value=2000, unit="Bytes", dimensions=self.dimensions,
+            timestamp=now_idx,
+        )
+
+        stata = self.synaps.get_metric_statistics(
+            period=300, start_time=start_time, end_time=end_time,
+            metric_name="SampleCountTest", namespace=self.namespace,
+            statistics=['Sum', 'Average', 'SampleCount'],
+            unit="Kilobytes",
+            dimensions=self.dimensions,
+        )
+
+        statb = self.synaps.get_metric_statistics(
+            period=300, start_time=start_time, end_time=end_time,
+            metric_name="SampleCountTest", namespace=self.namespace,
+            statistics=['Sum', 'Average', 'SampleCount'],
+            unit="Bytes",
+            dimensions=self.dimensions,
+        )
+
+        
+        stat1 = filter(lambda x: x.get('Timestamp') == now_idx, stata)[0]
+        stat2 = filter(lambda x: x.get('Timestamp') == now_idx, statb)[0]
+        
+        self.assertAlmostEqual(stat1['SampleCount'], stat2['SampleCount'])
+        
     def test_alarm_period(self):
         
         #알람을 생성, MAX_START_PERIOD 를 6000 으로 증가시키는지 테스트.
@@ -305,7 +351,7 @@ class ShortCase(SynapsTestCase):
         
         # 메트릭의 TimeStamp가 TTL 범위(15일 이내) 를 벗어난 데이터일 경우,
         # DB 에 저장하지 않고 무시하는지 여부를 테스트.
-        td = timedelta(days=20, seconds=1)  
+        td = timedelta(days=20, seconds=1) 
         
         ret1 = self.synaps.put_metric_data(
             namespace=self.namespace, name=self.metric_name,
