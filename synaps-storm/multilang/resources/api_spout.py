@@ -80,7 +80,7 @@ class ApiSpout(Spout):
     def fail(self, id):
         if id in self.delivery_tags:
             tag, try_count = self.delivery_tags.get(id)
-            self.channel.basic_nack(delivery_tag=tag, requeue=False)
+            self.channel.basic_ack(delivery_tag=tag)
             self.delivery_tags.pop(id)
             self.log("discard failed message [%s]" % id)
     
