@@ -82,9 +82,10 @@ class ApiSpout(Spout):
             tag, try_count = self.delivery_tags.get(id)
             if try_count < 10:
                 self.delivery_tags[id] = (tag, try_count + 1)
+                self.channel.basic_nack(delivery_tag=tag)
                 self.log("retry failed message [%s]" % id)
             else:
-                self.channel.basic_ack(delivery_tag=tag)
+                self.channel.basic_nack(delivery_tag=tag, requeue=False)
                 self.delivery_tags.pop(id)
                 self.log("discard failed message [%s]" % id)
     
