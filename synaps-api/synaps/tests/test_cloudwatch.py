@@ -298,7 +298,7 @@ class ShortCase(SynapsTestCase):
         start_time = now - datetime.timedelta(hours=0.1)
         end_time = now
 
-        # 메트릭 입력
+        # Input metric
         ret = self.synaps.put_metric_data(
             namespace=self.namespace, name="SampleCountTest",
             value=1000, unit="Bytes", dimensions=self.dimensions,
@@ -308,7 +308,7 @@ class ShortCase(SynapsTestCase):
         time.sleep(ASYNC_WAIT)
         
         
-        # 메트릭 입력        
+        # input metric      
         ret = self.synaps.put_metric_data(
             namespace=self.namespace, name="SampleCountTest",
             value=2000, unit="Bytes", dimensions=self.dimensions,
