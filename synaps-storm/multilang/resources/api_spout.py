@@ -18,6 +18,8 @@ import os
 import sys
 import traceback
 import pika
+import json
+import uuid
 import time
 from pika.exceptions import AMQPConnectionError
 
@@ -78,24 +80,31 @@ class ApiSpout(Spout):
     def fail(self, id):
         if id in self.delivery_tags:
             tag, try_count = self.delivery_tags.get(id)
-            self.delivery_tags[id] = (tag, try_count + 1)
-            self.channel.basic_ack(delivery_tag=tag)
-            self.log("discard failed message [%s]" % id)
+            if try_count < 10:
+                self.delivery_tags[id] = (tag, try_count + 1)
+                self.log("retry failed message [%s]" % id)
+            else:
+                self.channel.basic_ack(delivery_tag=tag)
+                self.delivery_tags.pop(id)
+                self.log("discard failed message [%s]" % id)
     
     def nextTuple(self):
         try:
             (method_frame, header_frame, body) = self.channel.basic_get(
-                queue="metric_queue"
+                queue="metric_queue",
             )
         except AMQPConnectionError:
-            self.log("RabbitMQ connection failed... retrying to connection")
-            time.sleep(10)            
+            msg = "AMQP Connection Error. Retry in 3 seconds."
+            self.log(_(msg))
+            time.sleep(3)            
             self.connect()
+            self.delivery_tags = {}
             return
 
         if not method_frame.NAME == 'Basic.GetEmpty':
             try:
-                id = str(uuid4())
+                unpacked_message = json.loads(body)
+                id = unpacked_message.get('message_uuid', str(uuid.uuid4()))
                 message = "Start processing message in the queue - [%s] %s"
                 self.log(message % (id, body))
                 self.delivery_tags[id] = (method_frame.delivery_tag, 0)

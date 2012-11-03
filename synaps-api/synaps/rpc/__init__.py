@@ -22,6 +22,7 @@ from synaps import flags
 from synaps.utils import strtime
 from synaps import log as logging
 from synaps.exception import RpcInvokeException
+import uuid
 
 import pika, json
 
@@ -84,11 +85,14 @@ class RemoteProcedureCall(object):
         if not self.conn.is_open:
             self.connect()
 
+        message_uuid = str(uuid.uuid4()) 
         body.setdefault('message_id', message_id)
+        body.setdefault('message_uuid', message_uuid)
+        
         self.channel.basic_publish(
             exchange='', routing_key='metric_queue', body=json.dumps(body),
             properties=pika.BasicProperties(delivery_mode=2)
         )
         
-        LOG.info(_("send_msg - id(%03d)") % message_id)
+        LOG.info(_("send_msg - id(%03d), %s") % (message_id, message_uuid))
         LOG.debug(_("send_msg - body(%s)") % str(body))

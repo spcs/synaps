@@ -571,7 +571,13 @@ class PutMetricBolt(storm.BasicBolt):
                 metric.check_alarms()
         
     def process(self, tup):
-        metric_key = UUID(tup.values[0]) if tup.values[0] else None
+        try:
+            metric_key = UUID(tup.values[0]) if tup.values[0] else None
+        except ValueError:
+            self.log("badly formed hexadecimal UUID string - %s" % 
+                     tup.values[0])
+            return
+        
         message = json.loads(tup.values[1])
         message_id = message.get('message_id')
         
