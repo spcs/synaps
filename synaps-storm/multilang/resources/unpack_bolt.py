@@ -110,9 +110,10 @@ class UnpackMessageBolt(storm.BasicBolt):
             alarm_name = message.get('alarm_name')
             alarm_key = self.cass.get_metric_alarm_key(project_id,
                                                        alarm_name)
-            alarm = self.cass.get_metric_alarm(alarm_key)
-            metric_key = str(alarm.get('metric_key'))
-            storm.emit([metric_key, json.dumps(message)])
+            if alarm_key:
+                alarm = self.cass.get_metric_alarm(alarm_key)
+                metric_key = str(alarm.get('metric_key'))
+                storm.emit([metric_key, json.dumps(message)])
 
 if __name__ == "__main__":
     UnpackMessageBolt().run()
