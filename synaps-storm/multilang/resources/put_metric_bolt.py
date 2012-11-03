@@ -285,21 +285,21 @@ class MetricMonitor(object):
         state_value = alarm['state_value']
         
         now = utils.utcnow()
-        end_idx = now.replace(second=0, microsecond=0)
-        start_idx = end_idx - evaluation_periods * datetools.Minute()
+        end_idx = now.replace(second=0, microsecond=0) - datetools.Minute()
+        start_idx = end_idx - (evaluation_periods - 1) * datetools.Minute()
         start_ana_idx = start_idx - datetools.Minute() * period
         
         func = self.ROLLING_FUNC_MAP[statistic]
         data = func(self.df[statistic].ix[start_ana_idx:end_idx], period,
                     min_periods=0).ix[start_idx:end_idx]
-
-        if unit:
-            data = data / utils.UNIT_CONV_MAP[unit]
-            threshold = threshold / utils.UNIT_CONV_MAP[unit] 
-        
+                      
         if statistic == 'SampleCount':
             data = data.fillna(0)
         else:
+            if unit:
+                data = data / utils.UNIT_CONV_MAP[unit]
+                threshold = threshold / utils.UNIT_CONV_MAP[unit]
+                
             data = data.dropna()
 
         query_date = utils.strtime(now)
