@@ -102,16 +102,12 @@ class ApiSpout(Spout):
             return
 
         if not method_frame.NAME == 'Basic.GetEmpty':
-            try:
-                unpacked_message = json.loads(body)
-                id = unpacked_message.get('message_uuid', str(uuid.uuid4()))
-                message = "Start processing message in the queue - [%s] %s"
-                self.log(message % (id, body))
-                self.delivery_tags[id] = (method_frame.delivery_tag, 0)
-                emit([body], id=id)
-            except Exception as e:
-                self.tracelog(e)
-                self.fail(id)
+            unpacked_message = json.loads(body)
+            id = unpacked_message.get('message_uuid', str(uuid.uuid4()))
+            message = "Start processing message in the queue - [%s] %s"
+            self.log(message % (id, body))
+            self.delivery_tags[id] = (method_frame.delivery_tag, 0)
+            emit([body], id=id)
 
 if __name__ == "__main__":
     ApiSpout().run()
