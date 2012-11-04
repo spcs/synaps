@@ -32,7 +32,6 @@ from synaps import flags
 from synaps import utils
 
 from storm import Spout, emit, log
-from uuid import uuid4
 
 FLAGS = flags.FLAGS
 flags.FLAGS(sys.argv)
@@ -43,7 +42,6 @@ class ApiSpout(Spout):
     
     def initialize(self, conf, context):
         self.connect()
-        self.delivery_tags = {}
     
     def log(self, msg):
         log("[%s] %s" % (self.SPOUT_NAME, msg))
@@ -72,17 +70,12 @@ class ApiSpout(Spout):
                                    arguments=queue_args)
     
     def ack(self, id):
-        if id in self.delivery_tags:
-            tag, try_count = self.delivery_tags.pop(id)
-            self.channel.basic_ack(delivery_tag=tag)
-            self.log("[%s] message acked" % id)
+        self.channel.basic_ack(delivery_tag=id)
+        self.log("[%s] message acked" % id)
     
     def fail(self, id):
-        if id in self.delivery_tags:
-            tag, try_count = self.delivery_tags.get(id)
-            self.channel.basic_ack(delivery_tag=tag)
-            self.delivery_tags.pop(id)
-            self.log("discard failed message [%s]" % id)
+        self.channel.basic_reject(delivery_tag=id, requeue=True)
+        self.log("discard failed message [%s]" % id)
     
     def nextTuple(self):
         try:
@@ -94,16 +87,13 @@ class ApiSpout(Spout):
             self.log(_(msg))
             time.sleep(3)            
             self.connect()
-            self.delivery_tags = {}
             return
 
-        if not method_frame.NAME == 'Basic.GetEmpty':
-            unpacked_message = json.loads(body)
-            id = unpacked_message.get('message_uuid', str(uuid.uuid4()))
+        if method_frame:
+            msg_id = method_frame.delivery_tag
             message = "Start processing message in the queue - [%s] %s"
-            self.log(message % (id, body))
-            self.delivery_tags[id] = (method_frame.delivery_tag, 0)
-            emit([body], id=id)
+            self.log(message % (msg_id, body))
+            emit([body], id=msg_id)
 
 if __name__ == "__main__":
     ApiSpout().run()
