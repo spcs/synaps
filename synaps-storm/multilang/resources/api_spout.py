@@ -21,7 +21,7 @@ import pika
 import json
 import uuid
 import time
-from pika.exceptions import AMQPConnectionError
+from pika.exceptions import AMQPConnectionError, AMQPChannelError
 
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir, os.pardir))
@@ -32,7 +32,6 @@ from synaps import flags
 from synaps import utils
 
 from storm import Spout, emit, log
-from uuid import uuid4
 
 FLAGS = flags.FLAGS
 flags.FLAGS(sys.argv)
@@ -43,7 +42,6 @@ class ApiSpout(Spout):
     
     def initialize(self, conf, context):
         self.connect()
-        self.delivery_tags = {}
     
     def log(self, msg):
         log("[%s] %s" % (self.SPOUT_NAME, msg))
@@ -54,6 +52,16 @@ class ApiSpout(Spout):
             self.log("TRACE: " + line)
     
     def connect(self):
+        while True:
+            try:
+                self._connect()
+            except (AMQPConnectionError, AMQPChannelError):
+                self.log("AMQP Connection Error. Retry in 3 seconds.")
+                time.sleep(3)            
+            else:
+                break
+    
+    def _connect(self):
         self.conn = pika.BlockingConnection(
             pika.ConnectionParameters(
                 host=FLAGS.get('rabbit_host'),
@@ -71,43 +79,24 @@ class ApiSpout(Spout):
         self.channel.queue_declare(queue='metric_queue', durable=True,
                                    arguments=queue_args)
     
-    def ack(self, id):
-        if id in self.delivery_tags:
-            tag, try_count = self.delivery_tags.pop(id)
-            self.channel.basic_ack(delivery_tag=tag)
-            self.log("[%s] message acked" % id)
-    
     def fail(self, id):
-        if id in self.delivery_tags:
-            tag, try_count = self.delivery_tags.get(id)
-            if try_count < 10:
-                self.delivery_tags[id] = (tag, try_count + 1)
-                self.log("retry failed message [%s]" % id)
-            else:
-                self.channel.basic_ack(delivery_tag=tag)
-                self.delivery_tags.pop(id)
-                self.log("discard failed message [%s]" % id)
+        self.log("Reject failed message [%s]" % id)
     
     def nextTuple(self):
         try:
             (method_frame, header_frame, body) = self.channel.basic_get(
-                queue="metric_queue",
+                queue="metric_queue", no_ack=True
             )
-        except AMQPConnectionError:
-            msg = "AMQP Connection Error. Retry in 3 seconds."
-            self.log(_(msg))
-            time.sleep(3)            
+        except (AMQPConnectionError, AMQPChannelError):
+            self.log("AMQP Connection or Channel Error. While get a message.")
             self.connect()
-            self.delivery_tags = {}
             return
 
-        if not method_frame.NAME == 'Basic.GetEmpty':
-            unpacked_message = json.loads(body)
-            id = unpacked_message.get('message_uuid', str(uuid.uuid4()))
+        if method_frame:
+            msg_id = method_frame.delivery_tag
             message = "Start processing message in the queue - [%s] %s"
-            self.log(message % (id, body))
-            self.delivery_tags[id] = (method_frame.delivery_tag, 0)
-            emit([body], id=id)
+            self.log(message % (msg_id, body))
+            emit([body], id=msg_id)
 
 if __name__ == "__main__":
     ApiSpout().run()

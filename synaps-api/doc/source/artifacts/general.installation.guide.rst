@@ -3,8 +3,7 @@
 Installation Guide
 ==================
 
-This instruction describes how to install Synaps. It assumes that you are 
-familiar with GIT and Ubuntu.
+This instruction describes how to install Synaps.
 
 .. toctree::
     :maxdepth: 3
@@ -40,7 +39,7 @@ For Synaps Backend cluster(synaps01 ~ nn),
 * :ref:`install.storm`
 * :ref:`postinstall.backend` 
 
-For Synaps Message Bus(mq00..nn),
+For Synaps Message Bus(mq01..nn),
 
 * :ref:`preinstall.common`
 * :ref:`install.rabbitmq`    
