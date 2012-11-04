@@ -11,10 +11,10 @@ Download cassandra and unzip the tarball.
 
 .. code-block:: bash
 
-  tar xvfz apache-cassandra-1.0.8-bin.tar.gz /DB/synaps/cassandra
+  tar xvfz apache-cassandra-1.0.8-bin.tar.gz -C /DB/synaps/cassandra
 
 To config cassandra, edit configuration file as below. The default config file
-path is "/SW/apache-cassandra-1.0.8/conf/cassandra.yaml"
+path is "/DB/synaps/cassandra/apache-cassandra-1.0.8/conf/cassandra.yaml"
 
 .. NOTE::
 

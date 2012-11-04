@@ -6,14 +6,14 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Install Synaps module &mdash; synaps v12.09.b3-dev documentation</title>
+    <title>Install Synaps module &mdash; synaps v12.09.b5-dev documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '12.09.b3-dev',
+        VERSION:     '12.09.b5-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps v12.09.b3-dev documentation" href="../../index.html" />
+    <link rel="top" title="synaps v12.09.b5-dev documentation" href="../../index.html" />
     <link rel="up" title="Installation Guide" href="../general.installation.guide.html" />
     <link rel="next" title="Install Cassandra" href="install.cassandra.html" />
     <link rel="prev" title="Common Pre-installation" href="preinstall.common.html" /> 
@@ -68,7 +68,7 @@
 <li>pandas-0.7.3 (currently, it doesn&#8217;t support more recent version)</li>
 <li>thrift-0.8.0</li>
 <li>pycassa-1.5.1</li>
-<li>pika-0.9.5</li>
+<li>pika-0.9.6</li>
 <li>boto-2.5.3</li>
 </ul>
 <p>Following is a pre-installation example for Ubuntu 12.04.</p>
@@ -86,15 +86,15 @@ wget http://labix.org/download/python-dateutil/python-dateutil-1.5.tar.gz
 wget http://pypi.python.org/packages/source/p/pandas/pandas-0.7.3.tar.gz#md5<span class="o">=</span>e4876ea5882accce15f6f37750f3ffec
 wget http://pypi.python.org/packages/source/t/thrift/thrift-0.8.0.tar.gz
 wget https://github.com/downloads/pycassa/pycassa/pycassa-1.5.1.tar.gz
-wget http://pypi.python.org/packages/source/p/pika/pika-0.9.5.tar.gz
-wget http://boto.googlecode.com/files/boto-2.5.3.tar.gz
+wget http://pypi.python.org/packages/source/p/pika/pika-0.9.6.tar.gz
+wget https://github.com/downloads/boto/boto/boto-2.5.2.tar.gz
 
 <span class="c"># unzip packages</span>
 tar xvfz python-dateutil-1.5.tar.gz
 tar xvfz pandas-0.7.3.tar.gz
 tar xvfz thrift-0.8.0.tar.gz
 tar xvfz pycassa-1.5.1.tar.gz
-tar xvfz pika-0.9.5.tar.gz
+tar xvfz pika-0.9.6.tar.gz
 tar xvfz boto-2.5.2.tar.gz
 
 <span class="c"># install python-dateutil 1.5</span>
@@ -118,12 +118,12 @@ sudo python setup.py install
 <span class="nb">cd</span> ..
 
 <span class="c"># install pika</span>
-<span class="nb">cd </span>pika-0.9.5
+<span class="nb">cd </span>pika-0.9.6
 sudo python setup.py install
 <span class="nb">cd</span> ..
 
 <span class="c"># install boto</span>
-<span class="nb">cd </span>boto-2.5.3
+<span class="nb">cd </span>boto-2.5.2
 sudo python setup.py install
 <span class="nb">cd</span> ..
 </pre></div>
@@ -269,13 +269,13 @@ paste.app_factory <span class="o">=</span> synaps.api.cloudwatch:Executor.factor
         <li class="right" >
           <a href="preinstall.common.html" title="Common Pre-installation"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">synaps v12.09.b3-dev documentation</a> &raquo;</li>
+        <li><a href="../../index.html">synaps v12.09.b5-dev documentation</a> &raquo;</li>
           <li><a href="../general.installation.guide.html" accesskey="U">Installation Guide</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Thu Nov 1 13:52:33 2012, commit 01e3349.
+      Last updated on Sun Nov 4 18:08:41 2012, commit 8399bad.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>
