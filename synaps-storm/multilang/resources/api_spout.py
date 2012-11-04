@@ -21,7 +21,7 @@ import pika
 import json
 import uuid
 import time
-from pika.exceptions import AMQPConnectionError
+from pika.exceptions import AMQPConnectionError, AMQPChannelError
 
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir, os.pardir))
@@ -52,6 +52,16 @@ class ApiSpout(Spout):
             self.log("TRACE: " + line)
     
     def connect(self):
+        while True:
+            try:
+                self._connect()
+            except (AMQPConnectionError, AMQPChannelError):
+                self.log("AMQP Connection Error. Retry in 3 seconds.")
+                time.sleep(3)            
+            else:
+                break
+    
+    def _connect(self):
         self.conn = pika.BlockingConnection(
             pika.ConnectionParameters(
                 host=FLAGS.get('rabbit_host'),
@@ -69,23 +79,16 @@ class ApiSpout(Spout):
         self.channel.queue_declare(queue='metric_queue', durable=True,
                                    arguments=queue_args)
     
-    def ack(self, id):
-        self.channel.basic_ack(delivery_tag=id)
-        self.log("[%s] message acked" % id)
-    
     def fail(self, id):
-        self.channel.basic_reject(delivery_tag=id, requeue=True)
-        self.log("discard failed message [%s]" % id)
+        self.log("Reject failed message [%s]" % id)
     
     def nextTuple(self):
         try:
             (method_frame, header_frame, body) = self.channel.basic_get(
-                queue="metric_queue",
+                queue="metric_queue", no_ack=True
             )
-        except AMQPConnectionError:
-            msg = "AMQP Connection Error. Retry in 3 seconds."
-            self.log(_(msg))
-            time.sleep(3)            
+        except (AMQPConnectionError, AMQPChannelError):
+            self.log("AMQP Connection or Channel Error. While get a message.")
             self.connect()
             return
 
