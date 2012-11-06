@@ -23,7 +23,7 @@ You will need python packages listed below.
 * thrift-0.8.0
 * pycassa-1.5.1
 * pika-0.9.6
-* boto-2.5.3
+* boto-2.5.2
 
 Following is a pre-installation example for Ubuntu 12.04.
 
