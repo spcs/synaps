@@ -10,7 +10,7 @@ Download cassandra and unzip the tarball.
 
 .. code-block:: bash
 
-   tar xvfz apache-cassandra-1.0.8-bin.tar.gz -C /DB/synaps/cassandra
+   tar xvfz apache-cassandra-1.0.8-bin.tar.gz
    mv apache-cassandra-1.0.8 /DB/synaps/cassandra-1.0.8
    ln -s /DB/synaps/cassandra-1.0.8 /DB/synaps/cassandra
 
