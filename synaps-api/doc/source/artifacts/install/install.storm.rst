@@ -32,7 +32,12 @@ Storm requires ZeroMQ 2.1.7 and JZMQ.
    make
    make install
    sudo ldconfig
-   easy_install "pyzmq==2.1.7"
+   
+   wget http://pypi.python.org/packages/source/p/pyzmq/pyzmq-2.1.7.tar.gz#md5=aa4d7d81ad3c93dc1efd195153cb71ae
+   tar xvfz pyzmq-2.1.7.tar.gz
+   cd pyzmq-2.1.7
+   python setup.py install
+   cd ..
    
    # install JZMQ
    wget https://github.com/nathanmarz/jzmq/tarball/master
@@ -56,7 +61,7 @@ Storm requires ZeroMQ 2.1.7 and JZMQ.
    CLASSPATH=.:./.:$CLASSPATH javac -d . org/zeromq/ZMQ.java org/zeromq/App.java org/zeromq/ZMQForwarder.java org/zeromq/EmbeddedLibraryTools.java org/zeromq/ZMQQueue.java org/zeromq/ZMQStreamer.java org/zeromq/ZMQException.java
    cd ..
    make
-   sudo make install  
+   sudo make install
 
 
 Install Storm

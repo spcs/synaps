@@ -13,17 +13,17 @@ For Nimbus node(synaps01), update rc.d as below.
 
 .. code-block:: bash
 
-   sudo update-rc.d zkServer.sh defaluts 80 20  
-   sudo update-rc.d storm-nimbus defaluts 81 19
-   sudo update-rc.d storm-ui defaluts 82 18
-   sudo update-rc.d synaps-noti defaluts 80
+   sudo update-rc.d zkServer.sh defaults 80 20  
+   sudo update-rc.d storm-nimbus defaults 81 19
+   sudo update-rc.d storm-ui defaults 82 18
+   sudo update-rc.d synaps-noti defaults 80
       
 For Supervisor nodes(synaps02 ~ nn), update rc.d as below. 
 
 .. code-block:: bash
 
-   sudo update-rc.d zkServer.sh defaluts 80 20  
-   sudo update-rc.d storm-supervisor defaluts 83 17
+   sudo update-rc.d zkServer.sh defaults 80 20  
+   sudo update-rc.d storm-supervisor defaults 83 17
 
 To run storm topology on the backend cluster. Use following command on the 
 Nimbus node(synaps01). This will submit the topology jar file to the cluster 
