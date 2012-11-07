@@ -3,93 +3,95 @@
 DescribeAlarmHistory
 ======================
 
-설명
+Description
 ----
-특정 알람의 히스토리를 조회한다. 기간이나 아이템 타입(HistoryItemType)
-에 따라 히스토리를 검색할 수 있다. 알람 이름(AlarmName)을 지정하지 않은 경우, 
-사용자의 모든 알람에 해당하는 히스토리 정보가 조회된다. 
+Check the history of specific Alarm. You can search history using Period or
+HistoryItemType. If you don't specify AlarmName, Synaps will return history
+information of all Alarms that user has.
 
-알림:
-  SPCS Synaps는 알람의 삭제 여부에 관계없이 알람 히스토리를 2주간 보관한다.
+Note:
+  SPCS Synaps stores AlarmHistory for 2 weeks whether alarm is deleted or not.
 
-요청 매개변수
+Parameters
 -------------
-공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
    :widths: 20 50 10
    :header-rows: 1
 
-   * - 이름
-     - 설명
-     - 필수 여부
+   * - Name
+     - Description
+     - Mandatory
    * - AlarmName	
-     - 알람 이름
+     - Alarm name.
        
-       자료 형: String
+       Data type: String
        
-       길이 제한: 최소 1자 ~ 최대 255자
+       Length limitation: 1 ~ 255 bytes
               
-       형식 제한: 숫자로만 이루어진 값 사용 불가
+       Type limitation: Value consisting of only numbers can not be used.
      - No
    * - EndDate	
-     - 알람 히스토리를 조회할 기간의 끝
+     - End of the period for which you want to check the AlarmHistory.
        
-       자료 형: DateTime
+       Data type: DateTime
      - No
    * - HistoryItemType	
-     - 조회할 알람 히스토리의 종류
+     - Type of AlarmHistory to check.
       
-       자료 형: String
+       Data type: String
       
-       유효 값: ConfigurationUpdate | StateUpdate | Action
+       Valid values: ConfigurationUpdate | StateUpdate | Action
      - No
    * - MaxRecords	
-     - 조회할 알람 히스토리의 최대 갯수
+     - Max number of AlarmHistory to check.
       
-       자료 형: Integer
+       Data type: Integer
      - No
    * - NextToken	
-     - 다음 데이터를 조회하기 위한 토큰
+     - Token to check next data.
        
-       자료 형: String
+       Data type: String
      - No
    * - StartDate	
-     - 알람 히스토리를 조회할 기간의 시작
+     - Start period for which you want to check the AlarmHistory.
        
-       자료 형: DateTime
+       Data type: DateTime
      - No
 
-응답
+see also :ref:`common_query_parameters` 
+
+Response
 ----
-아래 엘리먼트가 :ref:`describe_alarm_history_result` 에 구조화되어 반환된다.
+Following elements are structured in :ref:`describe_alarm_history_result` and returned.
 
 .. list-table:: 
    :widths: 30 50
    :header-rows: 1
 
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - AlarmHistoryItems
-     - JSON 형식의 알람 히스토리
+     - JSON-Formatted AlarmHistory.
        
-       자료 형: :ref:`alarm_history_item` 리스트
+       Data type: :ref:`alarm_history_item` list
    * - NextToken
-     - 다음 데이터를 조회하기 위한 토큰.
+     - Token to check next data.
        
-       자료 형: String
+       Data type: String
 
-에러
+Errors
 ----
-공통으로 발생하는 에러는 :ref:`common_errors` 를 참고한다.
 
 .. list-table:: 
    :widths: 20 50 10
    :header-rows: 1
    
-   * - 에러
-     - 설명
+   * - Error
+     - Description
      - HTTP Status Code
    * - InvalidNextToken
-     - 주어진 next token 이 유효하지 않음
+     - Invalid next token.
      - 400
+
+see also :ref:`common_errors` 
