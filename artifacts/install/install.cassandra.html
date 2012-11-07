@@ -54,10 +54,12 @@
 <a class="reference external" href="http://cassandra.apache.org/">http://cassandra.apache.org/</a></p>
 <p>Download cassandra and unzip the tarball.</p>
 <div class="highlight-bash"><div class="highlight"><pre>tar xvfz apache-cassandra-1.0.8-bin.tar.gz -C /DB/synaps/cassandra
+mv apache-cassandra-1.0.8 /DB/synaps/cassandra-1.0.8
+ln -s /DB/synaps/cassandra-1.0.8 /DB/synaps/cassandra
 </pre></div>
 </div>
 <p>To config cassandra, edit configuration file as below. The default config file
-path is &#8220;/DB/synaps/cassandra/apache-cassandra-1.0.8/conf/cassandra.yaml&#8221;</p>
+path is &#8220;/DB/synaps/cassandra/conf/cassandra.yaml&#8221;</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Set &#8216;seeds&#8217; as all your cassandra node list and &#8216;listen_address&#8217; as hostname
@@ -67,13 +69,13 @@ of local machine.</p>
 
 <span class="c"># directories where Cassandra should store data on disk.</span>
 data_file_directories:
-    - /var/lib/cassandra/data
+    - /DBDATA_SYNAPS/cassandra/data
 
 <span class="c"># commit log</span>
-commitlog_directory: /var/lib/cassandra/commitlog
+commitlog_directory: /DBDATA_SYNAPS/cassandra/commitlog
 
 <span class="c"># saved caches</span>
-saved_caches_directory: /var/lib/cassandra/saved_caches
+saved_caches_directory: /DBDATA_SYNAPS/cassandra/saved_caches
 
 seed_provider:
     <span class="c"># Addresses of hosts that are deemed contact points.</span>
@@ -149,7 +151,7 @@ rpc_address: 0.0.0.0
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Sun Nov 4 18:08:41 2012, commit 8399bad.
+      Last updated on Wed Nov 7 09:46:56 2012, commit 5948a32.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

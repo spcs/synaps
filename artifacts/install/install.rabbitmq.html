@@ -60,6 +60,10 @@
 <div class="highlight-bash"><div class="highlight"><pre>dpkg -i rabbitmq-server_2.8.4_all.deb
 </pre></div>
 </div>
+<p>Or, if your apt repository provides more recent version than 2.8.4;</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo apt-get install rabbitmq-server
+</pre></div>
+</div>
 <p>To config rabbitmq, edit configuration file as below. The default config file
 path is &#8220;/etc/rabbitmq/rabbitmq.config&#8221;.</p>
 <div class="admonition note">
@@ -67,6 +71,21 @@ path is &#8220;/etc/rabbitmq/rabbitmq.config&#8221;.</p>
 <p class="last">Replace example hostname(synaps-mq01 and synaps-mq02) to real hostname.</p>
 </div>
 <div class="highlight-python"><pre>[{rabbit, [{cluster_nodes, ['rabbit@synaps-mq01', 'rabbit@synaps-mq02']}]}].</pre>
+</div>
+<p>And all cluster must share same cookie file. Copy
+&#8220;/var/lib/rabbitmq/.erlang.cookie&#8221; from a node to all cluster nodes.</p>
+<p>Now, you can start service as below.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo service rabbit-server start
+</pre></div>
+</div>
+<p>To verify if the rabbitmq is running well,</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>rabbitmqctl cluster_status
+
+Cluster status of node <span class="s1">&#39;rabbit@synaps-mq02&#39;</span> ...
+<span class="o">[{</span>nodes,<span class="o">[{</span>disc,<span class="o">[</span><span class="s1">&#39;rabbit@synaps-mq02&#39;</span>,<span class="s1">&#39;rabbit@synaps-mq01&#39;</span><span class="o">]}]}</span>,
+<span class="o">{</span>running_nodes,<span class="o">[</span><span class="s1">&#39;rabbit@synaps-mq01&#39;</span>,<span class="s1">&#39;rabbit@synaps-mq02&#39;</span><span class="o">]}]</span>
+...done.
+</pre></div>
 </div>
 </div>
 
@@ -125,7 +144,7 @@ path is &#8220;/etc/rabbitmq/rabbitmq.config&#8221;.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Sun Nov 4 18:08:41 2012, commit 8399bad.
+      Last updated on Wed Nov 7 09:46:56 2012, commit 5948a32.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

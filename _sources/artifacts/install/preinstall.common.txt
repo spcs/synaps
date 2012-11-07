@@ -3,8 +3,8 @@
 Common Pre-installation
 =======================
 
-Set up NTP
-----------
+Set up NTP client
+-----------------
 
 Install ntpd 
 
@@ -26,5 +26,4 @@ edit '/etc/ntpd.conf' as below.
    server "ntp host" 
    # Local users may interrogate the ntp server more closely.
    restrict 127.0.0.1
-   
-
+  

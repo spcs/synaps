@@ -55,15 +55,25 @@
 </pre></div>
 </div>
 <p>For Nimbus node(synaps01), update rc.d as below.</p>
-<div class="highlight-bash"><div class="highlight"><pre>sudo update-rc.d zkServer.sh defaluts 80 20
-sudo update-rc.d storm-nimbus defaluts 81 19
-sudo update-rc.d storm-ui defaluts 82 18
-sudo update-rc.d synaps-noti defaluts 80
+<div class="highlight-bash"><div class="highlight"><pre>sudo update-rc.d zkServer.sh defaults 80 20
+sudo update-rc.d storm-nimbus defaults 81 19
+sudo update-rc.d storm-ui defaults 82 18
+sudo update-rc.d synaps-noti defaults 80
 </pre></div>
 </div>
 <p>For Supervisor nodes(synaps02 ~ nn), update rc.d as below.</p>
-<div class="highlight-bash"><div class="highlight"><pre>sudo update-rc.d zkServer.sh defaluts 80 20
-sudo update-rc.d storm-supervisor defaluts 83 17
+<div class="highlight-bash"><div class="highlight"><pre>sudo update-rc.d zkServer.sh defaults 80 20
+sudo update-rc.d storm-supervisor defaults 83 17
+</pre></div>
+</div>
+<p>To run storm topology on the backend cluster. Use following command on the
+Nimbus node(synaps01). This will submit the topology jar file to the cluster
+and configure StormSubmitter class to talk to the right cluster.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo storm jar synaps-storm-yyyy.mm.dd.jar com.spcs.synaps.PutMetricTopology topologyname
+</pre></div>
+</div>
+<p>Then, you can check if the topology is running well as below.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo storm list
 </pre></div>
 </div>
 </div>
@@ -123,7 +133,7 @@ sudo update-rc.d storm-supervisor defaluts 83 17
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Sun Nov 4 18:08:41 2012, commit 8399bad.
+      Last updated on Wed Nov 7 09:46:56 2012, commit 5948a32.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

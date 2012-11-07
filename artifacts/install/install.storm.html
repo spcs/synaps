@@ -72,7 +72,12 @@ tar zxvf zeromq-2.1.7.tar.gz
 make
 make install
 sudo ldconfig
-easy_install <span class="s2">&quot;pyzmq==2.1.7&quot;</span>
+
+wget http://pypi.python.org/packages/source/p/pyzmq/pyzmq-2.1.7.tar.gz#md5<span class="o">=</span>aa4d7d81ad3c93dc1efd195153cb71ae
+tar xvfz pyzmq-2.1.7.tar.gz
+<span class="nb">cd </span>pyzmq-2.1.7
+python setup.py install
+<span class="nb">cd</span> ..
 
 <span class="c"># install JZMQ</span>
 wget https://github.com/nathanmarz/jzmq/tarball/master
@@ -255,7 +260,7 @@ hostname should be appeared before localhost as below.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Sun Nov 4 18:08:41 2012, commit 8399bad.
+      Last updated on Wed Nov 7 09:46:56 2012, commit 5948a32.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>
