@@ -72,7 +72,7 @@ interoperate with the queue.</p>
 persistent data.</p>
 <p>Following is Architecture of Synaps.</p>
 <blockquote>
-<div><img alt="../_images/SynapsSystemOverview1.jpg" src="../_images/SynapsSystemOverview1.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsSystemOverview.jpg" src="../_images/SynapsSystemOverview.jpg" style="width: 100%;" />
 </div></blockquote>
 <p>Following is an example of an integrated system.</p>
 <p>Externally, Synaps interoperates with agents which inputs metric data
@@ -80,7 +80,7 @@ periodically, such as VMMON which can get information from VM Hyperisor with
 libvirt library and Nova API, and custom agent also.</p>
 <p>Synaps Notification is a program to send E-mail or SMS.</p>
 <blockquote>
-<div><img alt="../_images/IntegratedSystemOverview1.jpg" src="../_images/IntegratedSystemOverview1.jpg" style="width: 100%;" />
+<div><img alt="../_images/IntegratedSystemOverview.jpg" src="../_images/IntegratedSystemOverview.jpg" style="width: 100%;" />
 </div></blockquote>
 </div>
 <div class="section" id="program-synaps-api">
@@ -97,7 +97,7 @@ API.</p>
 </ul>
 <p>For example,</p>
 <blockquote>
-<div><img alt="../_images/SynapsAPI-PutMetricData1.jpg" src="../_images/SynapsAPI-PutMetricData1.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsAPI-PutMetricData.jpg" src="../_images/SynapsAPI-PutMetricData.jpg" style="width: 100%;" />
 </div></blockquote>
 </div>
 <div class="section" id="synchrous-request-processing">
@@ -115,7 +115,7 @@ API.</p>
 </ul>
 <p>For example,</p>
 <blockquote>
-<div><img alt="../_images/SynapsAPI-GetMetricStatistics1.jpg" src="../_images/SynapsAPI-GetMetricStatistics1.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsAPI-GetMetricStatistics.jpg" src="../_images/SynapsAPI-GetMetricStatistics.jpg" style="width: 100%;" />
 </div></blockquote>
 </div>
 </div>
@@ -124,7 +124,7 @@ API.</p>
 <p>Synaps Storm is a topology implementation which is aimed to run on the Twitter
 Storm, real-time distributed stream processing system.</p>
 <blockquote>
-<div><img alt="../_images/SynapsStorm-Topology1.jpg" src="../_images/SynapsStorm-Topology1.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsStorm-Topology.jpg" src="../_images/SynapsStorm-Topology.jpg" style="width: 100%;" />
 </div></blockquote>
 <div class="section" id="putmetricdata-message-processing">
 <h3>PutMetricData message processing<a class="headerlink" href="#putmetricdata-message-processing" title="Permalink to this headline">¶</a></h3>
@@ -134,7 +134,7 @@ windows or database to aggregate its datapoints and evalutate status of
 its alarms. If the status is changed, it sends action message to notification
 queue.</p>
 <blockquote>
-<div><img alt="../_images/SynapsStorm-PutMetricData1.jpg" src="../_images/SynapsStorm-PutMetricData1.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsStorm-PutMetricData.jpg" src="../_images/SynapsStorm-PutMetricData.jpg" style="width: 100%;" />
 </div></blockquote>
 </div>
 <div class="section" id="putmetricalarm-message-processing">
@@ -143,7 +143,7 @@ queue.</p>
 find its metric and update its in-memory alarm data and update it into
 database.</p>
 <blockquote>
-<div><img alt="../_images/SynapsStormPutMetricAlarm1.jpg" src="../_images/SynapsStormPutMetricAlarm1.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsStormPutMetricAlarm.jpg" src="../_images/SynapsStormPutMetricAlarm.jpg" style="width: 100%;" />
 </div></blockquote>
 </div>
 <div class="section" id="periodicmonitoring-message-processing">
@@ -152,7 +152,7 @@ database.</p>
 generated, it checks their whole alarms if they are not evaluated alarms
 recently PutMetricData message processing.</p>
 <blockquote>
-<div><img alt="../_images/SynapsStormPeriodicMonitoring1.jpg" src="../_images/SynapsStormPeriodicMonitoring1.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsStormPeriodicMonitoring.jpg" src="../_images/SynapsStormPeriodicMonitoring.jpg" style="width: 100%;" />
 </div></blockquote>
 </div>
 </div>
@@ -231,7 +231,7 @@ recently PutMetricData message processing.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Nov 7 09:46:56 2012, commit 5948a32.
+      Last updated on Wed Nov 7 10:41:29 2012, commit fd131b4.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>
