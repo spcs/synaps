@@ -189,16 +189,30 @@ class MetricMonitor(object):
             if ret:
                 self.alarms[alarm_key] = ret
                 storm.log("alarm key is [%s]" % alarm_key)
+                self.set_max_start_period(self.alarms)
             else:
                 storm.log("alarm key [%s] is found, but alarm is not found." % alarm_key)
         else:
-            storm.log("no alarm key [%s]" % alarm_key)
-
-        self.set_max_start_period(self.alarms)
-        
+            storm.log("no alarm key [%s]" % alarm_key)        
         
     def put_metric_data(self, metric_key, timestamp, value, unit=None):
-
+        
+        def get_stats(tmp_stat):
+            try:
+                ret = dict(zip(self.cass.STATISTICS,
+                                    map(lambda x: x.values()[0], tmp_stat)))
+                for v in ret:
+                    if v == None: v = float('nan') 
+            except IndexError:
+                storm.log("index %s is not in DB." % time_idx)
+                ret = {'SampleCount' : float('nan'),
+                        'Sum' : float('nan'),
+                        'Average' : float('nan'),
+                        'Minimum' : float('nan'),
+                        'Maximum' : float('nan') }
+            return ret
+        
+                 
         time_idx = timestamp.replace(second=0, microsecond=0)
         
         if timedelta(seconds=self.cass.STATISTICS_TTL) < (utils.utcnow() - 
@@ -221,20 +235,8 @@ class MetricMonitor(object):
                  
         except KeyError:
             stat = self.cass.get_metric_statistics_for_key(metric_key, time_idx)
-            if [{}, {}, {}, {}, {}] == stat:
-                storm.log("index %s is not in DB." % time_idx)
-                stat = {'SampleCount' : float('nan'),
-                        'Sum' : float('nan'),
-                        'Average' : float('nan'),
-                        'Minimum' : float('nan'),
-                        'Maximum' : float('nan') }
-                
-            else:            
-                stat = dict(zip(self.cass.STATISTICS,
-                                map(lambda x: x.values()[0], stat)))
-                for v in stat:
-                    if v == None: v = float('nan') 
-        
+            stat = get_stats(stat)
+
         
         stat['SampleCount'] = 1.0 if isnan(stat['SampleCount']) \
                               else stat['SampleCount'] + 1.0
@@ -269,6 +271,8 @@ class MetricMonitor(object):
             # check alarms
             self.check_alarms()
         
+
+                
     
     def check_alarms(self):
         for alarmkey, alarm in self.alarms.iteritems():
@@ -538,15 +542,24 @@ class PutMetricBolt(storm.BasicBolt):
         project_id = message.get('project_id')
         alarm_name = message.get('alarm_name')
         state_reason_data = message.get('state_reason_data')
-        alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
-        
+                      
         if metric_key not in self.metrics:
             self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
 
         metric = self.metrics[metric_key]
         
-        metricalarm = metric.alarms[alarm_key]
-                
+        ret = self.cass.get_metric_alarm_key(project_id, alarm_name)
+        if ret:
+            alarm_key = ret
+            try:
+                metricalarm = metric.alarms[alarm_key]
+            except KeyError:
+                storm.log("alarm key [%s] is found, but alarm is not found." % alarm_key)
+                return            
+        else:
+            storm.log("alarm key [%s] is not found." % alarm_key)
+            return
+        
         metricalarm['state_reason'] = message.get('state_reason')
         metricalarm['state_value'] = message.get('state_value')
         metricalarm['state_reason_data'] = message.get('state_reason_data')
