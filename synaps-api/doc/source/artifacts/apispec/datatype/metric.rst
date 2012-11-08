@@ -3,34 +3,34 @@
 Metric
 ======
 
-설명
+Description
 ----
-:ref:`list_metrics` 호출 시 얻는 메트릭 리스트
+Metric list that :ref:`list_metrics` call.
 
-내용
+Contents
 ----
 
 .. list-table:: 
    :widths: 30 50
    :header-rows: 1
    
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - Dimensions
-     - 메트릭의 dimensions.
+     - Dimensions for Metric
 
-       자료 형: :ref:`dimension` 리스트
+       Data type: :ref:`dimension` list
 
-       길이 제한: 0개부터 10개의 아이템
+       Length limitation: 0 ~ 10 items
    * - MetricName
-     - 메트릭의 이름
+     - Metric's name.
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 1자, 최대 255자
+       Length limitation: 1 ~ 255 bytes
    * - Namespace
-     - 메트릭의 namespace
+     - Namespace for Metric
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 1자, 최대 255자
+       Length limitation: 1 ~ 255 bytes

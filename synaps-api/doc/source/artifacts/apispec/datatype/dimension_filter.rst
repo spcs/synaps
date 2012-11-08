@@ -3,28 +3,28 @@
 DimensionFilter
 ===============
 
-설명
+Description
 ----
-:ref:`list_metrics` 에 적용하기 위한 검색 조건.
+Search condition to be applied to :ref:`list_metrics`.
 
-내용
+Contents
 ----
 
 .. list-table:: 
    :widths: 30 50
    :header-rows: 1
    
-   * - 이름
-     - 설명
    * - Name
-     - 일치하는 dimension 이름
+     - Description
+   * - Name
+     - Name of the dimension that matches.
 
-       자료 형: String
+       Data tyoe: String
 
-       길이 제한: 최소 1자 부터 255자
+       Length limitation: 1 ~ 255 bytes
    * - Value
-     - 일치하는 dimension 값
+     - Value of the dimension that matches.
      
-       자료 형: String
+       Data tyoe: String
 
-       길이 제한: 최소 1자 부터 255자   
+       Length limitation: 1 ~ 255 bytes   

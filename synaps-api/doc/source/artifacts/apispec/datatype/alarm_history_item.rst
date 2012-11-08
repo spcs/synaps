@@ -3,46 +3,46 @@
 AlarmHistoryItem
 ================
 
-설명
+Description
 ----
-AlarmHistoryItem 자료 형은 특정 알람의 히스토리 정보를 포함한다. 
-:ref:`describe_alarm_history` 를 호출하면 SPCS Synaps 는 이 자료 형을
-:ref:`describe_alarm_history_result` 자료 형에 포함해서 돌려준다.
+AlarmHistoryItem data type contain specified alarm's history information. If you 
+call :ref:`describe_alarm_history`, SPCS Synaps will return this data type into
+:ref:`describe_alarm_history_result` data type.
 
-내용
+Contents
 ----
 
 .. list-table:: 
    :widths: 30 50
    :header-rows: 1
    
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - AlarmName
-     - 알람 이름
+     - Alarm's name.
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 1자 부터 255자
+       Length limitation: 1 ~ 255 bytes
    * - HistoryData
-     - JSON 형식의 알람에 대한 정보 (기계가 읽기 위한 용도)
+     - Information for JSON-formatted Alarm. (for computer)
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 1자 부터 4095자
+       Length limitation: 1 ~ 4095 bytes
    * - HistoryItemType
-     - 알람 히스토리 종류
+     - Type of Alarm history.
 
-       자료 형: String
+       Data type: String
 
-       유효 값: ConfigurationUpdate | StateUpdate | Action
+       Valid value: ConfigurationUpdate | StateUpdate | Action
    * - HistorySummary
-     - 알람 히스토리의 요약 (사람이 읽기 편한 형식)
+     - Sumary of Alarm history. (for human)
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 1자 부터 255자
+       Length limitation: 1 ~ 255 bytes
    * - Timestamp
-     - 알람 히스토리 항목의 timestamp
+     - Alarm history's timestamp
 
-       자료 형: DateTime
+       Data type: DateTime
