@@ -21,7 +21,9 @@ path is "/etc/rabbitmq/rabbitmq.config".
 
 .. NOTE::
 
-   Replace example hostname(synaps-mq01 and synaps-mq02) to real hostname. 
+   Replace example hostname(synaps-mq01 and synaps-mq02) to the first hostname 
+   (the one without dots) of each server.
+   For example, If hostname is "synapsmq1.exam.ple", only "synapsmq1" is used.  
 
 ::
 

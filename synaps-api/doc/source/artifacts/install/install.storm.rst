@@ -90,8 +90,8 @@ First, you need to set up zookeeper cluster. The default config file is
 .. code-block:: bash
 
    server.1=(HostName):2888:3888
-   server.2=(HostName):2889:3889
-   server.3=(HostName):2890:3890
+   server.2=(HostName):2888:3888
+   server.3=(HostName):2888:3888
    
    ...
 
