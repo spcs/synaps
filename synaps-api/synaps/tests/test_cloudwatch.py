@@ -462,6 +462,11 @@ class ShortCase(SynapsTestCase):
         #expected = stat1['Sum'] + test_value
         self.assertAlmostEqual(stat1['Sum'] + test_value, stat2['Sum'])
         
+        # expect that the unit matches that specified on the corresponding
+        # PutMetricData call, even though we do not explicitly state the
+        # in the GetMetricStatistics call
+        self.assertEqual(stat2['Unit'], "Percent")
+
         # check 400 error when period is invalid
         test_period = 50
         try:
