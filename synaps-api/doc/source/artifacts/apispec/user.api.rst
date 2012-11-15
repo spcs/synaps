@@ -55,3 +55,11 @@ Common
 
    common/common_query_parameters
    common/common_errors
+
+Value limitation
+------
+
+.. toctree::
+   :maxdepth: 1
+   
+   limitation/value_limitation
