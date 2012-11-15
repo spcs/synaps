@@ -39,12 +39,13 @@ utils.default_flagfile()
 
 class CheckSpout(Spout):
     SPOUT_NAME = "CheckSpout"
+    lastchecked = 0
     
     def initialize(self, conf, context):
         self.cass = Cassandra()
         self.nextTuple()
         self.delivery_tags = {}
-        self.timestamp = time.time()
+        self.lastchecked = time.time()
     
     def log(self, msg):
         log("[%s] %s" % (self.SPOUT_NAME, msg))
@@ -56,7 +57,10 @@ class CheckSpout(Spout):
     
     def nextTuple(self):
         now = time.time()
-        if now - self.timestamp >= 60: 
+        if self.lastchecked == 0:
+            self.lastchecked = now
+        elif now - self.lastchecked >= 60: 
+            self.lastchecked = now
             id = "periodic_%s" % str(uuid4())
             body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID})
             message = "Periodic monitoring message sent [%s] %s"
