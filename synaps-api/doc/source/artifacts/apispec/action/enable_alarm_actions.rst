@@ -3,29 +3,30 @@
 EnableAlarmActions
 ==================
 
-설명
+Description
 ----
-특정 알람의 액션을 활성화 함.
+Activate action of specific Alarm.
 
-요청 매개변수
+Parameters
 -------------
-공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
    :widths: 20 50 10
    :header-rows: 1
 
-   * - 이름
-     - 설명
-     - 필수 여부
+   * - Name
+     - Description
+     - Mandatory
    * - AlarmNames.member.N
-     - 액션을 활성화 할 알람 이름의 리스트
+     - List of Alarm name to activate action.
 
-       자료 형: String 리스트
+       Data type: String list
 
-       길이 제한: 최소 0개부터 최대 100개의 아이템
+       Length limitation: 0 ~ 100 items
      - Yes
 
-에러
+see also :ref:`common_query_parameters`
+
+Error
 ----
-공통으로 발생하는 에러는 :ref:`common_errors` 를 참고한다.
+see also :ref:`common_errors` 

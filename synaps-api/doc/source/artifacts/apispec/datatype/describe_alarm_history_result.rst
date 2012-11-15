@@ -3,24 +3,24 @@
 DescribeAlarmHistoryResult
 ==========================
 
-설명
+Description
 ----
-:ref:`describe_alarm_history` 액션의 결과 값 
+Result of :ref:`describe_alarm_history` action. 
 
-내용
+Contents
 ----
 
 .. list-table:: 
    :widths: 30 50
    :header-rows: 1
    
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - AlarmHistoryItems
-     - JSON 형식의 알람 히스토리 리스트
+     - JSON-Formatted Alarm history list.
 
-       자료 형: :ref:`alarm_history_item` 리스트
+       Data type: :ref:`alarm_history_item` list
    * - NextToken
-     - 다음 정보 요청을 위해 사용할 토큰
+     - Token for request next information
 
-       자료 형: String
+       Data type: String

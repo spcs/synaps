@@ -171,7 +171,20 @@ class ShortCase(SynapsTestCase):
             self.fail("It should occur an error")
         else:
             self.assertTrue(ret)
+        
+        
+        
+        # test list_metric with next token which start "0b" 
+        ret = self.synaps.list_metrics(
+            next_token = "0b234016-7824-47f3-9924-634eab9d81da", 
+            dimensions=self.dimensions,
+            metric_name=self.metric_name,
+            namespace=self.namespace
+        )
+
+        self.assertTrue(ret)
             
+    
     
     def test_put_metric_alarm(self):
         alarm_actions = ['+82 1012345678', 'test@email.abc']

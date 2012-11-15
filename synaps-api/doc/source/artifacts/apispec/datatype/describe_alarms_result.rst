@@ -3,24 +3,24 @@
 DescribeAlarmsResult
 ====================
 
-설명
+Description
 ----
-:ref:`describe_alarms` 액션의 결과 값
+Result of :ref:`describe_alarms` action
 
-내용
+Contents
 ----
 
 .. list-table:: 
    :widths: 30 50
    :header-rows: 1
    
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - MetricAlarms
-     - 특정 알람 리스트 
+     - Specific Alarm's list
 
-       자료 형: :ref:`metric_alarm` 리스트
+       Data type: :ref:`metric_alarm` list
    * - NextToken
-     - 다음 정보 요청을 위해 사용할 토큰
+     - Token for request next information
 
-       자료 형: String
+       Data type: String

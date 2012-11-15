@@ -22,6 +22,7 @@ You will need python packages listed below.
 * pandas-0.7.3 (currently, it doesn't support more recent version)  
 * thrift-0.8.0
 * pycassa-1.5.1
+* pycrypto
 * pika-0.9.6
 * boto-2.5.2
 
@@ -43,6 +44,7 @@ Following is a pre-installation example for Ubuntu 12.04.
    wget http://pypi.python.org/packages/source/p/pandas/pandas-0.7.3.tar.gz#md5=e4876ea5882accce15f6f37750f3ffec
    wget http://pypi.python.org/packages/source/t/thrift/thrift-0.8.0.tar.gz
    wget https://github.com/downloads/pycassa/pycassa/pycassa-1.5.1.tar.gz
+   wget http://ftp.dlitz.net/pub/dlitz/crypto/pycrypto/pycrypto-2.6.tar.gz
    wget http://pypi.python.org/packages/source/p/pika/pika-0.9.6.tar.gz
    wget https://github.com/downloads/boto/boto/boto-2.5.2.tar.gz
    
@@ -51,6 +53,7 @@ Following is a pre-installation example for Ubuntu 12.04.
    tar xvfz pandas-0.7.3.tar.gz
    tar xvfz thrift-0.8.0.tar.gz
    tar xvfz pycassa-1.5.1.tar.gz
+   tar xvfz pycrypto-2.6.tar.gz
    tar xvfz pika-0.9.6.tar.gz
    tar xvfz boto-2.5.2.tar.gz
    
@@ -73,7 +76,12 @@ Following is a pre-installation example for Ubuntu 12.04.
    cd pycassa-1.5.1
    sudo python setup.py install
    cd ..
-  
+   
+   # install pycrypto
+   cd pycrypto-2.6
+   sudo python setup.py install
+   cd ..
+   
    # install pika  
    cd pika-0.9.6
    sudo python setup.py install
