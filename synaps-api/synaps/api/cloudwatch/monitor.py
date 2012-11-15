@@ -251,7 +251,7 @@ class MonitorController(object):
                     ret['Unit'] = "Count"
                     ret[statistic] = value
                 else:
-                    ret['Unit'] = unit
+                    ret['Unit'] = (unit if unit != 'None' else None)
                     ret[statistic] = utils.to_unit(value, unit)
                     
             return ret
@@ -270,7 +270,8 @@ class MonitorController(object):
         self.check_unit(unit)
         self.check_period(period)
         
-        stats = self.monitor_api.get_metric_statistics(project_id, end_time,
+        stats, unit = self.monitor_api.get_metric_statistics(
+                                                       project_id, end_time,
                                                        metric_name, namespace,
                                                        period, start_time,
                                                        statistics, unit,

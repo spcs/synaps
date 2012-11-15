@@ -3,123 +3,119 @@
 GetMetricStatistics
 ===================
 
-설명
+Description.
 ----
-특정 메트릭의 통계자료를 조회한다.
+Check the specific metric's statistic data. SPCS Synaps collect data points 
+which are exist within specified Period and return statistic data. For example,
+suppose you specify Period 1 minute and input 30 data points of timestamp for
+each minute. then Synaps will return the result that became one data point.
+Synaps can check statistic information up to 2 weeks. and you can check the
+data points up to 20,160 in a single API call.
 
-SPCS Synaps는 `Period` 에서 입력한 길이 만큼의 데이터 포인트를 모아서 통계
-자료를 반환한다. 예를들어, `Period` 를 1분으로 입력하고 특정 분에 맞아 떨어지는 
-타임스탬프의 데이터 포인트를 30개 입력한 경우 조회 시에는 하나의 데이터 
-포인트로 합쳐진 결과를 얻게 된다.
-
-최대 2주의 통계자료를 조회할 수 있으며 한 번의 API 호출로 최대 20,160 개의 
-데이터 포인트를 조회할 수 있다. 20,160 개의 데이터 포인트는 1분 단위 통계자료
-14일치에 해당한다.
-
-
-요청 매개변수
+Parameters
 -------------
-공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
    :widths: 20 50 10
    :header-rows: 1
 
-   * - 이름
-     - 설명
-     - 필수 여부
+   * - Name
+     - Description
+     - Mandatory
    * - Dimensions.member.N
-     - 메트릭과 관련된 Dimension 리스트
+     - Dimension list in respect of Metric.
 
-       자료 형: :ref:`dimension` list
+       Data type: :ref:`dimension` list
 
-       길이 제한: 최소 0개부터 최대 10개의 아이템
+       Length limitation: 0 ~ 10 items
      - No
    * - EndTime	
-     - 데이터포인트가 반환될 시간의 끝
-
-       자료 형: DateTime
+     - End of the period for which data point will be returned.
+       
+       Data type: DateTime
      - Yes
    * - MetricName
-     - 메트릭 이름
+     - Metric name.
 
-       자료 형: String
+       Data Type: String
 
-       길이 제한: 최소 1자 ~ 최대 255자
+       Length limitation: 1 ~ 255 bytes
               
-       형식 제한: 숫자로만 이루어진 값 사용 불가
+       Type limitation: Value consisting of only numbers can not be used.
      - Yes
    * - Namespace	
-     - 메트릭의 namespace
+     - namespace of Metric.
 
-       자료 형: String
+       Data Type: String
 
-       길이 제한: 최소 1자 ~ 최대 255자
+       Length limitation: 1 ~ 255 bytes
               
-       형식 제한: 숫자로만 이루어진 값 사용 불가
+       Type limitation: Value consisting of only numbers can not be used.
      - Yes
    * - Period
-     - 데이터포인트의 통계에 적용할 기간(초 단위). 최소 60초이며 반드시 60초의 
-       배수이어야 한다. 기본 값은 60 이다.
-
-       자료 형: Integer
+     - Period to apply data point Statistic. (sec) It has to be always multiple
+       of 60. Minimum, and default value is 60.
+          
+       Data Type: Integer
        
-       유효값 : 60(1분) ~ 86400(24시간), 60의 배수.
+       Valid value : 60(1 minute) ~ 86400(24 hours), multiple of 60.
      - Yes
    * - StartTime
-     - 데이터포인트가 반환될 시간의 시작
+     - End of the period for which data point will be returned.
 
-       자료 형: DateTime
+       Data type: DateTime
      - Yes
    * - Statistics.member.N
-     - 반환될 메트릭 통계. 
+     - Metric statistics to return. 
 
-       유효 값: Average | Sum | SampleCount | Maximum | Minimum
+       Valid value: Average | Sum | SampleCount | Maximum | Minimum
 
-       자료 형: String list
+       Data type: String list
 
-       길이 제한: 최소 1개 ~ 5개의 아이템 
+       Length limitation: 1 ~ 5 items 
      - Yes
    * - Unit
-     - 메트릭에 적용될 단위
+     - Metric's unit.
+     
+       Data type: String
 
-       자료 형: String
-
-       유효 값: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
+       Valid value: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
        Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits | 
        Gigabits | Terabits | Percent | Count | Bytes/Second | Kilobytes/Second | 
        Megabytes/Second | Gigabytes/Second | Terabytes/Second | Bits/Second | 
        Kilobits/Second | Megabits/Second | Gigabits/Second | Terabits/Second | 
        Count/Second | None
      - Yes
+
+see also :ref:`common_query_parameters`        
        
-       
-응답
+Response
 ----
-아래 엘리먼트가 GetMetricStatisticsResult 에 구조화되어 반환된다.
+Following elements are structured in GetMetricStatisticsResult and returned.
 
 .. list-table:: 
    :widths: 20 40
    :header-rows: 1
 
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - Datapoints
-     - 해당 메트릭의 데이터포인트
+     - Data points of Metric.
 
-       자료 형: :ref:`datapoint` 리스트
+       Data type: :ref:`datapoint` list
      
-에러
+Error
 ----
-공통으로 발생하는 에러는 :ref:`common_errors` 를 참고한다.
 
 .. list-table:: 
    :widths: 20 50 10
    :header-rows: 1
    
-   * - 에러
-     - 설명
+   * - Error
+     - Description
      - HTTP Status Code
    * - InvalidParameterValue
-     - 입력 파라미터의 값이 규격을 위반했음
+     - Invalid Input Parameter.
      - 400
+
+see also :ref:`common_errors` 

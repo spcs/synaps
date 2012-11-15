@@ -3,141 +3,141 @@
 MetricAlarm
 ===========
 
-설명
+Description
 ----
-:ref:`metric_alarm` 자료형은 알람을 나타낸다. :ref:`put_metric_alarm` 액션으로 
-알람을 생성하고 갱신할 수 있다.
+:ref:`metric_alarm` data type shows Alarm. It can create or update Alarm
+using :ref:`put_metric_alarm` action.
 
-내용
+Contents
 ----
 
 .. list-table:: 
    :widths: 30 50
    :header-rows: 1
    
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - ActionsEnabled
-     - 알람의 상태 변화에 따른 액션 수행 여부
-
-       자료 형: Boolean
+     - Whether the execution of action by changing state of the Alarm.
+     
+       Data type: Boolean
    * - AlarmActions
-     - 알람 상태가 된 경우 SMS를 보낼 전화번호(국제전화번호 형식) 또는 전자우편
-       을 보낼 E-Mail 주소의 리스트.
+     - Address to send the E-mail or phone number to send SMS if the state of
+       the Alarm.
 
-       자료 형: String 리스트
+       Data type: String list
    * - AlarmArn
-     - 알람의 자원 번호
+     - Resource Number of Alarm.
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 1자, 최대 1000자
+       Length limitation: 1 ~ 1000 bytes
    * - AlarmConfigurationUpdatedTimestamp
-     - 알람 설정이 변경된 가장 최근의 시간 
+     - Time of the most recent alarm setting has been changed
 
-       자료 형: DateTime
+       Data type: DateTime
    * - AlarmDescription
-     - 알람 설명
+     - Alarm's description
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 0자, 최대 255자
+       Length limitation: 0 ~ 255 bytes
    * - AlarmName
-     - 알람 이름
+     - Alarm's name
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 1자, 최대 255자
+       Length limitation: 1 ~ 255 bytes
    * - ComparisonOperator
-     - 특정 통계 자료와 임계치를 비교하기 위해 사용하는 산술 연산자. 통계 자료
-       가 좌변 변수로 적용 된다. 
+     - Operator to compare with threshold. Statistics data is used for left side
+       of calculation.
 
-       자료 형: String
+       Data type: String
 
-       유효 값: GreaterThanOrEqualToThreshold | GreaterThanThreshold |
+       Valid value: GreaterThanOrEqualToThreshold | GreaterThanThreshold | 
        LessThanThreshold | LessThanOrEqualToThreshold
    * - Dimensions
-     - 알람 대상 메트릭의 dimensions 리스트
+     - Dimension list for Alarm's Metric.
 
-       자료 형: :ref:`dimension` 리스트
+       Data type: :ref:`dimension` list
 
-       길이 제한: 0개부터 10개의 아이템
+       Length limitation: 0 ~ 10 items
    * - EvaluationPeriods
-     - 임계치와 비교할 데이터의 갯수
+     - Number of data to compare with threshold.
 
-       자료 형: Integer
+       Data type: Integer
    * - InsufficientDataActions
-     - 알람 상태가 된 경우 SMS를 보낼 전화번호(국제전화번호 형식) 또는 전자우편
-       을 보낼 E-Mail 주소의 리스트.
+     - List of phone number to send SMS or E-mail address to send an E-mail when the
+       state of alarm is Insufficient_Data. 
 
-       자료 형: String 리스트
+       Data type: String list
    * - MetricName
-     - 알람 대상 메트릭의 이름
+     - Metric's name for Alarm.
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 1자, 최대 255자
+       Length limiation: 1 ~ 255 bytes
    * - Namespace
-     - 알람 대상 메트릭의 namespace
+     - Metric's namespace for Alarm.
 
        Type: String
 
-       길이 제한: 최소 1자, 최대 255자
+       Length limitation: 1 ~ 255 bytes
    * - OKActions
-     - 알람 상태가 된 경우 SMS를 보낼 전화번호(국제전화번호 형식) 또는 전자우편
-       을 보낼 E-Mail 주소의 리스트.
+     - List of phone number to send SMS or E-mail address to send an E-mail when the
+       state of alarm is Insufficient_Data.
 
-       자료 형: String 리스트
+       Data type: String list
    * - Period
-     - 통계 자료 계산에 적용될 기간 (초단위) 
+     - Period to apply Statistic (sec)
 
-       자료 형: Integer
+       Data type: Integer
 
 
 .. list-table:: cont' 
    :widths: 30 50
    :header-rows: 1
    
-   * - 이름
-     - 설명       
+   * - Name
+     - Description       
    * - StateReason
-     - 알람 상태의 이유 (사람이 읽기 좋은 형식)
+     - Reason of Alarm state. (for human)
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 0자, 최대 1023자
+       Length limitation: 0 ~ 1023 bytes
    * - StateReasonData
-     - 알람 상태의 이유 (JSON 형식)
+     - Reason of Alarm state. (JSON-formatted)
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 0자, 최대 4000자
+       Length limitation: 0 ~ 4000 bytes
    * - StateUpdatedTimestamp
-     - 알람의 상태가 변경된 최근의 timestamp
+     - Timestamp of the most recent alarm' state has been changed.
 
-       자료 형: DateTime
+       Data type: DateTime
    * - StateValue
-     - 알람의 상태 값
+     - Value of state for Alarm.
 
-       자료 형: String
+       Data type: String
 
-       유효 값: OK | ALARM | INSUFFICIENT_DATA
+       Valid value: OK | ALARM | INSUFFICIENT_DATA
    * - Statistic
-     - 알람 대상 메트릭의 통계
+     - Statistic of Metric for Alarm.
 
-       자료 형: String
+       Data type: String
 
-       유효 값: SampleCount | Average | Sum | Minimum | Maximum
+       Valid value: SampleCount | Average | Sum | Minimum | Maximum
    * - Threshold
-     - 통계자료와 비교할 임계치
+     - Threshold to compare with statistics.
 
-       자료 형: Double
+       Data type: Double
    * - Unit
-     - 알람 대상 메트릭의 단위
+     - Unit of Metric for Alarm.
 
-       자료 형: String
+       Data type: String
 
-       유효 값: Seconds | Microseconds | Milliseconds | Bytes | 
+       Valid value: Seconds | Microseconds | Milliseconds | Bytes | 
        Kilobytes | Megabytes | Gigabytes | Terabytes | Bits | Kilobits | 
        Megabits | Gigabits | Terabits | Percent | Count | Bytes/Second | 
        Kilobytes/Second | Megabytes/Second | Gigabytes/Second | 
