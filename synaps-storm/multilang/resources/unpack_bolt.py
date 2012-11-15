@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python -u
 
 # Copyright (c) 2012 Samsung SDS Co., LTD
 # All Rights Reserved.

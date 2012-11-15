@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python -u
 
 # Copyright (c) 2012 Samsung SDS Co., LTD
 # All Rights Reserved.
@@ -44,6 +44,7 @@ class CheckSpout(Spout):
         self.cass = Cassandra()
         self.nextTuple()
         self.delivery_tags = {}
+        self.timestamp = time.time()
     
     def log(self, msg):
         log("[%s] %s" % (self.SPOUT_NAME, msg))
@@ -54,12 +55,15 @@ class CheckSpout(Spout):
             self.log("TRACE: " + line)
     
     def nextTuple(self):
-        id = "periodic_%s" % str(uuid4())
-        body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID})
-        message = "Periodic monitoring message sent [%s] %s"
-        self.log(message % (id, body))
-        emit([None, body], id=id)
-        time.sleep(60)
+        now = time.time()
+        if now - self.timestamp >= 60: 
+            id = "periodic_%s" % str(uuid4())
+            body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID})
+            message = "Periodic monitoring message sent [%s] %s"
+            self.log(message % (id, body))
+            emit([None, body], id=id)
+        else:
+            time.sleep(1)
 
 if __name__ == "__main__":
     CheckSpout().run()
