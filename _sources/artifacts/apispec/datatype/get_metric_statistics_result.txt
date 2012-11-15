@@ -3,24 +3,24 @@
 GetMetricStatisticsResult
 =========================
 
-설명
+Description
 ----
-:ref:`get_metric_statistics` 액션의 결과 값
+Result of :ref:`get_metric_statistics` action.
 
-내용
+Contents
 ----
 
 .. list-table:: 
    :widths: 30 50
    :header-rows: 1
    
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - Datapoints
-     - 해당 메트릭의 datapoint 리스트
+     - Datapoint list for specific Metric.
 
-       자료 형: :ref:`datapoint` 리스트
+       Data type: :ref:`datapoint` list
    * - Label
-     - 해당 메트릭을 설명하는 레이블
+     - Label for explain specific Metric.
 
-       자료 형: String
+       Data type: String

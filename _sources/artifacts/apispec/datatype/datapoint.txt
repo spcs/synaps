@@ -3,49 +3,49 @@
 Datapoint
 =========
 
-설명
+Description
 ----
-SPCS Synaps 가 메트릭 데이터로 부터 계산한 통계 자료를 담는 자료형
+Datapoint data type contains Statistic data which is calculated from Metric data.
 
-내용
+Contents
 ----
 
 .. list-table:: 
    :widths: 30 50
    :header-rows: 1
    
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - Average
-     - 메트릭 값의 평균
+     - Average of Metric value.
 
-       자료 형: Double
+       Data type: Double
    * - Maximum
-     - 메트릭 값의 최대값
+     - Maximum value of Metric
 
-       자료 형: Double
+       Data type: Double
    * - Minimum
-     - 메트릭 값의 최소값
+     - Minimum value of Metric
 
-       자료 형: Double
+       Data type: Double
    * - SampleCount
-     - 메트릭 샘플의 갯수
+     - Count of Metric samples
 
-       자료 형: Double
+       Data type: Double
    * - Sum
-     - 매트릭 샘플의 총 합
+     - Sum of Metric samples
 
-       자료 형: Double
+       Data type: Double
    * - Timestamp
-     - 데이터포인트가 사용하는 timestamp
+     - Timestamp for Datapoint
 
-       자료 형: DateTime
+       Data type: DateTime
    * - Unit
-     - 데이터포인트의 표준 단위
+     - Standard unit for Datapoint
 
-       자료 형: String
+       Data type: String
 
-       유효 값: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
+       Valid value: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
        Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits | 
        Gigabits | Terabits | Percent | Count | Bytes/Second | Kilobytes/Second | 
        Megabytes/Second | Gigabytes/Second | Terabytes/Second | Bits/Second | 

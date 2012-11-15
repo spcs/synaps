@@ -50,14 +50,12 @@
             
   <div class="section" id="putmetricdata">
 <span id="put-metric-data"></span><h1>PutMetricData<a class="headerlink" href="#putmetricdata" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="id1">
-<h2>설명<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>메트릭 데이터포인트를 SPCS Synaps로 발행한다. SPCS Synaps에 해당 메트릭이 없는
-경우, 해당 메트릭을 생성한다.</p>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Publish Metric Datapoint to Synaps. If there is no specified Metric, create it.</p>
 </div>
-<div class="section" id="id2">
-<h2>요청 매개변수<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>공통으로 요구되는 매개변수는 <a class="reference internal" href="../common/common_query_parameters.html#common-query-parameters"><em>Common Qurey Parameters</em></a> 를 참고한다.</p>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -65,35 +63,35 @@
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">이름</th>
-<th class="head">설명</th>
-<th class="head">필수 여부</th>
+<tr><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Mandatory</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>MetricData.member.N</td>
-<td><p class="first">메트릭을 기술하는 데이터</p>
-<p class="last">자료 형: <a class="reference internal" href="../datatype/metric_datum.html#metric-datum"><em>MetricDatum</em></a> 리스트</p>
+<td><p class="first">Data for describe the Metric</p>
+<p class="last">Data type: <a class="reference internal" href="../datatype/metric_datum.html#metric-datum"><em>MetricDatum</em></a> list</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>Namespace</td>
-<td><p class="first">메트릭 데이터의 namespace</p>
-<p>사용자 API로는 &#8220;SPCS/&#8221;로 시작하는 namespace 는 사용할 수 없음. 해당
-namespace는 SPCS 제품군에 예약되어 있기 때문. Admin API를 통해서
-접근한 경우 &#8220;SPCS/&#8221; 로 시작하는 namespace를 사용할 수 있음.</p>
-<p>자료 형: String</p>
-<p>길이 제한: 최소 1자 ~ 최대 255자</p>
-<p class="last">형식 제한: 숫자로만 이루어진 값 사용 불가</p>
+<td><p class="first">Namespace for Metric data.</p>
+<p>Because &#8220;SPCS/&#8221; is reserved for SPCS product family, namespace beginning
+with &#8220;SPCS/&#8221; can not be used as user API. only access with Admin API can
+use namespace prefix &#8220;SPCS/&#8221;.</p>
+<p>Data type: String</p>
+<p>Length limitation: 1 ~ 255 bytes</p>
+<p class="last">Type limitation: Value consisting of only numbers can not be used.</p>
 </td>
 <td>Yes</td>
 </tr>
 </tbody>
 </table>
+<p>see also <a class="reference internal" href="../common/common_query_parameters.html#common-query-parameters"><em>Common Query Parameters</em></a></p>
 </div>
-<div class="section" id="id3">
-<h2>에러<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>공통으로 발생하는 에러는 <a class="reference internal" href="../common/common_errors.html#common-errors"><em>Common Errors</em></a> 를 참고한다.</p>
+<div class="section" id="errors">
+<h2>Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -101,18 +99,19 @@ namespace는 SPCS 제품군에 예약되어 있기 때문. Admin API를 통해�
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">에러</th>
-<th class="head">설명</th>
+<tr><th class="head">Error</th>
+<th class="head">Description</th>
 <th class="head">HTTP Status Code</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>InvalidParameterValue</td>
-<td>입력 파라미터의 값이 규격을 위반했음</td>
+<td>Invalid value of input parameter.</td>
 <td>400</td>
 </tr>
 </tbody>
 </table>
+<p>see also <a class="reference internal" href="../common/common_errors.html#common-errors"><em>Common Errors</em></a></p>
 </div>
 </div>
 
@@ -125,9 +124,9 @@ namespace는 SPCS 제품군에 예약되어 있기 때문. Admin API를 통해�
             <h3><a href="../../../index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference internal" href="#">PutMetricData</a><ul>
-<li><a class="reference internal" href="#id1">설명</a></li>
-<li><a class="reference internal" href="#id2">요청 매개변수</a></li>
-<li><a class="reference internal" href="#id3">에러</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+<li><a class="reference internal" href="#errors">Errors</a></li>
 </ul>
 </li>
 </ul>
@@ -182,7 +181,7 @@ namespace는 SPCS 제품군에 예약되어 있기 때문. Admin API를 통해�
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Nov 7 10:41:29 2012, commit fd131b4.
+      Last updated on Thu Nov 15 18:58:03 2012, commit 2afbb5d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

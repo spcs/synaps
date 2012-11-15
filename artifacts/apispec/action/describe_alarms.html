@@ -50,14 +50,14 @@
             
   <div class="section" id="describealarms">
 <span id="describe-alarms"></span><h1>DescribeAlarms<a class="headerlink" href="#describealarms" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="id1">
-<h2>설명<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>특정 이름을 가진 알람을 조회한다. 이름이 지정되지 않은 경우, 사용자의 모든 알람
-을 반환한다. 알람 이름의 시작 문자열이나 알람 상태를 통해 조회할 수 있다.</p>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Check the Alarm that has specific name. If you don&#8217;t specify name, Synaps will
+return all Alarms of user. You can search Alarm using name&#8217;s prefix string or
+state of Alarm.</p>
 </div>
-<div class="section" id="id2">
-<h2>요청 매개변수<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>공통 매개변수에 대한 정보는 <a class="reference internal" href="../common/common_query_parameters.html#common-query-parameters"><em>Common Qurey Parameters</em></a> 를 참고한다.</p>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -65,89 +65,90 @@
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">이름</th>
-<th class="head">설명</th>
-<th class="head">필수 여부</th>
+<tr><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Mandatory</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>ActionPrefix</td>
-<td><p class="first">아직 구현되지 않았음.</p>
-<p>액션 이름 시작 문자열.</p>
+<td><p class="first">TBD.</p>
+<p>Prefix string of action&#8217;s name.</p>
 <p>Type: String</p>
-<p>길이 제한: 최소 1자, 최대 1024자.</p>
-<p class="last">형식 제한: 숫자로만 이루어진 값 사용 불가</p>
+<p>Length limitation: 1 ~ 1024 bytes.</p>
+<p class="last">Type limitation: Value consisting of only numbers can not be used.</p>
 </td>
 <td>No</td>
 </tr>
 <tr><td>AlarmNamePrefix</td>
-<td><p class="first">알람 이름의 시작 문자열. AlarmNames 매개변수를 사용한 경우 본 매개변수는
-무시한다.</p>
+<td><p class="first">Prefix string of Alarm&#8217;s name. If you use AlarmNAmes, this parameter will
+be ignored.</p>
 <p>Type: String</p>
-<p>길이 제한: 최소 1자, 최대 255자.</p>
-<p class="last">형식 제한: 숫자로만 이루어진 값 사용 불가</p>
+<p>Length limitation: 1 ~ 255 bytes.</p>
+<p class="last">Type limitation: Value consisting of only numbers can not be used.</p>
 </td>
 <td>No</td>
 </tr>
 <tr><td>AlarmNames.member.N</td>
-<td><p class="first">알람 정보를 얻어올 알람 이름의 리스트.</p>
+<td><p class="first">list of AlarmName to get Alarm information.</p>
 <p>Type: String list</p>
-<p class="last">길이 제한: 최소 0개의 이름, 최대 100개의 이름.</p>
+<p class="last">Length limitation: 0 ~ 100 names.</p>
 </td>
 <td>No</td>
 </tr>
 <tr><td>MaxRecords</td>
-<td><p class="first">얻어올 알람의 최대 갯수.</p>
+<td><p class="first">Max number of Alarm to bring</p>
 <p class="last">Type: Integer</p>
 </td>
 <td>No</td>
 </tr>
 <tr><td>NextToken</td>
-<td><p class="first">해당 토큰을 키로하는 알람부터 조회</p>
+<td><p class="first">Check from the Alarm that has this Token.</p>
 <p class="last">Type: String</p>
 </td>
 <td>No</td>
 </tr>
 <tr><td>StateValue</td>
-<td><p class="first">일치하는 알람의 상태값.</p>
+<td><p class="first">State value to check.</p>
 <p>Type: String</p>
-<p class="last">유효 값: OK | ALARM | INSUFFICIENT_DATA</p>
+<p class="last">Valid value: OK | ALARM | INSUFFICIENT_DATA</p>
 </td>
 <td>No</td>
 </tr>
 </tbody>
 </table>
+<p>see also <a class="reference internal" href="../common/common_query_parameters.html#common-query-parameters"><em>Common Query Parameters</em></a></p>
 </div>
-<div class="section" id="id3">
-<h2>응답<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>다음 자료를 DescribeAlarmsResult 에 담아 반환한다.</p>
+<div class="section" id="response">
+<h2>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h2>
+<p>Following elements are structured in DescribeAlarmsResult and returned.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="33%" />
 <col width="67%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">이름</th>
-<th class="head">설명</th>
+<tr><th class="head">Name</th>
+<th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>MetricAlarms</td>
-<td><p class="first">알람 정보</p>
+<td><p class="first">Information of Alarm.</p>
 <p class="last">Type: MetricAlarm list</p>
 </td>
 </tr>
 <tr><td>NextToken</td>
-<td><p class="first">결과의 마지막 토큰</p>
+<td><p class="first">The last Token of Result.</p>
 <p class="last">Type: String</p>
 </td>
 </tr>
 </tbody>
 </table>
+<p>see also <a class="reference internal" href="../common/common_query_parameters.html#common-query-parameters"><em>Common Query Parameters</em></a></p>
 </div>
-<div class="section" id="id4">
-<h2>에러<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
-<p>공통으로 발생하는 에러는 <a class="reference internal" href="../common/common_errors.html#common-errors"><em>Common Errors</em></a> 를 참고한다.</p>
+<div class="section" id="errors">
+<h2>Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -155,18 +156,19 @@
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">에러</th>
-<th class="head">설명</th>
+<tr><th class="head">Error</th>
+<th class="head">Description</th>
 <th class="head">HTTP Status Code</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>InvalidNextToken</td>
-<td>주어진 next token 이 유효하지 않음</td>
+<td>Invalid next token.</td>
 <td>400</td>
 </tr>
 </tbody>
 </table>
+<p>see also <a class="reference internal" href="../common/common_errors.html#common-errors"><em>Common Errors</em></a></p>
 </div>
 </div>
 
@@ -179,10 +181,10 @@
             <h3><a href="../../../index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference internal" href="#">DescribeAlarms</a><ul>
-<li><a class="reference internal" href="#id1">설명</a></li>
-<li><a class="reference internal" href="#id2">요청 매개변수</a></li>
-<li><a class="reference internal" href="#id3">응답</a></li>
-<li><a class="reference internal" href="#id4">에러</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+<li><a class="reference internal" href="#response">Response</a></li>
+<li><a class="reference internal" href="#errors">Errors</a></li>
 </ul>
 </li>
 </ul>
@@ -237,7 +239,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Nov 7 10:41:29 2012, commit fd131b4.
+      Last updated on Thu Nov 15 18:58:03 2012, commit 2afbb5d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

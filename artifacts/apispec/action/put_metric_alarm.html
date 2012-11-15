@@ -50,13 +50,12 @@
             
   <div class="section" id="putmetricalarm">
 <span id="put-metric-alarm"></span><h1>PutMetricAlarm<a class="headerlink" href="#putmetricalarm" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="id1">
-<h2>설명<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>메트릭에 대해 알람을 생성하거나 업데이트한다.</p>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Create or update Alarm for Metric.</p>
 </div>
-<div class="section" id="id2">
-<h2>요청 매개변수<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>공통으로 요구되는 매개변수는 <a class="reference internal" href="../common/common_query_parameters.html#common-query-parameters"><em>Common Qurey Parameters</em></a> 를 참고한다.</p>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -64,56 +63,57 @@
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">이름</th>
-<th class="head">설명</th>
-<th class="head">필수 여부</th>
+<tr><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Mandatory</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>ActionsEnabled</td>
-<td>알람의 상태 변화에 따른 액션 수행 여부
-자료 형: Boolean</td>
+<td>Whether the execution of action by changing state of the Alarm.
+Data type: Boolean</td>
 <td>No</td>
 </tr>
 <tr><td>AlarmActions.member.N</td>
-<td><p class="first">알람 상태가 된 경우 SMS를 보낼 전화번호(국제전화번호 형식) 또는 전자우편
-을 보낼 E-Mail 주소를 입력한다.</p>
-<p>국제전화번호의 경우 +82 10 1234 5678 와 같은 형식을 따르며,
-국제전화코드는 나머지 번호와 번호는 공백(&#8216; &#8216;)으로 구분되어야한다.
-허용되는 문자열은 +, [0-9], 공백(&#8216; &#8216;) 으로 제한된다.</p>
-<p>International Telecommunication Union ITU-T Rec. E.123 (02/2001) 참조</p>
-<p class="last">자료 형: String</p>
+<td><p class="first">Address to send the E-mail or phone number to send SMS if the state of
+the Alarm.</p>
+<p>If you using international phone number, form is such as +82 10 1234 5678.
+Country code and other phone number should be divided by space(&#8216; &#8216;).
+only +, [0-9], space(&#8216; &#8216;) are allowed in international phone number.</p>
+<p>Refer to International Telecommunication Union ITU-T Rec. E.123 (02/2001)</p>
+<p class="last">Data type: String</p>
 </td>
 <td>No</td>
 </tr>
 <tr><td>AlarmDescription</td>
-<td><p class="first">알람 설명</p>
-<p>자료 형: String</p>
-<p>길이 제한: 최소 1자 ~ 최대 255자</p>
-<p class="last">형식 제한: 숫자로만 이루어진 값 사용 불가</p>
+<td><p class="first">Description of Alarm.</p>
+<p>Data type: String</p>
+<p>Length limitation: 1 ~ 255 bytes</p>
+<p class="last">Type limitation: Value consisting of only numbers can not be used.</p>
 </td>
 <td>No</td>
 </tr>
 <tr><td>AlarmName</td>
-<td><p class="first">알람 이름. 이 이름은 SPCS 프로젝트에 한해 유일해야한다.</p>
-<p>자료 형: String</p>
-<p>길이 제한: 최소 1자 ~ 최대 255자</p>
-<p class="last">형식 제한: 숫자로만 이루어진 값 사용 불가</p>
+<td><p class="first">name of Alarm. It should be unique in user&#8217;s all alarm.</p>
+<p>Data type: String</p>
+<p>Length limitation: 1 ~ 255 bytes</p>
+<p class="last">Type limitation: Value consisting of only numbers can not be used.</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>ComparisonOperator</td>
-<td><p class="first">임계치와 비교할 연산자. 통계 자료가 좌변 연산 값으로 사용된다.</p>
-<p>자료 형: String</p>
-<p class="last">유효 값: GreaterThanOrEqualToThreshold | GreaterThanThreshold |
+<td><p class="first">Operator to compare with threshold. Statistics data is used for left side
+of calculation.</p>
+<p>Data type: String</p>
+<p class="last">Valid value: GreaterThanOrEqualToThreshold | GreaterThanThreshold |
 LessThanThreshold | LessThanOrEqualToThreshold</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>Dimensions.member.N</td>
-<td><p class="first">알람에 관련된 메트릭의 dimensions</p>
-<p>자료 형: <a class="reference internal" href="../datatype/dimension.html#dimension"><em>Dimension</em></a> 리스트</p>
-<p class="last">길이 제한: 최소 0개부터 최대 10개의 아이템</p>
+<td><p class="first">Dimension list to be used for search.</p>
+<p>Data type: <a class="reference internal" href="../datatype/dimension_filter.html#dimension-filter"><em>DimensionFilter</em></a> list</p>
+<p class="last">Length limitation: 0 ~ 10 items</p>
 </td>
 <td>No</td>
 </tr>
@@ -126,81 +126,85 @@ LessThanThreshold | LessThanOrEqualToThreshold</p>
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">이름</th>
-<th class="head">설명</th>
-<th class="head">필수 여부</th>
+<tr><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Mandatory</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>EvaluationPeriods</td>
-<td><p class="first">임계치 비교를 할 기간 (분 단위)</p>
-<p>자료 형: Integer</p>
-<p class="last">유효 값: 1 ~ 100</p>
+<td><p class="first">Period to compare with threshold. (minute)</p>
+<p>Data type: Integer</p>
+<p class="last">Valid value: 1 ~ 100</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>InsufficientDataActions.member.N</td>
-<td><p class="first">알람 상태가 Insufficient_Data가 된 경우 SMS를 보낼 전화번호(국제전화번호
-형식) 또는 전자우편을 보낼 E-Mail 주소를 입력한다.</p>
-<p>국제전화번호의 경우 +82 10 1234 5678 와 같은 형식을 따르며,
-국제전화코드는 나머지 번호와 번호는 공백(&#8216; &#8216;)으로 구분되어야한다.
-허용되는 문자열은 +, [0-9], 공백(&#8216; &#8216;) 으로 제한된다.</p>
-<p>International Telecommunication Union ITU-T Rec. E.123 (02/2001) 참조</p>
-<p class="last">자료 형: String</p>
+<td><p class="first">Phone number to send SMS or E-mail address to send an E-mail when the
+state of alarm is Insufficient_Data. Phone number should follow the shape
+of the International phone number.</p>
+<p>International phone number is in accordance with the form, such as
++82 10 1234 5678. International phone code and the remaining numbers are
+divided by space(&#8216; &#8216;). only can +, [0-9], space(&#8216; &#8216;) are available in
+this value.</p>
+<p>refer to International Telecommunication Union ITU-T Rec. E.123 (02/2001)</p>
+<p class="last">Data type: String</p>
 </td>
 <td>No</td>
 </tr>
 <tr><td>MetricName</td>
-<td><p class="first">알람에 관련된 메트릭의 이름</p>
-<p>자료 형: String</p>
-<p>길이 제한: 최소 1자 ~ 최대 255자</p>
-<p class="last">형식 제한: 숫자로만 이루어진 값 사용 불가</p>
+<td><p class="first">Metric name for Alarm.</p>
+<p>Data type: String</p>
+<p>Length limitation: 1 ~ 255 bytes</p>
+<p class="last">Type limitation: Value consisting of only numbers can not be used.</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>Namespace</td>
-<td><p class="first">알람에 관련된 메트릭의 namespace</p>
-<p>자료 형: String</p>
-<p>길이 제한: 최소 1자 ~ 최대 255자</p>
-<p class="last">형식 제한: 숫자로만 이루어진 값 사용 불가</p>
+<td><p class="first">Namespace for Alarm.</p>
+<p>Data Type: String</p>
+<p>Length limitation: 1 ~ 255 bytes</p>
+<p class="last">Type limitation: Value consisting of only numbers can not be used.</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>OKActions.member.N</td>
-<td><p class="first">알람 상태가 OK로 변경된 경우 SMS를 보낼 전화번호(국제전화번호 형식) 또는
-전자우편을 보낼 E-Mail 주소를 입력한다.</p>
-<p>국제전화번호의 경우 +82 10 1234 5678 와 같은 형식을 따르며,
-국제전화코드는 나머지 번호와 번호는 공백(&#8216; &#8216;)으로 구분되어야한다.
-허용되는 문자열은 +, [0-9], 공백(&#8216; &#8216;) 으로 제한된다.</p>
-<p>International Telecommunication Union ITU-T Rec. E.123 (02/2001) 참조</p>
-<p class="last">자료 형: String</p>
+<td><p class="first">Phone number to send SMS or E-mail address to send an E-mail when the
+state of alarm is Insufficient_Data. Phone number should follow the shape
+of the International phone number.</p>
+<p>International phone number is in accordance with the form, such as
++82 10 1234 5678. International phone code and the remaining numbers are
+divided by space(&#8216; &#8216;). only can +, [0-9], space(&#8216; &#8216;) are available in
+this value.</p>
+<p>refer to International Telecommunication Union ITU-T Rec. E.123 (02/2001)</p>
+<p class="last">Data type: String</p>
 </td>
 <td>No</td>
 </tr>
 <tr><td>Period</td>
-<td><p class="first">통계가 적용될 기간(초 단위)</p>
-<p>자료 형: Integer</p>
-<p class="last">유효값 : 60(1분) ~ 86400(24시간), 60의 배수.</p>
+<td><p class="first">Period to apply Statistic (sec)</p>
+<p>Data type: Integer</p>
+<p class="last">Valid value : 60(1 minute) ~ 86400(24 hours), multiple of 60.</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>Statistic</td>
-<td><p class="first">알람에 사용할 메트릭의 통계</p>
-<p>자료 형: String</p>
-<p class="last">유효 값: SampleCount | Average | Sum | Minimum | Maximum</p>
+<td><p class="first">Metric statistics for Alarm</p>
+<p>Data type: String</p>
+<p class="last">Valid value: SampleCount | Average | Sum | Minimum | Maximum</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>Threshold</td>
-<td><p class="first">통계자료와 비교할 임계치.</p>
-<p class="last">자료 형: Double</p>
+<td><p class="first">Threshold to be compared with statistics.</p>
+<p class="last">Data type: Double</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>Unit</td>
-<td><p class="first">알람과 연계된 메트릭의 단위.</p>
-<p>자료 형: String</p>
-<p class="last">유효 값: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes |
+<td><p class="first">Metric&#8217;s unit for Alarm.</p>
+<p>Data type: String</p>
+<p class="last">Valid value: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes |
 Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits |
 Gigabits | Terabits | Percent | Count | Bytes/Second | Kilobytes/Second |
 Megabytes/Second | Gigabytes/Second | Terabytes/Second | Bits/Second |
@@ -211,10 +215,11 @@ Count/Second | None</p>
 </tr>
 </tbody>
 </table>
+<p>see also <a class="reference internal" href="../common/common_query_parameters.html#common-query-parameters"><em>Common Query Parameters</em></a></p>
 </div>
-<div class="section" id="id3">
-<h2>에러<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>공통으로 발생하는 에러는 <a class="reference internal" href="../common/common_errors.html#common-errors"><em>Common Errors</em></a> 를 참고한다.</p>
+<div class="section" id="errors">
+<h2>Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h2>
+<p>see also <a class="reference internal" href="../common/common_errors.html#common-errors"><em>Common Errors</em></a></p>
 </div>
 </div>
 
@@ -227,9 +232,9 @@ Count/Second | None</p>
             <h3><a href="../../../index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference internal" href="#">PutMetricAlarm</a><ul>
-<li><a class="reference internal" href="#id1">설명</a></li>
-<li><a class="reference internal" href="#id2">요청 매개변수</a></li>
-<li><a class="reference internal" href="#id3">에러</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+<li><a class="reference internal" href="#errors">Errors</a></li>
 </ul>
 </li>
 </ul>
@@ -284,7 +289,7 @@ Count/Second | None</p>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Nov 7 10:41:29 2012, commit fd131b4.
+      Last updated on Thu Nov 15 18:58:03 2012, commit 2afbb5d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

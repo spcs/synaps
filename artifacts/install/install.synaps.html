@@ -68,6 +68,7 @@
 <li>pandas-0.7.3 (currently, it doesn&#8217;t support more recent version)</li>
 <li>thrift-0.8.0</li>
 <li>pycassa-1.5.1</li>
+<li>pycrypto</li>
 <li>pika-0.9.6</li>
 <li>boto-2.5.2</li>
 </ul>
@@ -86,6 +87,7 @@ wget http://labix.org/download/python-dateutil/python-dateutil-1.5.tar.gz
 wget http://pypi.python.org/packages/source/p/pandas/pandas-0.7.3.tar.gz#md5<span class="o">=</span>e4876ea5882accce15f6f37750f3ffec
 wget http://pypi.python.org/packages/source/t/thrift/thrift-0.8.0.tar.gz
 wget https://github.com/downloads/pycassa/pycassa/pycassa-1.5.1.tar.gz
+wget http://ftp.dlitz.net/pub/dlitz/crypto/pycrypto/pycrypto-2.6.tar.gz
 wget http://pypi.python.org/packages/source/p/pika/pika-0.9.6.tar.gz
 wget https://github.com/downloads/boto/boto/boto-2.5.2.tar.gz
 
@@ -94,6 +96,7 @@ tar xvfz python-dateutil-1.5.tar.gz
 tar xvfz pandas-0.7.3.tar.gz
 tar xvfz thrift-0.8.0.tar.gz
 tar xvfz pycassa-1.5.1.tar.gz
+tar xvfz pycrypto-2.6.tar.gz
 tar xvfz pika-0.9.6.tar.gz
 tar xvfz boto-2.5.2.tar.gz
 
@@ -114,6 +117,11 @@ sudo python setup.py install
 
 <span class="c"># install pycassa</span>
 <span class="nb">cd </span>pycassa-1.5.1
+sudo python setup.py install
+<span class="nb">cd</span> ..
+
+<span class="c"># install pycrypto</span>
+<span class="nb">cd </span>pycrypto-2.6
 sudo python setup.py install
 <span class="nb">cd</span> ..
 
@@ -275,7 +283,7 @@ paste.app_factory <span class="o">=</span> synaps.api.cloudwatch:Executor.factor
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Nov 7 10:41:29 2012, commit fd131b4.
+      Last updated on Thu Nov 15 18:58:03 2012, commit 2afbb5d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

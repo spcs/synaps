@@ -3,65 +3,64 @@
 DescribeAlarmsForMetric
 =======================
 
-설명
+Description
 ----
-단일 메트릭에 대한 알람을 모두 조회한다. 통계 종류, 기간 또는 단위를 지정해서
-조회할 수 있다.
+Check all Alarm in single Metric. You can search Alarm using Statistic type,
+Period or Unit.
 
-요청 매개변수
+Parameters
 -------------
-공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
    :widths: 20 50 10
    :header-rows: 1
 
-   * - 이름
-     - 설명
-     - 필수 여부
+   * - Name
+     - Description
+     - Mandatory
    * - Dimensions.member.N
-     - 메트릭과 연관된 dimensions 리스트
+     - Dimensions list in respect of Metric.
 
-       자료 형: :ref:`dimension` list
+       Data type: :ref:`dimension` list
 
-       길이 제한: 최소 0개 최대 10개의 아이템을 갖는 리스트
+       Length limitation: 0 ~ 10 items list.
      - No
    * - MetricName	
-     - 메트릭 이름
+     - Metric name
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 1자 ~ 최대 255자
+       Length limitation: 1 ~ 255 bytes
               
-       형식 제한: 숫자로만 이루어진 값 사용 불가
+       Type limitation: Value consisting of only numbers can not be used.
      - Yes
    * - Namespace
-     - 메트릭의 namespace
+     - Namespace of Metric
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 1자 ~ 최대 255자
+       Length limitation: 1 ~ 255 bytes
               
-       형식 제한: 숫자로만 이루어진 값 사용 불가
+       Type limitation: Value consisting of only numbers can not be used.
      - Yes
    * - Period	
-     - 통계를 적용할 기간 (초 단위)
-
-       자료 형: Integer
+     - Period to apply Statistic (sec)
+     
+       Data type: Integer
      - No
    * - Statistic
-     - 메트릭 통계
+     - Metric statistic.
 
-       자료 형: String
+       Data type: String
 
-       유효 값: SampleCount | Average | Sum | Minimum | Maximum
+       Valid value: SampleCount | Average | Sum | Minimum | Maximum
      - No
    * - Unit	
-     - 메트릭 단위
+     - Unit of Metric.
 
-       자료 형: String
+       Data type: String
 
-       유효 값: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
+       Valid value: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | 
        Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits | 
        Gigabits | Terabits | Percent | Count | Bytes/Second | Kilobytes/Second | 
        Megabytes/Second | Gigabytes/Second | Terabytes/Second | Bits/Second | 
@@ -69,21 +68,23 @@ DescribeAlarmsForMetric
        Count/Second | None
      - No
 
-응답
+see also :ref:`common_query_parameters` 
+
+Response
 ----
-다음 엘리먼트들이 DescribeAlarmsForMetricResult 구조에 담겨 반환된다.
+Following elements are structured in DescribeAlarmsForMetricResult and returned.
 
 .. list-table:: 
    :widths: 20 40
    :header-rows: 1
 
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - MetricAlarms
-     - 특정 메트릭에 대한 각각의 알람 정보를 담은 리스트
+     - List of each Alarm's information for specific Metric.
 
-       자료 형: :ref:`metric_alarm` 리스트
+       Data type: :ref:`metric_alarm` list
      
-에러
+Errors
 ----
-공통으로 발생하는 에러는 :ref:`common_errors` 를 참고한다.
+see also :ref:`common_errors` 

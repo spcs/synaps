@@ -19,5 +19,5 @@ It describes common errors for all API actions.
      - Request is invalid
      - 400
    * - InternalFailure
-     - Request is failed by unkwon interal error. 
+     - Request is failed by unknown internal error. 
      - 500

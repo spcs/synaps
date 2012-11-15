@@ -3,20 +3,20 @@
 DescribeAlarmsForMetricResult
 =============================
 
-설명
+Description
 ----
-:ref:`describe_alarms_for_metric` 액션의 결과 값
+Result of :ref:`describe_alarms_for_metric` action
 
-내용
+Contents
 ----
 
 .. list-table:: 
    :widths: 30 50
    :header-rows: 1
    
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - MetricAlarms
-     - 특정 메트릭에 관련된 알람의 리스트.
+     - Alarm's list for specific Metric.
 
-       자료 형: :ref:`metric_alarm` 리스트
+       Data type: :ref:`metric_alarm` list

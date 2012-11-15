@@ -50,14 +50,13 @@
             
   <div class="section" id="disablealarmactions">
 <span id="disable-alarm-actions"></span><h1>DisableAlarmActions<a class="headerlink" href="#disablealarmactions" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="id1">
-<h2>설명<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>특정 알람에 대한 액션을 비활성화한다. 알람의 액션이 비활성화된 경우 알람의
-상태가 바뀌더라도 알람 액션이 실행되지 않는다.</p>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Deactivate the action of specific Alarm. In this case, Alarm action is not executed
+even if Alarm state changed.</p>
 </div>
-<div class="section" id="id2">
-<h2>요청 매개변수<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>공통으로 요구되는 매개변수는 <a class="reference internal" href="../common/common_query_parameters.html#common-query-parameters"><em>Common Qurey Parameters</em></a> 를 참고한다.</p>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -65,25 +64,26 @@
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">이름</th>
-<th class="head">설명</th>
-<th class="head">필수 여부</th>
+<tr><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Mandatory</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>AlarmNames.member.N</td>
-<td><p class="first">액션을 비활성화 할 알람 이름의 리스트</p>
-<p>자료 형: String 리스트</p>
-<p class="last">길이 제한: 최소 0개부터 최대 100개의 아이템</p>
+<td><p class="first">List of Alarm name to deactivate action.</p>
+<p>Data type: String list</p>
+<p class="last">Length limitation: 0 ~ 100 items.</p>
 </td>
 <td>Yes</td>
 </tr>
 </tbody>
 </table>
+<p>see also <a class="reference internal" href="../common/common_query_parameters.html#common-query-parameters"><em>Common Query Parameters</em></a></p>
 </div>
-<div class="section" id="id3">
-<h2>에러<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>공통으로 발생하는 에러는 <a class="reference internal" href="../common/common_errors.html#common-errors"><em>Common Errors</em></a> 를 참고한다.</p>
+<div class="section" id="error">
+<h2>Error<a class="headerlink" href="#error" title="Permalink to this headline">¶</a></h2>
+<p>see also <a class="reference internal" href="../common/common_errors.html#common-errors"><em>Common Errors</em></a></p>
 </div>
 </div>
 
@@ -96,9 +96,9 @@
             <h3><a href="../../../index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference internal" href="#">DisableAlarmActions</a><ul>
-<li><a class="reference internal" href="#id1">설명</a></li>
-<li><a class="reference internal" href="#id2">요청 매개변수</a></li>
-<li><a class="reference internal" href="#id3">에러</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+<li><a class="reference internal" href="#error">Error</a></li>
 </ul>
 </li>
 </ul>
@@ -153,7 +153,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Nov 7 10:41:29 2012, commit fd131b4.
+      Last updated on Thu Nov 15 18:58:03 2012, commit 2afbb5d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

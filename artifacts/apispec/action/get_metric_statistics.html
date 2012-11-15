@@ -50,20 +50,17 @@
             
   <div class="section" id="getmetricstatistics">
 <span id="get-metric-statistics"></span><h1>GetMetricStatistics<a class="headerlink" href="#getmetricstatistics" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="id1">
-<h2>설명<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>특정 메트릭의 통계자료를 조회한다.</p>
-<p>SPCS Synaps는 <cite>Period</cite> 에서 입력한 길이 만큼의 데이터 포인트를 모아서 통계
-자료를 반환한다. 예를들어, <cite>Period</cite> 를 1분으로 입력하고 특정 분에 맞아 떨어지는
-타임스탬프의 데이터 포인트를 30개 입력한 경우 조회 시에는 하나의 데이터
-포인트로 합쳐진 결과를 얻게 된다.</p>
-<p>최대 2주의 통계자료를 조회할 수 있으며 한 번의 API 호출로 최대 20,160 개의
-데이터 포인트를 조회할 수 있다. 20,160 개의 데이터 포인트는 1분 단위 통계자료
-14일치에 해당한다.</p>
+<div class="section" id="description">
+<h2>Description.<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Check the specific metric&#8217;s statistic data. SPCS Synaps collect data points
+which are exist within specified Period and return statistic data. For example,
+suppose you specify Period 1 minute and input 30 data points of timestamp for
+each minute. then Synaps will return the result that became one data point.
+Synaps can check statistic information up to 2 weeks. and you can check the
+data points up to 20,160 in a single API call.</p>
 </div>
-<div class="section" id="id2">
-<h2>요청 매개변수<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>공통으로 요구되는 매개변수는 <a class="reference internal" href="../common/common_query_parameters.html#common-query-parameters"><em>Common Qurey Parameters</em></a> 를 참고한다.</p>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -71,67 +68,67 @@
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">이름</th>
-<th class="head">설명</th>
-<th class="head">필수 여부</th>
+<tr><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Mandatory</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>Dimensions.member.N</td>
-<td><p class="first">메트릭과 관련된 Dimension 리스트</p>
-<p>자료 형: <a class="reference internal" href="../datatype/dimension.html#dimension"><em>Dimension</em></a> list</p>
-<p class="last">길이 제한: 최소 0개부터 최대 10개의 아이템</p>
+<td><p class="first">Dimension list in respect of Metric.</p>
+<p>Data type: <a class="reference internal" href="../datatype/dimension.html#dimension"><em>Dimension</em></a> list</p>
+<p class="last">Length limitation: 0 ~ 10 items</p>
 </td>
 <td>No</td>
 </tr>
 <tr><td>EndTime</td>
-<td><p class="first">데이터포인트가 반환될 시간의 끝</p>
-<p class="last">자료 형: DateTime</p>
+<td><p class="first">End of the period for which data point will be returned.</p>
+<p class="last">Data type: DateTime</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>MetricName</td>
-<td><p class="first">메트릭 이름</p>
-<p>자료 형: String</p>
-<p>길이 제한: 최소 1자 ~ 최대 255자</p>
-<p class="last">형식 제한: 숫자로만 이루어진 값 사용 불가</p>
+<td><p class="first">Metric name.</p>
+<p>Data Type: String</p>
+<p>Length limitation: 1 ~ 255 bytes</p>
+<p class="last">Type limitation: Value consisting of only numbers can not be used.</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>Namespace</td>
-<td><p class="first">메트릭의 namespace</p>
-<p>자료 형: String</p>
-<p>길이 제한: 최소 1자 ~ 최대 255자</p>
-<p class="last">형식 제한: 숫자로만 이루어진 값 사용 불가</p>
+<td><p class="first">namespace of Metric.</p>
+<p>Data Type: String</p>
+<p>Length limitation: 1 ~ 255 bytes</p>
+<p class="last">Type limitation: Value consisting of only numbers can not be used.</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>Period</td>
-<td><p class="first">데이터포인트의 통계에 적용할 기간(초 단위). 최소 60초이며 반드시 60초의
-배수이어야 한다. 기본 값은 60 이다.</p>
-<p>자료 형: Integer</p>
-<p class="last">유효값 : 60(1분) ~ 86400(24시간), 60의 배수.</p>
+<td><p class="first">Period to apply data point Statistic. (sec) It has to be always multiple
+of 60. Minimum, and default value is 60.</p>
+<p>Data Type: Integer</p>
+<p class="last">Valid value : 60(1 minute) ~ 86400(24 hours), multiple of 60.</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>StartTime</td>
-<td><p class="first">데이터포인트가 반환될 시간의 시작</p>
-<p class="last">자료 형: DateTime</p>
+<td><p class="first">End of the period for which data point will be returned.</p>
+<p class="last">Data type: DateTime</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>Statistics.member.N</td>
-<td><p class="first">반환될 메트릭 통계.</p>
-<p>유효 값: Average | Sum | SampleCount | Maximum | Minimum</p>
-<p>자료 형: String list</p>
-<p class="last">길이 제한: 최소 1개 ~ 5개의 아이템</p>
+<td><p class="first">Metric statistics to return.</p>
+<p>Valid value: Average | Sum | SampleCount | Maximum | Minimum</p>
+<p>Data type: String list</p>
+<p class="last">Length limitation: 1 ~ 5 items</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>Unit</td>
-<td><p class="first">메트릭에 적용될 단위</p>
-<p>자료 형: String</p>
-<p class="last">유효 값: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes |
+<td><p class="first">Metric&#8217;s unit.</p>
+<p>Data type: String</p>
+<p class="last">Valid value: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes |
 Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits |
 Gigabits | Terabits | Percent | Count | Bytes/Second | Kilobytes/Second |
 Megabytes/Second | Gigabytes/Second | Terabytes/Second | Bits/Second |
@@ -142,32 +139,32 @@ Count/Second | None</p>
 </tr>
 </tbody>
 </table>
+<p>see also <a class="reference internal" href="../common/common_query_parameters.html#common-query-parameters"><em>Common Query Parameters</em></a></p>
 </div>
-<div class="section" id="id3">
-<h2>응답<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>아래 엘리먼트가 GetMetricStatisticsResult 에 구조화되어 반환된다.</p>
+<div class="section" id="response">
+<h2>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h2>
+<p>Following elements are structured in GetMetricStatisticsResult and returned.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="33%" />
 <col width="67%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">이름</th>
-<th class="head">설명</th>
+<tr><th class="head">Name</th>
+<th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>Datapoints</td>
-<td><p class="first">해당 메트릭의 데이터포인트</p>
-<p class="last">자료 형: <a class="reference internal" href="../datatype/datapoint.html#datapoint"><em>Datapoint</em></a> 리스트</p>
+<td><p class="first">Data points of Metric.</p>
+<p class="last">Data type: <a class="reference internal" href="../datatype/datapoint.html#datapoint"><em>Datapoint</em></a> list</p>
 </td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="section" id="id4">
-<h2>에러<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
-<p>공통으로 발생하는 에러는 <a class="reference internal" href="../common/common_errors.html#common-errors"><em>Common Errors</em></a> 를 참고한다.</p>
+<div class="section" id="error">
+<h2>Error<a class="headerlink" href="#error" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -175,18 +172,19 @@ Count/Second | None</p>
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">에러</th>
-<th class="head">설명</th>
+<tr><th class="head">Error</th>
+<th class="head">Description</th>
 <th class="head">HTTP Status Code</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>InvalidParameterValue</td>
-<td>입력 파라미터의 값이 규격을 위반했음</td>
+<td>Invalid Input Parameter.</td>
 <td>400</td>
 </tr>
 </tbody>
 </table>
+<p>see also <a class="reference internal" href="../common/common_errors.html#common-errors"><em>Common Errors</em></a></p>
 </div>
 </div>
 
@@ -199,10 +197,10 @@ Count/Second | None</p>
             <h3><a href="../../../index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference internal" href="#">GetMetricStatistics</a><ul>
-<li><a class="reference internal" href="#id1">설명</a></li>
-<li><a class="reference internal" href="#id2">요청 매개변수</a></li>
-<li><a class="reference internal" href="#id3">응답</a></li>
-<li><a class="reference internal" href="#id4">에러</a></li>
+<li><a class="reference internal" href="#description">Description.</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+<li><a class="reference internal" href="#response">Response</a></li>
+<li><a class="reference internal" href="#error">Error</a></li>
 </ul>
 </li>
 </ul>
@@ -257,7 +255,7 @@ Count/Second | None</p>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Nov 7 10:41:29 2012, commit fd131b4.
+      Last updated on Thu Nov 15 18:58:03 2012, commit 2afbb5d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

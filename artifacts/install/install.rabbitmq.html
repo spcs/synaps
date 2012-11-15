@@ -68,7 +68,9 @@
 path is &#8220;/etc/rabbitmq/rabbitmq.config&#8221;.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Replace example hostname(synaps-mq01 and synaps-mq02) to real hostname.</p>
+<p class="last">Replace example hostname(synaps-mq01 and synaps-mq02) to the first hostname
+(the one without dots) of each server.
+For example, If hostname is &#8220;synapsmq1.exam.ple&#8221;, only &#8220;synapsmq1&#8221; is used.</p>
 </div>
 <div class="highlight-python"><pre>[{rabbit, [{cluster_nodes, ['rabbit@synaps-mq01', 'rabbit@synaps-mq02']}]}].</pre>
 </div>
@@ -144,7 +146,7 @@ Cluster status of node <span class="s1">&#39;rabbit@synaps-mq02&#39;</span> ...
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Nov 7 10:41:29 2012, commit fd131b4.
+      Last updated on Thu Nov 15 18:58:03 2012, commit 2afbb5d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

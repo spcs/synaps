@@ -50,19 +50,17 @@
             
   <div class="section" id="listmetrics">
 <span id="list-metrics"></span><h1>ListMetrics<a class="headerlink" href="#listmetrics" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="id1">
-<h2>설명<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>SPCS 사용자가 저장한 메트릭 리스트를 반환한다. <a class="reference internal" href="get_metric_statistics.html#get-metric-statistics"><em>GetMetricStatistics</em></a> 을
-사용해서 조회된 메트릭의 통계자료를 얻을 수 있다.</p>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Return the Metric list that user has stored. You can get Statistics of
+checked Metric using <a class="reference internal" href="get_metric_statistics.html#get-metric-statistics"><em>GetMetricStatistics</em></a>.</p>
 <dl class="docutils">
-<dt>알림</dt>
-<dd>최대 500 개 결과만 얻을 수 있음. 다음 리스트를 얻기 위해서는 NextToken을 사용
-해야함.</dd>
+<dt>Note</dt>
+<dd>You can get result up to 500. You need to use NextToken to get next list.</dd>
 </dl>
 </div>
-<div class="section" id="id2">
-<h2>요청 매개변수<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>공통으로 요구되는 매개변수는 <a class="reference internal" href="../common/common_query_parameters.html#common-query-parameters"><em>Common Qurey Parameters</em></a> 를 참고한다.</p>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -70,74 +68,75 @@
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">이름</th>
-<th class="head">설명</th>
-<th class="head">필수 여부</th>
+<tr><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Mandatory</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>Dimensions.member.N</td>
-<td><p class="first">검색에 사용할 dimension 의 리스트</p>
-<p>자료 형: <a class="reference internal" href="../datatype/dimension_filter.html#dimension-filter"><em>DimensionFilter</em></a> 리스트</p>
-<p class="last">길이 제한: 최소 0개부터 최대 10개의 아이템</p>
+<td><p class="first">Dimension list to be used for search.</p>
+<p>Data type: <a class="reference internal" href="../datatype/dimension_filter.html#dimension-filter"><em>DimensionFilter</em></a> list</p>
+<p class="last">Length limitation: 0 ~ 10 items</p>
 </td>
 <td>No</td>
 </tr>
 <tr><td>MetricName</td>
-<td><p class="first">검색에 사용할 메트릭 이름</p>
-<p>자료 형: String</p>
-<p>길이 제한: 최소 1자 ~ 최대 255자</p>
-<p class="last">형식 제한: 숫자로만 이루어진 값 사용 불가</p>
+<td><p class="first">Metric name to be used for search.</p>
+<p>Data type: String</p>
+<p>Length limitation: 1 ~ 255 bytes</p>
+<p class="last">Type limitation: Value consisting of only numbers can not be used.</p>
 </td>
 <td>No</td>
 </tr>
 <tr><td>Namespace</td>
-<td><p class="first">검색에 사용할 namespace</p>
-<p>자료 형: String</p>
-<p>길이 제한: 최소 1자 ~ 최대 255자</p>
-<p class="last">형식 제한: 숫자로만 이루어진 값 사용 불가</p>
+<td><p class="first">Namespace to be used for search.</p>
+<p>Data type: String</p>
+<p>Length limitation: 1 ~ 255 bytes</p>
+<p class="last">Type limitation: Value consisting of only numbers can not be used.</p>
 </td>
 <td>No</td>
 </tr>
 <tr><td>NextToken</td>
-<td><p class="first">다음 데이터를 조회하기 위한 토큰.</p>
-<p class="last">자료 형: String</p>
+<td><p class="first">Token to check next data.</p>
+<p class="last">Data type: String</p>
 </td>
 <td>No</td>
 </tr>
 </tbody>
 </table>
+<p>see also <a class="reference internal" href="../common/common_query_parameters.html#common-query-parameters"><em>Common Query Parameters</em></a></p>
 </div>
-<div class="section" id="id3">
-<h2>응답<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>아래 엘리먼트가 ListMetricsResult 에 구조화되어 반환된다.</p>
+<div class="section" id="response">
+<h2>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h2>
+<p>Following elements are structured in ListMetricsResult and returned.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="33%" />
 <col width="67%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">이름</th>
-<th class="head">설명</th>
+<tr><th class="head">Name</th>
+<th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>Metrics</td>
-<td><p class="first">SPCS 사용자의 메트릭 리스트</p>
-<p class="last">자료 형: <a class="reference internal" href="../datatype/metric.html#metric"><em>Metric</em></a> 리스트</p>
+<td><p class="first">User&#8217;s Metric list</p>
+<p class="last">Data type: <a class="reference internal" href="../datatype/metric.html#metric"><em>Metric</em></a> list</p>
 </td>
 </tr>
 <tr><td>NextToken</td>
-<td><p class="first">다음 데이터를 조회하기 위한 토큰.</p>
-<p class="last">자료 형: String</p>
+<td><p class="first">Token to check next data.</p>
+<p class="last">Data type: String</p>
 </td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="section" id="id4">
-<h2>에러<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
-<p>공통으로 발생하는 에러는 <a class="reference internal" href="../common/common_errors.html#common-errors"><em>Common Errors</em></a> 를 참고한다.</p>
+<div class="section" id="error">
+<h2>Error<a class="headerlink" href="#error" title="Permalink to this headline">¶</a></h2>
+<p>see also <a class="reference internal" href="../common/common_errors.html#common-errors"><em>Common Errors</em></a></p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -145,14 +144,14 @@
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">에러</th>
-<th class="head">설명</th>
+<tr><th class="head">Error</th>
+<th class="head">Description</th>
 <th class="head">HTTP Status Code</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>InvalidParameterValue</td>
-<td>입력 파라미터의 값이 규격을 위반했음</td>
+<td>Invalid input parameter</td>
 <td>400</td>
 </tr>
 </tbody>
@@ -169,10 +168,10 @@
             <h3><a href="../../../index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference internal" href="#">ListMetrics</a><ul>
-<li><a class="reference internal" href="#id1">설명</a></li>
-<li><a class="reference internal" href="#id2">요청 매개변수</a></li>
-<li><a class="reference internal" href="#id3">응답</a></li>
-<li><a class="reference internal" href="#id4">에러</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+<li><a class="reference internal" href="#response">Response</a></li>
+<li><a class="reference internal" href="#error">Error</a></li>
 </ul>
 </li>
 </ul>
@@ -227,7 +226,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Nov 7 10:41:29 2012, commit fd131b4.
+      Last updated on Thu Nov 15 18:58:03 2012, commit 2afbb5d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

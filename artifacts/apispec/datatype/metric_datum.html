@@ -50,49 +50,49 @@
             
   <div class="section" id="metricdatum">
 <span id="metric-datum"></span><h1>MetricDatum<a class="headerlink" href="#metricdatum" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="id1">
-<h2>설명<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="../action/put_metric_data.html#put-metric-data"><em>PutMetricData</em></a> 를 통해 보낼 정보. 새로운 메트릭을 생성하거나 기존
-메트릭에 새로운 값을 추가하기 위해 사용함.</p>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Information that sent through <a class="reference internal" href="../action/put_metric_data.html#put-metric-data"><em>PutMetricData</em></a>. Used to add a new value
+to existing Metric or generate new Metric.</p>
 </div>
-<div class="section" id="id2">
-<h2>내용<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="38%" />
 <col width="63%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">이름</th>
-<th class="head">설명</th>
+<tr><th class="head">Name</th>
+<th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr><td>Dimensions</td>
-<td><p class="first">메트릭의 dimensions</p>
-<p>자료 형: <a class="reference internal" href="dimension.html#dimension"><em>Dimension</em></a> 리스트</p>
-<p class="last">길이 제한: 최소 0개, 최대 10개의 아이템</p>
+<td><p class="first">Dimensions for Metric</p>
+<p>Data type: <a class="reference internal" href="dimension.html#dimension"><em>Dimension</em></a> list</p>
+<p class="last">Length limitation: 0 ~ 10 items</p>
 </td>
 </tr>
 <tr><td>MetricName</td>
-<td><p class="first">메트릭 이름</p>
-<p>자료 형: String</p>
-<p class="last">길이 제한: 최소 1자, 최대 255자</p>
+<td><p class="first">Metric&#8217;s name.</p>
+<p>Data type: String</p>
+<p class="last">Length limitation: 1 ~ 255 bytes</p>
 </td>
 </tr>
 <tr><td>StatisticValues</td>
-<td>TBD - 아직 구현되지 않음</td>
+<td>TBD - Not Yet Implemented.</td>
 </tr>
 <tr><td>Timestamp</td>
-<td><p class="first">메트릭에 대응하는 timestamp. 지정되지 않은 경우 기본 값으로 메트릭을
-입력받은 시간을 사용한다.</p>
-<p class="last">자료 형: DateTime</p>
+<td><p class="first">Timestamp for Metric. If you don&#8217;t specify this parameter, Use input time
+of Metric as default.</p>
+<p class="last">Data type: DateTime</p>
 </td>
 </tr>
 <tr><td>Unit</td>
-<td><p class="first">메트릭의 단위</p>
-<p>자료 형: String</p>
-<p class="last">유효 값: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes |
+<td><p class="first">Unit for Metric</p>
+<p>Data type: String</p>
+<p class="last">Valid value: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes |
 Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits |
 Gigabits | Terabits | Percent | Count | Bytes/Second | Kilobytes/Second |
 Megabytes/Second | Gigabytes/Second | Terabytes/Second | Bits/Second |
@@ -101,8 +101,8 @@ Count/Second | None</p>
 </td>
 </tr>
 <tr><td>Value</td>
-<td><p class="first">메트릭의 값</p>
-<p class="last">자료 형: Double</p>
+<td><p class="first">Value of Metric</p>
+<p class="last">Data type: Double</p>
 </td>
 </tr>
 </tbody>
@@ -119,8 +119,8 @@ Count/Second | None</p>
             <h3><a href="../../../index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference internal" href="#">MetricDatum</a><ul>
-<li><a class="reference internal" href="#id1">설명</a></li>
-<li><a class="reference internal" href="#id2">내용</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#contents">Contents</a></li>
 </ul>
 </li>
 </ul>
@@ -175,7 +175,7 @@ Count/Second | None</p>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Nov 7 10:41:29 2012, commit fd131b4.
+      Last updated on Thu Nov 15 18:58:03 2012, commit 2afbb5d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

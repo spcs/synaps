@@ -3,35 +3,35 @@
 StatisticSet
 ============
 .. DANGER::
-  TBD - 아직 구현되지 않음
+  TBD - Not yet implemented
 
-설명
+Description
 ----
-StatisticSet 자료 형은 :ref:`metric_datum` 의 StatisticValues 에 해당함, 
-특정 메트릭을 기술하는 통계자료를 나타냄
+StatisticSet data type corresponds to StatisticValue of MetricDatum. 
+It means statistic data for specific Metric.
 
-내용
+Parameters
 ----
 
 .. list-table:: 
    :widths: 30 50
    :header-rows: 1
    
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - Maximum
-     - 샘플 셋의 최대값
+     - Maximum value of sample set.
 
-       자료 형: Double
+       Data type: Double
    * - Minimum
-     - 샘플 셋의 최소값
+     - Minimum value of sample set.
 
-       자료 형: Double
+       Data type: Double
    * - SampleCount
-     - 샘플의 갯수
+     - Count of samples
 
-       자료 형: Double
+       Data type: Double
    * - Sum
-     - 샘플 셋의 합
+     - Sum of samples
 
-       자료 형: Double
+       Data type: Double

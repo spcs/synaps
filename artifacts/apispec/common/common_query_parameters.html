@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Common Qurey Parameters &mdash; synaps v12.09.b5-dev documentation</title>
+    <title>Common Query Parameters &mdash; synaps v12.09.b5-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/tweaks.css" type="text/css" />
@@ -48,8 +48,8 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="common-qurey-parameters">
-<span id="common-query-parameters"></span><h1>Common Qurey Parameters<a class="headerlink" href="#common-qurey-parameters" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="common-query-parameters">
+<span id="id1"></span><h1>Common Query Parameters<a class="headerlink" href="#common-query-parameters" title="Permalink to this headline">¶</a></h1>
 <p>It describes common query parameters for all API actions.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -72,7 +72,7 @@
 <td>Yes</td>
 </tr>
 <tr><td>AuthParams</td>
-<td><p class="first">질의 요청을 인증하기 위한 매개변수.</p>
+<td><p class="first">Parameters for authentication to query request.</p>
 <p>This includes the following:</p>
 <p>AWSAccessKeyID</p>
 <p>SignatureVersion</p>
@@ -80,59 +80,58 @@
 <p>Signature</p>
 <p class="last">Default Value: None</p>
 </td>
-<td>조건부</td>
+<td>Conditional</td>
 </tr>
 <tr><td>AWSAccessKeyId</td>
-<td><p class="first">요청에 서명할 AWS Secrete Access Key 와 짝을 이루는 Access Key ID</p>
+<td><p class="first">Access key which makes a pair with AWS Secrete Access Key to signature
+for request.</p>
 <p>Default Value: None</p>
 <p class="last">Data Type: String</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>Expires</td>
-<td><p class="first">요청 서명의 만기 일시. ISO 8601 표준에 명기된 대로 YYYY-MM-DDThh:mm:ssZ
-의 형식을 따른다.</p>
-<p>조건: 요청은 Timestamp 또는 Expires 둘 중 하나를 반드시 포함해야 하며,
-모두 포함할 수 없다.</p>
+<td><p class="first">Expire date and time for request. Follow the ISO 8601 standard; such as
+YYYY-MM-DDThh:mm:ssZ</p>
+<p>Condition: Request must has Timestamp or Expires, not allow both.</p>
 <p>Default Value: None</p>
 <p class="last">Data Type: String</p>
 </td>
-<td>조건부</td>
+<td>Conditional</td>
 </tr>
 <tr><td>Signature</td>
-<td><p class="first">요청 시 생성하는 전자 서명.</p>
+<td><p class="first">Electronic signature that is generated when it is requested.</p>
 <p>Default Value: None</p>
 <p class="last">Data Type: String</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>SignatureMethod</td>
-<td><p class="first">서명에 사용하는 해시 알고리즘</p>
+<td><p class="first">Hash algorithm to use for signature.</p>
 <p>Default Value: None</p>
-<p>유효 값: HmacSHA256 | HmacSHA1.</p>
+<p>Valid value: HmacSHA256 | HmacSHA1.</p>
 <p class="last">Data Type: String</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>SignatureVersion</td>
-<td><p class="first">요청에 서명할 때 사용한 서명의 버전</p>
+<td><p class="first">used Signature&#8217;s version when sign for request.</p>
 <p>Default Value: None</p>
 <p class="last">Data Type: String</p>
 </td>
 <td>Yes</td>
 </tr>
 <tr><td>Timestamp</td>
-<td><p class="first">요청에 서명하는 날짜 및 시간, ISO 8601 표준에 따라 YYYY-MM-DDThh:mm:ssZ
-와 같은 형식을 따른다.</p>
-<p>조건: 요청은 Timestamp 또는 Expires 둘 중 하나를 반드시 포함해야 하며,
-모두 포함할 수 없다.</p>
+<td><p class="first">date and time for sign a request. Follow the ISO 8601 standard; such as
+YYYY-MM-DDThh:mm:ssZ</p>
+<p>Condition: Request must has Timestamp or Expires, not allow both.</p>
 <p>Default Value: None</p>
 <p class="last">Data Type: String</p>
 </td>
-<td>조건부</td>
+<td>Conditional</td>
 </tr>
 <tr><td>Version</td>
-<td><p class="first">사용할 API 버전, YYYY-MM-DD.</p>
+<td><p class="first">API&#8217;s version, such as YYYY-MM-DD.</p>
 <p>Default Value: None</p>
 <p class="last">Data Type: String</p>
 </td>
@@ -198,7 +197,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Nov 7 10:41:29 2012, commit fd131b4.
+      Last updated on Thu Nov 15 18:58:03 2012, commit 2afbb5d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

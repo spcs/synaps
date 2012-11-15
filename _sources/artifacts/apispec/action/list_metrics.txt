@@ -3,88 +3,88 @@
 ListMetrics
 ===========
 
-설명
+Description
 ----
-SPCS 사용자가 저장한 메트릭 리스트를 반환한다. :ref:`get_metric_statistics` 을 
-사용해서 조회된 메트릭의 통계자료를 얻을 수 있다. 
+Return the Metric list that user has stored. You can get Statistics of 
+checked Metric using :ref:`get_metric_statistics`. 
 
-알림
-  최대 500 개 결과만 얻을 수 있음. 다음 리스트를 얻기 위해서는 NextToken을 사용
-  해야함.
+Note
+  You can get result up to 500. You need to use NextToken to get next list.
 
 
-요청 매개변수
+Parameters
 -------------
-공통으로 요구되는 매개변수는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
    :widths: 20 50 10
    :header-rows: 1
 
-   * - 이름
-     - 설명
-     - 필수 여부
+   * - Name
+     - Description
+     - Mandatory
    * - Dimensions.member.N
-     - 검색에 사용할 dimension 의 리스트
+     - Dimension list to be used for search.
+     
+       Data type: :ref:`dimension_filter` list
 
-       자료 형: :ref:`dimension_filter` 리스트
-
-       길이 제한: 최소 0개부터 최대 10개의 아이템
+       Length limitation: 0 ~ 10 items
      - No
    * - MetricName
-     - 검색에 사용할 메트릭 이름
+     - Metric name to be used for search.
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 1자 ~ 최대 255자
+       Length limitation: 1 ~ 255 bytes
               
-       형식 제한: 숫자로만 이루어진 값 사용 불가
+       Type limitation: Value consisting of only numbers can not be used.
      - No
    * - Namespace	
-     - 검색에 사용할 namespace
+     - Namespace to be used for search.
 
-       자료 형: String
+       Data type: String
 
-       길이 제한: 최소 1자 ~ 최대 255자
+       Length limitation: 1 ~ 255 bytes
               
-       형식 제한: 숫자로만 이루어진 값 사용 불가
+       Type limitation: Value consisting of only numbers can not be used.
      - No
    * - NextToken
-     - 다음 데이터를 조회하기 위한 토큰.
+     - Token to check next data.
        
-       자료 형: String
+       Data type: String
      - No       
+
+see also :ref:`common_query_parameters` 
        
-응답
+Response
 ----
-아래 엘리먼트가 ListMetricsResult 에 구조화되어 반환된다.
+Following elements are structured in ListMetricsResult and returned.
 
 .. list-table:: 
    :widths: 20 40
    :header-rows: 1
 
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - Metrics
-     - SPCS 사용자의 메트릭 리스트
+     - User's Metric list 
 
-       자료 형: :ref:`metric` 리스트
+       Data type: :ref:`metric` list
    * - NextToken
-     - 다음 데이터를 조회하기 위한 토큰.
+     - Token to check next data.
        
-       자료 형: String
+       Data type: String
      
-에러
+Error
 ----
-공통으로 발생하는 에러는 :ref:`common_errors` 를 참고한다.
+see also :ref:`common_errors` 
 
 .. list-table:: 
    :widths: 20 50 10
    :header-rows: 1
    
-   * - 에러
-     - 설명
+   * - Error
+     - Description
      - HTTP Status Code
    * - InvalidParameterValue
-     - 입력 파라미터의 값이 규격을 위반했음
+     - Invalid input parameter
      - 400

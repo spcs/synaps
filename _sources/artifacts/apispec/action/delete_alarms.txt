@@ -7,7 +7,7 @@ Description
 -----------
 
 It deletes all alarm that is specified in action parameter. If at least one 
-alarmname does not exist in the database, this action will not affect to any
+AlarmName does not exist in the database, this action will not affect to any
 alarm.  
 
 Parameters
