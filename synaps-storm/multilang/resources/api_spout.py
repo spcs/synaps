@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python -u
 # Copyright (c) 2012 Samsung SDS Co., LTD
 # All Rights Reserved.
 #
@@ -78,7 +78,10 @@ class ApiSpout(Spout):
         queue_args = {"x-ha-policy" : "all" }
         self.channel.queue_declare(queue='metric_queue', durable=True,
                                    arguments=queue_args)
-    
+
+    def ack(self, id):
+        self.log("Acked message [%s]" % id)
+            
     def fail(self, id):
         self.log("Reject failed message [%s]" % id)
     

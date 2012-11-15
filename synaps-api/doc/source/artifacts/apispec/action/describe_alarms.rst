@@ -3,98 +3,103 @@
 DescribeAlarms
 ======================
 
-설명
+Description
 ----
-특정 이름을 가진 알람을 조회한다. 이름이 지정되지 않은 경우, 사용자의 모든 알람
-을 반환한다. 알람 이름의 시작 문자열이나 알람 상태를 통해 조회할 수 있다.
+Check the Alarm that has specific name. If you don't specify name, Synaps will
+return all Alarms of user. You can search Alarm using name's prefix string or
+state of Alarm.
 
-요청 매개변수
+Parameters
 -------------
-공통 매개변수에 대한 정보는 :ref:`common_query_parameters` 를 참고한다.
 
 .. list-table:: 
    :widths: 20 50 10
    :header-rows: 1
 
-   * - 이름
-     - 설명
-     - 필수 여부
+   * - Name
+     - Description
+     - Mandatory
    * - ActionPrefix
-     - 아직 구현되지 않았음.
+     - TBD.
      
-       액션 이름 시작 문자열.
+       Prefix string of action's name.
 
        Type: String
 
-       길이 제한: 최소 1자, 최대 1024자.
+       Length limitation: 1 ~ 1024 bytes.
               
-       형식 제한: 숫자로만 이루어진 값 사용 불가
+       Type limitation: Value consisting of only numbers can not be used.
      - No
    * - AlarmNamePrefix
-     - 알람 이름의 시작 문자열. AlarmNames 매개변수를 사용한 경우 본 매개변수는
-       무시한다.
+     - Prefix string of Alarm's name. If you use AlarmNAmes, this parameter will
+       be ignored.
 
        Type: String
 
-       길이 제한: 최소 1자, 최대 255자.
+       Length limitation: 1 ~ 255 bytes.
               
-       형식 제한: 숫자로만 이루어진 값 사용 불가
+       Type limitation: Value consisting of only numbers can not be used.
      - No
    * - AlarmNames.member.N
-     - 알람 정보를 얻어올 알람 이름의 리스트.
+     - list of AlarmName to get Alarm information.
 
        Type: String list
 
-       길이 제한: 최소 0개의 이름, 최대 100개의 이름.
+       Length limitation: 0 ~ 100 names.
      - No
    * - MaxRecords
-     - 얻어올 알람의 최대 갯수.
+     - Max number of Alarm to bring
 
        Type: Integer
      - No
    * - NextToken
-     - 해당 토큰을 키로하는 알람부터 조회
+     - Check from the Alarm that has this Token.
 
        Type: String
      - No
    * - StateValue
-     - 일치하는 알람의 상태값.
+     - State value to check.
 
        Type: String
 
-       유효 값: OK | ALARM | INSUFFICIENT_DATA
+       Valid value: OK | ALARM | INSUFFICIENT_DATA
      - No
+
+see also :ref:`common_query_parameters` 
  
-응답
+Response
 ----
-다음 자료를 DescribeAlarmsResult 에 담아 반환한다.
+Following elements are structured in DescribeAlarmsResult and returned.
 
 .. list-table:: 
    :widths: 20 40
    :header-rows: 1
 
-   * - 이름
-     - 설명
+   * - Name
+     - Description
    * - MetricAlarms	
-     - 알람 정보
+     - Information of Alarm.
 
        Type: MetricAlarm list
    * - NextToken
-     - 결과의 마지막 토큰
-       
+     - The last Token of Result.
+            
        Type: String
+
+see also :ref:`common_query_parameters` 
     
-에러
+Errors
 ----
-공통으로 발생하는 에러는 :ref:`common_errors` 를 참고한다.
 
 .. list-table:: 
    :widths: 20 50 10
    :header-rows: 1
    
-   * - 에러
-     - 설명
+   * - Error
+     - Description
      - HTTP Status Code
    * - InvalidNextToken
-     - 주어진 next token 이 유효하지 않음
+     - Invalid next token.
      - 400
+
+see also :ref:`common_errors` 

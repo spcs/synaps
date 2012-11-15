@@ -181,7 +181,7 @@ class API(object):
             stat[statistic] = func(ts, period, min_periods=0)
 
         ret = filter(None, (to_datapoint(stat, i) for i in stat.index))
-        return ret
+        return ret, unit
 
     def list_metrics(self, project_id, next_token=None, dimensions=None,
                      metric_name=None, namespace=None):

@@ -6,7 +6,7 @@
 Program Specification
 =====================
 
-Synaps is an cloud monitoring system that collects metric data, provides 
+Synaps is a cloud monitoring system that collects metric data, provides 
 statistics data, monitors and notifies based on user defined alarms.
 
 It supports users to collect and monitor their default metrics (eg. 

@@ -63,16 +63,6 @@ def _try_convert(value):
         return 0
     if valueneg == '':
         return value
-    if valueneg[0] == '0':
-        if valueneg[1] in 'xX':
-            return int(value, 16)
-        elif valueneg[1] in 'bB':
-            return int(value, 2)
-        else:
-            try:
-                return int(value, 8)
-            except ValueError:
-                pass
     try:
         return int(value)
     except ValueError:
