@@ -320,13 +320,14 @@ class ShortCase(SynapsTestCase):
 
         time.sleep(ASYNC_WAIT)
         
-        
         # input metric      
         ret = self.synaps.put_metric_data(
             namespace=self.namespace, name="SampleCountTest",
             value=2000, unit="Bytes", dimensions=self.dimensions,
             timestamp=now_idx,
         )
+
+        time.sleep(ASYNC_WAIT)
 
         stata = self.synaps.get_metric_statistics(
             period=300, start_time=start_time, end_time=end_time,
@@ -344,11 +345,11 @@ class ShortCase(SynapsTestCase):
             dimensions=self.dimensions,
         )
 
-        
         stat1 = filter(lambda x: x.get('Timestamp') == now_idx, stata)[0]
         stat2 = filter(lambda x: x.get('Timestamp') == now_idx, statb)[0]
         
-        self.assertAlmostEqual(stat1['SampleCount'], stat2['SampleCount'])
+        self.assertEqual(stat1['SampleCount'], stat2['SampleCount'])
+
         
     def test_alarm_period(self):
         
