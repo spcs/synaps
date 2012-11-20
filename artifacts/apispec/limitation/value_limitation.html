@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>MetricAlarm &mdash; synaps v12.09.b6 documentation</title>
+    <title>Value limitation &mdash; synaps v12.09.b6 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/tweaks.css" type="text/css" />
@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../../../_static/jquery.tweet.js"></script>
     <link rel="top" title="synaps v12.09.b6 documentation" href="../../../index.html" />
     <link rel="up" title="User API Specification" href="../user.api.html" />
-    <link rel="next" title="MetricDatum" href="metric_datum.html" />
-    <link rel="prev" title="Metric" href="metric.html" /> 
+    <link rel="next" title="Admin API Specificaton" href="../admin.api.html" />
+    <link rel="prev" title="Common Errors" href="../common/common_errors.html" /> 
   </head>
   <body>
   <div id="header">
@@ -48,166 +48,266 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="metricalarm">
-<span id="metric-alarm"></span><h1>MetricAlarm<a class="headerlink" href="#metricalarm" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#metric-alarm"><em>MetricAlarm</em></a> data type shows Alarm. It can create or update Alarm
-using <a class="reference internal" href="../action/put_metric_alarm.html#put-metric-alarm"><em>PutMetricAlarm</em></a> action.</p>
-</div>
-<div class="section" id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="value-limitation">
+<span id="id1"></span><h1>Value limitation<a class="headerlink" href="#value-limitation" title="Permalink to this headline">¶</a></h1>
+<p>This page describes length and type limitation of parameters in Synaps.</p>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="38%" />
-<col width="63%" />
+<col width="30%" />
+<col width="15%" />
+<col width="15%" />
+<col width="40%" />
 </colgroup>
 <thead valign="bottom">
 <tr><th class="head">Name</th>
-<th class="head">Description</th>
+<th class="head">Data type</th>
+<th class="head">Length limitation</th>
+<th class="head">Valid value / Type limitation</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>ActionsEnabled</td>
-<td><p class="first">Whether the execution of action by changing state of the Alarm.</p>
-<p class="last">Data type: Boolean</p>
-</td>
+<tr><td>ActionPrefix</td>
+<td>String</td>
+<td>1 ~ 1024</td>
+<td>Value consisting of only numbers can not be used.</td>
+</tr>
+<tr><td>ActionEnabled</td>
+<td>Boolean</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>AlarmActions</td>
-<td><p class="first">Address to send the E-mail or phone number to send SMS if the state of
-the Alarm.</p>
-<p class="last">Data type: String list</p>
-</td>
+<td>String list</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>AlarmArn</td>
-<td><p class="first">Resource Number of Alarm.</p>
-<p>Data type: String</p>
-<p class="last">Length limitation: 1 ~ 1000 bytes</p>
-</td>
+<td>String</td>
+<td>1 ~ 1000</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>AlarmConfigurationUpdatedTimestamp</td>
-<td><p class="first">Time of the most recent alarm setting has been changed</p>
-<p class="last">Data type: DateTime</p>
-</td>
+<td>DateTime</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>AlarmDescription</td>
-<td><p class="first">Alarm&#8217;s description</p>
-<p>Data type: String</p>
-<p class="last">Length limitation: 0 ~ 255 bytes</p>
-</td>
+<td>String</td>
+<td>1 ~ 255</td>
+<td>Value consisting of only numbers can not be used.</td>
+</tr>
+<tr><td>AlarmHistoryItems</td>
+<td>AlarmHistoryItem list</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>AlarmName</td>
-<td><p class="first">Alarm&#8217;s name</p>
-<p>Data type: String</p>
-<p class="last">Length limitation: 1 ~ 255 bytes</p>
-</td>
+<td>String</td>
+<td>1 ~ 255</td>
+<td>Value consisting of only numbers can not be used.</td>
+</tr>
+<tr><td>AlarmNamePrefix</td>
+<td>String</td>
+<td>1 ~ 255</td>
+<td>Value consisting of only numbers can not be used.</td>
+</tr>
+<tr><td>AlarmNames</td>
+<td>String list</td>
+<td>0 ~ 100</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>Average</td>
+<td>Double</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>ComparisonOperator</td>
-<td><p class="first">Operator to compare with threshold. Statistics data is used for left side
-of calculation.</p>
-<p>Data type: String</p>
-<p class="last">Valid value: GreaterThanOrEqualToThreshold | GreaterThanThreshold |
-LessThanThreshold | LessThanOrEqualToThreshold</p>
-</td>
+<td>String</td>
+<td>&nbsp;</td>
+<td>GreaterThanOrEqualToThreshold | GreaterThanThreshold |
+LessThanThreshold | LessThanOrEqualToThreshold</td>
+</tr>
+<tr><td>Datapoints</td>
+<td>Datapoint list</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>Dimensions</td>
-<td><p class="first">Dimension list for Alarm&#8217;s Metric.</p>
-<p>Data type: <a class="reference internal" href="dimension.html#dimension"><em>Dimension</em></a> list</p>
-<p class="last">Length limitation: 0 ~ 10 items</p>
-</td>
+<td>Dimension list</td>
+<td>0 ~ 10</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>EndDate</td>
+<td>DateTime</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>EndTime</td>
+<td>DateTime</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>EvaluationPeriods</td>
-<td><p class="first">Number of data to compare with threshold.</p>
-<p class="last">Data type: Integer</p>
-</td>
+<td>Integer</td>
+<td>&nbsp;</td>
+<td>1 ~ 100</td>
+</tr>
+<tr><td>HistoryItemType</td>
+<td>String</td>
+<td>&nbsp;</td>
+<td>ConfigurationUpdate | StateUpdate | Action</td>
+</tr>
+<tr><td>HistorySummary</td>
+<td>String</td>
+<td>1 ~ 255</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>InsufficientDataActions</td>
-<td><p class="first">List of phone number to send SMS or E-mail address to send an E-mail when the
-state of alarm is Insufficient_Data.</p>
-<p class="last">Data type: String list</p>
-</td>
+<td>String</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>Label</td>
+<td>String</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>Maximum</td>
+<td>Double</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>MaxRecords</td>
+<td>Integer</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>MetricAlarms</td>
+<td>MetricAlarm list</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>MetricData</td>
+<td>MetricDatum list</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>MetricName</td>
-<td><p class="first">Metric&#8217;s name for Alarm.</p>
-<p>Data type: String</p>
-<p class="last">Length limiation: 1 ~ 255 bytes</p>
-</td>
+<td>String</td>
+<td>1 ~ 255</td>
+<td>Value consisting of only numbers can not be used.</td>
+</tr>
+<tr><td>Metrics</td>
+<td>Metric list</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>Minimum</td>
+<td>Double</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>Name</td>
+<td>String</td>
+<td>1 ~ 255</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>Namespace</td>
-<td><p class="first">Metric&#8217;s namespace for Alarm.</p>
-<p>Type: String</p>
-<p class="last">Length limitation: 1 ~ 255 bytes</p>
-</td>
+<td>String</td>
+<td>1 ~ 255</td>
+<td>Value consisting of only numbers can not be used.</td>
+</tr>
+<tr><td>NextToken</td>
+<td>String</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>OKActions</td>
-<td><p class="first">List of phone number to send SMS or E-mail address to send an E-mail when the
-state of alarm is Insufficient_Data.</p>
-<p class="last">Data type: String list</p>
-</td>
+<td>String</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>Period</td>
-<td><p class="first">Period to apply Statistic (sec)</p>
-<p class="last">Data type: Integer</p>
-</td>
+<td>Integer</td>
+<td>&nbsp;</td>
+<td>60 ~ 86400, multiple of 60.</td>
 </tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<caption>cont&#8217;</caption>
-<colgroup>
-<col width="38%" />
-<col width="63%" />
-</colgroup>
-<thead valign="bottom">
-<tr><th class="head">Name</th>
-<th class="head">Description</th>
+<tr><td>SampleCount</td>
+<td>Double</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
-</thead>
-<tbody valign="top">
+<tr><td>StartDate</td>
+<td>DateTime</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>StartTime</td>
+<td>DateTime</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
 <tr><td>StateReason</td>
-<td><p class="first">Reason of Alarm state. (for human)</p>
-<p>Data type: String</p>
-<p class="last">Length limitation: 0 ~ 1023 bytes</p>
-</td>
+<td>String</td>
+<td>1 ~ 1023</td>
+<td>Value consisting of only numbers can not be used.</td>
 </tr>
 <tr><td>StateReasonData</td>
-<td><p class="first">Reason of Alarm state. (JSON-formatted)</p>
-<p>Data type: String</p>
-<p class="last">Length limitation: 0 ~ 4000 bytes</p>
-</td>
-</tr>
-<tr><td>StateUpdatedTimestamp</td>
-<td><p class="first">Timestamp of the most recent alarm&#8217; state has been changed.</p>
-<p class="last">Data type: DateTime</p>
-</td>
+<td>String</td>
+<td>0 ~ 4000</td>
+<td>Value consisting of only numbers can not be used.</td>
 </tr>
 <tr><td>StateValue</td>
-<td><p class="first">Value of state for Alarm.</p>
-<p>Data type: String</p>
-<p class="last">Valid value: OK | ALARM | INSUFFICIENT_DATA</p>
-</td>
+<td>String</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>Statistic</td>
-<td><p class="first">Statistic of Metric for Alarm.</p>
-<p>Data type: String</p>
-<p class="last">Valid value: SampleCount | Average | Sum | Minimum | Maximum</p>
-</td>
+<td>String</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>Statistics</td>
+<td>String list</td>
+<td>1 ~ 5</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>StatisticValues</td>
+<td>TBD</td>
+<td>&nbsp;</td>
+<td>Not yet implemented</td>
+</tr>
+<tr><td>Sum</td>
+<td>Double</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>Threshold</td>
-<td><p class="first">Threshold to compare with statistics.</p>
-<p class="last">Data type: Double</p>
-</td>
+<td>Double</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>Timestamp</td>
+<td>DateTime</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr><td>Unit</td>
-<td><p class="first">Unit of Metric for Alarm.</p>
-<p>Data type: String</p>
-<p class="last">Valid value: Seconds | Microseconds | Milliseconds | Bytes |
+<td>String</td>
+<td>&nbsp;</td>
+<td>Seconds | Microseconds | Milliseconds | Bytes |
 Kilobytes | Megabytes | Gigabytes | Terabytes | Bits | Kilobits |
 Megabits | Gigabits | Terabits | Percent | Count | Bytes/Second |
 Kilobytes/Second | Megabytes/Second | Gigabytes/Second |
 Terabytes/Second | Bits/Second | Kilobits/Second | Megabits/Second |
-Gigabits/Second | Terabits/Second | Count/Second | None</p>
-</td>
+Gigabits/Second | Terabits/Second | Count/Second | None</td>
+</tr>
+<tr><td>Value</td>
+<td>String</td>
+<td>1 ~ 255</td>
+<td>&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -222,22 +322,21 @@ Gigabits/Second | Terabits/Second | Count/Second | None</p>
         <div class="sphinxsidebarwrapper">
             <h3><a href="../../../index.html">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference internal" href="#">MetricAlarm</a><ul>
-<li><a class="reference internal" href="#description">Description</a></li>
-<li><a class="reference internal" href="#contents">Contents</a></li>
+<li><a class="reference internal" href="#">Value limitation</a><ul>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
 </ul>
 </li>
 </ul>
 
             <h4>Previous topic</h4>
-            <p class="topless"><a href="metric.html"
-                                  title="previous chapter">Metric</a></p>
+            <p class="topless"><a href="../common/common_errors.html"
+                                  title="previous chapter">Common Errors</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="metric_datum.html"
-                                  title="next chapter">MetricDatum</a></p>
+            <p class="topless"><a href="../admin.api.html"
+                                  title="next chapter">Admin API Specificaton</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
-              <li><a href="../../../_sources/artifacts/apispec/datatype/metric_alarm.txt"
+              <li><a href="../../../_sources/artifacts/apispec/limitation/value_limitation.txt"
                      rel="nofollow">Show Source</a></li>
             </ul>
           <div id="searchbox" style="display: none">
@@ -267,10 +366,10 @@ Gigabits/Second | Terabits/Second | Count/Second | None</p>
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="metric_datum.html" title="MetricDatum"
+          <a href="../admin.api.html" title="Admin API Specificaton"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="metric.html" title="Metric"
+          <a href="../common/common_errors.html" title="Common Errors"
              accesskey="P">previous</a> |</li>
         <li><a href="../../../index.html">synaps v12.09.b6 documentation</a> &raquo;</li>
           <li><a href="../../apispec.html" >Application Programming Interface Specification</a> &raquo;</li>
