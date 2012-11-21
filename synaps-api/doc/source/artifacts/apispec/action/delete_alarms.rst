@@ -13,6 +13,8 @@ alarm.
 Parameters
 ----------
 
+Following is list of parameters for this action.
+
 .. list-table:: 
    :widths: 20 50 10
    :header-rows: 1
@@ -32,6 +34,8 @@ see also :ref:`common_query_parameters`
 
 Errors
 ------
+
+Following is list of errors for this action.
 
 .. list-table:: 
    :widths: 20 50 10

@@ -4,12 +4,15 @@ DescribeAlarmsForMetric
 =======================
 
 Description
-----
+-----------
 Check all Alarm in single Metric. You can search Alarm using Statistic type,
 Period or Unit.
 
 Parameters
--------------
+---------- 
+
+Following is list of parameters for this action.
+
 
 .. list-table:: 
    :widths: 20 50 10
@@ -71,7 +74,8 @@ Parameters
 see also :ref:`common_query_parameters` 
 
 Response
-----
+--------
+
 Following elements are structured in DescribeAlarmsForMetricResult and returned.
 
 .. list-table:: 
@@ -86,5 +90,6 @@ Following elements are structured in DescribeAlarmsForMetricResult and returned.
        Data type: :ref:`metric_alarm` list
      
 Errors
-----
+------
+
 see also :ref:`common_errors` 

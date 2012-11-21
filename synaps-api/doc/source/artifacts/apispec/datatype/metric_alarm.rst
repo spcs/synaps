@@ -4,12 +4,14 @@ MetricAlarm
 ===========
 
 Description
-----
+-----------
 :ref:`metric_alarm` data type shows Alarm. It can create or update Alarm
 using :ref:`put_metric_alarm` action.
 
 Contents
-----
+--------
+
+Following is contents of this data type.
 
 .. list-table:: 
    :widths: 30 50

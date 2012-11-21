@@ -4,11 +4,13 @@ ListMetricResult
 ================
 
 Description
-----
+-----------
 Result of :ref:`list_metrics` action
 
 Contents
-----
+--------
+
+Following is contents of this data type.
 
 .. list-table:: 
    :widths: 30 50

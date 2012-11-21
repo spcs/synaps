@@ -4,11 +4,14 @@ PutMetricAlarm
 ==============
 
 Description
-----
+-----------
 Create or update Alarm for Metric.
 
 Parameters
--------------
+----------
+
+Following is list of parameters for this action.
+
 
 .. list-table:: 
    :widths: 20 50 10
@@ -163,5 +166,8 @@ Parameters
 see also :ref:`common_query_parameters` 
             
 Errors
-----
+------
+
+Following is list of errors for this action.
+
 see also :ref:`common_errors` 

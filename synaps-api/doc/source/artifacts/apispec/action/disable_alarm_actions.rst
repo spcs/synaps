@@ -4,12 +4,14 @@ DisableAlarmActions
 ===================
 
 Description
-----
+-----------
 Deactivate the action of specific Alarm. In this case, Alarm action is not executed
 even if Alarm state changed.
 
 Parameters
--------------
+----------
+
+Following is list of parameters for this action.
 
 .. list-table:: 
    :widths: 20 50 10
@@ -29,5 +31,8 @@ Parameters
 see also :ref:`common_query_parameters` 
  
 Error
-----
+-----
+
+Following is list of errors for this action.
+
 see also :ref:`common_errors` 

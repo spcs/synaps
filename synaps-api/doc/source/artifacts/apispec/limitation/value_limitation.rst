@@ -1,12 +1,14 @@
 .. _value_limitation:
 
 Value limitation
-======================
+================
 
 This page describes length and type limitation of parameters in Synaps.  
 
 Parameters
--------------
+----------
+
+Following is contents of this data type.
 
 .. list-table:: 
    :widths: 30 15 15 40

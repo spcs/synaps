@@ -4,11 +4,13 @@ DimensionFilter
 ===============
 
 Description
-----
+-----------
 Search condition to be applied to :ref:`list_metrics`.
 
 Contents
-----
+--------
+
+Following is contents of this data type.
 
 .. list-table:: 
    :widths: 30 50

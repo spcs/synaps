@@ -4,13 +4,15 @@ AlarmHistoryItem
 ================
 
 Description
-----
+-----------
 AlarmHistoryItem data type contain specified alarm's history information. If you 
 call :ref:`describe_alarm_history`, SPCS Synaps will return this data type into
 :ref:`describe_alarm_history_result` data type.
 
 Contents
-----
+--------
+
+Following is contents of this data type.
 
 .. list-table:: 
    :widths: 30 50
