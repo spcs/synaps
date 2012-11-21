@@ -4,7 +4,7 @@ GetMetricStatistics
 ===================
 
 Description.
-----
+------------
 Check the specific metric's statistic data. SPCS Synaps collect data points 
 which are exist within specified Period and return statistic data. For example,
 suppose you specify Period 1 minute and input 30 data points of timestamp for
@@ -13,7 +13,9 @@ Synaps can check statistic information up to 2 weeks. and you can check the
 data points up to 20,160 in a single API call.
 
 Parameters
--------------
+----------
+
+Following is list of parameters for this action.
 
 .. list-table:: 
    :widths: 20 50 10
@@ -90,7 +92,8 @@ Parameters
 see also :ref:`common_query_parameters`        
        
 Response
-----
+--------
+
 Following elements are structured in GetMetricStatisticsResult and returned.
 
 .. list-table:: 
@@ -105,7 +108,9 @@ Following elements are structured in GetMetricStatisticsResult and returned.
        Data type: :ref:`datapoint` list
      
 Error
-----
+-----
+
+Following is list of errors for this action.
 
 .. list-table:: 
    :widths: 20 50 10

@@ -1,14 +1,16 @@
 .. _put_metric_data:
 
 PutMetricData
-======================
+=============
 
 Description
-----
+-----------
 Publish Metric Datapoint to Synaps. If there is no specified Metric, create it. 
   
 Parameters
--------------
+----------
+
+Following is list of parameters for this action.
 
 .. list-table:: 
    :widths: 20 50 10
@@ -39,7 +41,9 @@ Parameters
 see also :ref:`common_query_parameters` 
             
 Errors
-----
+------
+
+Following is list of errors for this action.
 
 .. list-table:: 
    :widths: 20 50 10

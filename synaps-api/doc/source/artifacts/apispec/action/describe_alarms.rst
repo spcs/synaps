@@ -1,16 +1,18 @@
 .. _describe_alarms:
 
 DescribeAlarms
-======================
+==============
 
 Description
-----
+-----------
 Check the Alarm that has specific name. If you don't specify name, Synaps will
 return all Alarms of user. You can search Alarm using name's prefix string or
 state of Alarm.
 
 Parameters
--------------
+----------
+
+Following is list of parameters for this action.
 
 .. list-table:: 
    :widths: 20 50 10
@@ -68,7 +70,8 @@ Parameters
 see also :ref:`common_query_parameters` 
  
 Response
-----
+--------
+
 Following elements are structured in DescribeAlarmsResult and returned.
 
 .. list-table:: 
@@ -89,7 +92,9 @@ Following elements are structured in DescribeAlarmsResult and returned.
 see also :ref:`common_query_parameters` 
     
 Errors
-----
+------
+
+Following is list of errors for this action.
 
 .. list-table:: 
    :widths: 20 50 10
