@@ -27,7 +27,6 @@ possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir, os.pardir))
 if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
     sys.path.insert(0, possible_topdir)
-
 from synaps import flags
 from synaps import utils
 
@@ -96,10 +95,12 @@ class ApiSpout(Spout):
             return
 
         if method_frame:
-            msg_id = method_frame.delivery_tag
-            message = "Start processing message in the queue - [%s] %s"
-            self.log(message % (msg_id, body))
-            emit([body], id=msg_id)
+            mq_msg_id = method_frame.delivery_tag
+            msg_body = json.loads(body)
+            msg_id, msg_uuid = msg_body['message_id'], msg_body['message_uuid']
+            message = "Start processing message in the queue - [%s:%s] %s"
+            self.log(message % (msg_id, msg_uuid, body))
+            emit([body], id=msg_uuid)
 
 if __name__ == "__main__":
     ApiSpout().run()

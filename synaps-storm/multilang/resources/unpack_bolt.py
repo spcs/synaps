@@ -79,12 +79,19 @@ class UnpackMessageBolt(storm.BasicBolt):
             return str(alarm.get('metric_key'))
         else:
             return None
+
+    def emit(self, tup):
+        storm.emit(tup)
+        self.log("Emitted %s" % tup)
     
     def process(self, tup):
         message_buf = tup.values[0]
         message = json.loads(message_buf)
 
-        message_id = message.get('message_id')
+        message_id = message['message_id']
+        message_uuid = message['message_uuid']
+        self.log("start processing msg[%s:%s]" % (message_id, message_uuid))
+        
         if message_id == PUT_METRIC_DATA_MSG_ID:
             metric_key = str(self.get_metric_key(message))
             storm.emit([metric_key, message_buf])
@@ -92,8 +99,8 @@ class UnpackMessageBolt(storm.BasicBolt):
             metric_key = message.get('metric_key')
             storm.emit([metric_key, message_buf])
         elif message_id == DELETE_ALARMS_MSG_ID:
-            project_id = message.get('project_id')
-            alarmkeys = message.get('alarmkeys')
+            project_id = message['project_id']
+            alarmkeys = message['alarmkeys']
             for alarmkey in alarmkeys:
                 try:
                     alarmkey_uuid = UUID(alarmkey)
@@ -106,13 +113,13 @@ class UnpackMessageBolt(storm.BasicBolt):
                     storm.log("Alarm %s does not exists" % alarmkey)
                     storm.log(traceback.format_exc(e))
         elif message_id == SET_ALARM_STATE_MSG_ID:
-            project_id = message.get('project_id')
-            alarm_name = message.get('alarm_name')
+            project_id = message['project_id']
+            alarm_name = message['alarm_name']
             alarm_key = self.cass.get_metric_alarm_key(project_id,
                                                        alarm_name)
             if alarm_key:
                 alarm = self.cass.get_metric_alarm(alarm_key)
-                metric_key = str(alarm.get('metric_key'))
+                metric_key = str(alarm['metric_key'])
                 storm.emit([metric_key, json.dumps(message)])
 
 if __name__ == "__main__":

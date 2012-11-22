@@ -116,7 +116,7 @@ class ActionBolt(storm.BasicBolt):
         alarm_key = tup.values[0]
         message_buf = tup.values[1]
         message = json.loads(message_buf)
-        self.log("message received: %s " % message_buf)
+        self.log("start processing tup %s" % (tup))
         
         alarm = self.cass.get_metric_alarm(UUID(alarm_key))
         
