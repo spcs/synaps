@@ -435,7 +435,7 @@ class MetricMonitor(object):
             'query_date': query_date
         }
         storm.log("emit to Alarm Action: %s %s" % (alarmkey, msg)) 
-        storm.emit([str(alarmkey), json.dumps(msg)])        
+        storm.emit([str(alarmkey), json.dumps(msg)])   
     
     def alarm_history_delete(self, alarm_key, alarm):
         item_type = 'ConfigurationUpdate'
@@ -585,15 +585,17 @@ class PutMetricBolt(storm.BasicBolt):
                 metric.check_alarms()
         
     def process(self, tup):
+        message = json.loads(tup.values[1])
+        message_id = message['message_id']
+        message_uuid = message.get('message_uuid', None)
+        self.log("start processing msg[%s:%s]" % (message_id, message_uuid))
+
         try:
             metric_key = UUID(tup.values[0]) if tup.values[0] else None
         except ValueError:
             self.log("badly formed hexadecimal UUID string - %s" % 
                      tup.values[0])
             return
-        
-        message = json.loads(tup.values[1])
-        message_id = message.get('message_id')
         
         if message_id == PUT_METRIC_DATA_MSG_ID:
             self.log("process put_metric_data_msg (%s)" % message)
