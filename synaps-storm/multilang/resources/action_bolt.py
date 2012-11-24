@@ -35,12 +35,7 @@ import zmq
 from synaps.db import Cassandra
 from synaps.utils import validate_email, validate_international_phonenumber
 
-threshhold = 10000
 FLAGS = flags.FLAGS
-
-flags.FLAGS(sys.argv)
-utils.default_flagfile()
-logging.setup()
 
 class ActionBolt(storm.BasicBolt):
     BOLT_NAME = "ActionBolt"
@@ -173,4 +168,8 @@ class ActionBolt(storm.BasicBolt):
         self.process_action(tup)
 
 if __name__ == "__main__":
+    flags.FLAGS(sys.argv)
+    utils.default_flagfile()
+    logging.setup()
+    
     ActionBolt().run()

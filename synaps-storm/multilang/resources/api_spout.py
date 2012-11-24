@@ -28,13 +28,12 @@ possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
 if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
     sys.path.insert(0, possible_topdir)
 from synaps import flags
+from synaps import log as logging
 from synaps import utils
 
 from storm import Spout, emit, log
 
 FLAGS = flags.FLAGS
-flags.FLAGS(sys.argv)
-utils.default_flagfile()
 
 class ApiSpout(Spout):
     SPOUT_NAME = "APISpout"
@@ -103,4 +102,8 @@ class ApiSpout(Spout):
             emit([body], id=msg_uuid)
 
 if __name__ == "__main__":
+    flags.FLAGS(sys.argv)
+    utils.default_flagfile()
+    logging.setup()
+    
     ApiSpout().run()

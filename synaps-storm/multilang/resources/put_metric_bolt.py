@@ -47,10 +47,7 @@ from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
 from synaps import exception
 
 FLAGS = flags.FLAGS
-flags.FLAGS(sys.argv)
-utils.default_flagfile()
-logging.setup()
-    
+
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
     STATISTICS_TTL = Cassandra.STATISTICS_TTL
@@ -616,4 +613,8 @@ class PutMetricBolt(storm.BasicBolt):
             self.log("unknown message")
 
 if __name__ == "__main__":
+    flags.FLAGS(sys.argv)
+    utils.default_flagfile()
+    logging.setup()
+
     PutMetricBolt().run()

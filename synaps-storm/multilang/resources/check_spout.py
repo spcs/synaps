@@ -27,15 +27,15 @@ if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
     sys.path.insert(0, possible_topdir)
 
 from synaps import flags
+from synaps import log as logging
 from synaps import utils
+
 from synaps.rpc import CHECK_METRIC_ALARM_MSG_ID
 from storm import Spout, emit, log
 from uuid import uuid4
 import json
 
 FLAGS = flags.FLAGS
-flags.FLAGS(sys.argv)
-utils.default_flagfile()
 
 class CheckSpout(Spout):
     SPOUT_NAME = "CheckSpout"
@@ -70,4 +70,8 @@ class CheckSpout(Spout):
             time.sleep(1)
 
 if __name__ == "__main__":
+    flags.FLAGS(sys.argv)
+    utils.default_flagfile()
+    logging.setup()
+
     CheckSpout().run()
