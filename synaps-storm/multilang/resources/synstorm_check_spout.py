@@ -42,13 +42,14 @@ class CheckSpout(Spout):
     lastchecked = 0
     
     def initialize(self, conf, context):
+        self.pid = os.getpid()
         self.cass = Cassandra()
         self.nextTuple()
         self.delivery_tags = {}
         self.lastchecked = time.time()
     
     def log(self, msg):
-        log("[%s] %s" % (self.SPOUT_NAME, msg))
+        log("[%s:%d] %s" % (self.SPOUT_NAME, self.pid, msg))
         
     def tracelog(self, e):
         msg = traceback.format_exc(e)

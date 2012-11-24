@@ -44,13 +44,14 @@ class ActionBolt(storm.BasicBolt):
     NOTIFICATION_SERVER = FLAGS.get('notification_server_addr')
     
     def initialize(self, stormconf, context):
+        self.pid = os.getpid()
         self.cass = Cassandra()
         self.ctx = zmq.Context()
         self.sock = self.ctx.socket(zmq.PUSH)
         self.sock.connect(self.NOTIFICATION_SERVER)
     
     def log(self, msg):
-        storm.log("[%s] %s" % (self.BOLT_NAME, msg))
+        storm.log("[%s:%d] %s" % (self.BOLT_NAME, self.pid, msg))
         
     def tracelog(self, e):
         msg = traceback.format_exc(e)

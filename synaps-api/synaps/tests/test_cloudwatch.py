@@ -51,19 +51,20 @@ class SynapsTestCase(unittest.TestCase):
         
 class ShortCase(SynapsTestCase):
     def test_delete_alarms(self):
-        for i in range(10):
-            alarm = MetricAlarm(name="TEST_ALARM_%02d" % i,
-                metric=self.metric_name, namespace=self.namespace,
-                statistic="Average", comparison="<", threshold=2.0 * i,
-                period=300, evaluation_periods=2, unit="Percent",
-                description=None, dimensions=self.dimensions,
-                alarm_actions=None, insufficient_data_actions=None,
-                ok_actions=None)
+        alarmnames = ["TEST_ALARM_%02d" % i for i in range(10)]
+        for name in alarmnames:
+            alarm = MetricAlarm(name=name, metric=self.metric_name,
+                                namespace=self.namespace, statistic="Average",
+                                comparison="<", threshold=2.0, period=300,
+                                evaluation_periods=2, unit="Percent",
+                                description=None, dimensions=self.dimensions,
+                                alarm_actions=None,
+                                insufficient_data_actions=None,
+                                ok_actions=None)
             self.synaps.put_metric_alarm(alarm)
 
-        time.sleep(ASYNC_WAIT)
+        time.sleep(ASYNC_WAIT * 2)
         
-        alarmnames = ["TEST_ALARM_%02d" % i for i in range(10)]
         for alarm in alarmnames:
             self.synaps.delete_alarms(alarms=[alarm])
         
@@ -176,7 +177,7 @@ class ShortCase(SynapsTestCase):
         
         # test list_metric with next token which start "0b" 
         ret = self.synaps.list_metrics(
-            next_token = "0b234016-7824-47f3-9924-634eab9d81da", 
+            next_token="0b234016-7824-47f3-9924-634eab9d81da",
             dimensions=self.dimensions,
             metric_name=self.metric_name,
             namespace=self.namespace
@@ -281,7 +282,7 @@ class ShortCase(SynapsTestCase):
     def test_put_metric_alarm_check_statistic(self):
         #test check Parameters...
         alarm = MetricAlarm(name="CPU_Alarm", metric=self.metric_name,
-                            namespace=self.namespace, 
+                            namespace=self.namespace,
                             statistic="It will occur an error",
                             comparison=">", threshold=50.0, period=300,
                             evaluation_periods=2, unit="Percent",
@@ -296,7 +297,7 @@ class ShortCase(SynapsTestCase):
         alarm = MetricAlarm(name="CPU_Alarm", metric=self.metric_name,
                             namespace=self.namespace, statistic="Average",
                             comparison=">", threshold=50.0, period=300,
-                            evaluation_periods=2, 
+                            evaluation_periods=2,
                             unit="It will occur an error",
                             description=None, dimensions=self.dimensions,
                             alarm_actions=None, insufficient_data_actions=None,
@@ -498,7 +499,7 @@ class ShortCase(SynapsTestCase):
         test_period = 100
         try:
             self.synaps.get_metric_statistics(
-                period=test_period, start_time=start_time, end_time=end_time, 
+                period=test_period, start_time=start_time, end_time=end_time,
                 metric_name=self.metric_name, namespace=self.namespace,
                 statistics=['Sum', 'Average', 'SampleCount'],
                 dimensions=self.dimensions,

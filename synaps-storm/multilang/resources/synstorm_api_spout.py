@@ -39,10 +39,11 @@ class ApiSpout(Spout):
     SPOUT_NAME = "APISpout"
     
     def initialize(self, conf, context):
+        self.pid = os.getpid()       
         self.connect()
     
     def log(self, msg):
-        log("[%s] %s" % (self.SPOUT_NAME, msg))
+        log("[%s:%d] %s" % (self.SPOUT_NAME, self.pid, msg))
         
     def tracelog(self, e):
         msg = traceback.format_exc(e)

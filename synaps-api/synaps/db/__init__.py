@@ -381,17 +381,20 @@ class Cassandra(object):
         return data
     
     def load_statistics(self, metric_key, start, finish):
+        def get_stat(statistic):
+            datapoints = self.scf_stat_archive.get(metric_key,
+                                                   super_column=statistic,
+                                                   column_start=start,
+                                                   column_finish=finish)
+            return statistic, datapoints
+        
         try:
-            samplecount = self.scf_stat_archive.get(metric_key, super_column='SampleCount', column_start=start, column_finish=finish)
-            summ = self.scf_stat_archive.get(metric_key, super_column='Sum', column_start=start, column_finish=finish)
-            average = self.scf_stat_archive.get(metric_key, super_column='Average', column_start=start, column_finish=finish)
-            minimum = self.scf_stat_archive.get(metric_key, super_column='Minimum', column_start=start, column_finish=finish)
-            maximum = self.scf_stat_archive.get(metric_key, super_column='Maximum', column_start=start, column_finish=finish)
-            
-            stat = {'SampleCount':samplecount, 'Sum':summ, 'Average':average, 'Minimum':minimum, 'Maximum':maximum}
+            stat = dict([get_stat(statistic) 
+                         for statistic in self.STATISTICS])
             
         except pycassa.NotFoundException:
             stat = {}
+
         return stat
 
     def load_alarms(self, metric_key):

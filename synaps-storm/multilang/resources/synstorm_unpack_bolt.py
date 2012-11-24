@@ -42,11 +42,12 @@ class UnpackMessageBolt(storm.BasicBolt):
     BOLT_NAME = "UnpackMessageBolt"
     
     def initialize(self, stormconf, context):
+        self.pid = os.getpid()
         self.cass = Cassandra()
         self.key_dict = {}
     
     def log(self, msg):
-        storm.log("[%s] %s" % (self.BOLT_NAME, msg))
+        storm.log("[%s:%d] %s" % (self.BOLT_NAME, self.pid, msg))
         
     def tracelog(self, e):
         msg = traceback.format_exc(e)

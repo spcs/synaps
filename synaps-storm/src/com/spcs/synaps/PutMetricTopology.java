@@ -35,7 +35,7 @@ import java.util.Properties;
 public class PutMetricTopology {
 	public static class ApiSpout extends ShellSpout implements IRichSpout {
 		public ApiSpout() {
-			super("python", "-u", "api_spout.py");
+			super("python", "-u", "synstorm_api_spout.py");
 		}
 
 		@Override
@@ -51,7 +51,7 @@ public class PutMetricTopology {
 
 	public static class CheckSpout extends ShellSpout implements IRichSpout {
 		public CheckSpout() {
-			super("python", "-u", "check_spout.py");
+			super("python", "-u", "synstorm_check_spout.py");
 		}
 
 		@Override
@@ -68,7 +68,7 @@ public class PutMetricTopology {
 	public static class UnpackMessageBolt extends ShellBolt implements
 			IRichBolt {
 		public UnpackMessageBolt() {
-			super("python", "-u", "unpack_bolt.py");
+			super("python", "-u", "synstorm_unpack_bolt.py");
 		}
 
 		@Override
@@ -85,7 +85,7 @@ public class PutMetricTopology {
 
 	public static class PutMetricBolt extends ShellBolt implements IRichBolt {
 		public PutMetricBolt() {
-			super("python", "-u", "put_metric_bolt.py");
+			super("python", "-u", "synstorm_put_metric_bolt.py");
 		}
 
 		@Override
@@ -101,7 +101,7 @@ public class PutMetricTopology {
 
 	public static class ActionBolt extends ShellBolt implements IRichBolt {
 		public ActionBolt() {
-			super("python", "-u", "action_bolt.py");
+			super("python", "-u", "synstorm_action_bolt.py");
 		}
 
 		@Override
