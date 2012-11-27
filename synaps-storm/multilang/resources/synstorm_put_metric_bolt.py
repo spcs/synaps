@@ -617,8 +617,4 @@ class PutMetricBolt(storm.BasicBolt):
             self.log("unknown message")
 
 if __name__ == "__main__":
-    flags.FLAGS(sys.argv)
-    utils.default_flagfile()
-    logging.setup()
-
     PutMetricBolt().run()

@@ -106,8 +106,4 @@ class ApiSpout(Spout):
             emit([body], id=msg_uuid)
 
 if __name__ == "__main__":
-    flags.FLAGS(sys.argv)
-    utils.default_flagfile()
-    logging.setup()
-    
     ApiSpout().run()

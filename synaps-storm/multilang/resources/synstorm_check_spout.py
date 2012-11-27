@@ -74,8 +74,4 @@ class CheckSpout(Spout):
             time.sleep(1)
 
 if __name__ == "__main__":
-    flags.FLAGS(sys.argv)
-    utils.default_flagfile()
-    logging.setup()
-
     CheckSpout().run()
