@@ -35,6 +35,9 @@ from storm import Spout, emit, log
 from uuid import uuid4
 import json
 
+flags.FLAGS(sys.argv)
+utils.default_flagfile()
+logging.setup()
 FLAGS = flags.FLAGS
 
 class CheckSpout(Spout):

@@ -46,6 +46,9 @@ from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
                         CHECK_METRIC_ALARM_MSG_ID)
 from synaps import exception
 
+flags.FLAGS(sys.argv)
+utils.default_flagfile()
+logging.setup()
 FLAGS = flags.FLAGS
 
 class MetricMonitor(object):

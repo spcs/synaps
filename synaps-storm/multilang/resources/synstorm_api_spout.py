@@ -33,6 +33,9 @@ from synaps import utils
 
 from storm import Spout, emit, log
 
+flags.FLAGS(sys.argv)
+utils.default_flagfile()
+logging.setup()
 FLAGS = flags.FLAGS
 
 class ApiSpout(Spout):
