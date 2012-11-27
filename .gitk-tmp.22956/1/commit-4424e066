@@ -1,0 +1,180 @@
+commit 4424e06629da294c90bd7c4e8af91d16b9c899c9
+Author: Deokjune Yi <june.yi@samsung.com>
+Date:   Thu Nov 22 14:30:47 2012 +0900
+
+    [refs #1519] Fix API Spout to use Message UUID for message id
+    
+    Delivery tag can be easily duplicated and it can be the cause of duplicated
+    tuple id flows in the topology.
+    
+    So, changed from delivery tag to uuid for tuple id.
+
+diff --git a/synaps-api/synaps/tests/test_cloudwatch.py b/synaps-api/synaps/tests/test_cloudwatch.py
+index e8b5e15..a09c6a7 100644
+--- a/synaps-api/synaps/tests/test_cloudwatch.py
++++ b/synaps-api/synaps/tests/test_cloudwatch.py
+@@ -632,7 +632,7 @@ class LongCase(SynapsTestCase):
+             self.assertEqual("ALARM", alarm.state_value)
+             self.assertEqual("Manual input", alarm.state_reason)
+         
+-        time.sleep(90)
++        time.sleep(180)
+ 
+         for alarm in self.synaps.describe_alarms(alarm_names=[alarmname]):
+             self.assertEqual("INSUFFICIENT_DATA", alarm.state_value)
+diff --git a/synaps-api/synaps/version.py b/synaps-api/synaps/version.py
+index af0dc73..1b40f9a 100644
+--- a/synaps-api/synaps/version.py
++++ b/synaps-api/synaps/version.py
+@@ -18,7 +18,7 @@
+ #    License for the specific language governing permissions and limitations
+ #    under the License.
+ 
+-SYNAPS_VERSION = ['12', '09', 'b6']
++SYNAPS_VERSION = ['12', '09', 'b6-1']
+ YEAR, COUNT, REVISION = SYNAPS_VERSION
+ FINAL = True   # This becomes true at Release Candidate time
+ 
+diff --git a/synaps-storm/multilang/resources/action_bolt.py b/synaps-storm/multilang/resources/action_bolt.py
+index c251ebe..25e2599 100644
+--- a/synaps-storm/multilang/resources/action_bolt.py
++++ b/synaps-storm/multilang/resources/action_bolt.py
+@@ -116,7 +116,7 @@ class ActionBolt(storm.BasicBolt):
+         alarm_key = tup.values[0]
+         message_buf = tup.values[1]
+         message = json.loads(message_buf)
+-        self.log("message received: %s " % message_buf)
++        self.log("start processing tup %s" % (tup))
+         
+         alarm = self.cass.get_metric_alarm(UUID(alarm_key))
+         
+diff --git a/synaps-storm/multilang/resources/api_spout.py b/synaps-storm/multilang/resources/api_spout.py
+index f0736a6..665a9b7 100644
+--- a/synaps-storm/multilang/resources/api_spout.py
++++ b/synaps-storm/multilang/resources/api_spout.py
+@@ -27,7 +27,6 @@ possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
+                                                 os.pardir, os.pardir))
+ if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
+     sys.path.insert(0, possible_topdir)
+-
+ from synaps import flags
+ from synaps import utils
+ 
+@@ -96,10 +95,12 @@ class ApiSpout(Spout):
+             return
+ 
+         if method_frame:
+-            msg_id = method_frame.delivery_tag
+-            message = "Start processing message in the queue - [%s] %s"
+-            self.log(message % (msg_id, body))
+-            emit([body], id=msg_id)
++            mq_msg_id = method_frame.delivery_tag
++            msg_body = json.loads(body)
++            msg_id, msg_uuid = msg_body['message_id'], msg_body['message_uuid']
++            message = "Start processing message in the queue - [%s:%s] %s"
++            self.log(message % (msg_id, msg_uuid, body))
++            emit([body], id=msg_uuid)
+ 
+ if __name__ == "__main__":
+     ApiSpout().run()
+diff --git a/synaps-storm/multilang/resources/put_metric_bolt.py b/synaps-storm/multilang/resources/put_metric_bolt.py
+index 83e12f2..2944c52 100644
+--- a/synaps-storm/multilang/resources/put_metric_bolt.py
++++ b/synaps-storm/multilang/resources/put_metric_bolt.py
+@@ -435,7 +435,7 @@ class MetricMonitor(object):
+             'query_date': query_date
+         }
+         storm.log("emit to Alarm Action: %s %s" % (alarmkey, msg)) 
+-        storm.emit([str(alarmkey), json.dumps(msg)])        
++        storm.emit([str(alarmkey), json.dumps(msg)])   
+     
+     def alarm_history_delete(self, alarm_key, alarm):
+         item_type = 'ConfigurationUpdate'
+@@ -585,6 +585,11 @@ class PutMetricBolt(storm.BasicBolt):
+                 metric.check_alarms()
+         
+     def process(self, tup):
++        message = json.loads(tup.values[1])
++        message_id = message['message_id']
++        message_uuid = message.get('message_uuid', None)
++        self.log("start processing msg[%s:%s]" % (message_id, message_uuid))
++
+         try:
+             metric_key = UUID(tup.values[0]) if tup.values[0] else None
+         except ValueError:
+@@ -592,9 +597,6 @@ class PutMetricBolt(storm.BasicBolt):
+                      tup.values[0])
+             return
+         
+-        message = json.loads(tup.values[1])
+-        message_id = message.get('message_id')
+-        
+         if message_id == PUT_METRIC_DATA_MSG_ID:
+             self.log("process put_metric_data_msg (%s)" % message)
+             self.process_put_metric_data_msg(metric_key, message)
+diff --git a/synaps-storm/multilang/resources/unpack_bolt.py b/synaps-storm/multilang/resources/unpack_bolt.py
+index 13dcc76..4902820 100644
+--- a/synaps-storm/multilang/resources/unpack_bolt.py
++++ b/synaps-storm/multilang/resources/unpack_bolt.py
+@@ -79,12 +79,19 @@ class UnpackMessageBolt(storm.BasicBolt):
+             return str(alarm.get('metric_key'))
+         else:
+             return None
++
++    def emit(self, tup):
++        storm.emit(tup)
++        self.log("Emitted %s" % tup)
+     
+     def process(self, tup):
+         message_buf = tup.values[0]
+         message = json.loads(message_buf)
+ 
+-        message_id = message.get('message_id')
++        message_id = message['message_id']
++        message_uuid = message['message_uuid']
++        self.log("start processing msg[%s:%s]" % (message_id, message_uuid))
++        
+         if message_id == PUT_METRIC_DATA_MSG_ID:
+             metric_key = str(self.get_metric_key(message))
+             storm.emit([metric_key, message_buf])
+@@ -92,8 +99,8 @@ class UnpackMessageBolt(storm.BasicBolt):
+             metric_key = message.get('metric_key')
+             storm.emit([metric_key, message_buf])
+         elif message_id == DELETE_ALARMS_MSG_ID:
+-            project_id = message.get('project_id')
+-            alarmkeys = message.get('alarmkeys')
++            project_id = message['project_id']
++            alarmkeys = message['alarmkeys']
+             for alarmkey in alarmkeys:
+                 try:
+                     alarmkey_uuid = UUID(alarmkey)
+@@ -106,13 +113,13 @@ class UnpackMessageBolt(storm.BasicBolt):
+                     storm.log("Alarm %s does not exists" % alarmkey)
+                     storm.log(traceback.format_exc(e))
+         elif message_id == SET_ALARM_STATE_MSG_ID:
+-            project_id = message.get('project_id')
+-            alarm_name = message.get('alarm_name')
++            project_id = message['project_id']
++            alarm_name = message['alarm_name']
+             alarm_key = self.cass.get_metric_alarm_key(project_id,
+                                                        alarm_name)
+             if alarm_key:
+                 alarm = self.cass.get_metric_alarm(alarm_key)
+-                metric_key = str(alarm.get('metric_key'))
++                metric_key = str(alarm['metric_key'])
+                 storm.emit([metric_key, json.dumps(message)])
+ 
+ if __name__ == "__main__":
+diff --git a/synaps-storm/pom.xml b/synaps-storm/pom.xml
+index ad28be9..269de8a 100644
+--- a/synaps-storm/pom.xml
++++ b/synaps-storm/pom.xml
+@@ -4,7 +4,7 @@
+ 
+ 	<groupId>synaps</groupId>
+ 	<artifactId>synaps-storm</artifactId>
+-	<version>2012.09.b6</version>
++	<version>2012.09.b6-1</version>
+ 	<packaging>jar</packaging>
+ 
+ 	<properties>

@@ -1,10 +1,11 @@
 .. _describe_alarm_history:
 
 DescribeAlarmHistory
-======================
+====================
 
 Description
-----
+-----------
+
 Check the history of specific Alarm. You can search history using Period or
 HistoryItemType. If you don't specify AlarmName, Synaps will return history
 information of all Alarms that user has.
@@ -13,7 +14,9 @@ Note:
   SPCS Synaps stores AlarmHistory for 2 weeks whether alarm is deleted or not.
 
 Parameters
--------------
+----------
+
+Following is list of parameters for this action.
 
 .. list-table:: 
    :widths: 20 50 10
@@ -62,8 +65,10 @@ Parameters
 see also :ref:`common_query_parameters` 
 
 Response
-----
-Following elements are structured in :ref:`describe_alarm_history_result` and returned.
+--------
+
+Following elements are structured in :ref:`describe_alarm_history_result` and 
+returned.
 
 .. list-table:: 
    :widths: 30 50
@@ -81,7 +86,9 @@ Following elements are structured in :ref:`describe_alarm_history_result` and re
        Data type: String
 
 Errors
-----
+------
+
+Following is list of errors for this action.
 
 .. list-table:: 
    :widths: 20 50 10

@@ -6,14 +6,14 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Install Storm Example &mdash; synaps v12.09.b6 documentation</title>
+    <title>Install Storm Example &mdash; synaps v12.09.b6-2 documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '12.09.b6',
+        VERSION:     '12.09.b6-2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps v12.09.b6 documentation" href="../../index.html" />
+    <link rel="top" title="synaps v12.09.b6-2 documentation" href="../../index.html" />
     <link rel="up" title="Installation Guide" href="../general.installation.guide.html" />
     <link rel="next" title="Install RabbitMQ Example" href="install.rabbitmq.html" />
     <link rel="prev" title="Install Cassandra" href="install.cassandra.html" /> 
@@ -64,6 +64,8 @@ apt-get install apache2
 </div>
 <p>Storm requires ZeroMQ 2.1.7 and JZMQ.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="c"># install zeromq</span>
+<span class="c"># --------------</span>
+
 <span class="nb">cd</span> ~
 wget http://download.zeromq.org/zeromq-2.1.7.tar.gz
 tar zxvf zeromq-2.1.7.tar.gz
@@ -79,29 +81,24 @@ tar xvfz pyzmq-2.1.7.tar.gz
 python setup.py install
 <span class="nb">cd</span> ..
 
-<span class="c"># install JZMQ</span>
-wget https://github.com/nathanmarz/jzmq/tarball/master
-mv master nathanmarz-jzmq-dd3327d.tar.gz
-tar zxvf nathanmarz-jzmq-dd3327d.tar.gz
-<span class="nb">cd </span>nathanmarz-jzmq-dd3327d
+<span class="c"># Install JZMQ</span>
+<span class="c"># ------------</span>
 
-<span class="c"># JZMQ for Ubuntu 11.04</span>
+<span class="c">## download JZMQ for Ubuntu 11.04</span>
+wget https://github.com/nathanmarz/jzmq/archive/master.tar.gz
 <span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span><span class="s1">&#39;/usr/lib/jvm/java-6-openjdk&#39;</span>
-./autogen.sh
-./configure
-make
-sudo make install
 
-<span class="c"># JZMQ for Ubuntu 12.04</span>
+<span class="c">## download JZMQ for Ubuntu 12.04</span>
+wget https://github.com/halfaleague/jzmq/archive/master.tar.gz
 <span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span><span class="s1">&#39;/usr/lib/jvm/java-6-openjdk-amd64&#39;</span>
+
+tar zxvf master.tar.gz
+<span class="nb">cd </span>jzmq-master
 ./autogen.sh
 ./configure
-touch src/classdist_noinst.stamp
-<span class="nb">cd </span>src/
-<span class="nv">CLASSPATH</span><span class="o">=</span>.:./.:<span class="nv">$CLASSPATH</span> javac -d . org/zeromq/ZMQ.java org/zeromq/App.java org/zeromq/ZMQForwarder.java org/zeromq/EmbeddedLibraryTools.java org/zeromq/ZMQQueue.java org/zeromq/ZMQStreamer.java org/zeromq/ZMQException.java
-<span class="nb">cd</span> ..
 make
 sudo make install
+<span class="nb">cd</span> ..
 </pre></div>
 </div>
 </div>
@@ -109,11 +106,11 @@ sudo make install
 <h2>Install Storm<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>Install Storm as below.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="c"># install storm</span>
-wget https://github.com/downloads/nathanmarz/storm/storm-0.8.0.zip
-mv storm-0.8.0.zip /SW
+wget https://github.com/downloads/nathanmarz/storm/storm-0.8.1.zip
+mv storm-0.8.1.zip /SW
 <span class="nb">cd</span> /SW
-unzip storm-0.8.0
-ln -s /SW/storm-0.8.0 storm
+unzip storm-0.8.1
+ln -s /SW/storm-0.8.1 storm
 mkdir ~/.storm
 chmod 777 ~/.storm
 ln -s /SW/storm/bin/storm /bin/storm
@@ -254,13 +251,13 @@ hostname should be appeared before localhost as below.</p>
         <li class="right" >
           <a href="install.cassandra.html" title="Install Cassandra"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">synaps v12.09.b6 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">synaps v12.09.b6-2 documentation</a> &raquo;</li>
           <li><a href="../general.installation.guide.html" accesskey="U">Installation Guide</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Tue Nov 20 14:10:48 2012, commit f535511.
+      Last updated on Tue Nov 27 15:56:50 2012, commit 7d9e0f5.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>

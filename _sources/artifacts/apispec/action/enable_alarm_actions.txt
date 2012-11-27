@@ -4,11 +4,13 @@ EnableAlarmActions
 ==================
 
 Description
-----
+-----------
 Activate action of specific Alarm.
 
 Parameters
--------------
+----------
+
+Following is list of parameters for this action.
 
 .. list-table:: 
    :widths: 20 50 10
@@ -28,5 +30,8 @@ Parameters
 see also :ref:`common_query_parameters`
 
 Error
-----
+-----
+
+Following is list of errors for this action.
+
 see also :ref:`common_errors` 

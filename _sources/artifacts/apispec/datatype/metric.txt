@@ -4,11 +4,13 @@ Metric
 ======
 
 Description
-----
+-----------
 Metric list that :ref:`list_metrics` call.
 
 Contents
-----
+--------
+
+Following is contents of this data type.
 
 .. list-table:: 
    :widths: 30 50

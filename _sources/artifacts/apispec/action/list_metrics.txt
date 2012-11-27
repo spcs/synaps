@@ -4,7 +4,7 @@ ListMetrics
 ===========
 
 Description
-----
+-----------
 Return the Metric list that user has stored. You can get Statistics of 
 checked Metric using :ref:`get_metric_statistics`. 
 
@@ -13,7 +13,9 @@ Note
 
 
 Parameters
--------------
+----------
+
+Following is list of parameters for this action.
 
 .. list-table:: 
    :widths: 20 50 10
@@ -56,7 +58,8 @@ Parameters
 see also :ref:`common_query_parameters` 
        
 Response
-----
+--------
+
 Following elements are structured in ListMetricsResult and returned.
 
 .. list-table:: 
@@ -75,8 +78,9 @@ Following elements are structured in ListMetricsResult and returned.
        Data type: String
      
 Error
-----
-see also :ref:`common_errors` 
+-----
+
+Following is list of errors for this action.
 
 .. list-table:: 
    :widths: 20 50 10
@@ -88,3 +92,5 @@ see also :ref:`common_errors`
    * - InvalidParameterValue
      - Invalid input parameter
      - 400
+     
+see also :ref:`common_errors`      

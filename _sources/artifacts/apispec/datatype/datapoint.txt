@@ -4,11 +4,13 @@ Datapoint
 =========
 
 Description
-----
+-----------
 Datapoint data type contains Statistic data which is calculated from Metric data.
 
 Contents
-----
+--------
+
+Following is contents of this data type.
 
 .. list-table:: 
    :widths: 30 50

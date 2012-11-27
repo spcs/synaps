@@ -23,7 +23,9 @@ Storm requires ZeroMQ 2.1.7 and JZMQ.
 
 .. code-block:: bash
 
-   # install zeromq 
+   # install zeromq
+   # --------------
+    
    cd ~
    wget http://download.zeromq.org/zeromq-2.1.7.tar.gz
    tar zxvf zeromq-2.1.7.tar.gz
@@ -39,29 +41,24 @@ Storm requires ZeroMQ 2.1.7 and JZMQ.
    python setup.py install
    cd ..
    
-   # install JZMQ
-   wget https://github.com/nathanmarz/jzmq/tarball/master
-   mv master nathanmarz-jzmq-dd3327d.tar.gz
-   tar zxvf nathanmarz-jzmq-dd3327d.tar.gz
-   cd nathanmarz-jzmq-dd3327d
-   
-   # JZMQ for Ubuntu 11.04
+   # Install JZMQ
+   # ------------
+
+   ## download JZMQ for Ubuntu 11.04
+   wget https://github.com/nathanmarz/jzmq/archive/master.tar.gz
    export JAVA_HOME='/usr/lib/jvm/java-6-openjdk'
-   ./autogen.sh
-   ./configure
-   make
-   sudo make install
-   
-   # JZMQ for Ubuntu 12.04
+
+   ## download JZMQ for Ubuntu 12.04
+   wget https://github.com/halfaleague/jzmq/archive/master.tar.gz
    export JAVA_HOME='/usr/lib/jvm/java-6-openjdk-amd64'
+   
+   tar zxvf master.tar.gz
+   cd jzmq-master
    ./autogen.sh
    ./configure
-   touch src/classdist_noinst.stamp
-   cd src/
-   CLASSPATH=.:./.:$CLASSPATH javac -d . org/zeromq/ZMQ.java org/zeromq/App.java org/zeromq/ZMQForwarder.java org/zeromq/EmbeddedLibraryTools.java org/zeromq/ZMQQueue.java org/zeromq/ZMQStreamer.java org/zeromq/ZMQException.java
-   cd ..
    make
    sudo make install
+   cd ..
 
 
 Install Storm
@@ -72,11 +69,11 @@ Install Storm as below.
 .. code-block:: bash
 
    # install storm
-   wget https://github.com/downloads/nathanmarz/storm/storm-0.8.0.zip
-   mv storm-0.8.0.zip /SW
+   wget https://github.com/downloads/nathanmarz/storm/storm-0.8.1.zip
+   mv storm-0.8.1.zip /SW
    cd /SW
-   unzip storm-0.8.0
-   ln -s /SW/storm-0.8.0 storm
+   unzip storm-0.8.1
+   ln -s /SW/storm-0.8.1 storm
    mkdir ~/.storm
    chmod 777 ~/.storm
    ln -s /SW/storm/bin/storm /bin/storm

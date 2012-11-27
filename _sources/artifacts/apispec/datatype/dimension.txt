@@ -4,13 +4,15 @@ Dimension
 =========
 
 Description
-----
+-----------
 Data type that is used to separate Metric using the name-value pairs
 
 example of how to use dimensions - :ref:`put_metric_data`.
 
 Contents
-----
+--------
+
+Following is contents of this data type.
 
 .. list-table:: 
    :widths: 30 50

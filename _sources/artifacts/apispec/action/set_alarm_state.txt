@@ -4,12 +4,14 @@ SetAlarmState
 =============
 
 Description
-----
+-----------
 Set state of Alarm temporary. State is not continue; changed to the actual state
 when the following alarm checking.
 
 Parameters
--------------
+----------
+
+Following is list of parameters for this action.
 
 .. list-table:: 
    :widths: 20 50 10
@@ -57,7 +59,9 @@ Parameters
 see also :ref:`common_query_parameters`   
      
 Errors
-----
+------
+
+Following is list of errors for this action.
 
 .. list-table:: 
    :widths: 20 50 10

@@ -6,12 +6,14 @@ StatisticSet
   TBD - Not yet implemented
 
 Description
-----
+-----------
 StatisticSet data type corresponds to StatisticValue of MetricDatum. 
 It means statistic data for specific Metric.
 
 Parameters
-----
+----------
+
+Following is contents of this data type.
 
 .. list-table:: 
    :widths: 30 50

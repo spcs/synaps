@@ -4,11 +4,13 @@ GetMetricStatisticsResult
 =========================
 
 Description
-----
+-----------
 Result of :ref:`get_metric_statistics` action.
 
 Contents
-----
+--------
+
+Following is contents of this data type.
 
 .. list-table:: 
    :widths: 30 50

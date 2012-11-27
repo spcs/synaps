@@ -4,12 +4,14 @@ MetricDatum
 ===========
 
 Description
-----
+-----------
 Information that sent through :ref:`put_metric_data`. Used to add a new value
 to existing Metric or generate new Metric.
 
 Contents
-----
+--------
+
+Following is contents of this data type.
 
 .. list-table:: 
    :widths: 30 50

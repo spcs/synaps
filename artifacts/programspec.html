@@ -6,14 +6,14 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Program Specification &mdash; synaps v12.09.b6 documentation</title>
+    <title>Program Specification &mdash; synaps v12.09.b6-2 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '12.09.b6',
+        VERSION:     '12.09.b6-2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps v12.09.b6 documentation" href="../index.html" />
+    <link rel="top" title="synaps v12.09.b6-2 documentation" href="../index.html" />
     <link rel="next" title="Database Model" href="dbmodel.html" />
     <link rel="prev" title="Synaps" href="../index.html" /> 
   </head>
@@ -72,7 +72,7 @@ interoperate with the queue.</p>
 persistent data.</p>
 <p>Following is Architecture of Synaps.</p>
 <blockquote>
-<div><img alt="../_images/SynapsSystemOverview.jpg" src="../_images/SynapsSystemOverview.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsSystemOverview2.jpg" src="../_images/SynapsSystemOverview2.jpg" style="width: 100%;" />
 </div></blockquote>
 <p>Following is an example of an integrated system.</p>
 <p>Externally, Synaps interoperates with agents which inputs metric data
@@ -80,7 +80,7 @@ periodically, such as VMMON which can get information from VM Hyperisor with
 libvirt library and Nova API, and custom agent also.</p>
 <p>Synaps Notification is a program to send E-mail or SMS.</p>
 <blockquote>
-<div><img alt="../_images/IntegratedSystemOverview.jpg" src="../_images/IntegratedSystemOverview.jpg" style="width: 100%;" />
+<div><img alt="../_images/IntegratedSystemOverview2.jpg" src="../_images/IntegratedSystemOverview2.jpg" style="width: 100%;" />
 </div></blockquote>
 </div>
 <div class="section" id="program-synaps-api">
@@ -97,7 +97,7 @@ API.</p>
 </ul>
 <p>For example,</p>
 <blockquote>
-<div><img alt="../_images/SynapsAPI-PutMetricData.jpg" src="../_images/SynapsAPI-PutMetricData.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsAPI-PutMetricData2.jpg" src="../_images/SynapsAPI-PutMetricData2.jpg" style="width: 100%;" />
 </div></blockquote>
 </div>
 <div class="section" id="synchrous-request-processing">
@@ -115,7 +115,7 @@ API.</p>
 </ul>
 <p>For example,</p>
 <blockquote>
-<div><img alt="../_images/SynapsAPI-GetMetricStatistics.jpg" src="../_images/SynapsAPI-GetMetricStatistics.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsAPI-GetMetricStatistics2.jpg" src="../_images/SynapsAPI-GetMetricStatistics2.jpg" style="width: 100%;" />
 </div></blockquote>
 </div>
 </div>
@@ -124,7 +124,7 @@ API.</p>
 <p>Synaps Storm is a topology implementation which is aimed to run on the Twitter
 Storm, real-time distributed stream processing system.</p>
 <blockquote>
-<div><img alt="../_images/SynapsStorm-Topology.jpg" src="../_images/SynapsStorm-Topology.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsStorm-Topology2.jpg" src="../_images/SynapsStorm-Topology2.jpg" style="width: 100%;" />
 </div></blockquote>
 <div class="section" id="putmetricdata-message-processing">
 <h3>PutMetricData message processing<a class="headerlink" href="#putmetricdata-message-processing" title="Permalink to this headline">¶</a></h3>
@@ -134,7 +134,7 @@ windows or database to aggregate its datapoints and evalutate status of
 its alarms. If the status is changed, it sends action message to notification
 queue.</p>
 <blockquote>
-<div><img alt="../_images/SynapsStorm-PutMetricData.jpg" src="../_images/SynapsStorm-PutMetricData.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsStorm-PutMetricData2.jpg" src="../_images/SynapsStorm-PutMetricData2.jpg" style="width: 100%;" />
 </div></blockquote>
 </div>
 <div class="section" id="putmetricalarm-message-processing">
@@ -143,7 +143,7 @@ queue.</p>
 find its metric and update its in-memory alarm data and update it into
 database.</p>
 <blockquote>
-<div><img alt="../_images/SynapsStormPutMetricAlarm.jpg" src="../_images/SynapsStormPutMetricAlarm.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsStormPutMetricAlarm2.jpg" src="../_images/SynapsStormPutMetricAlarm2.jpg" style="width: 100%;" />
 </div></blockquote>
 </div>
 <div class="section" id="periodicmonitoring-message-processing">
@@ -152,7 +152,7 @@ database.</p>
 generated, it checks their whole alarms if they are not evaluated alarms
 recently PutMetricData message processing.</p>
 <blockquote>
-<div><img alt="../_images/SynapsStormPeriodicMonitoring.jpg" src="../_images/SynapsStormPeriodicMonitoring.jpg" style="width: 100%;" />
+<div><img alt="../_images/SynapsStormPeriodicMonitoring2.jpg" src="../_images/SynapsStormPeriodicMonitoring2.jpg" style="width: 100%;" />
 </div></blockquote>
 </div>
 </div>
@@ -226,12 +226,12 @@ recently PutMetricData message processing.</p>
         <li class="right" >
           <a href="../index.html" title="Synaps"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">synaps v12.09.b6 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">synaps v12.09.b6-2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Tue Nov 20 14:10:48 2012, commit f535511.
+      Last updated on Tue Nov 27 15:56:50 2012, commit 7d9e0f5.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>
