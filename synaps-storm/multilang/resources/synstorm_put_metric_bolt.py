@@ -35,7 +35,7 @@ import uuid
 from datetime import datetime, timedelta
 from pandas import TimeSeries, DataFrame, DateRange, datetools
 from pandas import rolling_sum, rolling_max, rolling_min, rolling_mean
-from numpy import isnan
+from pandas import isnull
 
 from synaps import flags
 from synaps import log as logging
@@ -239,16 +239,18 @@ class MetricMonitor(object):
             stat = get_stats(stat)
 
         
-        stat['SampleCount'] = 1.0 if isnan(stat['SampleCount']) \
+        stat['SampleCount'] = 1.0 if isnull(stat['SampleCount']) \
                               else stat['SampleCount'] + 1.0
-        stat['Sum'] = value if isnan(stat['Sum'])  \
+        stat['Sum'] = value if isnull(stat['Sum'])  \
                       else stat['Sum'] + value
         stat['Average'] = stat['Sum'] / stat['SampleCount']
         stat['Minimum'] = value \
-                          if isnan(stat['Minimum']) or stat['Minimum'] > value \
+                          if (isnull(stat['Minimum']) or 
+                              stat['Minimum'] > value) \
                           else stat['Minimum']
         stat['Maximum'] = value \
-                          if isnan(stat['Maximum']) or stat['Maximum'] < value \
+                          if (isnull(stat['Maximum']) or 
+                              stat['Maximum'] < value) \
                           else stat['Maximum']
 
         # insert into DB
