@@ -262,18 +262,6 @@ class MetricMonitor(object):
         
         self.cass.insert_stat(self.metric_key, stat_dict)
         storm.log("metric data inserted %s" % (self.metric_key))
-        
-        #self.df.ix[time_idx] = stat
-        
-        now = utils.utcnow().replace(second=0, microsecond=0)
-        timedelta_buf = now - time_idx
-        
-        if(timedelta_buf <= timedelta(seconds=self.MAX_START_PERIOD)):
-            # check alarms
-            self.check_alarms()
-        
-
-                
     
     def check_alarms(self):
         for alarmkey, alarm in self.alarms.iteritems():
@@ -578,12 +566,7 @@ class PutMetricBolt(storm.BasicBolt):
         now = datetime.utcnow()
 
         for metric in self.metrics.itervalues():
-            min_start_period = timedelta(seconds=metric.MIN_START_PERIOD)
-
-            if ((metric.lastchecked and 
-                 (now - metric.lastchecked > min_start_period))
-                or (metric.lastchecked == None)):
-                metric.check_alarms()
+            metric.check_alarms()
         
     def process(self, tup):
         message = json.loads(tup.values[1])

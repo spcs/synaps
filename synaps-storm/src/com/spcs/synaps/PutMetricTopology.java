@@ -167,7 +167,7 @@ public class PutMetricTopology {
 					.shuffleGrouping("putmetric_bolt");
 			LocalCluster cluster = new LocalCluster();
 			cluster.submitTopology("metric", conf, builder.createTopology());
-			Utils.sleep(3 * 60 * 1000); // 3 min
+			Utils.sleep(30 * 60 * 1000); // 30 min
 			cluster.killTopology("metric");
 			Utils.sleep(10 * 1000); // 10 sec
 			cluster.shutdown();

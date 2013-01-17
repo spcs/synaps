@@ -27,6 +27,7 @@ from boto.ec2.cloudwatch.alarm import MetricAlarm
 from boto.exception import BotoServerError
 import random 
 from synaps import exception
+from synaps import utils
 from datetime import timedelta
 
 ASYNC_WAIT = 3
@@ -639,6 +640,92 @@ class LongCase(SynapsTestCase):
             self.assertEqual("INSUFFICIENT_DATA", alarm.state_value)
 
         self.synaps.delete_alarms(alarms=[alarmname])
+    
+    def test_eval_alarm(self):
+        """
+        Test Scenario for following sequence. 
+        
+        1. Put metric alarm (period 60, evaluation_periods 1)
+        2. Put metric data which is over the threshold so that the alarm state 
+           would be 'ALARM'
+        3. Wait 2 minutes so that alarm state could be 'INSUFFICIENT_DATA'
+        4. Put metric data which is under the threshold so that the alarm state
+           would be 'OK'
+        5. Wait 3 minutes so that alarm state could be 'INSUFFICIENT_DATA' 
+        6. Describe alarm history and check if it has been changed as we are 
+           expected
+        
+        """
+        def get_state_update_value(h):
+            """
+            
+            """
+            oldstate = h.data['oldState']['stateValue']
+            newstate = h.data['newState']['stateValue']
+            querydate = h.data['newState']['stateReasonData']['queryDate']
+            querydate = utils.parse_strtime(querydate)
+            return oldstate, newstate, querydate        
+        
+        test_uuid = str(uuid.uuid4())
+        alarmname = "TestEvalAlarm_" + test_uuid
+        metricname = "TestEvalMetric_" + test_uuid
+        namespace = "unittest"
+        unit = "Percent"
+        dimensions = {"test_id":test_uuid}
+        threshold = 2.0
+        
+        # create metric alarm
+        alarm = MetricAlarm(name=alarmname, metric=metricname,
+                            namespace=namespace, statistic="Average",
+                            comparison=">", threshold=threshold,
+                            period=60, evaluation_periods=1, unit=unit,
+                            dimensions=dimensions)
+        self.synaps.put_metric_alarm(alarm)
+        
+        # due to put_metric_alarm is asynchronous
+        time.sleep(ASYNC_WAIT)
+        
+        alarm_time = datetime.datetime.utcnow().replace(second=0,
+                                                       microsecond=0)
+        self.synaps.put_metric_data(namespace=namespace, name=metricname,
+                                    value=threshold + 1, timestamp=alarm_time,
+                                    unit=unit, dimensions=dimensions)
+
+        time.sleep(120)
+
+        ok_time = datetime.datetime.utcnow().replace(second=0,
+                                                       microsecond=0)        
+        self.synaps.put_metric_data(namespace=namespace, name=metricname,
+                                    value=threshold - 2, timestamp=ok_time,
+                                    unit=unit, dimensions=dimensions)
+
+        time.sleep(180)
+        
+        histories = self.synaps.describe_alarm_history(alarm_name=alarmname,
+                                            history_item_type="StateUpdate")
+        histories.sort(cmp=lambda a, b: cmp(a.timestamp, b.timestamp))
+
+        result = map(get_state_update_value, histories)
+                
+        expected = (('INSUFFICIENT_DATA', 'ALARM', alarm_time),
+                    ('ALARM', 'INSUFFICIENT_DATA', None),
+                    ('INSUFFICIENT_DATA', 'OK', ok_time),
+                    ('OK', 'INSUFFICIENT_DATA', None))
+        
+        failmsg = "expected: %s real: %s" % (expected, result)
+        
+        self.assertEqual(len(result), len(expected), msg=failmsg)
+        
+        for ((r_new, r_old, r_time), (e_new, e_old, e_time)) in zip(result,
+                                                                    expected):
+            self.assertEqual(r_new, e_new, msg=failmsg)
+            self.assertEqual(r_old, e_old, msg=failmsg)
+            if e_time:
+                self.assertTrue((r_time - e_time) < timedelta(seconds=120),
+                                msg=failmsg)
+        
+        self.synaps.delete_alarms(alarms=[alarmname])
+        
         
 if __name__ == "__main__":
     unittest.main()

@@ -4,7 +4,7 @@
 
 	<groupId>synaps</groupId>
 	<artifactId>synaps-storm</artifactId>
-	<version>2012.09.b6-3</version>
+	<version>2013.1.1</version>
 	<packaging>jar</packaging>
 
 	<properties>
