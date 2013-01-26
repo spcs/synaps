@@ -108,10 +108,10 @@ core_opts = [
     cfg.IntOpt('statistics_ttl',
                default=60 * 60 * 24 * 15, # 15 days in seconds
                help='time to live of statistics data'),
-    cfg.IntOpt('max_start_period',
+    cfg.IntOpt('left_offset',
                default=60 * 5, # 5 minutes in seconds
                help='start time of memory.'),
-    cfg.IntOpt('max_end_period',
+    cfg.IntOpt('right_offset',
                default=60 * 60, # 1 hour in seconds
                help='end time of memory.'),
     cfg.ListOpt('statistics_archives',
@@ -179,7 +179,7 @@ core_opts = [
                default="0.0.0.0",
                help='IP address for cloudwatch API to listen'),
     cfg.IntOpt('cloudwatch_listen_port',
-               default=8773,
+               default=8776,
                help='port for cloudwatch api to listen'),
     ]
 
@@ -198,7 +198,7 @@ global_opts = [
                default='$my_ip',
                help='internal ip of api server'),
     cfg.IntOpt('cloudwatch_port',
-               default=8773,
+               default=8776,
                help='cloud controller port'),
     cfg.StrOpt('cloudwatch_scheme',
                default='http',

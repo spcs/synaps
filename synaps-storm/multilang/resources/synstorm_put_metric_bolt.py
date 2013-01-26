@@ -54,9 +54,7 @@ FLAGS = flags.FLAGS
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
     STATISTICS_TTL = Cassandra.STATISTICS_TTL
-    MAX_START_PERIOD = FLAGS.get('max_start_period')
-    MIN_START_PERIOD = 0
-    MAX_END_PERIOD = FLAGS.get('max_end_period')
+    DEFAULT_LEFT_OFFSET = FLAGS.get('left_offset')
         
     ROLLING_FUNC_MAP = {
         'Average': rolling_mean,
@@ -80,15 +78,17 @@ class MetricMonitor(object):
         'LessThanOrEqualToThreshold': "less than or equal to",
     }    
     
-    
     def __init__(self, metric_key, cass):
         self.metric_key = metric_key
         self.cass = cass
+        self.left_offset = FLAGS.get('left_offset')
+        self.right_offset = FLAGS.get('right_offset')
+
         self.df = self.load_statistics()
         self.alarms = self.load_alarms()
-        self.set_max_start_period(self.alarms)
         self._reindex()
 
+        self.update_left_offset(self.alarms)
         self.lastchecked = None
         
     def _reindex(self):
@@ -97,41 +97,37 @@ class MetricMonitor(object):
     def _get_range(self):
         now_idx = datetime.utcnow().replace(second=0, microsecond=0)
 
-        start = now_idx - timedelta(seconds=self.MAX_START_PERIOD)
-        end = now_idx + timedelta(seconds=self.MAX_END_PERIOD)
+        start = now_idx - timedelta(seconds=self.left_offset)
+        end = now_idx + timedelta(seconds=self.right_offset)
 
         daterange = DateRange(start, end, offset=datetools.Minute())
         
         return daterange
-    
 
-    def set_max_start_period(self, alarms):
-        msp = self.MAX_START_PERIOD
-        
+    def update_left_offset(self, alarms):
         try:
-            self.MAX_START_PERIOD = max(v.get('period') for v 
-                                        in alarms.itervalues()) \
-                                    if alarms else FLAGS.get('max_start_period') 
-            self.MIN_START_PERIOD = min(v.get('period') for v 
-                                        in alarms.itervalues()) \
-                                    if alarms else 0
-        except AttributeError:
-            msg = "alarm is not found in alarms."
-            self.log(msg)
-            
-            return False 
-                  
-        msg = "MAX_START_PERIOD is changed %s -> %s"                 
-        storm.log(msg % (str(msp), self.MAX_START_PERIOD))
-
-        if msp < self.MAX_START_PERIOD:
+            left_offset = max(v.get('period') * v.get('evaluation_periods')   
+                              for v in alarms.itervalues()) \
+                          if alarms else 0
+            left_offset += self.DEFAULT_LEFT_OFFSET
+             
+        except AttributeError as e:
+            self.log(str(e))
+            return 
+        
+        if left_offset > self.left_offset:
+            # expand in memory data frame
+            self.left_offset = left_offset 
             self.df = self.load_statistics()
-        elif msp > self.MAX_START_PERIOD:
-            self._reindex()
-                
+        elif left_offset < self.left_offset:
+            # shrink in memory data frame
+            self.left_offset = left_offset
+            self._reindex() 
+
+                  
     def delete_metric_alarm(self, alarmkey):
         """
-        메모리 및 DB에서 알람을 삭제한다.
+        Delete alarms from memory and database
         
         alarmkey:
             alarmkey should be UUID
@@ -148,13 +144,13 @@ class MetricMonitor(object):
                                                      self.metric_key))
         
 
-        self.set_max_start_period(self.alarms)        
+        self.update_left_offset(self.alarms)        
         
 
     def load_statistics(self):
         now_idx = datetime.utcnow().replace(second=0, microsecond=0)
-        start = now_idx - timedelta(seconds=self.MAX_START_PERIOD)
-        end = now_idx + timedelta(seconds=self.MAX_END_PERIOD)
+        start = now_idx - timedelta(seconds=self.left_offset)
+        end = now_idx + timedelta(seconds=self.right_offset)
         
         stat = self.cass.load_statistics(self.metric_key, start, end)
         
@@ -190,7 +186,7 @@ class MetricMonitor(object):
             if ret:
                 self.alarms[alarm_key] = ret
                 storm.log("alarm key is [%s]" % alarm_key)
-                self.set_max_start_period(self.alarms)
+                self.update_left_offset(self.alarms)
             else:
                 storm.log("alarm key [%s] is found, but alarm is not found." % alarm_key)
         else:
@@ -265,12 +261,16 @@ class MetricMonitor(object):
         self.cass.insert_stat(self.metric_key, stat_dict)
         storm.log("metric data inserted %s" % (self.metric_key))
     
-    def check_alarms(self):
+    def check_alarms(self, query_time=None):
+        query_time = query_time if query_time else utils.utcnow() 
         for alarmkey, alarm in self.alarms.iteritems():
-            self._check_alarm(alarmkey, alarm)
-        self.lastchecked = utils.utcnow()
+            self._check_alarm(alarmkey, alarm, query_time)
+
+        self.lastchecked = self.lastchecked if self.lastchecked else query_time
+        if self.lastchecked < query_time:
+            self.lastchecked = query_time
             
-    def _check_alarm(self, alarmkey, alarm):
+    def _check_alarm(self, alarmkey, alarm, query_time=None):
         period = int(alarm['period'] / 60)
         evaluation_periods = alarm['evaluation_periods']
         statistic = alarm['statistic']
@@ -279,29 +279,29 @@ class MetricMonitor(object):
         unit = alarm['unit']
         state_value = alarm['state_value']
         
-        now = utils.utcnow()
-        end_idx = now.replace(second=0, microsecond=0) - datetools.Minute()
-        start_idx = end_idx - (evaluation_periods - 1) * datetools.Minute()
+        query_time = query_time if query_time else utils.utcnow()
+        end_idx = (query_time.replace(second=0, microsecond=0) - 
+                   datetools.Minute())
+        start_idx = (end_idx - (period * evaluation_periods) * 
+                     datetools.Minute())
         start_ana_idx = start_idx - datetools.Minute() * period
         
         func = self.ROLLING_FUNC_MAP[statistic]
         data = func(self.df[statistic].ix[start_ana_idx:end_idx], period,
-                    min_periods=0).ix[start_idx:end_idx]
-                      
-        if statistic == 'SampleCount':
-            data = data.fillna(0)
-        else:
-            if unit:
-                data = data / utils.UNIT_CONV_MAP[unit]
-                threshold = threshold / utils.UNIT_CONV_MAP[unit]
-                
-            data = data.dropna()
+                    min_periods=0).ix[start_idx:end_idx:period][1:]
+        recent_datapoints = list(data)
 
-        query_date = utils.strtime(now)
+        if unit and statistic is not 'SampleCount':
+            data = data / utils.UNIT_CONV_MAP[unit]
+            threshold = threshold / utils.UNIT_CONV_MAP[unit]
+                
+        data = data.dropna()
+
+        query_date = utils.strtime(query_time)
         reason_data = {
             "period":alarm['period'],
             "queryDate":query_date,
-            "recentDatapoints": list(data),
+            "recentDatapoints": recent_datapoints,
             "startDate": utils.strtime(start_idx),
             "statistic":statistic,
             "threshold": threshold,
@@ -322,9 +322,10 @@ class MetricMonitor(object):
                              'stateReasonData':reason_data,
                              'stateValue':'INSUFFICIENT_DATA'}
                 self.update_alarm_state(alarmkey, 'INSUFFICIENT_DATA', reason,
-                                        json_reason_data, now)
+                                        json_reason_data, query_time)
                 self.cass.update_alarm_state(alarmkey, 'INSUFFICIENT_DATA',
-                                             reason, json_reason_data, now)
+                                             reason, json_reason_data,
+                                             query_time)
                 self.alarm_history_state_update(alarmkey, alarm,
                                                 new_state, old_state)
                 self.do_alarm_action(alarmkey, alarm, new_state, old_state,
@@ -338,18 +339,17 @@ class MetricMonitor(object):
                 template = _("Threshold Crossed: %d datapoints were %s " + 
                              "the threshold(%f). " + 
                              "The most recent datapoints: %s.")
-                reason = template % (len(data),
-                                     self.CMP_STR_MAP[com_op],
-                                     threshold, str(list(data)))
+                reason = template % (len(data), self.CMP_STR_MAP[com_op],
+                                     threshold, recent_datapoints)
                 if state_value != 'ALARM':
                     new_state = {'stateReason':reason,
                                  'stateReasonData':reason_data,
                                  'stateValue':'ALARM'}
                     
                     self.update_alarm_state(alarmkey, 'ALARM', reason,
-                                            json_reason_data, now)
+                                            json_reason_data, query_time)
                     self.cass.update_alarm_state(alarmkey, 'ALARM', reason,
-                                                 json_reason_data, now)
+                                                 json_reason_data, query_time)
                     self.alarm_history_state_update(alarmkey, alarm,
                                                     new_state, old_state)
                     self.do_alarm_action(alarmkey, alarm, new_state, old_state,
@@ -359,17 +359,16 @@ class MetricMonitor(object):
                 template = _("Threshold Crossed: %d datapoints were not %s " + 
                              "the threshold(%f). " + 
                              "The most recent datapoints: %s.")
-                reason = template % (len(data),
-                                     self.CMP_STR_MAP[com_op],
-                                     threshold, str(list(data)))
+                reason = template % (len(data), self.CMP_STR_MAP[com_op],
+                                     threshold, recent_datapoints)
                 if state_value != 'OK':
                     new_state = {'stateReason':reason,
                                  'stateReasonData':reason_data,
                                  'stateValue':'OK'}                    
                     self.update_alarm_state(alarmkey, 'OK', reason,
-                                            json_reason_data, now)
+                                            json_reason_data, query_time)
                     self.cass.update_alarm_state(alarmkey, 'OK', reason,
-                                                 json_reason_data, now)
+                                                 json_reason_data, query_time)
                     self.alarm_history_state_update(alarmkey, alarm,
                                                     new_state, old_state)
                     self.do_alarm_action(alarmkey, alarm, new_state, old_state,
@@ -565,10 +564,10 @@ class PutMetricBolt(storm.BasicBolt):
         self.cass.put_metric_alarm(alarm_key, alarm_columns)
         
     def process_check_metric_alarms_msg(self):
-        now = datetime.utcnow()
+        query_time = datetime.utcnow()
 
         for metric in self.metrics.itervalues():
-            metric.check_alarms()
+            metric.check_alarms(query_time)
         
     def process(self, tup):
         message = json.loads(tup.values[1])

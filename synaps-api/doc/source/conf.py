@@ -206,7 +206,7 @@ latex_font_size = '11pt'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'Synaps.tex', u'SPCS Synaps Documentation',
-   u'B2C클라우드플랫폼그룹, 삼성SDS', 'manual'),
+   u'Cloud Service Group, Samsung SDS', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

@@ -34,12 +34,12 @@ ASYNC_WAIT = 3
 
 class SynapsTestCase(unittest.TestCase):
     def setUp(self):
-        access_key = '58ca1eb7-eb69-4f3f-890d-c640cc6b3965'
-        secret_key = 'ebe4a1c3-6b4f-4fe1-8767-92a79532ee5c'
+        access_key = 'changeme'
+        secret_key = 'changeme'
         self.synaps = CloudWatchConnection(
             # oss key pair
             aws_access_key_id=access_key, aws_secret_access_key=secret_key,
-            is_secure=False, port=8773, path='/monitor',
+            is_secure=False, port=8776, path='/monitor',
             region=regioninfo.RegionInfo(None, 'Test Region', 'localhost'),
         )
         
@@ -49,10 +49,13 @@ class SynapsTestCase(unittest.TestCase):
         
     def tearDown(self):
         pass
+
+    def generate_random_name(self, prefix=""):
+        return prefix + str(uuid.uuid4())
         
 class ShortCase(SynapsTestCase):
     def test_delete_alarms(self):
-        alarmnames = ["TEST_ALARM_%02d" % i for i in range(10)]
+        alarmnames = map(self.generate_random_name, ["TEST_ALARM_"] * 10)
         for name in alarmnames:
             alarm = MetricAlarm(name=name, metric=self.metric_name,
                                 namespace=self.namespace, statistic="Average",
@@ -136,9 +139,53 @@ class ShortCase(SynapsTestCase):
         )
     
     def test_get_metric_statistics(self):
-        # test_put_metric_data 에서 검증
-        pass
-     
+        now = datetime.datetime.utcnow()
+        now_idx = now.replace(second=0, microsecond=0)
+        start_time = now - datetime.timedelta(minutes=30)
+        end_time = now
+
+        # input metric
+        metric_name = self.generate_random_name("test_metric_")
+        dimensions = {self.generate_random_name("key_"):
+                      self.generate_random_name("value_")}
+        
+        values = [10.0, 8.0, 2 ** -32, 0, 50.3, 2 ** 32, -2 ** 32, 4,
+                  1000, -3000]
+        keys = [now_idx - datetime.timedelta(minutes=i) 
+                for i in reversed(range(len(values)))]
+        data = zip(keys, values)
+
+        for ts, v in data:
+            if v == 0: continue
+            self.synaps.put_metric_data(namespace="Test", name=metric_name,
+                                        value=v, unit="Percent",
+                                        dimensions=dimensions, timestamp=ts)
+
+        time.sleep(ASYNC_WAIT)
+        
+        period = 4
+        stat = self.synaps.get_metric_statistics(
+            period=period * 60, start_time=keys[0], end_time=keys[-1],
+            metric_name=metric_name, namespace="Test",
+            statistics=['Sum', 'Average', 'SampleCount'],
+            dimensions=dimensions,
+        )
+        
+        timestamps = keys[::period]
+
+        self.assertEqual([1, 3, 4],
+                         map(lambda x:x.get('SampleCount'), stat))
+        self.assertEqual(timestamps,
+                         map(lambda x:x.get('Timestamp'), stat))
+        for e, r in zip([values[0], sum(values[1:5]) / 3,
+                         sum(values[5:9]) / 4],
+                        map(lambda x:x.get('Average'), stat)):
+            self.assertAlmostEqual(e, r) 
+        for e, r in zip([values[0], sum(values[1:5]), sum(values[5:9])],
+                         map(lambda x:x.get('Sum'), stat)):
+            self.assertAlmostEqual(e, r)
+
+             
     def test_list_metrics(self):
         """
         본 테스트 케이스는 list_metrics API를 검증하기 위한 것으로, 메트릭을 
@@ -171,10 +218,6 @@ class ShortCase(SynapsTestCase):
             )
         except BotoServerError:
             self.fail("It should occur an error")
-#        else:
-#            self.assertTrue(ret)
-        
-        
         
         # test list_metric with next token which start "0b" 
         ret = self.synaps.list_metrics(
@@ -184,9 +227,6 @@ class ShortCase(SynapsTestCase):
             namespace=self.namespace
         )
 
-#        self.assertTrue(ret)
-            
-    
     
     def test_put_metric_alarm(self):
         alarm_actions = ['+82 1012345678', 'test@email.abc']
@@ -281,7 +321,7 @@ class ShortCase(SynapsTestCase):
 
         
     def test_put_metric_alarm_check_statistic(self):
-        #test check Parameters...
+        # test check Parameters...
         alarm = MetricAlarm(name="CPU_Alarm", metric=self.metric_name,
                             namespace=self.namespace,
                             statistic="It will occur an error",
@@ -294,7 +334,7 @@ class ShortCase(SynapsTestCase):
         self.assertRaises(BotoServerError, self.synaps.put_metric_alarm, alarm) 
         
     def test_put_metric_alarm_check_unit(self):
-        #test check Parameters...        
+        # test check Parameters...        
         alarm = MetricAlarm(name="CPU_Alarm", metric=self.metric_name,
                             namespace=self.namespace, statistic="Average",
                             comparison=">", threshold=50.0, period=300,
@@ -310,8 +350,8 @@ class ShortCase(SynapsTestCase):
 
         now = datetime.datetime.utcnow()
         now_idx = now.replace(second=0, microsecond=0)
-        start_time = now - datetime.timedelta(hours=0.1)
-        end_time = now
+        start_time = now - datetime.timedelta(seconds=300)
+        end_time = now_idx
 
         # Input metric
         ret = self.synaps.put_metric_data(
@@ -355,7 +395,7 @@ class ShortCase(SynapsTestCase):
         
     def test_alarm_period(self):
         
-        #알람을 생성, MAX_START_PERIOD 를 6000 으로 증가시키는지 테스트.
+        # 알람을 생성, MAX_START_PERIOD 를 6000 으로 증가시키는지 테스트.
         alarm = MetricAlarm(name="Test_Alarm_Period", metric=self.metric_name,
                             namespace=self.namespace, statistic="Average",
                             comparison=">", threshold=50.0, period=6000,
@@ -387,7 +427,6 @@ class ShortCase(SynapsTestCase):
         
         self.assertTrue(ret2)
              
-        
         # TimeStamp가 현재인 메트릭 입력하여
         # 정상적으로 DB 및 Memory에 입력되는지를 테스트. 
         td3 = timedelta(seconds=5400) 
@@ -404,7 +443,6 @@ class ShortCase(SynapsTestCase):
         alarmnames = ["Test_Alarm_Period"]
         for alarm in alarmnames:
             self.synaps.delete_alarms(alarms=[alarm])
-        
         
         # MAX_START_PERIOD 가 변경된 이후 
         # 메트릭 입력이 정상적으로 진행되는지를 테스트.
@@ -475,7 +513,7 @@ class ShortCase(SynapsTestCase):
         stat1 = filter(lambda x: x.get('Timestamp') == now_idx, before_stat)[0]
         stat2 = filter(lambda x: x.get('Timestamp') == now_idx, after_stat)[0]
         
-        #expected = stat1['Sum'] + test_value
+        # expected = stat1['Sum'] + test_value
         self.assertAlmostEqual(stat1['Sum'] + test_value, stat2['Sum'])
         
         # expect that the unit matches that specified on the corresponding
@@ -570,7 +608,7 @@ class ShortCase(SynapsTestCase):
         self.assertEqual("Manual input", alarm.state_reason)
         
     def test_check_alarm_state(self):
-        alarmname = "TEST_ALARM_00"
+        alarmname = self.generate_random_name("TEST_ALARM_")
         alarm = MetricAlarm(name=alarmname,
             metric=self.metric_name, namespace=self.namespace,
             statistic="Average", comparison="<", threshold=2.0,
@@ -594,7 +632,8 @@ class ShortCase(SynapsTestCase):
         self.synaps.delete_alarms(alarms=[alarmname])
 
     def test_utf8_result(self):
-        alarm_names = [u"TEST_ALARM_01", u"TEST_알람_02"]
+        prefix = u"TEST_\uc54c\ub78c_02"
+        alarm_names = map(self.generate_random_name, [prefix])
         for alarmname in alarm_names:
             alarm = MetricAlarm(name=alarmname,
                 metric=self.metric_name, namespace=self.namespace,
@@ -605,15 +644,20 @@ class ShortCase(SynapsTestCase):
                 ok_actions=None)
             self.synaps.put_metric_alarm(alarm)    
         
-        alarms = self.synaps.describe_alarms(max_records=9,
-                                             alarm_names=["TEST_알람_02"])
+        time.sleep(ASYNC_WAIT)
+        
+        alarms = self.synaps.describe_alarms(alarm_name_prefix=prefix)
+        
         for a in alarms:
-            self.assertTrue(a.name in alarm_names)  
+            self.assertTrue(a.name.startswith(prefix),
+                            msg="%s %s" % (a.name, prefix))
+            
+        self.synaps.delete_alarms(alarm_names)  
 
     
 class LongCase(SynapsTestCase):
     def test_check_alarm_state(self):
-        alarmname = "TEST_ALARM_00"
+        alarmname = self.generate_random_name("TEST_ALARM_")
         alarm = MetricAlarm(name=alarmname,
             metric=self.metric_name, namespace=self.namespace,
             statistic="Average", comparison="<", threshold=2.0,
@@ -725,7 +769,7 @@ class LongCase(SynapsTestCase):
                                 msg=failmsg)
         
         self.synaps.delete_alarms(alarms=[alarmname])
-        
-        
+
+
 if __name__ == "__main__":
     unittest.main()

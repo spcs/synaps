@@ -57,7 +57,7 @@ class API(object):
                                        alarm_name)
             alarmkeys.append(str(k))
                 
-        body = {'project_id': project_id, 'alarmkeys': alarmkeys} # UUID str  
+        body = {'project_id': project_id, 'alarmkeys': alarmkeys}  # UUID str  
         self.rpc.send_msg(rpc.DELETE_ALARMS_MSG_ID, body)
         LOG.info("DELETE_ALARMS_MSG sent")
         
@@ -169,16 +169,15 @@ class API(object):
             dimensions=dimensions
         )
         
-        period = period / 60 # convert sec to min
+        period = period / 60  # convert sec to min
         stat = DataFrame(index=daterange)
         
         for statistic, series in zip(statistics, stats):
             func = self.ROLLING_FUNC_MAP[statistic]
-            if statistic == 'SampleCount':
-                ts = TimeSeries(series, index=daterange_ana).fillna(0)
-            else:
-                ts = TimeSeries(series, index=daterange_ana)
-            stat[statistic] = func(ts, period, min_periods=0)
+            ts = TimeSeries(series, index=daterange_ana)
+            rolled_ts = func(ts, period, min_periods=0)
+            stat[statistic] = rolled_ts.ix[::period]
+            LOG.debug("stat %s\n%s" % (statistic, stat[statistic]))
 
         ret = filter(None, (to_datapoint(stat, i) for i in stat.index))
         return ret, unit
