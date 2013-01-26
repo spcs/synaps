@@ -149,7 +149,7 @@ class ShortCase(SynapsTestCase):
         dimensions = {self.generate_random_name("key_"):
                       self.generate_random_name("value_")}
         
-        values = [10.0, 8.0, 2 ** -32, 0, 50.3, 2 ** 32, -2 ** 32, 4,
+        values = [10.0, 8.0, 2 ** -32, 0, 50.3, 2 ** 16, -2 ** 16, 4,
                   1000, -3000]
         keys = [now_idx - datetime.timedelta(minutes=i) 
                 for i in reversed(range(len(values)))]
