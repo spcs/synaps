@@ -788,7 +788,7 @@ class LongCase(SynapsTestCase):
                                     value=threshold + 1, timestamp=alarm_time,
                                     unit=unit, dimensions=dimensions)
 
-        time.sleep(120)
+        time.sleep(60 * 5)
 
         ok_time = datetime.datetime.utcnow().replace(second=0,
                                                        microsecond=0)        
@@ -796,7 +796,7 @@ class LongCase(SynapsTestCase):
                                     value=threshold - 2, timestamp=ok_time,
                                     unit=unit, dimensions=dimensions)
 
-        time.sleep(180)
+        time.sleep(60 * 5)
         
         histories = self.synaps.describe_alarm_history(alarm_name=alarmname,
                                             history_item_type="StateUpdate")
@@ -818,7 +818,7 @@ class LongCase(SynapsTestCase):
             self.assertEqual(r_new, e_new, msg=failmsg)
             self.assertEqual(r_old, e_old, msg=failmsg)
             if e_time:
-                self.assertTrue((r_time - e_time) < timedelta(seconds=120),
+                self.assertTrue((r_time - e_time) < timedelta(seconds=300),
                                 msg=failmsg)
         
         self.synaps.delete_alarms(alarms=[alarmname])

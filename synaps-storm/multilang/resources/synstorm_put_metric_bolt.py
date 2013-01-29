@@ -278,10 +278,16 @@ class MetricMonitor(object):
         cmp_op = self.CMP_MAP[alarm['comparison_operator']]
         unit = alarm['unit']
         state_value = alarm['state_value']
+        time_difference_buffer_min = 3 
         
         query_time = query_time if query_time else utils.utcnow()
-        end_idx = (query_time.replace(second=0, microsecond=0) - 
-                   datetools.Minute())
+        
+        for i in range(time_difference_buffer_min):
+            end_idx = (query_time.replace(second=0, microsecond=0) - 
+                       (i + 1) * datetools.Minute())
+            if not isnull(self.df[statistic].ix[end_idx]):
+                break
+            
         start_idx = (end_idx - (period * evaluation_periods) * 
                      datetools.Minute())
         start_ana_idx = start_idx - datetools.Minute() * period
