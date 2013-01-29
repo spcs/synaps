@@ -40,11 +40,12 @@ def pack_dimensions(dimensions):
     return json.dumps(OrderedDict(sorted(dimensions.items())))
 
 class Cassandra(object):
-    STATISTICS_TTL = FLAGS.get('statistics_ttl')
-    ARCHIVE = map(lambda x: int(x) * 60, FLAGS.get('statistics_archives'))
     STATISTICS = ["Sum", "SampleCount", "Average", "Minimum", "Maximum"]
     
     def __init__(self, keyspace=None):
+        self.STATISTICS_TTL = FLAGS.get('statistics_ttl')
+        self.ARCHIVE = map(lambda x: int(x) * 60, 
+                           FLAGS.get('statistics_archives'))
         if not keyspace:
             keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
         serverlist = FLAGS.get("cassandra_server_list")

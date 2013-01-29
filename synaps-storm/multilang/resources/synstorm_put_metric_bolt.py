@@ -53,7 +53,7 @@ FLAGS = flags.FLAGS
 
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
-    STATISTICS_TTL = Cassandra.STATISTICS_TTL
+    STATISTICS_TTL = FLAGS.get('statistics_ttl')
     DEFAULT_LEFT_OFFSET = FLAGS.get('left_offset')
         
     ROLLING_FUNC_MAP = {
