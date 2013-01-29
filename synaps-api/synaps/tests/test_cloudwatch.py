@@ -20,15 +20,25 @@ import time
 import datetime
 import uuid
 import unittest
+import sys
+import os
+
+possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
+                                                os.pardir, os.pardir))
+if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
+    sys.path.insert(0, possible_topdir)
 
 from boto.ec2 import regioninfo
 from boto.ec2.cloudwatch import CloudWatchConnection
 from boto.ec2.cloudwatch.alarm import MetricAlarm
 from boto.exception import BotoServerError
 import random 
-from synaps import exception
+from synaps import flags
 from synaps import utils
 from datetime import timedelta
+
+flags.FLAGS(['-flagfile', '/etc/synaps/synaps.conf'])
+FLAGS = flags.FLAGS
 
 ASYNC_WAIT = 3
 
@@ -652,8 +662,51 @@ class ShortCase(SynapsTestCase):
             self.assertTrue(a.name.startswith(prefix),
                             msg="%s %s" % (a.name, prefix))
             
-        self.synaps.delete_alarms(alarm_names)  
+        self.synaps.delete_alarms(alarm_names)
+    
+    def test_put_stale_metric(self):
+        name_stale = self.generate_random_name("STALE_METRIC")
+        name_fresh = self.generate_random_name("FRESH_METRIC")
+        ttl = FLAGS.get('statistics_ttl')
 
+        stale_time = (datetime.datetime.utcnow() - 
+                      datetime.timedelta(seconds=ttl))
+        start_time = stale_time - datetime.timedelta(hours=1)
+        end_time = stale_time + datetime.timedelta(hours=1)
+
+        # put metric at 'now - ttl' and get nothing
+        self.synaps.put_metric_data(namespace=self.namespace, name=name_stale,
+                                    value=10.0, timestamp=stale_time)
+    
+        time.sleep(ASYNC_WAIT)
+        
+        stat = self.synaps.get_metric_statistics(period=60,
+                                                 start_time=start_time,
+                                                 end_time=end_time,
+                                                 metric_name=name_stale,
+                                                 namespace=self.namespace,
+                                                 statistics=["Average"])
+        self.assertEqual(0, len(stat))
+        
+        # put metric at 'now - (ttl - 60)' and get one metric
+        stale_time = (datetime.datetime.utcnow() - 
+                      datetime.timedelta(seconds=ttl - 60))
+        start_time = stale_time - datetime.timedelta(hours=1)
+        end_time = stale_time + datetime.timedelta(hours=1)
+
+        self.synaps.put_metric_data(namespace=self.namespace, name=name_fresh,
+                                    value=10.0, timestamp=stale_time)
+    
+        time.sleep(ASYNC_WAIT)
+        
+        stat = self.synaps.get_metric_statistics(period=60,
+                                                 start_time=start_time,
+                                                 end_time=end_time,
+                                                 metric_name=name_fresh,
+                                                 namespace=self.namespace,
+                                                 statistics=["Average"])
+        self.assertEqual(1, len(stat))
+        
     
 class LongCase(SynapsTestCase):
     def test_check_alarm_state(self):
@@ -769,7 +822,7 @@ class LongCase(SynapsTestCase):
                                 msg=failmsg)
         
         self.synaps.delete_alarms(alarms=[alarmname])
-
+        
 
 if __name__ == "__main__":
     unittest.main()
