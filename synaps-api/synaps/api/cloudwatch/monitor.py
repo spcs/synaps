@@ -22,16 +22,16 @@ import datetime
 import json
 import uuid
 
-from pprint import pformat
 from synaps import log as logging
 from synaps import monitor
 from synaps import exception
+from synaps import flags
 from synaps import utils
 from synaps.exception import InvalidParameterValue
 from synaps import db
 
 LOG = logging.getLogger(__name__)
-
+FLAGS = flags.FLAGS    
 
 def to_alarm(v):
     ret = {
@@ -268,7 +268,8 @@ class MonitorController(object):
         self.check_namespace(namespace)
         self.check_statistics(statistics)
         self.check_unit(unit)
-        self.check_period(period)
+        self._validate_period(period)
+        self.validate_get_metric_statistics(start_time, end_time, period)
         
         stats, unit = self.monitor_api.get_metric_statistics(
                                                        project_id, end_time,
@@ -349,7 +350,7 @@ class MonitorController(object):
         insufficient_data_actions = \
             utils.extract_member_list(insufficient_data_actions)
         ok_actions = utils.extract_member_list(ok_actions)
-
+        
         self.check_alarm_description(alarm_description)
         self.check_alarm_name(alarm_name)
         self.check_comparison_operator(comparison_operator)
@@ -358,8 +359,9 @@ class MonitorController(object):
         self.check_namespace(namespace)
         self.check_statistic(statistic)
         self.check_unit(unit)
-        self.check_period(period)
-        self.check_evaluation_periods(evaluation_periods)
+        self._validate_period(period)
+        self._validate_evaluation_periods(evaluation_periods)
+        self.validate_put_metric_alarm(period, evaluation_periods)        
         
         metricalarm = monitor.MetricAlarm(
             alarm_name=alarm_name,
@@ -403,7 +405,14 @@ class MonitorController(object):
             req_timestamp = metric.get('timestamp')
             timestamp = req_timestamp if req_timestamp \
                         else utils.strtime(utils.utcnow())
-
+            timebound = (datetime.datetime.utcnow() - 
+                         datetime.timedelta(
+                                        seconds=FLAGS.get('statistics_ttl')))
+            
+            if utils.parse_strtime(timestamp) < timebound:
+                err = "Stale metric data - %s" % timestamp
+                raise InvalidParameterValue(err)
+            
             self.check_metric_name(metric_name)
             self.check_unit(unit)
             
@@ -656,20 +665,43 @@ class MonitorController(object):
         
         return True 
     
-    def check_period(self, period):
-        if period and (not 0 < int(period) <= (60 * 60 * 24)):
+    def _validate_period(self, period):
+        if (not 0 < int(period) <= (60 * 60 * 24)):
             err = "The length of Period is 1~86400. (24 hours)"
             raise exception.InvalidParameterValue(err)
         
-        if period and (not int(period) % 60 == 0):
+        if (not int(period) % 60 == 0):
             err = "Period is must be multiple of 60."
             raise exception.InvalidParameterValue(err)
             
         return True
     
-    def check_evaluation_periods(self, evaluation_periods):
-        if evaluation_periods and (not 0 < int(evaluation_periods) <= 100):
-            err = "The length of Evaluation Period is 1~100."
+    def _validate_evaluation_periods(self, evaluation_periods):
+        if evaluation_periods and (not 0 < int(evaluation_periods) <= 1440):
+            err = "Evaluation Periods should be in range of 1~1440."
             raise exception.InvalidParameterValue(err)
-                
-        return True
+
+    def validate_put_metric_alarm(self, period, evaluation_periods):
+        self._validate_period(period)
+        self._validate_evaluation_periods(evaluation_periods)
+        
+        if (int(period) * int(evaluation_periods) > (60 * 60 * 24)):
+            err = "Period * EvaluationPeriods should not exceed 86400(24 hours)"
+            raise exception.InvalidParameterValue(err)
+
+    def validate_get_metric_statistics(self, start_time, end_time, period):
+        minute = datetime.timedelta(minutes=1)
+        max_query_period = FLAGS.get('max_query_period_minutes') * minute
+        max_query_datapoints = FLAGS.get('max_query_datapoints')
+        period_diff = end_time - start_time
+        if not (datetime.timedelta(0) <= period_diff <= max_query_period):
+            err = "Difference between start_time and end_time should be "\
+                  "lesser than %s" % max_query_period  
+            raise exception.InvalidParameterValue(err)
+        
+        queried_datapoints = (period_diff.total_seconds() / (int(period)))
+        if queried_datapoints > max_query_datapoints:
+            err = "Requested too many datapoints (%d). "\
+                  "Limitation is %s datapoints" % (queried_datapoints, 
+                                                   max_query_datapoints) 
+            raise exception.InvalidParameterValue(err)

@@ -9,7 +9,7 @@ Get specific metric's statistic data. SPCS Synaps collect data points which
 are exist within specified Period and return statistic data. 
 
 Synaps holds 30 days of statistics data and you can query up to 1,440 
-datapoints which covers a day in 1 minutes resolution and 30 days in 30 minutes 
+datapoints which covers a day in 1 minutes resolution and 15 days in 15 minutes 
 resolution in a single API call.
 
 Parameters
@@ -35,6 +35,9 @@ Following is list of parameters for this action.
      - End of the period for which data point will be returned.
        
        Data type: DateTime
+       
+       Limitation: The time period between StartTime and EndTime should not be
+       over 15 days.
      - Yes
    * - MetricName
      - Metric name.
@@ -61,11 +64,17 @@ Following is list of parameters for this action.
        Data Type: Integer
        
        Valid value : 60(1 minute) ~ 86400(24 hours), multiple of 60.
+       
+       "(Total seconds between StartTime and EndTime) / Period" should be less 
+       than or equal to 1,440.
      - Yes
    * - StartTime
      - End of the period for which data point will be returned.
 
        Data type: DateTime
+       
+       Limitation: The time period between StartTime and EndTime should not be
+       over 15 days. 
      - Yes
    * - Statistics.member.N
      - Metric statistics to return. 

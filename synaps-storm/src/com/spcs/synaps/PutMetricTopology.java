@@ -143,6 +143,7 @@ public class PutMetricTopology {
 
 		if (args != null && args.length > 0) {
 			conf.setNumWorkers(20);
+			conf.setNumAckers(20);
 			conf.setMaxSpoutPending(500);
 			builder.setSpout("api_spout", new ApiSpout(), 8);
 			builder.setSpout("check_spout", new CheckSpout(), 1);

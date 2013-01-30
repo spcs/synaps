@@ -167,7 +167,8 @@ class ShortCase(SynapsTestCase):
 
         for ts, v in data:
             if v == 0: continue
-            self.synaps.put_metric_data(namespace="Test", name=metric_name,
+            self.synaps.put_metric_data(namespace=self.namespace,
+                                        name=metric_name,
                                         value=v, unit="Percent",
                                         dimensions=dimensions, timestamp=ts)
 
@@ -176,7 +177,7 @@ class ShortCase(SynapsTestCase):
         period = 4
         stat = self.synaps.get_metric_statistics(
             period=period * 60, start_time=keys[0], end_time=keys[-1],
-            metric_name=metric_name, namespace="Test",
+            metric_name=metric_name, namespace=self.namespace,
             statistics=['Sum', 'Average', 'SampleCount'],
             dimensions=dimensions,
         )
@@ -184,18 +185,99 @@ class ShortCase(SynapsTestCase):
         timestamps = keys[::period]
 
         self.assertEqual([1, 3, 4],
-                         map(lambda x:x.get('SampleCount'), stat))
+                         map(lambda x: x.get('SampleCount'), stat))
         self.assertEqual(timestamps,
-                         map(lambda x:x.get('Timestamp'), stat))
+                         map(lambda x: x.get('Timestamp'), stat))
         for e, r in zip([values[0], sum(values[1:5]) / 3,
                          sum(values[5:9]) / 4],
-                        map(lambda x:x.get('Average'), stat)):
+                        map(lambda x: x.get('Average'), stat)):
             self.assertAlmostEqual(e, r) 
         for e, r in zip([values[0], sum(values[1:5]), sum(values[5:9])],
-                         map(lambda x:x.get('Sum'), stat)):
+                         map(lambda x: x.get('Sum'), stat)):
             self.assertAlmostEqual(e, r)
 
-             
+
+    def test_get_long_period_statistics(self):
+        minute = datetime.timedelta(seconds=60)
+        second = datetime.timedelta(seconds=1)
+        max_query_period = FLAGS.get('max_query_period_minutes')
+        max_query_datapoints = FLAGS.get('max_query_datapoints')
+
+        now = datetime.datetime.utcnow()
+        now_idx = now.replace(second=0, microsecond=0)
+        start_idx = now_idx - max_query_period * minute
+        max_period = ((now_idx - start_idx).total_seconds() / 
+                      max_query_datapoints)
+        max_period = int(max_period - max_period % 60) 
+
+        # make metric first        
+        metric_name = self.generate_random_name("test_metric_")
+        for t, v in [(start_idx + minute, 100.0),
+                     (now_idx - (3 * max_period) * second, 100.0),
+                     (now_idx - (2 * max_period) * second, 50.0),
+                     (now_idx - (2 * max_period) * second, 0.0)]:
+            metric_kw = dict(namespace=self.namespace, name=metric_name,
+                             value=v, timestamp=t, unit='Percent')
+            self.synaps.put_metric_data(**metric_kw)
+
+        time.sleep(ASYNC_WAIT)
+
+        # make query which could have only two datapoints
+        
+        long_period_kw = dict(period=max_period, start_time=start_idx,
+                              end_time=now_idx, metric_name=metric_name,
+                              namespace=self.namespace,
+                              statistics=['SampleCount', 'Average', 'Sum'])
+        
+        stat = self.synaps.get_metric_statistics(**long_period_kw)
+        self.assertEqual(3, len(stat))
+        self.assertEqual(2, stat[-1]['SampleCount'])
+        self.assertEqual(50, stat[-1]['Sum'])
+        self.assertEqual(25, stat[-1]['Average'])
+        self.assertEqual(1, stat[0]['SampleCount'])
+        
+
+    def test_get_too_long_period_statistics(self):
+        minute = datetime.timedelta(seconds=60)
+        max_query_period = FLAGS.get('max_query_period_minutes')
+        max_query_datapoints = FLAGS.get('max_query_datapoints')
+
+        now = datetime.datetime.utcnow()
+        now_idx = now.replace(second=0, microsecond=0)
+        start_idx = now_idx - max_query_period * minute
+
+        # make metric first        
+        metric_name = self.generate_random_name("test_metric_")
+        metric_kw = dict(namespace=self.namespace, name=metric_name,
+                         value=100.0, timestamp=start_idx + minute)
+        self.synaps.put_metric_data(**metric_kw)
+
+        time.sleep(ASYNC_WAIT)
+        
+        # make query which has longer period than max_query_period_minutes
+        # and this will raise BotoServerError
+        long_period_kw = dict(period=60, start_time=start_idx - minute,
+                              end_time=now_idx, metric_name=metric_name,
+                              namespace=self.namespace, statistics=['Average'])
+        
+        self.assertRaises(BotoServerError, self.synaps.get_metric_statistics,
+                          **long_period_kw)
+        
+        # make queries which have more datapoints than max_query_datapoints
+        # or longer period than max_query_period_minutes and this will raise 
+        # BotoServerError
+        for period in (1, 5, 15, 30, 60, 90, 1440):
+            start_idx = now_idx - (1 + max_query_datapoints) * period * minute
+        
+            more_data_kw = dict(period=period * 60, start_time=start_idx,
+                                end_time=now_idx, metric_name=metric_name,
+                                namespace=self.namespace,
+                                statistics=['Average'])
+            
+            self.assertRaises(BotoServerError,
+                              self.synaps.get_metric_statistics,
+                              **more_data_kw)
+        
     def test_list_metrics(self):
         """
         본 테스트 케이스는 list_metrics API를 검증하기 위한 것으로, 메트릭을 
@@ -272,6 +354,37 @@ class ShortCase(SynapsTestCase):
             self.assertSetEqual(set(alarm_actions), set(a.alarm_actions))
             self.assertSetEqual(set(insufficient_data_actions),
                                 set(a.insufficient_data_actions))
+            
+    def test_put_long_alarm(self):
+        alarm_name = self.generate_random_name("TestAlarm_")
+        metric_name = self.generate_random_name("TestMetric_")
+        kw = dict(name=alarm_name, metric=metric_name,
+                  namespace=self.namespace, threshold=50.0, comparison=">",
+                  unit="Percent")
+        
+        # period: a day + one second, evaluation_periods: 1 time
+        long_period_kw = kw.copy()
+        long_period_kw.update(period=60 * 60 * 24 + 1,
+                              evaluation_periods=1)
+
+        self.assertRaises(BotoServerError, self.synaps.put_metric_alarm,
+                          MetricAlarm(**long_period_kw))
+        
+        # period: a minutes, evaluation_periods: 24 * 60 + 1 times
+        long_evaluation_period_kw = kw.copy()
+        long_evaluation_period_kw.update(period=60,
+                                         evaluation_periods=24 * 60 + 1)
+        
+        self.assertRaises(BotoServerError, self.synaps.put_metric_alarm,
+                          MetricAlarm(**long_evaluation_period_kw))
+        
+        # period: an hour, evaluation_periods: 25 times (over a day)
+        long_evaluation_kw = kw.copy()
+        long_evaluation_kw.update(period=60 * 60,
+                                  evaluation_periods=25)
+        
+        self.assertRaises(BotoServerError, self.synaps.put_metric_alarm,
+                          MetricAlarm(**long_evaluation_kw))
 
     def test_alarm_actions(self):
         # delete Alarm
@@ -477,14 +590,15 @@ class ShortCase(SynapsTestCase):
         stat1과 stat2의 SampleCount 차이는 1이 되어야하며, stat1['Sum']은 
         metric2 value + stat2['Sum']과 같아야한다.
         """
-        now = datetime.datetime.utcnow()
+        metric_name = self.generate_random_name("TestMetric_")
+        now = datetime.datetime.utcnow()        
         now_idx = now.replace(second=0, microsecond=0)
         start_time = now - datetime.timedelta(hours=0.25)
         end_time = now
 
         # 메트릭 입력
         ret = self.synaps.put_metric_data(
-            namespace=self.namespace, name=self.metric_name,
+            namespace=self.namespace, name=metric_name,
             value=55.25, unit="Percent", dimensions=self.dimensions,
             timestamp=now_idx,
         )
@@ -495,7 +609,7 @@ class ShortCase(SynapsTestCase):
         # 메트릭 입력 전 통계자료 조회
         before_stat = self.synaps.get_metric_statistics(
             period=300, start_time=start_time, end_time=end_time,
-            metric_name=self.metric_name, namespace=self.namespace,
+            metric_name=metric_name, namespace=self.namespace,
             statistics=['Sum', 'Average', 'SampleCount'],
             dimensions=self.dimensions,
         )
@@ -505,7 +619,7 @@ class ShortCase(SynapsTestCase):
         
         # 메트릭 입력        
         ret = self.synaps.put_metric_data(
-            namespace=self.namespace, name=self.metric_name,
+            namespace=self.namespace, name=metric_name,
             value=test_value, unit="Percent", dimensions=self.dimensions,
             timestamp=now_idx,
         )
@@ -515,7 +629,7 @@ class ShortCase(SynapsTestCase):
         time.sleep(ASYNC_WAIT)
         after_stat = self.synaps.get_metric_statistics(
             period=300, start_time=start_time, end_time=end_time,
-            metric_name=self.metric_name, namespace=self.namespace,
+            metric_name=metric_name, namespace=self.namespace,
             statistics=['Sum', 'Average', 'SampleCount'],
             dimensions=self.dimensions,
         )
@@ -536,7 +650,7 @@ class ShortCase(SynapsTestCase):
         try:
             self.synaps.get_metric_statistics(
                 period=test_period, start_time=start_time, end_time=end_time,
-                metric_name=self.metric_name, namespace=self.namespace,
+                metric_name=metric_name, namespace=self.namespace,
                 statistics=['Sum', 'Average', 'SampleCount'],
                 dimensions=self.dimensions,
             )
@@ -549,7 +663,7 @@ class ShortCase(SynapsTestCase):
         try:
             self.synaps.get_metric_statistics(
                 period=test_period, start_time=start_time, end_time=end_time,
-                metric_name=self.metric_name, namespace=self.namespace,
+                metric_name=metric_name, namespace=self.namespace,
                 statistics=['Sum', 'Average', 'SampleCount'],
                 dimensions=self.dimensions,
             )
@@ -559,9 +673,12 @@ class ShortCase(SynapsTestCase):
             self.fail("should return 400 error")         
 
     def test_enable_alarm_actions(self):
-        for i in range(10):
-            alarm = MetricAlarm(name="TEST_ALARM_%02d" % i,
-                metric=self.metric_name, namespace=self.namespace,
+        alarmnames = [self.generate_random_name("TEST_ALARM_") 
+                      for i in range(10)]
+        metric_name = self.generate_random_name("TEST_METRIC")
+        for alarmname in alarmnames:
+            alarm = MetricAlarm(name=alarmname,
+                metric=metric_name, namespace=self.namespace,
                 statistic="Average", comparison="<", threshold=2.0 * i,
                 period=300, evaluation_periods=2, unit="Percent",
                 description=None, dimensions=self.dimensions,
@@ -571,7 +688,6 @@ class ShortCase(SynapsTestCase):
 
         time.sleep(ASYNC_WAIT)
 
-        alarmnames = ["TEST_ALARM_%02d" % i for i in range(10)]
         self.synaps.enable_alarm_actions(alarmnames)
         time.sleep(ASYNC_WAIT)
         alarms = self.synaps.describe_alarms(alarm_names=alarmnames)
@@ -593,32 +709,10 @@ class ShortCase(SynapsTestCase):
         for a in alarms:
             self.assertFalse(a.name in alarmnames)
 
-    def test_set_alarm_state(self):
-        alarmname = "TEST_ALARM_00"
-        alarm = MetricAlarm(name=alarmname,
-            metric=self.metric_name, namespace=self.namespace,
-            statistic="Average", comparison="<", threshold=2.0,
-            period=300, evaluation_periods=2, unit="Percent",
-            description=None, dimensions=self.dimensions,
-            alarm_actions=None, insufficient_data_actions=None,
-            ok_actions=None)
-        self.synaps.put_metric_alarm(alarm)        
-
-        time.sleep(ASYNC_WAIT)
-        
-        self.synaps.set_alarm_state(alarmname, state_reason="Manual input",
-                                    state_value="ALARM")
-
-        time.sleep(ASYNC_WAIT)
-        
-        alarms = self.synaps.describe_alarms(alarm_names=[alarmname])
-        alarm = alarms[0]
-        
-        self.assertEqual("ALARM", alarm.state_value)
-        self.assertEqual("Manual input", alarm.state_reason)
-        
     def test_check_alarm_state(self):
         alarmname = self.generate_random_name("TEST_ALARM_")
+        start_date = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+        
         alarm = MetricAlarm(name=alarmname,
             metric=self.metric_name, namespace=self.namespace,
             statistic="Average", comparison="<", threshold=2.0,
@@ -663,6 +757,7 @@ class ShortCase(SynapsTestCase):
                             msg="%s %s" % (a.name, prefix))
             
         self.synaps.delete_alarms(alarm_names)
+
     
     def test_put_stale_metric(self):
         name_stale = self.generate_random_name("STALE_METRIC")
@@ -675,18 +770,9 @@ class ShortCase(SynapsTestCase):
         end_time = stale_time + datetime.timedelta(hours=1)
 
         # put metric at 'now - ttl' and get nothing
-        self.synaps.put_metric_data(namespace=self.namespace, name=name_stale,
-                                    value=10.0, timestamp=stale_time)
-    
-        time.sleep(ASYNC_WAIT)
-        
-        stat = self.synaps.get_metric_statistics(period=60,
-                                                 start_time=start_time,
-                                                 end_time=end_time,
-                                                 metric_name=name_stale,
-                                                 namespace=self.namespace,
-                                                 statistics=["Average"])
-        self.assertEqual(0, len(stat))
+        self.assertRaises(BotoServerError, self.synaps.put_metric_data,
+                          namespace=self.namespace, name=name_stale,
+                          value=10.0, timestamp=stale_time)
         
         # put metric at 'now - (ttl - 60)' and get one metric
         stale_time = (datetime.datetime.utcnow() - 
@@ -706,37 +792,9 @@ class ShortCase(SynapsTestCase):
                                                  namespace=self.namespace,
                                                  statistics=["Average"])
         self.assertEqual(1, len(stat))
+
         
-    
 class LongCase(SynapsTestCase):
-    def test_check_alarm_state(self):
-        alarmname = self.generate_random_name("TEST_ALARM_")
-        alarm = MetricAlarm(name=alarmname,
-            metric=self.metric_name, namespace=self.namespace,
-            statistic="Average", comparison="<", threshold=2.0,
-            period=60, evaluation_periods=1, unit="Percent",
-            description=None, dimensions=self.dimensions,
-            alarm_actions=None, insufficient_data_actions=None,
-            ok_actions=None)
-        self.synaps.put_metric_alarm(alarm)        
-
-        time.sleep(ASYNC_WAIT)
-        
-        self.synaps.set_alarm_state(alarmname, state_reason="Manual input",
-                                    state_value="ALARM")
-
-        time.sleep(ASYNC_WAIT)
-
-        for alarm in self.synaps.describe_alarms(alarm_names=[alarmname]):
-            self.assertEqual("ALARM", alarm.state_value)
-            self.assertEqual("Manual input", alarm.state_reason)
-        
-        time.sleep(180)
-
-        for alarm in self.synaps.describe_alarms(alarm_names=[alarmname]):
-            self.assertEqual("INSUFFICIENT_DATA", alarm.state_value)
-
-        self.synaps.delete_alarms(alarms=[alarmname])
     
     def test_eval_alarm(self):
         """
@@ -823,6 +881,6 @@ class LongCase(SynapsTestCase):
         
         self.synaps.delete_alarms(alarms=[alarmname])
         
-
+        
 if __name__ == "__main__":
     unittest.main()

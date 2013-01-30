@@ -209,15 +209,13 @@ class MetricMonitor(object):
                         'Maximum' : float('nan') }
             return ret
         
-                 
         time_idx = timestamp.replace(second=0, microsecond=0)
+        time_diff = utils.utcnow() - time_idx
         
-        if timedelta(seconds=self.cass.STATISTICS_TTL) < (utils.utcnow() - 
-                                                            time_idx):
+        if timedelta(seconds=self.cass.STATISTICS_TTL) < time_diff:
             msg = "index %s is older than TTL. It doesn't need to insert DB"
             storm.log(msg % time_idx)
             return
-        
         
         if time_idx not in self.df.index:
             self._reindex()
@@ -258,7 +256,8 @@ class MetricMonitor(object):
             'Maximum':{time_idx: stat['Maximum']}
         }        
         
-        self.cass.insert_stat(self.metric_key, stat_dict)
+        ttl = self.cass.STATISTICS_TTL - time_diff.total_seconds()
+        self.cass.insert_stat(self.metric_key, stat_dict, ttl)
         storm.log("metric data inserted %s" % (self.metric_key))
     
     def check_alarms(self, query_time=None):

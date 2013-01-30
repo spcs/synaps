@@ -120,6 +120,12 @@ core_opts = [
     cfg.StrOpt('cassandra_keyspace',
                default='synaps_test',
                help='cassandra key space'),
+    cfg.IntOpt('max_query_period_minutes',
+               default=60 * 24 * 15, # 15 days in minutes
+               help='max period to query at once'),
+    cfg.IntOpt('max_query_datapoints',
+               default=60 * 24, # 15 days in minutes
+               help='max datapoints to query at once'),
     cfg.StrOpt('api_paste_config',
                default="api-paste.ini",
                help='File name for the paste.deploy config for synaps-api'),

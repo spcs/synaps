@@ -256,12 +256,13 @@ class Cassandra(object):
                               dimensions=None):
         def get_stat(key, super_column, column_start, column_end):
             stat = {}
+            count = (column_end - column_start).total_seconds() / 60
             try:
                 stat = self.scf_stat_archive.get(key,
                                                  super_column=super_column,
                                                  column_start=column_start,
                                                  column_finish=column_end,
-                                                 column_count=1440)
+                                                 column_count=count)
             except pycassa.NotFoundException:
                 LOG.info("not found data - %s %s %s %s" % (key, super_column,
                                                            column_start,
@@ -315,9 +316,10 @@ class Cassandra(object):
             return "None"
         return metric.get('unit', "None")
 
-    def insert_stat(self, metric_key, stat):
+    def insert_stat(self, metric_key, stat, ttl=None):
         LOG.debug("scf_stat_archive.insert (%s, %s)" % (metric_key, stat))
-        self.scf_stat_archive.insert(metric_key, stat, ttl=self.STATISTICS_TTL)
+        ttl = ttl if ttl else self.STATISTICS_TTL
+        self.scf_stat_archive.insert(metric_key, stat, ttl=ttl)
     
     def insert_alarm_history(self, key, column):
         LOG.debug("cf_alarm_history.insert (%s, %s)" % (key, column))

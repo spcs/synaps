@@ -82,7 +82,7 @@ Following is contents of this data type.
    * - EndTime
      - DateTime
      - 
-     - 
+     - The time period between StartTime and EndTime should not be over 15 days.
    * - EvaluationPeriods
      - Integer
      - 
@@ -151,8 +151,9 @@ Following is contents of this data type.
      - Integer
      - 
      - 60 ~ 86400, multiple of 60.
-       (Total seconds between StartTime and EndTime) / Period should be less or
-       equals than 1,440 when it applied to the :ref:`get_metric_statistics`  
+       "(Total seconds between StartTime and EndTime) / Period" should be less 
+       than or equal to 1,440 when it applied to the 
+       :ref:`get_metric_statistics`  
    * - SampleCount
      - Double
      - 
@@ -160,13 +161,11 @@ Following is contents of this data type.
    * - StartDate
      - DateTime
      - 
-     - (Total seconds between StartTime and EndTime) / Period should be less or
-       equals than 1,440.  
+     -   
    * - StartTime
      - DateTime
      - 
-     - (Total seconds between StartTime and EndTime) / Period should be less or
-       equals than 1,440.  
+     - The time period between StartTime and EndTime should not be over 15 days. 
    * - StateReason
      - String
      - 1 ~ 1023
