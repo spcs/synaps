@@ -79,11 +79,12 @@ Following is list of parameters for this action.
      - Description
      - Mandatory
    * - EvaluationPeriods
-     - Period to compare with threshold. (minute)
-
+     - Number of periods to evaluate the alarm.
+       
        Data type: Integer
        
-       Valid value: 1 ~ 100
+       Valid value: 1 ~ 1440
+       Limitation: Period * EvaluationPeriods should not exceed 86400(24 hours)
      - Yes     
    * - InsufficientDataActions.member.N
      - Phone number to send SMS or E-mail address to send an E-mail when the

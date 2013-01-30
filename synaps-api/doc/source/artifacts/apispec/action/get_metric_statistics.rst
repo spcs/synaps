@@ -5,12 +5,12 @@ GetMetricStatistics
 
 Description.
 ------------
-Check the specific metric's statistic data. SPCS Synaps collect data points 
-which are exist within specified Period and return statistic data. For example,
-suppose you specify Period 1 minute and input 30 data points of timestamp for
-each minute. then Synaps will return the result that became one data point.
-Synaps can check statistic information up to 2 weeks. and you can check the
-data points up to 20,160 in a single API call.
+Get specific metric's statistic data. SPCS Synaps collect data points which 
+are exist within specified Period and return statistic data. 
+
+Synaps holds 30 days of statistics data and you can query up to 1,440 
+datapoints which covers a day in 1 minutes resolution and 30 days in 30 minutes 
+resolution in a single API call.
 
 Parameters
 ----------

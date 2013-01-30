@@ -86,7 +86,7 @@ Following is contents of this data type.
    * - EvaluationPeriods
      - Integer
      - 
-     - 1 ~ 100
+     - 1 ~ 1440, Period * EvaluationPeriods should not exceed 86400(24 hours)
    * - HistoryItemType
      - String
      - 
@@ -151,6 +151,8 @@ Following is contents of this data type.
      - Integer
      - 
      - 60 ~ 86400, multiple of 60.
+       (Total seconds between StartTime and EndTime) / Period should be less or
+       equals than 1,440 when it applied to the :ref:`get_metric_statistics`  
    * - SampleCount
      - Double
      - 
@@ -158,11 +160,13 @@ Following is contents of this data type.
    * - StartDate
      - DateTime
      - 
-     - 
+     - (Total seconds between StartTime and EndTime) / Period should be less or
+       equals than 1,440.  
    * - StartTime
      - DateTime
      - 
-     - 
+     - (Total seconds between StartTime and EndTime) / Period should be less or
+       equals than 1,440.  
    * - StateReason
      - String
      - 1 ~ 1023
@@ -212,4 +216,3 @@ Following is contents of this data type.
      - String
      - 1 ~ 255
      - 
-     
