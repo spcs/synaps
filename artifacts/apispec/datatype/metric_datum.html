@@ -2,18 +2,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>MetricDatum &mdash; synaps v12.09.b6-2 documentation</title>
+    <title>MetricDatum &mdash; synaps 2013.1.2a-dev documentation</title>
+    
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/tweaks.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '12.09.b6-2',
+        VERSION:     '2013.1.2a-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +26,7 @@
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps v12.09.b6-2 documentation" href="../../../index.html" />
+    <link rel="top" title="synaps 2013.1.2a-dev documentation" href="../../../index.html" />
     <link rel="up" title="User API Specification" href="../user.api.html" />
     <link rel="next" title="StatisticSet" href="statistic_set.html" />
     <link rel="prev" title="MetricAlarm" href="metric_alarm.html" /> 
@@ -64,33 +67,33 @@ to existing Metric or generate new Metric.</p>
 <col width="63%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Name</th>
+<tr class="row-odd"><th class="head">Name</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>Dimensions</td>
+<tr class="row-even"><td>Dimensions</td>
 <td><p class="first">Dimensions for Metric</p>
 <p>Data type: <a class="reference internal" href="dimension.html#dimension"><em>Dimension</em></a> list</p>
 <p class="last">Length limitation: 0 ~ 10 items</p>
 </td>
 </tr>
-<tr><td>MetricName</td>
+<tr class="row-odd"><td>MetricName</td>
 <td><p class="first">Metric&#8217;s name.</p>
 <p>Data type: String</p>
 <p class="last">Length limitation: 1 ~ 255 bytes</p>
 </td>
 </tr>
-<tr><td>StatisticValues</td>
+<tr class="row-even"><td>StatisticValues</td>
 <td>TBD - Not Yet Implemented.</td>
 </tr>
-<tr><td>Timestamp</td>
+<tr class="row-odd"><td>Timestamp</td>
 <td><p class="first">Timestamp for Metric. If you don&#8217;t specify this parameter, Use input time
 of Metric as default.</p>
 <p class="last">Data type: DateTime</p>
 </td>
 </tr>
-<tr><td>Unit</td>
+<tr class="row-even"><td>Unit</td>
 <td><p class="first">Unit for Metric</p>
 <p>Data type: String</p>
 <p class="last">Valid value: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes |
@@ -101,7 +104,7 @@ Kilobits/Second | Megabits/Second | Gigabits/Second | Terabits/Second |
 Count/Second | None</p>
 </td>
 </tr>
-<tr><td>Value</td>
+<tr class="row-odd"><td>Value</td>
 <td><p class="first">Value of Metric</p>
 <p class="last">Data type: Double</p>
 </td>
@@ -169,15 +172,15 @@ Count/Second | None</p>
         <li class="right" >
           <a href="metric_alarm.html" title="MetricAlarm"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../../index.html">synaps v12.09.b6-2 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">synaps 2013.1.2a-dev documentation</a> &raquo;</li>
           <li><a href="../../apispec.html" >Application Programming Interface Specification</a> &raquo;</li>
           <li><a href="../user.api.html" accesskey="U">User API Specification</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Tue Nov 27 15:56:50 2012, commit 7d9e0f5.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Last updated on Wed Jan 30 18:20:22 2013, commit 7fb5bb7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

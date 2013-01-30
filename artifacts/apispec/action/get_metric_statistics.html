@@ -2,18 +2,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>GetMetricStatistics &mdash; synaps v12.09.b6-2 documentation</title>
+    <title>GetMetricStatistics &mdash; synaps 2013.1.2a-dev documentation</title>
+    
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/tweaks.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '12.09.b6-2',
+        VERSION:     '2013.1.2a-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +26,7 @@
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps v12.09.b6-2 documentation" href="../../../index.html" />
+    <link rel="top" title="synaps 2013.1.2a-dev documentation" href="../../../index.html" />
     <link rel="up" title="User API Specification" href="../user.api.html" />
     <link rel="next" title="ListMetrics" href="list_metrics.html" />
     <link rel="prev" title="EnableAlarmActions" href="enable_alarm_actions.html" /> 
@@ -52,12 +55,11 @@
 <span id="get-metric-statistics"></span><h1>GetMetricStatistics<a class="headerlink" href="#getmetricstatistics" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="description">
 <h2>Description.<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p>Check the specific metric&#8217;s statistic data. SPCS Synaps collect data points
-which are exist within specified Period and return statistic data. For example,
-suppose you specify Period 1 minute and input 30 data points of timestamp for
-each minute. then Synaps will return the result that became one data point.
-Synaps can check statistic information up to 2 weeks. and you can check the
-data points up to 20,160 in a single API call.</p>
+<p>Get specific metric&#8217;s statistic data. SPCS Synaps collect data points which
+are exist within specified Period and return statistic data.</p>
+<p>Synaps holds 30 days of statistics data and you can query up to 1,440
+datapoints which covers a day in 1 minutes resolution and 15 days in 15 minutes
+resolution in a single API call.</p>
 </div>
 <div class="section" id="parameters">
 <h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
@@ -69,26 +71,28 @@ data points up to 20,160 in a single API call.</p>
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Name</th>
+<tr class="row-odd"><th class="head">Name</th>
 <th class="head">Description</th>
 <th class="head">Mandatory</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>Dimensions.member.N</td>
+<tr class="row-even"><td>Dimensions.member.N</td>
 <td><p class="first">Dimension list in respect of Metric.</p>
 <p>Data type: <a class="reference internal" href="../datatype/dimension.html#dimension"><em>Dimension</em></a> list</p>
 <p class="last">Length limitation: 0 ~ 10 items</p>
 </td>
 <td>No</td>
 </tr>
-<tr><td>EndTime</td>
+<tr class="row-odd"><td>EndTime</td>
 <td><p class="first">End of the period for which data point will be returned.</p>
-<p class="last">Data type: DateTime</p>
+<p>Data type: DateTime</p>
+<p class="last">Limitation: The time period between StartTime and EndTime should not be
+over 15 days.</p>
 </td>
 <td>Yes</td>
 </tr>
-<tr><td>MetricName</td>
+<tr class="row-even"><td>MetricName</td>
 <td><p class="first">Metric name.</p>
 <p>Data Type: String</p>
 <p>Length limitation: 1 ~ 255 bytes</p>
@@ -96,7 +100,7 @@ data points up to 20,160 in a single API call.</p>
 </td>
 <td>Yes</td>
 </tr>
-<tr><td>Namespace</td>
+<tr class="row-odd"><td>Namespace</td>
 <td><p class="first">namespace of Metric.</p>
 <p>Data Type: String</p>
 <p>Length limitation: 1 ~ 255 bytes</p>
@@ -104,21 +108,25 @@ data points up to 20,160 in a single API call.</p>
 </td>
 <td>Yes</td>
 </tr>
-<tr><td>Period</td>
+<tr class="row-even"><td>Period</td>
 <td><p class="first">Period to apply data point Statistic. (sec) It has to be always multiple
 of 60. Minimum, and default value is 60.</p>
 <p>Data Type: Integer</p>
-<p class="last">Valid value : 60(1 minute) ~ 86400(24 hours), multiple of 60.</p>
+<p>Valid value : 60(1 minute) ~ 86400(24 hours), multiple of 60.</p>
+<p class="last">&#8220;(Total seconds between StartTime and EndTime) / Period&#8221; should be less
+than or equal to 1,440.</p>
 </td>
 <td>Yes</td>
 </tr>
-<tr><td>StartTime</td>
+<tr class="row-odd"><td>StartTime</td>
 <td><p class="first">End of the period for which data point will be returned.</p>
-<p class="last">Data type: DateTime</p>
+<p>Data type: DateTime</p>
+<p class="last">Limitation: The time period between StartTime and EndTime should not be
+over 15 days.</p>
 </td>
 <td>Yes</td>
 </tr>
-<tr><td>Statistics.member.N</td>
+<tr class="row-even"><td>Statistics.member.N</td>
 <td><p class="first">Metric statistics to return.</p>
 <p>Valid value: Average | Sum | SampleCount | Maximum | Minimum</p>
 <p>Data type: String list</p>
@@ -126,7 +134,7 @@ of 60. Minimum, and default value is 60.</p>
 </td>
 <td>Yes</td>
 </tr>
-<tr><td>Unit</td>
+<tr class="row-odd"><td>Unit</td>
 <td><p class="first">Metric&#8217;s unit.</p>
 <p>Data type: String</p>
 <p class="last">Valid value: Seconds | Microseconds | Milliseconds | Bytes | Kilobytes |
@@ -151,12 +159,12 @@ Count/Second | None</p>
 <col width="67%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Name</th>
+<tr class="row-odd"><th class="head">Name</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>Datapoints</td>
+<tr class="row-even"><td>Datapoints</td>
 <td><p class="first">Data points of Metric.</p>
 <p class="last">Data type: <a class="reference internal" href="../datatype/datapoint.html#datapoint"><em>Datapoint</em></a> list</p>
 </td>
@@ -174,13 +182,13 @@ Count/Second | None</p>
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Error</th>
+<tr class="row-odd"><th class="head">Error</th>
 <th class="head">Description</th>
 <th class="head">HTTP Status Code</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>InvalidParameterValue</td>
+<tr class="row-even"><td>InvalidParameterValue</td>
 <td>Invalid Input Parameter.</td>
 <td>400</td>
 </tr>
@@ -250,15 +258,15 @@ Count/Second | None</p>
         <li class="right" >
           <a href="enable_alarm_actions.html" title="EnableAlarmActions"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../../index.html">synaps v12.09.b6-2 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">synaps 2013.1.2a-dev documentation</a> &raquo;</li>
           <li><a href="../../apispec.html" >Application Programming Interface Specification</a> &raquo;</li>
           <li><a href="../user.api.html" accesskey="U">User API Specification</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Tue Nov 27 15:56:50 2012, commit 7d9e0f5.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Last updated on Wed Jan 30 18:20:22 2013, commit 7fb5bb7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

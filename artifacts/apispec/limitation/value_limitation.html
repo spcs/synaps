@@ -2,18 +2,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Value limitation &mdash; synaps v12.09.b6-2 documentation</title>
+    <title>Value limitation &mdash; synaps 2013.1.2a-dev documentation</title>
+    
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/tweaks.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '12.09.b6-2',
+        VERSION:     '2013.1.2a-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +26,7 @@
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps v12.09.b6-2 documentation" href="../../../index.html" />
+    <link rel="top" title="synaps 2013.1.2a-dev documentation" href="../../../index.html" />
     <link rel="up" title="User API Specification" href="../user.api.html" />
     <link rel="next" title="Admin API Specificaton" href="../admin.api.html" />
     <link rel="prev" title="Common Errors" href="../common/common_errors.html" /> 
@@ -62,240 +65,243 @@
 <col width="40%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Name</th>
+<tr class="row-odd"><th class="head">Name</th>
 <th class="head">Data type</th>
 <th class="head">Length limitation</th>
 <th class="head">Valid value / Type limitation</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>ActionPrefix</td>
+<tr class="row-even"><td>ActionPrefix</td>
 <td>String</td>
 <td>1 ~ 1024</td>
 <td>Value consisting of only numbers can not be used.</td>
 </tr>
-<tr><td>ActionEnabled</td>
+<tr class="row-odd"><td>ActionEnabled</td>
 <td>Boolean</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>AlarmActions</td>
+<tr class="row-even"><td>AlarmActions</td>
 <td>String list</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>AlarmArn</td>
+<tr class="row-odd"><td>AlarmArn</td>
 <td>String</td>
 <td>1 ~ 1000</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>AlarmConfigurationUpdatedTimestamp</td>
+<tr class="row-even"><td>AlarmConfigurationUpdatedTimestamp</td>
 <td>DateTime</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>AlarmDescription</td>
+<tr class="row-odd"><td>AlarmDescription</td>
 <td>String</td>
 <td>1 ~ 255</td>
 <td>Value consisting of only numbers can not be used.</td>
 </tr>
-<tr><td>AlarmHistoryItems</td>
+<tr class="row-even"><td>AlarmHistoryItems</td>
 <td>AlarmHistoryItem list</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>AlarmName</td>
+<tr class="row-odd"><td>AlarmName</td>
 <td>String</td>
 <td>1 ~ 255</td>
 <td>Value consisting of only numbers can not be used.</td>
 </tr>
-<tr><td>AlarmNamePrefix</td>
+<tr class="row-even"><td>AlarmNamePrefix</td>
 <td>String</td>
 <td>1 ~ 255</td>
 <td>Value consisting of only numbers can not be used.</td>
 </tr>
-<tr><td>AlarmNames</td>
+<tr class="row-odd"><td>AlarmNames</td>
 <td>String list</td>
 <td>0 ~ 100</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>Average</td>
+<tr class="row-even"><td>Average</td>
 <td>Double</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>ComparisonOperator</td>
+<tr class="row-odd"><td>ComparisonOperator</td>
 <td>String</td>
 <td>&nbsp;</td>
 <td>GreaterThanOrEqualToThreshold | GreaterThanThreshold |
 LessThanThreshold | LessThanOrEqualToThreshold</td>
 </tr>
-<tr><td>Datapoints</td>
+<tr class="row-even"><td>Datapoints</td>
 <td>Datapoint list</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>Dimensions</td>
+<tr class="row-odd"><td>Dimensions</td>
 <td>Dimension list</td>
 <td>0 ~ 10</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>EndDate</td>
+<tr class="row-even"><td>EndDate</td>
 <td>DateTime</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>EndTime</td>
+<tr class="row-odd"><td>EndTime</td>
 <td>DateTime</td>
 <td>&nbsp;</td>
-<td>&nbsp;</td>
+<td>The time period between StartTime and EndTime should not be over 15 days.</td>
 </tr>
-<tr><td>EvaluationPeriods</td>
+<tr class="row-even"><td>EvaluationPeriods</td>
 <td>Integer</td>
 <td>&nbsp;</td>
-<td>1 ~ 100</td>
+<td>1 ~ 1440, Period * EvaluationPeriods should not exceed 86400(24 hours)</td>
 </tr>
-<tr><td>HistoryItemType</td>
+<tr class="row-odd"><td>HistoryItemType</td>
 <td>String</td>
 <td>&nbsp;</td>
 <td>ConfigurationUpdate | StateUpdate | Action</td>
 </tr>
-<tr><td>HistorySummary</td>
+<tr class="row-even"><td>HistorySummary</td>
 <td>String</td>
 <td>1 ~ 255</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>InsufficientDataActions</td>
+<tr class="row-odd"><td>InsufficientDataActions</td>
 <td>String</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>Label</td>
+<tr class="row-even"><td>Label</td>
 <td>String</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>Maximum</td>
+<tr class="row-odd"><td>Maximum</td>
 <td>Double</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>MaxRecords</td>
+<tr class="row-even"><td>MaxRecords</td>
 <td>Integer</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>MetricAlarms</td>
+<tr class="row-odd"><td>MetricAlarms</td>
 <td>MetricAlarm list</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>MetricData</td>
+<tr class="row-even"><td>MetricData</td>
 <td>MetricDatum list</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>MetricName</td>
+<tr class="row-odd"><td>MetricName</td>
 <td>String</td>
 <td>1 ~ 255</td>
 <td>Value consisting of only numbers can not be used.</td>
 </tr>
-<tr><td>Metrics</td>
+<tr class="row-even"><td>Metrics</td>
 <td>Metric list</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>Minimum</td>
+<tr class="row-odd"><td>Minimum</td>
 <td>Double</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>Name</td>
+<tr class="row-even"><td>Name</td>
 <td>String</td>
 <td>1 ~ 255</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>Namespace</td>
+<tr class="row-odd"><td>Namespace</td>
 <td>String</td>
 <td>1 ~ 255</td>
 <td>Value consisting of only numbers can not be used.</td>
 </tr>
-<tr><td>NextToken</td>
+<tr class="row-even"><td>NextToken</td>
 <td>String</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>OKActions</td>
+<tr class="row-odd"><td>OKActions</td>
 <td>String</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>Period</td>
+<tr class="row-even"><td>Period</td>
 <td>Integer</td>
 <td>&nbsp;</td>
-<td>60 ~ 86400, multiple of 60.</td>
+<td>60 ~ 86400, multiple of 60.
+&#8220;(Total seconds between StartTime and EndTime) / Period&#8221; should be less
+than or equal to 1,440 when it applied to the
+<a class="reference internal" href="../action/get_metric_statistics.html#get-metric-statistics"><em>GetMetricStatistics</em></a></td>
 </tr>
-<tr><td>SampleCount</td>
+<tr class="row-odd"><td>SampleCount</td>
 <td>Double</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>StartDate</td>
+<tr class="row-even"><td>StartDate</td>
 <td>DateTime</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>StartTime</td>
+<tr class="row-odd"><td>StartTime</td>
 <td>DateTime</td>
 <td>&nbsp;</td>
-<td>&nbsp;</td>
+<td>The time period between StartTime and EndTime should not be over 15 days.</td>
 </tr>
-<tr><td>StateReason</td>
+<tr class="row-even"><td>StateReason</td>
 <td>String</td>
 <td>1 ~ 1023</td>
 <td>Value consisting of only numbers can not be used.</td>
 </tr>
-<tr><td>StateReasonData</td>
+<tr class="row-odd"><td>StateReasonData</td>
 <td>String</td>
 <td>0 ~ 4000</td>
 <td>Value consisting of only numbers can not be used.</td>
 </tr>
-<tr><td>StateValue</td>
+<tr class="row-even"><td>StateValue</td>
 <td>String</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>Statistic</td>
+<tr class="row-odd"><td>Statistic</td>
 <td>String</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>Statistics</td>
+<tr class="row-even"><td>Statistics</td>
 <td>String list</td>
 <td>1 ~ 5</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>StatisticValues</td>
+<tr class="row-odd"><td>StatisticValues</td>
 <td>TBD</td>
 <td>&nbsp;</td>
 <td>Not yet implemented</td>
 </tr>
-<tr><td>Sum</td>
+<tr class="row-even"><td>Sum</td>
 <td>Double</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>Threshold</td>
+<tr class="row-odd"><td>Threshold</td>
 <td>Double</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>Timestamp</td>
+<tr class="row-even"><td>Timestamp</td>
 <td>DateTime</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td>Unit</td>
+<tr class="row-odd"><td>Unit</td>
 <td>String</td>
 <td>&nbsp;</td>
 <td>Seconds | Microseconds | Milliseconds | Bytes |
@@ -305,7 +311,7 @@ Kilobytes/Second | Megabytes/Second | Gigabytes/Second |
 Terabytes/Second | Bits/Second | Kilobits/Second | Megabits/Second |
 Gigabits/Second | Terabits/Second | Count/Second | None</td>
 </tr>
-<tr><td>Value</td>
+<tr class="row-even"><td>Value</td>
 <td>String</td>
 <td>1 ~ 255</td>
 <td>&nbsp;</td>
@@ -372,15 +378,15 @@ Gigabits/Second | Terabits/Second | Count/Second | None</td>
         <li class="right" >
           <a href="../common/common_errors.html" title="Common Errors"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../../index.html">synaps v12.09.b6-2 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">synaps 2013.1.2a-dev documentation</a> &raquo;</li>
           <li><a href="../../apispec.html" >Application Programming Interface Specification</a> &raquo;</li>
           <li><a href="../user.api.html" accesskey="U">User API Specification</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Tue Nov 27 15:56:50 2012, commit 7d9e0f5.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Last updated on Wed Jan 30 18:20:22 2013, commit 7fb5bb7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

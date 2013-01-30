@@ -2,18 +2,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>The synaps.auth.manager Module &mdash; synaps v12.09.b6-2 documentation</title>
+    <title>The synaps.auth.manager Module &mdash; synaps 2013.1.2a-dev documentation</title>
+    
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '12.09.b6-2',
+        VERSION:     '2013.1.2a-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +26,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps v12.09.b6-2 documentation" href="../index.html" /> 
+    <link rel="top" title="synaps 2013.1.2a-dev documentation" href="../index.html" /> 
   </head>
   <body>
   <div id="header">
@@ -90,7 +93,7 @@ is specified, adds a local role.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>user</strong> (<em>User or uid</em>) &#8211; User to which to add role.</li>
 <li><strong>role</strong> (<em>str</em>) &#8211; Role to add.</li>
 <li><strong>project</strong> (<em>Project or project_id</em>) &#8211; Project in which to add local role.</li>
@@ -118,7 +121,7 @@ that have no project knowledge will still work.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>access</strong> (<em>str</em>) &#8211; Access key for user in the form &#8220;access:project&#8221;.</li>
 <li><strong>signature</strong> (<em>str</em>) &#8211; Signature of the request.</li>
 <li><strong>params</strong> (<em>list of str</em>) &#8211; Web paramaters used for the signature.</li>
@@ -131,10 +134,10 @@ checked.</li>
 </ul>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">tuple (User, Project)</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">tuple (User, Project)</p>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">User and project that the request represents.</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">User and project that the request represents.</p>
 </td>
 </tr>
 </tbody>
@@ -149,7 +152,7 @@ checked.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>name</strong> (<em>str</em>) &#8211; Name of the project to create. The name will also be
 used as the project id.</li>
 <li><strong>manager_user</strong> (<em>User or uid</em>) &#8211; This user will be the project manager.</li>
@@ -158,14 +161,14 @@ specified, the name of the project will be used.</li>
 </ul>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Param :</th><td class="field-body"><p class="first">Initial project members. The project manager will always be
+<tr class="field-even field"><th class="field-name">Param :</th><td class="field-body"><p class="first">Initial project members. The project manager will always be
 added as a member, even if he isn&#8217;t specified in this list.</p>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Project</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Project</p>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The new project.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The new project.</p>
 </td>
 </tr>
 </tbody>
@@ -180,7 +183,7 @@ added as a member, even if he isn&#8217;t specified in this list.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>name</strong> (<em>str</em>) &#8211; Name of the user to create.</li>
 <li><strong>access</strong> (<em>str</em>) &#8211; Access Key (defaults to a random uuid)</li>
 <li><strong>secret</strong> (<em>str</em>) &#8211; Secret Key (defaults to a random uuid)</li>
@@ -190,13 +193,13 @@ user.</li>
 </ul>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Param :</th><td class="field-body"><p class="first">Whether to create a project for the user with the same name.</p>
+<tr class="field-even field"><th class="field-name">Param :</th><td class="field-body"><p class="first">Whether to create a project for the user with the same name.</p>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">User</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">User</p>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The new user.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The new user.</p>
 </td>
 </tr>
 </tbody>
@@ -283,17 +286,17 @@ is the same as calling is_project_manager(user, project).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>user</strong> (<em>User or uid</em>) &#8211; User to check.</li>
 <li><strong>role</strong> (<em>str</em>) &#8211; Role to check.</li>
 <li><strong>project</strong> (<em>Project or project_id</em>) &#8211; Project in which to look for local role.</li>
 </ul>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">bool</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">bool</p>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if the user has the role.</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if the user has the role.</p>
 </td>
 </tr>
 </tbody>
@@ -308,11 +311,11 @@ is the same as calling is_project_manager(user, project).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>user</strong> (<em>User or uid</em>) &#8211; User to check.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>user</strong> (<em>User or uid</em>) &#8211; User to check.</td>
 </tr>
-<tr class="field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
 </tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True for admin.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True for admin.</td>
 </tr>
 </tbody>
 </table>
@@ -338,15 +341,20 @@ is the same as calling is_project_manager(user, project).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>user</strong> (<em>User or uid</em>) &#8211; User to check.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>user</strong> (<em>User or uid</em>) &#8211; User to check.</td>
 </tr>
-<tr class="field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
 </tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True for superuser.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True for superuser.</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="synaps.auth.manager.AuthManager.mc">
+<tt class="descname">mc</tt><em class="property"> = None</em><a class="headerlink" href="#synaps.auth.manager.AuthManager.mc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="synaps.auth.manager.AuthManager.modify_project">
@@ -356,7 +364,7 @@ is the same as calling is_project_manager(user, project).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>project</strong> &#8211; The project to modify.</li>
 <li><strong>manager_user</strong> (<em>User or uid</em>) &#8211; This user will be the new project manager.</li>
 <li><strong>project</strong> &#8211; This will be the new description of the project.</li>
@@ -390,7 +398,7 @@ is specified, removes a local role.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>user</strong> (<em>User or uid</em>) &#8211; User from which to remove role.</li>
 <li><strong>role</strong> (<em>str</em>) &#8211; Role to remove.</li>
 <li><strong>project</strong> (<em>Project or project_id</em>) &#8211; Project in which to remove local role.</li>
@@ -546,13 +554,13 @@ is specified, removes a local role.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">synaps v12.09.b6-2 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">synaps 2013.1.2a-dev documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Tue Nov 27 15:56:50 2012, commit 7d9e0f5.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Last updated on Wed Jan 30 18:20:22 2013, commit 7fb5bb7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

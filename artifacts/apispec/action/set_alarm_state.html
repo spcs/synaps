@@ -2,18 +2,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>SetAlarmState &mdash; synaps v12.09.b6-2 documentation</title>
+    <title>SetAlarmState &mdash; synaps 2013.1.2a-dev documentation</title>
+    
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/tweaks.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '12.09.b6-2',
+        VERSION:     '2013.1.2a-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +26,7 @@
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps v12.09.b6-2 documentation" href="../../../index.html" />
+    <link rel="top" title="synaps 2013.1.2a-dev documentation" href="../../../index.html" />
     <link rel="up" title="User API Specification" href="../user.api.html" />
     <link rel="next" title="AlarmHistoryItem" href="../datatype/alarm_history_item.html" />
     <link rel="prev" title="PutMetricData" href="put_metric_data.html" /> 
@@ -65,13 +68,13 @@ when the following alarm checking.</p>
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Name</th>
+<tr class="row-odd"><th class="head">Name</th>
 <th class="head">Description</th>
 <th class="head">Mandatory</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>AlarmName</td>
+<tr class="row-even"><td>AlarmName</td>
 <td><p class="first">name of Alarm. It should be unique in user&#8217;s all alarm.</p>
 <p>Data type: String</p>
 <p>Length limitation: 1 ~ 255 bytes</p>
@@ -79,7 +82,7 @@ when the following alarm checking.</p>
 </td>
 <td>Yes</td>
 </tr>
-<tr><td>StateReason</td>
+<tr class="row-odd"><td>StateReason</td>
 <td><p class="first">Reason for the alarm state has changed in the friendly human-readable
 text form.</p>
 <p>Data type: String</p>
@@ -88,7 +91,7 @@ text form.</p>
 </td>
 <td>Yes</td>
 </tr>
-<tr><td>StateReasonData</td>
+<tr class="row-even"><td>StateReasonData</td>
 <td><p class="first">Reason for the alarm state has changed in the JSON format.</p>
 <p>Data type: String</p>
 <p>Length limitation: 0 ~ 4000 bytes</p>
@@ -96,7 +99,7 @@ text form.</p>
 </td>
 <td>No</td>
 </tr>
-<tr><td>StateValue</td>
+<tr class="row-odd"><td>StateValue</td>
 <td><p class="first">State value.</p>
 <p>Data type: String</p>
 <p class="last">Valid value: OK | ALARM | INSUFFICIENT_DATA</p>
@@ -117,17 +120,17 @@ text form.</p>
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Error</th>
+<tr class="row-odd"><th class="head">Error</th>
 <th class="head">Description</th>
 <th class="head">HTTP Status Code</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>InvalidFormat</td>
+<tr class="row-even"><td>InvalidFormat</td>
 <td>Invalid JSON format data.</td>
 <td>400</td>
 </tr>
-<tr><td>ResourceNotFound</td>
+<tr class="row-odd"><td>ResourceNotFound</td>
 <td>Alarm name that does not exist.</td>
 <td>404</td>
 </tr>
@@ -196,15 +199,15 @@ text form.</p>
         <li class="right" >
           <a href="put_metric_data.html" title="PutMetricData"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../../index.html">synaps v12.09.b6-2 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">synaps 2013.1.2a-dev documentation</a> &raquo;</li>
           <li><a href="../../apispec.html" >Application Programming Interface Specification</a> &raquo;</li>
           <li><a href="../user.api.html" accesskey="U">User API Specification</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Tue Nov 27 15:56:50 2012, commit 7d9e0f5.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Last updated on Wed Jan 30 18:20:22 2013, commit 7fb5bb7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
