@@ -43,3 +43,13 @@ For Synaps Message Bus(mq01..nn),
 
 * :ref:`preinstall.common`
 * :ref:`install.rabbitmq`    
+
+For Synaps Development Environment (Installation on a single box)
+
+* :ref:`preinstall.common` (optional)
+* :ref:`install.synaps`
+* :ref:`postinstall.frontend` 
+* :ref:`install.cassandra`
+* :ref:`install.storm`
+* :ref:`postinstall.backend` (optional)
+* and then, see :ref:`developersguide`

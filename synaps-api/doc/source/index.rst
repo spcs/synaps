@@ -29,6 +29,7 @@ Artifacts
     artifacts/build.guide.rst
     artifacts/general.installation.guide.rst
     artifacts/operatormanual.rst
+    artifacts/developersguide.rst
     
 Indices
 -------
