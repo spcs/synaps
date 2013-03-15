@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Developer Guide &mdash; synaps 2013.1.2a-dev documentation</title>
+    <title>Developer’s Guide &mdash; synaps 2013.1.2a-dev documentation</title>
     
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,7 +26,8 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps 2013.1.2a-dev documentation" href="../index.html" /> 
+    <link rel="top" title="synaps 2013.1.2a-dev documentation" href="../index.html" />
+    <link rel="prev" title="Operational Manual" href="operatormanual.html" /> 
   </head>
   <body>
   <div id="header">
@@ -48,11 +49,41 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="developer-guide">
-<h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul class="simple">
-</ul>
+  <div class="section" id="developer-s-guide">
+<span id="developersguide"></span><h1>Developer&#8217;s Guide<a class="headerlink" href="#developer-s-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="how-to-develope-and-test-synaps">
+<h2>How to develope and test Synaps<a class="headerlink" href="#how-to-develope-and-test-synaps" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="set-up-development-environment">
+<h3>Set up development environment<a class="headerlink" href="#set-up-development-environment" title="Permalink to this headline">¶</a></h3>
+<p>see <a class="reference internal" href="general.installation.guide.html#general-installation-guide"><em>Installation Guide</em></a></p>
+</div>
+<div class="section" id="build-synaps">
+<h3>Build Synaps<a class="headerlink" href="#build-synaps" title="Permalink to this headline">¶</a></h3>
+<p>see <a class="reference internal" href="build.guide.html#build-guide"><em>Build Guide</em></a></p>
+</div>
+<div class="section" id="run-synaps-api">
+<h3>Run synaps-api<a class="headerlink" href="#run-synaps-api" title="Permalink to this headline">¶</a></h3>
+<p>After synaps installation, you can run synaps as below.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>sudo synaps-api-cloudwatch
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-synaps-storm-local-mode">
+<h3>Run synaps-storm (local mode)<a class="headerlink" href="#run-synaps-storm-local-mode" title="Permalink to this headline">¶</a></h3>
+<p>After build synaps-storm topology(synaps-storm-yyyy.xx.xx.jar), you can run
+the topology on storm local mode as below. (When you don&#8217;t pass topology name,
+it will run on local mode)</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>sudo storm jar synaps-storm-yyyy.xx.xx.jar
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-testcase-functional-integration-test">
+<h3>Run testcase (Functional/Integration test)<a class="headerlink" href="#run-testcase-functional-integration-test" title="Permalink to this headline">¶</a></h3>
+<p>Now you can run testcase to check your Synaps running OK</p>
+<div class="highlight-bash"><div class="highlight"><pre>~/git/synaps/synaps-api/synaps/tests<span class="nv">$ </span>python test_cloudwatch.py
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 
@@ -62,6 +93,24 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">Developer&#8217;s Guide</a><ul>
+<li><a class="reference internal" href="#how-to-develope-and-test-synaps">How to develope and test Synaps</a><ul>
+<li><a class="reference internal" href="#set-up-development-environment">Set up development environment</a></li>
+<li><a class="reference internal" href="#build-synaps">Build Synaps</a></li>
+<li><a class="reference internal" href="#run-synaps-api">Run synaps-api</a></li>
+<li><a class="reference internal" href="#run-synaps-storm-local-mode">Run synaps-storm (local mode)</a></li>
+<li><a class="reference internal" href="#run-testcase-functional-integration-test">Run testcase (Functional/Integration test)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="operatormanual.html"
+                                  title="previous chapter">Operational Manual</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="../_sources/artifacts/developersguide.txt"
@@ -93,12 +142,15 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="operatormanual.html" title="Operational Manual"
+             accesskey="P">previous</a> |</li>
         <li><a href="../index.html">synaps 2013.1.2a-dev documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Jan 30 18:20:22 2013, commit 7fb5bb7.
+      Last updated on Fri Mar 15 14:16:32 2013, commit 2a4e400.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

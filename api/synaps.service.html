@@ -48,137 +48,8 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="module-synaps.service">
-<span id="the-synaps-service-module"></span><h1>The <a class="reference internal" href="#module-synaps.service" title="synaps.service"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.service</span></tt></a> Module<a class="headerlink" href="#module-synaps.service" title="Permalink to this headline">¶</a></h1>
-<p>Generic Node base class for all workers that run on hosts.</p>
-<dl class="class">
-<dt id="synaps.service.Launcher">
-<em class="property">class </em><tt class="descname">Launcher</tt><a class="headerlink" href="#synaps.service.Launcher" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>Launch one or more services and wait for them to complete.</p>
-<dl class="method">
-<dt id="synaps.service.Launcher.launch_server">
-<tt class="descname">launch_server</tt><big>(</big><em>server</em><big>)</big><a class="headerlink" href="#synaps.service.Launcher.launch_server" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load and start the given server.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>server</strong> &#8211; The server you would like to start.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="synaps.service.Launcher.run_server">
-<em class="property">static </em><tt class="descname">run_server</tt><big>(</big><em>server</em><big>)</big><a class="headerlink" href="#synaps.service.Launcher.run_server" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start and wait for a server to finish.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>service</strong> &#8211; Server to run and wait for.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="synaps.service.Launcher.stop">
-<tt class="descname">stop</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.service.Launcher.stop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Stop all services which are currently running.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="synaps.service.Launcher.wait">
-<tt class="descname">wait</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.service.Launcher.wait" title="Permalink to this definition">¶</a></dt>
-<dd><p>Waits until all services have been stopped, and then returns.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="synaps.service.WSGIService">
-<em class="property">class </em><tt class="descname">WSGIService</tt><big>(</big><em>name</em>, <em>loader=None</em><big>)</big><a class="headerlink" href="#synaps.service.WSGIService" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>Provides ability to launch API from a &#8216;paste&#8217; configuration.</p>
-<dl class="method">
-<dt id="synaps.service.WSGIService.start">
-<tt class="descname">start</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.service.WSGIService.start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start serving this service using loaded configuration.</p>
-<p>Also, retrieve updated port number in case &#8216;0&#8217; was passed in, which
-indicates a random port should be used.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="synaps.service.WSGIService.stop">
-<tt class="descname">stop</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.service.WSGIService.stop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Stop serving this API.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="synaps.service.WSGIService.wait">
-<tt class="descname">wait</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.service.WSGIService.wait" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wait for the service to stop serving this API.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="synaps.service.serve">
-<tt class="descname">serve</tt><big>(</big><em>*servers</em><big>)</big><a class="headerlink" href="#synaps.service.serve" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="synaps.service.wait">
-<tt class="descname">wait</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.service.wait" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+  <div class="section" id="the-synaps-service-module">
+<h1>The <tt class="xref py py-mod docutils literal"><span class="pre">synaps.service</span></tt> Module<a class="headerlink" href="#the-synaps-service-module" title="Permalink to this headline">¶</a></h1>
 </div>
 
 
@@ -223,7 +94,7 @@ indicates a random port should be used.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Jan 30 18:20:22 2013, commit 7fb5bb7.
+      Last updated on Fri Mar 15 14:16:32 2013, commit 2a4e400.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
