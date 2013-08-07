@@ -18,7 +18,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-SYNAPS_VERSION = ['2013', '1', '2a']
+SYNAPS_VERSION = ['2013', '2', '0']
 YEAR, COUNT, REVISION = SYNAPS_VERSION
 FINAL = False   # This becomes true at Release Candidate time
 
