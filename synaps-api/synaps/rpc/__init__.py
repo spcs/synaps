@@ -22,7 +22,7 @@ from synaps import flags
 from synaps.utils import strtime
 from synaps import log as logging
 from synaps.exception import RpcInvokeException
-import uuid
+import uuid, time
 
 import pika, json
 
@@ -37,6 +37,34 @@ DELETE_ALARMS_MSG_ID = 0x0005
 SET_ALARM_STATE_MSG_ID = 0x0006
 CHECK_METRIC_ALARM_MSG_ID = 0x0010 
 
+def retry5_uncaught_exceptions(infunc):
+    def inner_func(*args, **kwargs):
+        last_log_time = 0
+        last_exc_message = None
+        exc_count = 0
+        for i in range(5):
+            try:
+                return infunc(*args, **kwargs)
+            except Exception as exc:
+                if exc.message == last_exc_message:
+                    exc_count += 1
+                else:
+                    exc_count = 1
+                # Do not log any more frequently than once a minute unless
+                # the exception message changes
+                cur_time = int(time.time())
+                if (cur_time - last_log_time > 60 or
+                        exc.message != last_exc_message):
+                    LOG.exception(
+                        _('Unexpected exception occurred %d time(s)... '
+                          'retrying.') % exc_count)
+                    last_log_time = cur_time
+                    last_exc_message = exc.message
+                    exc_count = 0
+                # This should be a very rare event. In case it isn't, do
+                # a sleep.
+                time.sleep(1)
+    return inner_func
 
 class RemoteProcedureCall(object):
     def __init__(self):
@@ -67,6 +95,7 @@ class RemoteProcedureCall(object):
         except Exception as e:
             raise RpcInvokeException()
     
+    @retry5_uncaught_exceptions
     def send_msg(self, message_id, body):
         """
         
@@ -93,6 +122,6 @@ class RemoteProcedureCall(object):
             exchange='', routing_key='metric_queue', body=json.dumps(body),
             properties=pika.BasicProperties(delivery_mode=2)
         )
-        
         LOG.info(_("send_msg - id(%03d), %s") % (message_id, message_uuid))
         LOG.debug(_("send_msg - body(%s)") % str(body))
+            

@@ -597,7 +597,7 @@ class MonitorController(object):
             else:
                 for statistic in statistics:
                     if statistic and (statistic not in statistic_sample):
-                        err = "Unsuitable Statistic Value" + statistic
+                        err = "Unsuitable Statistic Value %s" % str(statistic)
                         raise exception.InvalidParameterValue(err)
         
         return True

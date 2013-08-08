@@ -241,8 +241,27 @@ rabbitmq_opts = [
                help='the RabbitMQ virtual host'),
 ]
 
+reload_opts = [
+    cfg.StrOpt('synaps_internal_api_host',
+               default='127.0.0.1',
+               help='synaps_internal_api_host'),
+    cfg.IntOpt('synaps_internal_api_port',
+               default=8776,
+               help='synaps_internal_api_port'),
+    cfg.StrOpt('synaps_internal_api_path',
+               default='monitor',
+               help='synaps_internal_api_path'),
+    cfg.StrOpt('synaps_admin_api_key',
+               default='changeme',
+               help='synaps_admin_api_key'),
+    cfg.StrOpt('synaps_admin_secret_key',
+               default='changeme',
+               help='synaps_admin_secret_key'),
+]
+
 FLAGS.register_cli_opts(log_opts)
 FLAGS.register_cli_opts(core_opts)
 FLAGS.register_cli_opts(debug_opts)
 FLAGS.register_opts(global_opts)
 FLAGS.register_opts(rabbitmq_opts)
+FLAGS.register_opts(reload_opts)

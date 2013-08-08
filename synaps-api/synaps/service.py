@@ -213,6 +213,9 @@ def wait():
             LOG.debug(_('%(flag)s : FLAG SET ') % locals())
         else:
             LOG.debug('%(flag)s : %(flag_get)s' % locals())
+
+    LOG.info(_('synaps %s is starting') % version.version_string())
+
     try:
         _launcher.wait()
     except KeyboardInterrupt:

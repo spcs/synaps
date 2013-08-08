@@ -90,7 +90,14 @@ class MetricMonitor(object):
 
         self.update_left_offset(self.alarms)
         self.lastchecked = None
-        
+
+        metric = self.cass.get_metric(metric_key)
+        self.created_timestamp = metric.get('created_timestamp') or \
+                                 datetime.utcnow()
+        self.updated_timestamp = metric.get('updated_timestamp') or \
+                                 datetime.utcnow()
+       
+ 
     def _reindex(self):
         self.df = self.df.reindex(index=self._get_range())
         
@@ -123,6 +130,17 @@ class MetricMonitor(object):
             # shrink in memory data frame
             self.left_offset = left_offset
             self._reindex() 
+
+    def delete(self):
+        self.cass.delete_metric(self.metric_key)
+
+
+    def is_stale(self):
+        elapsed = datetime.utcnow() - self.updated_timestamp
+        ttl = timedelta(seconds=self.cass.STATISTICS_TTL)
+        storm.log("is metric(%s)_stale? elapsed: %s ttl: %s" % 
+                  (str(self.metric_key), str(elapsed), str(ttl)))
+        return elapsed > ttl
 
                   
     def delete_metric_alarm(self, alarmkey):
@@ -219,8 +237,13 @@ class MetricMonitor(object):
         
         if time_idx not in self.df.index:
             self._reindex()
-        
-        value = utils.to_default_unit(value, unit)
+       
+        if value == None:
+            msg = "metric inputted without value"
+            storm.log(msg)
+            return 
+        else:
+            value = utils.to_default_unit(value, unit)
         
         try:
             stat = self.df.ix[time_idx]
@@ -257,8 +280,12 @@ class MetricMonitor(object):
         }        
         
         ttl = self.cass.STATISTICS_TTL - time_diff.total_seconds()
+        self.updated_timestamp = utils.utcnow()
         self.cass.insert_stat(self.metric_key, stat_dict, ttl)
+        self.cass.update_metric(self.metric_key, {'updated_timestamp': 
+                                                  self.updated_timestamp})
         storm.log("metric data inserted %s" % (self.metric_key))
+
     
     def check_alarms(self, query_time=None):
         query_time = query_time if query_time else utils.utcnow() 
@@ -504,10 +531,6 @@ class PutMetricBolt(storm.BasicBolt):
         메모리 상의 메트릭을 기반으로 데이터베이스에 StatArchive 컬럼패밀리 
         업데이트.
         """
-        # 메시지 값이 없는 경우 종료    
-        if message['value'] is None:
-            return
-        
         # 메트릭 가져오기
         if metric_key not in self.metrics:
             self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
@@ -550,7 +573,8 @@ class PutMetricBolt(storm.BasicBolt):
             try:
                 metricalarm = metric.alarms[alarm_key]
             except KeyError:
-                storm.log("alarm key [%s] is found, but alarm is not found." % alarm_key)
+                storm.log("alarm key [%s] is found, but alarm is not found." %
+                          alarm_key)
                 return            
         else:
             storm.log("alarm key [%s] is not found." % alarm_key)
@@ -570,10 +594,22 @@ class PutMetricBolt(storm.BasicBolt):
         
     def process_check_metric_alarms_msg(self):
         query_time = datetime.utcnow()
+        stale_metrics = []
 
-        for metric in self.metrics.itervalues():
+        for key, metric in self.metrics.iteritems():
+            if metric.is_stale():
+                stale_metrics.append(key)
             metric.check_alarms(query_time)
-        
+
+        for key in stale_metrics:
+            try:
+                metric = self.metrics.pop(key)
+                metric.delete()
+                self.log("stale metric(%s) is deleted" % str(key))
+            except KeyError:
+                self.log("KeyError occured when delete stale metric(%s)" % 
+                         str(key))
+
     def process(self, tup):
         message = json.loads(tup.values[1])
         message_id = message['message_id']

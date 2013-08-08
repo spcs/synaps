@@ -214,6 +214,22 @@ class Cassandra(object):
         except pycassa.NotFoundException:
             pass
         return ret
+
+
+    def delete_metric(self, key):
+        try:
+            self.cf_metric.remove(key)
+            self.scf_stat_archive.remove(key)
+            LOG.debug("metric is deleted(%s)" % str(key))
+            expr_list = [create_index_expression("metric_key", key)]
+            index_clause = pycassa.create_index_clause(expr_list)
+            items = self.cf_metric_alarm.get_indexed_slices(index_clause)
+            for k in items:
+                self.cf_metric_alarm.remove(str(k))
+            
+        except pycassa.NotFoundException:
+            LOG.error("failed to delete metric(%s)" % str(key))
+
             
     def get_metric_key(self, project_id, namespace, metric_name, dimensions):
         dimensions = pack_dimensions(dimensions)
@@ -230,7 +246,8 @@ class Cassandra(object):
 
         for k, v in items:
             return k
-        return None
+        else:
+            return None
     
     def get_metric_key_or_create(self, project_id, namespace, metric_name,
                                  dimensions, unit='None'):
@@ -244,7 +261,8 @@ class Cassandra(object):
             json_dim = pack_dimensions(dimensions)
             columns = {'project_id': project_id, 'namespace': namespace,
                        'name': metric_name, 'dimensions': json_dim,
-                       'unit': unit}
+                       'unit': unit, 'updated_timestamp': datetime.utcnow(),
+                       'created_timestamp': datetime.utcnow()}
             
             LOG.debug("cf_metric.insert (%s, %s)" % (key, columns))
             self.cf_metric.insert(key=key, columns=columns)
@@ -375,6 +393,26 @@ class Cassandra(object):
         items = self.cf_metric.get_indexed_slices(index_clause)
         metrics = ((k, to_dict(v)) for k, v in items)
         return metrics
+
+
+    def get_all_metrics(self):
+        return self.cf_metric.get_range()
+
+
+    def get_metric(self, metric_key):
+        try:
+            data = self.cf_metric.get(metric_key)
+        except pycassa.NotFoundException:
+            data = {}
+        return data
+
+
+    def update_metric(self, metric_key, columns):
+        try:
+            self.cf_metric.insert(key=metric_key, columns=columns)
+        except pycassa.NotFoundException:
+            LOG.debug("Metric Not Found %s" % str(metric_key))
+
     
     def load_metric_data(self, metric_key):
         try:
@@ -473,13 +511,16 @@ class Cassandra(object):
             manager.create_column_family(
                 keyspace=keyspace,
                 name='Metric',
+                comparator_type=pycassa.ASCII_TYPE,
                 key_validation_class=pycassa.LEXICAL_UUID_TYPE,
                 column_validation_classes={
                     'project_id': pycassa.UTF8_TYPE,
                     'name': pycassa.UTF8_TYPE,
                     'namespace': pycassa.UTF8_TYPE,
                     'unit': pycassa.UTF8_TYPE,
-                    'dimensions': pycassa.UTF8_TYPE
+                    'dimensions': pycassa.UTF8_TYPE,
+                    'updated_timestamp': pycassa.DATE_TYPE,
+                    'created_timestamp': pycassa.DATE_TYPE
                 }
             )
             manager.create_index(keyspace=keyspace, column_family='Metric',
@@ -494,7 +535,12 @@ class Cassandra(object):
             manager.create_index(keyspace=keyspace, column_family='Metric',
                                  column='dimensions',
                                  value_type=types.UTF8Type())
-
+            manager.create_index(keyspace=keyspace, column_family='Metric',
+                                 column='updated_timestamp',
+                                 value_type=types.DateType())
+            manager.create_index(keyspace=keyspace, column_family='Metric',
+                                 column='created_timestamp',
+                                 value_type=types.DateType())
 
         if 'StatArchive' not in column_families.keys():
             manager.create_column_family(
@@ -511,6 +557,7 @@ class Cassandra(object):
                 keyspace=keyspace,
                 name='MetricAlarm',
                 key_validation_class=pycassa.LEXICAL_UUID_TYPE,
+                comparator_type=pycassa.ASCII_TYPE,
                 column_validation_classes={
                     'metric_key': pycassa.LEXICAL_UUID_TYPE,
                     'project_id': pycassa.UTF8_TYPE,
@@ -576,6 +623,7 @@ class Cassandra(object):
                 keyspace=keyspace,
                 name='AlarmHistory',
                 key_validation_class=pycassa.LEXICAL_UUID_TYPE,
+                comparator_type=pycassa.ASCII_TYPE,
                 column_validation_classes={
                     'project_id': pycassa.UTF8_TYPE,
                     'alarm_key': pycassa.LEXICAL_UUID_TYPE,
