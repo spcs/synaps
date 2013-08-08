@@ -187,6 +187,9 @@ core_opts = [
     cfg.IntOpt('cloudwatch_listen_port',
                default=8776,
                help='port for cloudwatch api to listen'),
+    cfg.StrOpt('admin_namespace',
+               default='SPCS/',
+               help='admin namespace'),
     ]
 
 debug_opts = []
