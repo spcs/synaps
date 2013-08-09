@@ -31,9 +31,9 @@ from uuid import UUID, uuid4
 import json
 import storm
 import traceback
-import zmq
 from synaps.db import Cassandra
 from synaps.utils import validate_email, validate_international_phonenumber
+from synaps.notification import send_email, send_sms
 
 flags.FLAGS(sys.argv)
 utils.default_flagfile()
@@ -49,9 +49,6 @@ class ActionBolt(storm.BasicBolt):
     def initialize(self, stormconf, context):
         self.pid = os.getpid()
         self.cass = Cassandra()
-        self.ctx = zmq.Context()
-        self.sock = self.ctx.socket(zmq.PUSH)
-        self.sock.connect(self.NOTIFICATION_SERVER)
     
     def log(self, msg):
         storm.log("[%s:%d] %s" % (self.BOLT_NAME, self.pid, msg))
@@ -75,17 +72,28 @@ class ActionBolt(storm.BasicBolt):
         elif action_type == "SMS":
             self.send_sms(action, message)
     
-    def alarm_history_state_update(self, alarmkey, alarm, notification_message):
-#                notification_message = {
-#                    'method': "email",
-#                    'receivers': email_receivers,
-#                    'subject': message['subject'],
-#                    'body': message['body']
-#                }        
+    def alarm_history_state_update(self, alarmkey, alarm, 
+                                   notification_message):
+        """
+        update alarm history based on notification message
+        
+        notification_message = {
+            'method': "email",
+            'receivers': email_receivers,
+            'subject': message['subject'],
+            'body': message['body'],
+            'state': "ok" | "failed"
+        }
+        """        
         item_type = 'Action'
         project_id = alarm['project_id']
-        history_summary = ("Message '%(subject)s' is sent via %(method)s" % 
-                           notification_message)
+        if notification_message.get('state', 'ok') == 'ok':
+            history_summary = "Message '%(subject)s' is sent via"\
+                              " %(method)s" % notification_message
+        else:
+            history_summary = "Failed to send a message '%(subject)s' via"\
+                              " %(method)s" % notification_message
+        
         timestamp = utils.utcnow()
         
         history_key = uuid4()
@@ -119,7 +127,7 @@ class ActionBolt(storm.BasicBolt):
         
         alarm = self.cass.get_metric_alarm(UUID(alarm_key))
         
-        try:        
+        try:
             actions_enabled = alarm['actions_enabled']
         except TypeError:
             msg = "alarm is not found [" + alarm_key + "]"
@@ -140,34 +148,46 @@ class ActionBolt(storm.BasicBolt):
             if self.ENABLE_SEND_MAIL:            
                 email_receivers = [action for action in actions 
                                    if self.get_action_type(action) == "email"]
-                
+                 
                 notification_message = {
                     'method': "email",
                     'receivers': email_receivers,
                     'subject': message['subject'],
-                    'body': message['body']
+                    'body': message['body'],
+                    'state': 'ok'
                 }
-                
-                self.sock.send_pyobj(notification_message)
-                self.log("notify: %s " % notification_message)
+ 
+                try:                
+                    send_email(notification_message)
+                except Exception as e:
+                    notification_message['state'] = 'failed'
+                    self.tracelog(e)
+                self.log("AUDIT notify: %s" % notification_message)
                 self.alarm_history_state_update(alarm_key, alarm,
                                                 notification_message)
-                
+                 
             if self.ENABLE_SEND_SMS:
                 sms_receivers = [action for action in actions
                                  if self.get_action_type(action) == "SMS"]
-                
+                 
                 notification_message = {
                     'method': "SMS",
                     'receivers': sms_receivers,
                     'subject': message['subject'],
-                    'body': message['body']
+                    'body': message['body'],
+                    'state': 'ok'
                 }
-                
-                self.sock.send_pyobj(notification_message)
-                self.log("notify: %s " % notification_message)
+                 
+                try:
+                    send_sms(notification_message)
+                except Exception as e:
+                    notification_message['state'] = 'failed'
+                    self.tracelog(e)
+                self.log("AUDIT notify: %s" % notification_message)
                 self.alarm_history_state_update(alarm_key, alarm,
-                                                notification_message)    
+                                                notification_message)
+
+    
     def process(self, tup):
         self.process_action(tup)
 
