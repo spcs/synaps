@@ -18,9 +18,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-SYNAPS_VERSION = ['2013', '2', '0']
+SYNAPS_VERSION = ['2013', '2', 'rc1']
 YEAR, COUNT, REVISION = SYNAPS_VERSION
-FINAL = False   # This becomes true at Release Candidate time
+FINAL = True   # This becomes true at Release Candidate time
 
 
 def canonical_version_string():
