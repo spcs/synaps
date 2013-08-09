@@ -55,6 +55,7 @@ class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
     STATISTICS_TTL = FLAGS.get('statistics_ttl')
     DEFAULT_LEFT_OFFSET = FLAGS.get('left_offset')
+    INSUFFICIENT_BUFFER = FLAGS.get('insufficient_buffer')
         
     ROLLING_FUNC_MAP = {
         'Average': rolling_mean,
@@ -304,14 +305,17 @@ class MetricMonitor(object):
         cmp_op = self.CMP_MAP[alarm['comparison_operator']]
         unit = alarm['unit']
         state_value = alarm['state_value']
-        time_difference_buffer_min = 3 
         
         query_time = query_time if query_time else utils.utcnow()
         
-        for i in range(time_difference_buffer_min):
+        for i in range(self.INSUFFICIENT_BUFFER):
             end_idx = (query_time.replace(second=0, microsecond=0) - 
                        (i + 1) * datetools.Minute())
-            if not isnull(self.df[statistic].ix[end_idx]):
+            try:
+                end_datapoint = self.df[statistic].ix[end_idx]
+            except KeyError:
+                end_datapoint = None
+            if not isnull(end_datapoint):
                 break
             
         start_idx = (end_idx - (period * evaluation_periods) * 

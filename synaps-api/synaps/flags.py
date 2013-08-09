@@ -190,6 +190,9 @@ core_opts = [
     cfg.StrOpt('admin_namespace',
                default='SPCS/',
                help='admin namespace'),
+    cfg.IntOpt('insufficient_buffer',
+               default=3,
+               help='time buffer to declare insufficient data(in minutes)')
     ]
 
 debug_opts = []
