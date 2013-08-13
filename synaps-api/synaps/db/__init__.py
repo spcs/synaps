@@ -218,14 +218,14 @@ class Cassandra(object):
 
     def delete_metric(self, key):
         try:
-            self.cf_metric.remove(key)
-            self.scf_stat_archive.remove(key)
-            LOG.debug("metric is deleted(%s)" % str(key))
             expr_list = [create_index_expression("metric_key", key)]
             index_clause = pycassa.create_index_clause(expr_list)
             items = self.cf_metric_alarm.get_indexed_slices(index_clause)
             for k in items:
-                self.cf_metric_alarm.remove(str(k))
+                self.cf_metric_alarm.remove(k)
+            self.scf_stat_archive.remove(key)
+            self.cf_metric.remove(key)
+            LOG.debug("metric is deleted(%s)" % str(key))
             
         except pycassa.NotFoundException:
             LOG.error("failed to delete metric(%s)" % str(key))
@@ -447,6 +447,7 @@ class Cassandra(object):
         try:
             items = self.cf_metric_alarm.get_indexed_slices(index_clause)
         except pycassa.NotFoundException:
+            LOG.debug("no alarm found")
             items = {}
         return items
     
