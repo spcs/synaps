@@ -28,17 +28,30 @@ from synaps import log as logging
 from synaps import utils
 from uuid import UUID, uuid4
 
+import smtplib
+import MySQLdb as db
+from email.mime.text import MIMEText
+
 import json
 import storm
 import traceback
 from synaps.db import Cassandra
 from synaps.utils import validate_email, validate_international_phonenumber
-from synaps.notification import send_email, send_sms
 
 flags.FLAGS(sys.argv)
 utils.default_flagfile()
 logging.setup()
 FLAGS = flags.FLAGS
+
+SMTP_SERVER = FLAGS.get('smtp_server')
+MAIL_SENDER = FLAGS.get('mail_sender')
+SMS_SENDER = FLAGS.get('sms_sender')
+SMS_DB_HOST = FLAGS.get('sms_database_host')
+SMS_DB_PORT = FLAGS.get('sms_database_port')
+SMS_DB = FLAGS.get('sms_database')
+SMS_DB_USERNAME = FLAGS.get('sms_db_username')
+SMS_DB_PASSWORD = FLAGS.get('sms_db_password')
+
 
 class ActionBolt(storm.BasicBolt):
     BOLT_NAME = "ActionBolt"
@@ -63,14 +76,7 @@ class ActionBolt(storm.BasicBolt):
             return "email"
         elif validate_international_phonenumber(action):
             return "SMS"
-        
-    def do_action(self, action, message):
-        
-        action_type = self.get_action_type(action)
-        if action_type == "email":
-            self.send_email(action, message)
-        elif action_type == "SMS":
-            self.send_sms(action, message)
+
     
     def alarm_history_state_update(self, alarmkey, alarm, 
                                    notification_message):
@@ -144,28 +150,7 @@ class ActionBolt(storm.BasicBolt):
         
         self.log("actions enabled: %s actions: %s " % (actions_enabled,
                                                        actions))
-        if actions_enabled and actions:
-            if self.ENABLE_SEND_MAIL:            
-                email_receivers = [action for action in actions 
-                                   if self.get_action_type(action) == "email"]
-                 
-                notification_message = {
-                    'method': "email",
-                    'receivers': email_receivers,
-                    'subject': message['subject'],
-                    'body': message['body'],
-                    'state': 'ok'
-                }
- 
-                try:                
-                    send_email(notification_message)
-                except Exception as e:
-                    notification_message['state'] = 'failed'
-                    self.tracelog(e)
-                self.log("AUDIT notify: %s" % notification_message)
-                self.alarm_history_state_update(alarm_key, alarm,
-                                                notification_message)
-                 
+        if actions_enabled and actions:                 
             if self.ENABLE_SEND_SMS:
                 sms_receivers = [action for action in actions
                                  if self.get_action_type(action) == "SMS"]
@@ -177,16 +162,110 @@ class ActionBolt(storm.BasicBolt):
                     'body': message['body'],
                     'state': 'ok'
                 }
-                 
-                try:
-                    send_sms(notification_message)
-                except Exception as e:
-                    notification_message['state'] = 'failed'
-                    self.tracelog(e)
-                self.log("AUDIT notify: %s" % notification_message)
-                self.alarm_history_state_update(alarm_key, alarm,
-                                                notification_message)
+                
+                if sms_receivers: 
+                    try:
+                        self.send_sms(notification_message)
+                    except Exception as e:
+                        notification_message['state'] = 'failed'
+                        self.tracelog(e)
+                    self.log("AUDIT notify: %s" % notification_message)
+                    self.alarm_history_state_update(alarm_key, alarm,
+                                                    notification_message)
 
+            if self.ENABLE_SEND_MAIL:            
+                email_receivers = [action for action in actions 
+                                   if self.get_action_type(action) == "email"]
+                 
+                notification_message = {
+                    'method': "email",
+                    'receivers': email_receivers,
+                    'subject': message['subject'],
+                    'body': message['body'],
+                    'state': 'ok'
+                }
+                
+                if email_receivers:
+                    try:                
+                        self.send_email(notification_message)
+                    except Exception as e:
+                        notification_message['state'] = 'failed'
+                        self.tracelog(e)
+                    self.log("AUDIT notify: %s" % notification_message)
+                    self.alarm_history_state_update(alarm_key, alarm,
+                                                    notification_message)
+                    
+
+    def send_sms(self, message):
+        Q_LOCAL = """insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, 
+        MESSAGE) values (now()+0, '%s','%s','%s','%s')
+        """
+        Q_NAT = """insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, 
+        MESSAGE, NAT_CODE) values (now()+0, '%s','%s','%s','%s', %d)
+        """
+    
+        def build_query(receiver, subject):
+            nat, local_no = parse_number(receiver)
+            if nat == None:
+                ret = Q_LOCAL % (str(uuid4())[:15], local_no, SMS_SENDER,
+                                 subject[:80])
+            else:
+                ret = Q_NAT % (str(uuid4())[:15], local_no, SMS_SENDER,
+                               subject[:80], nat)
+            return ret
+            
+        def parse_number(no):
+            nat, local_no = no.split(' ', 1)
+            if nat.startswith("+"):
+                nat = int(nat[1:])
+            else:
+                nat = int(nat)
+            
+            if nat == 82: # Korean national code
+                nat = None
+                local_no = '0' + local_no.replace(' ', '')
+            else:
+                local_no = local_no.replace(' ', '')
+            
+            return nat, local_no
+        
+        self.log("SMS: %s" % str(message))
+        
+        # message example.
+        #
+        #    {'body': u'Threshold Crossed: 3 datapoints were greater than the threshold(50.000000). The most recent datapoints: [110.0, 110.0, 60.0]. at 2012-08-28T10:17:50.494902',
+        #     'receivers': [u'+82 1093145616'],
+        #     'method': 'SMS',
+        #     'subject': u'AlarmActionTest state has been changed from OK to ALARM at 2012-08-28T10:17:50.494902'}
+        #
+    
+        self.log("connect to mysql db %s@%s:%s %s" % (SMS_DB_USERNAME, 
+                 SMS_DB_HOST, SMS_DB_PORT, SMS_DB))
+        conn = db.connect(host=SMS_DB_HOST, port=SMS_DB_PORT, db=SMS_DB,
+                          user=SMS_DB_USERNAME, passwd=SMS_DB_PASSWORD,
+                          connect_timeout=30)
+        c = conn.cursor()
+        for receiver in message['receivers']:
+            q = build_query(receiver, message['subject'])
+            c.execute(q)
+        
+        c.close()
+        conn.commit()
+        conn.close()
+        
+    
+    def send_email(self, message):
+        self.log("EMAIL: %s" % str(message))
+    
+        msg = MIMEText(message['body'])
+        msg['Subject'] = message['subject']
+        msg['From'] = MAIL_SENDER
+        msg['To'] = ", ".join(message['receivers'])
+        
+        s = smtplib.SMTP(SMTP_SERVER, timeout=30)
+        s.sendmail(MAIL_SENDER, message['receivers'], msg.as_string())
+        s.quit()
+    
     
     def process(self, tup):
         self.process_action(tup)
