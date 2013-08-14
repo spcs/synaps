@@ -221,7 +221,7 @@ class Cassandra(object):
             expr_list = [create_index_expression("metric_key", key)]
             index_clause = pycassa.create_index_clause(expr_list)
             items = self.cf_metric_alarm.get_indexed_slices(index_clause)
-            for k in items:
+            for k, v in items:
                 self.cf_metric_alarm.remove(k)
             self.scf_stat_archive.remove(key)
             self.cf_metric.remove(key)
