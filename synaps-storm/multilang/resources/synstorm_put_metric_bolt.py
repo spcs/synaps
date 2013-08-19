@@ -196,6 +196,7 @@ class MetricMonitor(object):
             ret_dict[statistic] = func(df[statistic], window)
         
         return DataFrame(ret_dict)
+
     
     def put_alarm(self, project_id, metricalarm):
         alarm_name = metricalarm.get('alarm_name')
@@ -207,9 +208,11 @@ class MetricMonitor(object):
                 storm.log("alarm key is [%s]" % alarm_key)
                 self.update_left_offset(self.alarms)
             else:
-                storm.log("alarm key [%s] is found, but alarm is not found." % alarm_key)
+                storm.log("alarm key [%s] is found, but alarm is not found." % 
+                          alarm_key)
         else:
             storm.log("no alarm key [%s]" % alarm_key)        
+
         
     def put_metric_data(self, metric_key, timestamp, value, unit=None):
         
@@ -253,7 +256,8 @@ class MetricMonitor(object):
                 if v == None: v = float('nan')                    
                  
         except KeyError:
-            stat = self.cass.get_metric_statistics_for_key(metric_key, time_idx)
+            stat = self.cass.get_metric_statistics_for_key(metric_key, 
+                                                           time_idx)
             stat = get_stats(stat)
 
         
@@ -296,6 +300,7 @@ class MetricMonitor(object):
         self.lastchecked = self.lastchecked if self.lastchecked else query_time
         if self.lastchecked < query_time:
             self.lastchecked = query_time
+
             
     def _check_alarm(self, alarmkey, alarm, query_time=None):
         period = int(alarm['period'] / 60)
@@ -501,6 +506,7 @@ class MetricMonitor(object):
         
         self.cass.insert_alarm_history(history_key, column)
         storm.log("alarm history \n %s" % summary)
+        
                 
     def update_alarm_state(self, alarmkey, state_value, reason, reason_data,
                            timestamp):
@@ -518,14 +524,17 @@ class PutMetricBolt(storm.BasicBolt):
         self.pid = os.getpid()
         self.cass = Cassandra()
         self.metrics = {}
+        
     
     def log(self, msg):
         storm.log("[%s:%d] %s" % (self.BOLT_NAME, self.pid, msg))
+        
         
     def tracelog(self, e):
         msg = traceback.format_exc(e)
         for line in msg.splitlines():
             self.log("TRACE: " + line)
+            
     
     def process_put_metric_data_msg(self, metric_key, message):
         """
@@ -546,6 +555,7 @@ class PutMetricBolt(storm.BasicBolt):
                                                  timestamp=timestamp,
                                                  value=message['value'],
                                                  unit=message['unit'])
+        
     
     def process_put_metric_alarm_msg(self, metric_key, message):
         if metric_key not in self.metrics:
@@ -553,6 +563,7 @@ class PutMetricBolt(storm.BasicBolt):
         project_id = message['project_id']
         metricalarm = message['metricalarm']
         self.metrics[metric_key].put_alarm(project_id, metricalarm)
+        
 
     def process_delete_metric_alarms_msg(self, metric_key, message):
         alarmkey = UUID(message['alarmkey'])
@@ -560,6 +571,7 @@ class PutMetricBolt(storm.BasicBolt):
         if metric_key not in self.metrics:
             self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
         self.metrics[metric_key].delete_metric_alarm(alarmkey)
+        
         
     def process_set_alarm_state_msg(self, metric_key, message):
         project_id = message.get('project_id')
@@ -596,6 +608,7 @@ class PutMetricBolt(storm.BasicBolt):
         
         self.cass.put_metric_alarm(alarm_key, alarm_columns)
         
+        
     def process_check_metric_alarms_msg(self):
         query_time = datetime.utcnow()
         stale_metrics = []
@@ -613,6 +626,7 @@ class PutMetricBolt(storm.BasicBolt):
             except KeyError:
                 self.log("KeyError occured when delete stale metric(%s)" % 
                          str(key))
+
 
     def process(self, tup):
         message = json.loads(tup.values[1])
@@ -644,6 +658,7 @@ class PutMetricBolt(storm.BasicBolt):
             self.process_check_metric_alarms_msg()
         else:
             self.log("unknown message")
+
 
 if __name__ == "__main__":
     PutMetricBolt().run()

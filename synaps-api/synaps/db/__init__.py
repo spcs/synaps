@@ -339,9 +339,10 @@ class Cassandra(object):
         ttl = ttl if ttl else self.STATISTICS_TTL
         self.scf_stat_archive.insert(metric_key, stat, ttl=ttl)
     
-    def insert_alarm_history(self, key, column):
+    def insert_alarm_history(self, key, column, ttl=None):
         LOG.debug("cf_alarm_history.insert (%s, %s)" % (key, column))
-        self.cf_alarm_history.insert(key, column, ttl=self.STATISTICS_TTL)
+        ttl = ttl or self.STATISTICS_TTL
+        self.cf_alarm_history.insert(key, column, ttl=ttl)
         
     def update_alarm_state(self, alarmkey, state, reason, reason_data,
                            timestamp):
@@ -409,9 +410,12 @@ class Cassandra(object):
 
     def update_metric(self, metric_key, columns):
         try:
-            self.cf_metric.insert(key=metric_key, columns=columns)
+            data = self.cf_metric.get(metric_key)
         except pycassa.NotFoundException:
             LOG.debug("Metric Not Found %s" % str(metric_key))
+        else:
+            data.update(columns)
+            self.cf_metric.insert(key=metric_key, columns=data)
 
     
     def load_metric_data(self, metric_key):

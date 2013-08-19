@@ -31,6 +31,7 @@ from uuid import UUID, uuid4
 import smtplib
 import MySQLdb as db
 from email.mime.text import MIMEText
+from random import randint
 
 import json
 import storm
@@ -58,6 +59,7 @@ class ActionBolt(storm.BasicBolt):
     ENABLE_SEND_MAIL = FLAGS.get('enable_send_mail')
     ENABLE_SEND_SMS = FLAGS.get('enable_send_sms')
     NOTIFICATION_SERVER = FLAGS.get('notification_server_addr')
+    STATISTICS_TTL = FLAGS.get('statistics_ttl')
     
     def initialize(self, stormconf, context):
         self.pid = os.getpid()
@@ -78,7 +80,7 @@ class ActionBolt(storm.BasicBolt):
             return "SMS"
 
     
-    def alarm_history_state_update(self, alarmkey, alarm, 
+    def alarm_history_state_update(self, alarmkey, alarm,
                                    notification_message):
         """
         update alarm history based on notification message
@@ -111,7 +113,8 @@ class ActionBolt(storm.BasicBolt):
                   'history_summary':history_summary,
                   'timestamp':timestamp}
         
-        self.cass.insert_alarm_history(history_key, column)
+        self.cass.insert_alarm_history(history_key, column, 
+                                       ttl=self.STATISTICS_TTL)
         storm.log("alarm history \n %s" % history_summary)
     
     def process_action(self, tup):
@@ -198,20 +201,23 @@ class ActionBolt(storm.BasicBolt):
 
     def send_sms(self, message):
         Q_LOCAL = """insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, 
-        MESSAGE) values (now()+0, '%s','%s','%s','%s')
+        MESSAGE) values (now()+0, '%d','%s','%s','%s')
         """
         Q_NAT = """insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, 
-        MESSAGE, NAT_CODE) values (now()+0, '%s','%s','%s','%s', %d)
+        MESSAGE, NAT_CODE) values (now()+0, '%d','%s','%s','%s', %d)
         """
     
         def build_query(receiver, subject):
             nat, local_no = parse_number(receiver)
+            # random integer for msg_key
+            msg_key = randint(1, 10 ** 15)
+            if len(subject) > 80:
+                subject = subject[:77] + "..."
+            
             if nat == None:
-                ret = Q_LOCAL % (str(uuid4())[:15], local_no, SMS_SENDER,
-                                 subject[:80])
+                ret = Q_LOCAL % (msg_key, local_no, SMS_SENDER, subject)
             else:
-                ret = Q_NAT % (str(uuid4())[:15], local_no, SMS_SENDER,
-                               subject[:80], nat)
+                ret = Q_NAT % (msg_key, local_no, SMS_SENDER, subject, nat)
             return ret
             
         def parse_number(no):
@@ -221,7 +227,7 @@ class ActionBolt(storm.BasicBolt):
             else:
                 nat = int(nat)
             
-            if nat == 82: # Korean national code
+            if nat == 82:  # Korean national code
                 nat = None
                 local_no = '0' + local_no.replace(' ', '')
             else:
@@ -239,7 +245,7 @@ class ActionBolt(storm.BasicBolt):
         #     'subject': u'AlarmActionTest state has been changed from OK to ALARM at 2012-08-28T10:17:50.494902'}
         #
     
-        self.log("connect to mysql db %s@%s:%s %s" % (SMS_DB_USERNAME, 
+        self.log("connect to mysql db %s@%s:%s %s" % (SMS_DB_USERNAME,
                  SMS_DB_HOST, SMS_DB_PORT, SMS_DB))
         conn = db.connect(host=SMS_DB_HOST, port=SMS_DB_PORT, db=SMS_DB,
                           user=SMS_DB_USERNAME, passwd=SMS_DB_PASSWORD,
@@ -269,6 +275,7 @@ class ActionBolt(storm.BasicBolt):
     
     def process(self, tup):
         self.process_action(tup)
+        
 
 if __name__ == "__main__":
     ActionBolt().run()
