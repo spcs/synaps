@@ -116,7 +116,24 @@ class API(object):
     def set_alarm_actions(self, project_id, alarm_names, enabled):
         for alarm_name in alarm_names:
             alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
-            self.cass.put_metric_alarm(alarm_key, {'actions_enabled':enabled})
+            history_data = {'actions_enabled':enabled}
+            self.cass.put_metric_alarm(alarm_key, history_data)
+            
+            if enabled:
+                summary = "Alarm actions for %s are enabled" % alarm_name
+            else:
+                summary = "Alarm actions for %s are disabled" % alarm_name
+            history_key = uuid.uuid4()
+            history_column = {
+                'project_id': project_id,
+                'alarm_key': alarm_key,
+                'alarm_name': alarm_name,
+                'history_data': json.dumps(history_data),
+                'history_item_type': 'ConfigurationUpdate',
+                'history_summary':summary,
+                'timestamp': utils.utcnow()
+            }
+            self.cass.insert_alarm_history(history_key, history_column)            
     
     def set_alarm_state(self, project_id, alarm_name, state_reason,
                         state_value, state_reason_data=None):

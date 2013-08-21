@@ -289,7 +289,8 @@ class MetricMonitor(object):
         self.cass.insert_stat(self.metric_key, stat_dict, ttl)
         self.cass.update_metric(self.metric_key, {'updated_timestamp': 
                                                   self.updated_timestamp})
-        storm.log("metric data inserted %s" % (self.metric_key))
+        storm.log("metric data inserted %s, time_idx %s" % (self.metric_key,
+                                                            time_idx))
 
     
     def check_alarms(self, query_time=None):
