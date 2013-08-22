@@ -15,8 +15,6 @@
     under the License.
  */
 
-package com.spcs.synaps;
-
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.StormSubmitter;
@@ -32,7 +30,7 @@ import backtype.storm.utils.Utils;
 import java.util.Map;
 import java.util.Properties;
 
-public class PutMetricTopology {
+public class SynapsTopology {
 	public static class ApiSpout extends ShellSpout implements IRichSpout {
 		public ApiSpout() {
 			super("python", "-u", "synstorm_api_spout.py");
@@ -143,16 +141,16 @@ public class PutMetricTopology {
 
 		if (args != null && args.length > 0) {
 			conf.setNumWorkers(20);
-			conf.setNumAckers(20);
+			conf.setNumAckers(111);
 			conf.setMaxSpoutPending(500);
-			builder.setSpout("api_spout", new ApiSpout(), 8);
+			builder.setSpout("api_spout", new ApiSpout(), 10);
 			builder.setSpout("check_spout", new CheckSpout(), 1);
-			builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 8)
+			builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 10)
 					.shuffleGrouping("api_spout");
-			builder.setBolt("putmetric_bolt", new PutMetricBolt(), 20)
+			builder.setBolt("putmetric_bolt", new PutMetricBolt(), 80)
 					.fieldsGrouping("unpack_bolt", new Fields("metric_key"))
 					.allGrouping("check_spout");
-			builder.setBolt("action_bolt", new ActionBolt(), 2)
+			builder.setBolt("action_bolt", new ActionBolt(), 10)
 					.shuffleGrouping("putmetric_bolt");
 			StormSubmitter.submitTopology("synaps" + args[0], conf,
 					builder.createTopology());

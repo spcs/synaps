@@ -87,7 +87,7 @@ class MonitorController(object):
         return {}
 
     def describe_alarm_history(self, context, alarm_name=None, end_date=None,
-                               history_item_type=None, max_records=None,
+                               history_item_type=None, max_records=100,
                                next_token=None, start_date=None,
                                project_id=None):
         def to_alarm_history(v):
@@ -109,11 +109,11 @@ class MonitorController(object):
         
         ret_dict = {}
         ret_histories = []
-        max_records = int(max_records) if max_records else 100  
         end_date = utils.parse_strtime(end_date) if end_date else end_date
         start_date = utils.parse_strtime(start_date) \
                      if start_date else start_date
-        
+
+        LOG.debug("request to database for alarm history")        
         histories = self.monitor_api.describe_alarm_history(
             alarm_name=alarm_name, end_date=end_date,
             history_item_type=history_item_type,
@@ -121,11 +121,18 @@ class MonitorController(object):
             start_date=start_date, project_id=project_id
         )
         
+        LOG.debug("convert to list")
+        histories = list(histories)
+        LOG.debug("to list %d", len(histories))
+        
+        LOG.debug("start to read histories")
         for i, (k, v) in enumerate(histories):
             if i >= max_records:
                 next_token = k
+                LOG.debug("reached to the number of max records")
                 break
             ret_histories.append(to_alarm_history(v))
+            LOG.debug("not reached to the number of max records")
         else:
             next_token = None
             
