@@ -649,7 +649,7 @@ class PutMetricBolt(storm.BasicBolt):
             self.log("process put_metric_alarm_msg (%s)" % message)
             self.process_put_metric_alarm_msg(metric_key, message)
         elif message_id == DELETE_ALARMS_MSG_ID:
-            self.log("process put_metric_alarm_msg (%s)" % message)
+            self.log("process delete_alarms_msg (%s)" % message)
             self.process_delete_metric_alarms_msg(metric_key, message)
         elif message_id == SET_ALARM_STATE_MSG_ID:
             self.log("process set_alarm_state_msg (%s)" % message)
