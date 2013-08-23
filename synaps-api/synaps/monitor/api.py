@@ -116,6 +116,12 @@ class API(object):
     def set_alarm_actions(self, project_id, alarm_names, enabled):
         for alarm_name in alarm_names:
             alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
+            if not alarm_key:
+                raise InvalidParameterValue("Alarm %s does not exist" % 
+                                            alarm_name)
+        
+        for alarm_name in alarm_names:
+            alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
             history_data = {'actions_enabled':enabled}
             self.cass.put_metric_alarm(alarm_key, history_data)
             
@@ -208,39 +214,16 @@ class API(object):
                                          dimensions, next_token)
         return metrics
     
+    
     def put_metric_alarm(self, project_id, metricalarm):
         """
-        알람을 DB에 넣고 값이 빈 dictionary 를 반환한다.
-        메트릭 유무 확인
-        알람 히스토리 발생.
+        Send put metric alarm message to Storm 
         """
-        def metricalarm_for_json(metricalarm):
-            alarm_for_json = {
-                'actionEnabled': metricalarm.get('actions_enabled', False),
-                'alarmActions': metricalarm.get('alarm_actions', []),
-                'alarmArn': metricalarm.get('alarm_arn'),
-                'alarmConfigurationUpdatedTimestamp': 
-                      metricalarm.get('alarm_configuration_updated_timestamp'),
-                'alarmDescription': metricalarm.get('alarm_description'),
-                'alarmName': metricalarm.get('alarm_name'),
-                'comparisonOperator': metricalarm.get('comparison_operator'),
-                'dimensions': metricalarm.get('dimensions'),
-                'evaluationPeriods': metricalarm.get('evaluation_periods'),
-                'insufficientDataActions': 
-                    metricalarm.get('insufficient_data_actions', []),
-                'metricName':metricalarm.get('metric_name'),
-                'namespace':metricalarm.get('namespace'),
-                'okactions':metricalarm.get('ok_actions', []),
-                'statistic':metricalarm.get('statistic'),
-                'threshold':metricalarm.get('threshold'),
-                'unit':metricalarm.get('unit'),
-            }
-            return alarm_for_json
-
         now = utils.utcnow()
         metricalarm = metricalarm.to_columns()
+        alarm_name = metricalarm['alarm_name']
         
-        # 메트릭 유무 확인
+        # check if we have metric in database
         metric_key = self.cass.get_metric_key_or_create(
             project_id=project_id,
             namespace=metricalarm['namespace'],
@@ -249,80 +232,25 @@ class API(object):
             unit=metricalarm['unit'],
         )
         
-        metricalarm['project_id'] = project_id
-        metricalarm['metric_key'] = metric_key
-        metricalarm['alarm_arn'] = "arn:spcs:synaps:%s:alarm:%s" % (
-            project_id, metricalarm['alarm_name']
-        )
-        metricalarm['alarm_configuration_updated_timestamp'] = now
+        update_data = {
+            'project_id': project_id,
+            'metric_key': str(metric_key),
+            'alarm_arn': "arn:spcs:synaps:%s:alarm:%s" % (project_id, 
+                                                          alarm_name),
+            'alarm_configuration_updated_timestamp': utils.strtime(now)
+        }
+        metricalarm.update(update_data)
         
-        # 알람 유무 확인
-        alarm_key = self.cass.get_metric_alarm_key(
-            project_id=project_id, alarm_name=metricalarm['alarm_name']
-        )
-        
+        # check if metric is changed 
+        alarm_key = self.cass.get_metric_alarm_key(project_id=project_id, 
+                                                   alarm_name=alarm_name)
         
         if alarm_key:            
-            history_type = 'Update'
-            before_alarm = self.cass.get_metric_alarm(alarm_key)
-            if before_alarm['metric_key'] != metricalarm['metric_key']:
-                raise InvalidRequest("Metric cannot be changed.")
-            
-            metricalarm['state_updated_timestamp'] = \
-                before_alarm['state_updated_timestamp']
-            metricalarm['state_reason'] = before_alarm['state_reason']
-            metricalarm['state_reason_data'] = \
-                before_alarm['state_reason_data']
-            metricalarm['state_value'] = before_alarm['state_value']
-            
-        else:            
-            history_type = "Create"
-            alarm_key = uuid.uuid4()
-            metricalarm['state_updated_timestamp'] = utils.utcnow()
-            metricalarm['state_reason'] = "Unchecked: Initial alarm creation"
-            metricalarm['state_reason_data'] = json.dumps({})
-            metricalarm['state_value'] = "INSUFFICIENT_DATA"
-            
-        
-        # insert alarm into database
-        self.cass.put_metric_alarm(alarm_key, metricalarm)
-        LOG.debug("metric alarm inserted alarm key: %s" % (alarm_key))
-
-        # to make json, convert datetime type into str        
-        metricalarm['state_updated_timestamp'] = utils.strtime(
-            metricalarm['state_updated_timestamp']
-        )
-        metricalarm['alarm_configuration_updated_timestamp'] = utils.strtime(
-            metricalarm['alarm_configuration_updated_timestamp']
-        )
-        metricalarm['metric_key'] = str(metric_key)
-        
-        if history_type == "Update":
-            history_data = json.dumps({
-                'updatedAlarm':metricalarm_for_json(metricalarm),
-                'type':history_type,
-                'version': '1.0'
-            })
-            summary = "Alarm %s updated" % metricalarm['alarm_name']
-        else:
-            history_data = json.dumps({
-                'createdAlarm': metricalarm_for_json(metricalarm),
-                'type':history_type, 'version': '1.0'
-            })
-            summary = "Alarm %s created" % metricalarm['alarm_name']
-        
-        history_key = uuid.uuid4()
-        history_column = {
-            'project_id': project_id,
-            'alarm_key': alarm_key,
-            'alarm_name': metricalarm['alarm_name'],
-            'history_data': history_data,
-            'history_item_type': 'ConfigurationUpdate',
-            'history_summary':summary,
-            'timestamp': utils.utcnow()
-        }
-            
-        self.cass.insert_alarm_history(history_key, history_column)
+            original_alarm = self.cass.get_metric_alarm(alarm_key)
+            if (str(original_alarm['metric_key']) != 
+                str(metricalarm['metric_key'])):
+                raise InvalidRequest("Metric cannot be changed. "
+                                     "Delete alarm and retry.")
         
         message = {'project_id': project_id, 'metric_key': str(metric_key),
                    'metricalarm': metricalarm}
@@ -330,6 +258,7 @@ class API(object):
         LOG.info("PUT_METRIC_ALARM_MSG sent")
 
         return {}
+    
     
     def put_metric_data(self, project_id, namespace, metric_name, dimensions,
                         value, unit, timestamp, is_admin=False):

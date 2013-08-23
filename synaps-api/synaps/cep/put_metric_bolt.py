@@ -566,12 +566,89 @@ class PutMetricBolt(storm.BasicBolt):
         
     
     def process_put_metric_alarm_msg(self, metric_key, message):
+        def get_alarm_key(project_id, alarm_name):
+            key = self.cass.get_metric_alarm_key(project_id, alarm_name)
+            return key
+
+        def metricalarm_for_json(metricalarm):
+            alarm_for_json = {
+                'actionEnabled': metricalarm.get('actions_enabled', False),
+                'alarmActions': metricalarm.get('alarm_actions', []),
+                'alarmArn': metricalarm.get('alarm_arn'),
+                'alarmConfigurationUpdatedTimestamp': 
+                      metricalarm.get('alarm_configuration_updated_timestamp'),
+                'alarmDescription': metricalarm.get('alarm_description'),
+                'alarmName': metricalarm.get('alarm_name'),
+                'comparisonOperator': metricalarm.get('comparison_operator'),
+                'dimensions': metricalarm.get('dimensions'),
+                'evaluationPeriods': metricalarm.get('evaluation_periods'),
+                'insufficientDataActions': 
+                    metricalarm.get('insufficient_data_actions', []),
+                'metricName':metricalarm.get('metric_name'),
+                'namespace':metricalarm.get('namespace'),
+                'okactions':metricalarm.get('ok_actions', []),
+                'statistic':metricalarm.get('statistic'),
+                'threshold':metricalarm.get('threshold'),
+                'unit':metricalarm.get('unit'),
+            }
+            return alarm_for_json
+                
         if metric_key not in self.metrics:
             self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
         project_id = message['project_id']
         metricalarm = message['metricalarm']
-        self.metrics[metric_key].put_alarm(project_id, metricalarm)
         
+        # build metricalarm column, alarmhistory column 
+        alarm_key = get_alarm_key(project_id, metricalarm['alarm_name'])
+        history_type = 'Update' if alarm_key else 'Create'
+        if history_type == 'Update':
+            original_alarm = self.cass.get_metric_alarm(alarm_key)
+            for dict_key in ['state_updated_timestamp', 'state_reason', 
+                             'state_reason_data', 'state_value']:
+                metricalarm[dict_key] = original_alarm[dict_key]
+            history_data = json.dumps({
+                'updatedAlarm':metricalarm_for_json(metricalarm),
+                'type':history_type,
+                'version': '1.0'
+            })
+            summary = "Alarm %s updated" % metricalarm['alarm_name']                
+        else:
+            alarm_key = uuid.uuid4()
+            state_reason = "Unchecked: Initial alarm creation"
+            metricalarm.update({'state_updated_timestamp': utils.utcnow(),
+                                'state_reason': state_reason,
+                                'state_reason_data': json.dumps({}),
+                                'state_value': "INSUFFICIENT_DATA"})
+            history_data = json.dumps({
+                'createdAlarm': metricalarm_for_json(metricalarm),
+                'type':history_type, 'version': '1.0'
+            })
+            summary = "Alarm %s created" % metricalarm['alarm_name']
+
+        for dict_key in ['state_updated_timestamp', 
+                         'alarm_configuration_updated_timestamp']:
+            metricalarm[dict_key] = utils.str_to_timestamp(
+                                                        metricalarm[dict_key])
+        metricalarm['metric_key'] = metric_key
+        
+        history_key = uuid.uuid4()
+        history_column = {
+            'project_id': project_id,
+            'alarm_key': alarm_key,
+            'alarm_name': metricalarm['alarm_name'],
+            'history_data': history_data,
+            'history_item_type': 'ConfigurationUpdate',
+            'history_summary':summary,
+            'timestamp': utils.utcnow()
+        }
+            
+        self.cass.put_metric_alarm(alarm_key, metricalarm)
+        self.cass.insert_alarm_history(history_key, history_column)
+        LOG.info("metric alarm inserted: %s %s", alarm_key, metricalarm)       
+                
+        # load metric in memory     
+        self.metrics[metric_key].put_alarm(project_id, metricalarm)
+       
 
     def process_delete_metric_alarms_msg(self, metric_key, message):
         alarmkey = UUID(message['alarmkey'])
