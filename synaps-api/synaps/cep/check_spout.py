@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from datetime import datetime
 import json
 import os
 import traceback
@@ -39,7 +40,7 @@ class CheckSpout(Spout):
         self.cass = Cassandra()
         self.nextTuple()
         self.delivery_tags = {}
-        self.lastchecked = time.time()
+        self.lastchecked = self.get_now()
     
     def log(self, msg):
         log("[%s:%d] %s" % (self.SPOUT_NAME, self.pid, msg))
@@ -48,12 +49,14 @@ class CheckSpout(Spout):
         msg = traceback.format_exc(e)
         for line in msg.splitlines():
             self.log("TRACE: " + line)
+
+    def get_now(self):
+        return datetime.utcnow().replace(second=0, microsecond=0)
     
     def nextTuple(self):
-        now = time.time()
-        if self.lastchecked == 0:
-            self.lastchecked = now
-        elif now - self.lastchecked >= 60: 
+        now = self.get_now()
+        
+        if self.lastchecked != now:
             self.lastchecked = now
             id = "periodic_%s" % str(uuid4())
             body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID})
