@@ -1,7 +1,6 @@
-# -*- coding:utf-8 -*-
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
-# Copyright (c) 2012 Samsung SDS Co., LTD
+# Copyright (c) 2012, 2013 Samsung SDS Co., LTD
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -43,7 +42,7 @@ class Cassandra(object):
     STATISTICS = ["Sum", "SampleCount", "Average", "Minimum", "Maximum"]
     
     def __init__(self, keyspace=None):
-        self.STATISTICS_TTL = FLAGS.get('statistics_ttl')
+        self.statistics_ttl = FLAGS.get('statistics_ttl')
         self.ARCHIVE = map(lambda x: int(x) * 60, 
                            FLAGS.get('statistics_archives'))
         if not keyspace:
@@ -336,12 +335,12 @@ class Cassandra(object):
 
     def insert_stat(self, metric_key, stat, ttl=None):
         LOG.debug("scf_stat_archive.insert (%s, %s)" % (metric_key, stat))
-        ttl = ttl if ttl else self.STATISTICS_TTL
+        ttl = ttl if ttl else self.statistics_ttl
         self.scf_stat_archive.insert(metric_key, stat, ttl=ttl)
     
     def insert_alarm_history(self, key, column, ttl=None):
         LOG.debug("cf_alarm_history.insert (%s, %s)" % (key, column))
-        ttl = ttl or self.STATISTICS_TTL
+        ttl = ttl or self.statistics_ttl
         self.cf_alarm_history.insert(key, column, ttl=ttl)
         
     def update_alarm_state(self, alarmkey, state, reason, reason_data,
@@ -457,7 +456,7 @@ class Cassandra(object):
     
     def put_metric_alarm(self, alarm_key, metricalarm):
         """
-        MetricAlarm 을 DB에 생성 또는 업데이트 함.
+        update MetricAlarm CF
         """
         LOG.debug("cf_metric_alarm.insert (%s, %s)" % (alarm_key, metricalarm)) 
         self.cf_metric_alarm.insert(key=alarm_key, columns=metricalarm)
@@ -482,8 +481,7 @@ class Cassandra(object):
     @staticmethod
     def syncdb(keyspace=None):
         """
-        카산드라 database schema 를 체크, 
-        필요한 KEYSPACE, CF, SCF 가 없으면 새로 생성.
+        Create Cassandra keyspace, CF, SCF
         """
         if not keyspace:
             keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
@@ -493,7 +491,7 @@ class Cassandra(object):
         strategy_options = {'replication_factor':replication_factor}
         
 
-        # keyspace 체크, keyspace 가 없으면 새로 생성
+        # create keyspace
         LOG.info(_("cassandra syncdb is started for keyspace(%s)" % keyspace))
         if keyspace not in manager.list_keyspaces():
             LOG.info(_("cassandra keyspace %s does not exist.") % keyspace)
@@ -502,14 +500,14 @@ class Cassandra(object):
         else:
             property = manager.get_keyspace_properties(keyspace)
             
-            # strategy_option 체크, option 이 다르면 수정
+            # check strategy_option
             if not (strategy_options == property.get('strategy_options')):
                 manager.alter_keyspace(keyspace,
                                        strategy_options=strategy_options)
                 LOG.info(_("cassandra keyspace strategy options is updated - %s" 
                            % str(strategy_options)))
         
-        # CF 체크
+        # create CF, SCF
         column_families = manager.get_keyspace_column_families(keyspace)        
         
         if 'Metric' not in column_families.keys():

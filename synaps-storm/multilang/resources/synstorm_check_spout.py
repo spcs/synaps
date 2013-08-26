@@ -1,4 +1,5 @@
 #!/usr/bin/env python -u
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
 
 # Copyright (c) 2012 Samsung SDS Co., LTD
 # All Rights Reserved.
@@ -17,61 +18,20 @@
 
 import os
 import sys
-import traceback
-import time
-from synaps.db import Cassandra
-
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir, os.pardir))
 if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
     sys.path.insert(0, possible_topdir)
 
+from synaps.cep.check_spout import CheckSpout 
 from synaps import flags
 # from synaps import log as logging
 from synaps import utils
 
-from synaps.rpc import CHECK_METRIC_ALARM_MSG_ID
-from storm import Spout, emit, log
-from uuid import uuid4
-import json
-
-flags.FLAGS(sys.argv)
-utils.default_flagfile()
-# logging.setup()
-FLAGS = flags.FLAGS
-
-class CheckSpout(Spout):
-    SPOUT_NAME = "CheckSpout"
-    lastchecked = 0
-    
-    def initialize(self, conf, context):
-        self.pid = os.getpid()
-        self.cass = Cassandra()
-        self.nextTuple()
-        self.delivery_tags = {}
-        self.lastchecked = time.time()
-    
-    def log(self, msg):
-        log("[%s:%d] %s" % (self.SPOUT_NAME, self.pid, msg))
-        
-    def tracelog(self, e):
-        msg = traceback.format_exc(e)
-        for line in msg.splitlines():
-            self.log("TRACE: " + line)
-    
-    def nextTuple(self):
-        now = time.time()
-        if self.lastchecked == 0:
-            self.lastchecked = now
-        elif now - self.lastchecked >= 60: 
-            self.lastchecked = now
-            id = "periodic_%s" % str(uuid4())
-            body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID})
-            message = "Periodic monitoring message sent [%s] %s"
-            self.log(message % (id, body))
-            emit([None, body], id=id)
-        else:
-            time.sleep(1)
 
 if __name__ == "__main__":
+    flags.FLAGS(sys.argv)
+    utils.default_flagfile()
+    # logging.setup()
+    FLAGS = flags.FLAGS
     CheckSpout().run()
