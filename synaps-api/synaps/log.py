@@ -43,6 +43,7 @@ import sys
 import traceback
 
 import synaps
+from synaps.cep import storm
 from synaps import flags
 from synaps import local
 from synaps.openstack.common import cfg
@@ -270,6 +271,17 @@ class PublishErrorsHandler(logging.Handler):
 #            nova.notifier.api.ERROR, dict(error=record.msg))
 
 
+class StormLogHandler(logging.Handler):
+    def emit(self, record):
+        try:
+            msg = self.format(record)
+            storm.log(msg)
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except:
+            self.handleError(record)
+
+
 def handle_exception(type, value, tb):
     extra = {}
     if FLAGS.verbose:
@@ -315,6 +327,52 @@ def _find_facility_from_flags():
     return facility
 
 
+def setup_storm():
+    synaps_root = getLogger().logger
+    for handler in synaps_root.handlers:
+        synaps_root.removeHandler(handler)
+
+    if FLAGS.log_storm_worker:
+        stormlog = StormLogHandler()
+        synaps_root.addHandler(stormlog)
+
+    logpath = _get_log_file_path()
+    if logpath and FLAGS.log_storm_file:
+        filelog = logging.handlers.WatchedFileHandler(logpath)
+        synaps_root.addHandler(filelog)
+
+        mode = int(FLAGS.logfile_mode, 8)
+        st = os.stat(logpath)
+        if st.st_mode != (stat.S_IFREG | mode):
+            os.chmod(logpath, mode)
+                
+    for handler in synaps_root.handlers:
+        datefmt = FLAGS.log_date_format
+        if FLAGS.log_format:
+            handler.setFormatter(logging.Formatter(fmt=FLAGS.log_format,
+                                                   datefmt=datefmt))
+        handler.setFormatter(LegacyNovaFormatter(datefmt=datefmt))
+
+    if FLAGS.verbose or FLAGS.debug:
+        synaps_root.setLevel(logging.DEBUG)
+    else:
+        synaps_root.setLevel(logging.INFO)
+
+    level = logging.NOTSET
+    for pair in FLAGS.default_log_levels:
+        mod, _sep, level_name = pair.partition('=')
+        level = logging.getLevelName(level_name)
+        logger = logging.getLogger(mod)
+        logger.setLevel(level)
+
+    root = logging.getLogger()
+    for handler in root.handlers:
+        root.removeHandler(handler)
+    handler = NullHandler()
+    handler.setFormatter(logging.Formatter())
+    root.addHandler(handler)
+    
+    
 def _setup_logging_from_flags():
     synaps_root = getLogger().logger
     for handler in synaps_root.handlers:
@@ -335,7 +393,7 @@ def _setup_logging_from_flags():
         st = os.stat(logpath)
         if st.st_mode != (stat.S_IFREG | mode):
             os.chmod(logpath, mode)
-
+            
     if FLAGS.use_stderr:
         streamlog = logging.StreamHandler()
         synaps_root.addHandler(streamlog)

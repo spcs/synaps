@@ -25,13 +25,14 @@ if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
 
 from synaps.cep.put_metric_bolt import PutMetricBolt 
 from synaps import flags
-# from synaps import log as logging
+from synaps import log as logging
 from synaps import utils
 
 
 if __name__ == "__main__":
     flags.FLAGS(sys.argv)
     utils.default_flagfile()
-    # logging.setup()
     FLAGS = flags.FLAGS
+    FLAGS.set_override('log_file', 'storm_putmetric_%d.log' % os.getpid())
+    logging.setup_storm()
     PutMetricBolt().run()

@@ -43,7 +43,7 @@ class CheckSpout(Spout):
         self.lastchecked = self.get_now()
     
     def log(self, msg):
-        log("[%s:%d] %s" % (self.SPOUT_NAME, self.pid, msg))
+        LOG.info("[%s:%d] %s" % (self.SPOUT_NAME, self.pid, msg))
         
     def tracelog(self, e):
         msg = traceback.format_exc(e)

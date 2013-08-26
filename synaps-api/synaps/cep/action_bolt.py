@@ -54,7 +54,7 @@ class ActionBolt(storm.BasicBolt):
         self.sms_db_password = FLAGS.get('sms_db_password')
     
     def log(self, msg):
-        storm.log("[%s:%d] %s" % (self.BOLT_NAME, self.pid, msg))
+        LOG.info("[%s:%d] %s" % (self.BOLT_NAME, self.pid, msg))
         
     def tracelog(self, e):
         msg = traceback.format_exc(e)

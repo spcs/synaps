@@ -96,6 +96,12 @@ log_opts = [
     cfg.BoolOpt('use_stderr',
                 default=True,
                 help='log to standard error'),
+    cfg.BoolOpt('log_storm_worker',
+                default=False,
+                help='log to storm worker log'),
+    cfg.BoolOpt('log_storm_file',
+                default=True,
+                help='log to file per storm executor process'),
     ]
 
 core_opts = [
