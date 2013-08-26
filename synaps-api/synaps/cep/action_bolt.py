@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Samsung SDS Co., LTD
+# Copyright (c) 2012, 2013 Samsung SDS Co., LTD
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -19,7 +19,6 @@ import json
 import MySQLdb as db
 from random import randint
 import smtplib
-import traceback
 from uuid import UUID, uuid4
 
 from synaps.cep import storm
@@ -53,13 +52,6 @@ class ActionBolt(storm.BasicBolt):
         self.sms_db_username = FLAGS.get('sms_db_username')
         self.sms_db_password = FLAGS.get('sms_db_password')
     
-    def log(self, msg):
-        LOG.info("[%s:%d] %s" % (self.BOLT_NAME, self.pid, msg))
-        
-    def tracelog(self, e):
-        msg = traceback.format_exc(e)
-        for line in msg.splitlines():
-            self.log("TRACE: " + line)
     
     def get_action_type(self, action):
         if validate_email(action):
@@ -103,7 +95,8 @@ class ActionBolt(storm.BasicBolt):
         
         self.cass.insert_alarm_history(history_key, column, 
                                        ttl=self.statistics_ttl)
-        storm.log("alarm history \n %s" % history_summary)
+        LOG.info("History updated. %s", history_summary)
+        
     
     def process_action(self, tup):
         """
@@ -120,15 +113,14 @@ class ActionBolt(storm.BasicBolt):
         alarm_key = tup.values[0]
         message_buf = tup.values[1]
         message = json.loads(message_buf)
-        self.log("start processing tup %s" % (tup))
+        LOG.info("start processing tup %s", tup)
         
         alarm = self.cass.get_metric_alarm(UUID(alarm_key))
         
         try:
             actions_enabled = alarm['actions_enabled']
         except TypeError:
-            msg = "alarm is not found [" + alarm_key + "]"
-            self.log(msg)
+            LOG.debug("Alarm(%s) is not found", alarm_key)
             
             return False
                      
@@ -139,8 +131,6 @@ class ActionBolt(storm.BasicBolt):
         elif message['state'] == 'ALARM':
             actions = json.loads(alarm['alarm_actions'])
         
-        self.log("actions enabled: %s actions: %s " % (actions_enabled,
-                                                       actions))
         if actions_enabled and actions:                 
             if self.enable_send_sms:
                 sms_receivers = [action for action in actions
@@ -159,8 +149,8 @@ class ActionBolt(storm.BasicBolt):
                         self.send_sms(notification_message)
                     except Exception as e:
                         notification_message['state'] = 'failed'
-                        self.tracelog(e)
-                    self.log("AUDIT notify: %s" % notification_message)
+                        LOG.error(e)
+                    LOG.audit("SMS sent. %s", notification_message)
                     self.alarm_history_state_update(alarm_key, alarm,
                                                     notification_message)
 
@@ -181,8 +171,8 @@ class ActionBolt(storm.BasicBolt):
                         self.send_email(notification_message)
                     except Exception as e:
                         notification_message['state'] = 'failed'
-                        self.tracelog(e)
-                    self.log("AUDIT notify: %s" % notification_message)
+                        LOG.error(e)
+                    LOG.audit("Email sent. %s", notification_message)
                     self.alarm_history_state_update(alarm_key, alarm,
                                                     notification_message)
                     
@@ -224,18 +214,19 @@ class ActionBolt(storm.BasicBolt):
             
             return nat, local_no
         
-        self.log("SMS: %s" % str(message))
-        
         # message example.
         #
-        #    {'body': u'Threshold Crossed: 3 datapoints were greater than the threshold(50.000000). The most recent datapoints: [110.0, 110.0, 60.0]. at 2012-08-28T10:17:50.494902',
+        #    {'body': u'Threshold Crossed: 3 datapoints were greater than the 
+        #               threshold(50.000000). The most recent datapoints: 
+        #               [110.0, 110.0, 60.0]. at 2012-08-28T10:17:50.494902',
         #     'receivers': [u'+82 1093145616'],
         #     'method': 'SMS',
-        #     'subject': u'AlarmActionTest state has been changed from OK to ALARM at 2012-08-28T10:17:50.494902'}
+        #     'subject': u'AlarmActionTest state has been changed from OK to
+        #                  ALARM at 2012-08-28T10:17:50.494902'}
         #
     
-        self.log("connect to mysql db %s@%s:%s %s" % (self.sms_db_username,
-                 self.sms_db_host, self.sms_db_port, self.sms_db))
+        LOG.debug("Connect to mysql db %s@%s:%s %s" % (self.sms_db_username,
+                            self.sms_db_host, self.sms_db_port, self.sms_db))
         conn = db.connect(host=self.sms_db_host, port=self.sms_db_port, 
                           db=self.sms_db, user=self.sms_db_username, 
                           passwd=self.sms_db_password, connect_timeout=30)
@@ -250,8 +241,6 @@ class ActionBolt(storm.BasicBolt):
         
     
     def send_email(self, message):
-        self.log("EMAIL: %s" % str(message))
-    
         msg = MIMEText(message['body'])
         msg['Subject'] = message['subject']
         msg['From'] = self.mail_sender

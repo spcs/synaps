@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Samsung SDS Co., LTD
+# Copyright (c) 2012, 2013 Samsung SDS Co., LTD
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -20,7 +20,7 @@ import traceback
 import time
 from uuid import uuid4
 
-from synaps.cep.storm import Spout, emit, log
+from synaps.cep.storm import Spout, emit
 from synaps.db import Cassandra
 from synaps import flags
 from synaps import log as logging
@@ -41,17 +41,19 @@ class CheckSpout(Spout):
         self.nextTuple()
         self.delivery_tags = {}
         self.lastchecked = self.get_now()
-    
-    def log(self, msg):
-        LOG.info("[%s:%d] %s" % (self.SPOUT_NAME, self.pid, msg))
-        
-    def tracelog(self, e):
-        msg = traceback.format_exc(e)
-        for line in msg.splitlines():
-            self.log("TRACE: " + line)
 
+
+    def ack(self, id):
+        LOG.info("Acked message %s", id)
+        
+            
+    def fail(self, id):
+        LOG.error("Reject failed message %s", id)
+        
+        
     def get_now(self):
         return datetime.utcnow().replace(second=0, microsecond=0)
+
     
     def nextTuple(self):
         now = self.get_now()
@@ -60,8 +62,7 @@ class CheckSpout(Spout):
             self.lastchecked = now
             id = "periodic_%s" % str(uuid4())
             body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID})
-            message = "Periodic monitoring message sent [%s] %s"
-            self.log(message % (id, body))
+            LOG.info("Periodic monitoring message sent [%s] %s", id, body)
             emit([None, body], id=id)
         else:
             time.sleep(1)

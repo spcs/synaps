@@ -33,6 +33,6 @@ if __name__ == "__main__":
     flags.FLAGS(sys.argv)
     utils.default_flagfile()
     FLAGS = flags.FLAGS
-    FLAGS.set_override('log_file', 'storm_putmetric_%d.log' % os.getpid())
+    FLAGS.set_override('log_file', 'storm-putmetric-%d.log' % os.getpid())
     logging.setup_storm()
     PutMetricBolt().run()

@@ -33,6 +33,6 @@ if __name__ == "__main__":
     flags.FLAGS(sys.argv)
     utils.default_flagfile()
     FLAGS = flags.FLAGS
-    FLAGS.set_override('log_file', 'storm_check_%d.log' % os.getpid())
+    FLAGS.set_override('log_file', 'storm-check-%d.log' % os.getpid())
     logging.setup_storm()
     CheckSpout().run()

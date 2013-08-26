@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Samsung SDS Co., LTD
+# Copyright (c) 2012, 2013 Samsung SDS Co., LTD
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -18,9 +18,8 @@ import os
 import pika
 from pika.exceptions import AMQPConnectionError, AMQPChannelError
 import time
-import traceback
 
-from synaps.cep.storm import Spout, emit, log
+from synaps.cep.storm import Spout, emit
 from synaps import flags
 from synaps import log as logging
 
@@ -35,14 +34,6 @@ class ApiSpout(Spout):
     def initialize(self, conf, context):
         self.pid = os.getpid()       
         self.connect()
-    
-    def log(self, msg):
-        LOG.info("[%s:%d] %s" % (self.SPOUT_NAME, self.pid, msg))
-        
-    def tracelog(self, e):
-        msg = traceback.format_exc(e)
-        for line in msg.splitlines():
-            self.log("TRACE: " + line)
     
     def connect(self):
         while True:
@@ -73,10 +64,12 @@ class ApiSpout(Spout):
                                    arguments=queue_args)
 
     def ack(self, id):
-        self.log("Acked message [%s]" % id)
+        LOG.info("Acked message %s", id)
+        
             
     def fail(self, id):
-        self.log("Reject failed message [%s]" % id)
+        LOG.error("Reject failed message %s", id)
+        
     
     def nextTuple(self):
         try:
@@ -84,7 +77,7 @@ class ApiSpout(Spout):
                 queue="metric_queue", no_ack=True
             )
         except (AMQPConnectionError, AMQPChannelError):
-            self.log("AMQP Connection or Channel Error. While get a message.")
+            LOG.error("AMQP Connection or Channel Error. While get a message.")
             self.connect()
             return
 
@@ -93,5 +86,5 @@ class ApiSpout(Spout):
             msg_body = json.loads(body)
             msg_id, msg_uuid = msg_body['message_id'], msg_body['message_uuid']
             message = "Start processing message in the queue - [%s:%s] %s"
-            self.log(message % (msg_id, msg_uuid, body))
+            LOG.info(message % (msg_id, msg_uuid, body))
             emit([body], id=msg_uuid)

@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Samsung SDS Co., LTD
+# Copyright (c) 2012, 2013 Samsung SDS Co., LTD
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -17,7 +17,6 @@
 import json
 import md5
 import os
-import traceback
 from uuid import UUID
 
 from synaps import flags
@@ -42,13 +41,6 @@ class UnpackMessageBolt(storm.BasicBolt):
         self.cass = Cassandra()
         self.key_dict = {}
     
-    def log(self, msg):
-        LOG.info("[%s:%d] %s" % (self.BOLT_NAME, self.pid, msg))
-        
-    def tracelog(self, e):
-        msg = traceback.format_exc(e)
-        for line in msg.splitlines():
-            self.log("TRACE: " + line)
                 
     def get_metric_key(self, message):
         memory_key = md5.md5(str((message['project_id'],
@@ -75,9 +67,6 @@ class UnpackMessageBolt(storm.BasicBolt):
         else:
             return None
 
-    def emit(self, tup):
-        storm.emit(tup)
-        self.log("Emitted %s" % tup)
     
     def process(self, tup):
         message_buf = tup.values[0]
@@ -85,14 +74,16 @@ class UnpackMessageBolt(storm.BasicBolt):
 
         message_id = message['message_id']
         message_uuid = message['message_uuid']
-        self.log("start processing msg[%s:%s]" % (message_id, message_uuid))
+        LOG.info("start processing msg[%s:%s]" % (message_id, message_uuid))
         
         if message_id == PUT_METRIC_DATA_MSG_ID:
             metric_key = str(self.get_metric_key(message))
             storm.emit([metric_key, message_buf])
+        
         elif message_id == PUT_METRIC_ALARM_MSG_ID:
             metric_key = message.get('metric_key')
             storm.emit([metric_key, message_buf])
+
         elif message_id == DELETE_ALARMS_MSG_ID:
             project_id = message['project_id']
             alarmkeys = message['alarmkeys']
@@ -105,8 +96,8 @@ class UnpackMessageBolt(storm.BasicBolt):
                         message['alarmkey'] = alarmkey
                         storm.emit([metric_key, json.dumps(message)])
                 except Exception as e:
-                    storm.log("Alarm %s does not exists" % alarmkey)
-                    storm.log(traceback.format_exc(e))
+                    LOG.error("Alarm %s does not exists", alarmkey)
+
         elif message_id == SET_ALARM_STATE_MSG_ID:
             project_id = message['project_id']
             alarm_name = message['alarm_name']
