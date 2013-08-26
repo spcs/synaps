@@ -27,7 +27,7 @@ if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
     sys.path.insert(0, possible_topdir)
 
 from synaps import flags
-from synaps import log as logging
+# from synaps import log as logging
 from synaps import utils
 
 from synaps.rpc import CHECK_METRIC_ALARM_MSG_ID
@@ -37,7 +37,7 @@ import json
 
 flags.FLAGS(sys.argv)
 utils.default_flagfile()
-logging.setup()
+# logging.setup()
 FLAGS = flags.FLAGS
 
 class CheckSpout(Spout):

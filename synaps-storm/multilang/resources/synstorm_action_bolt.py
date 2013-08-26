@@ -24,7 +24,7 @@ if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
     sys.path.insert(0, possible_topdir)
 
 from synaps import flags
-from synaps import log as logging
+# from synaps import log as logging
 from synaps import utils
 from uuid import UUID, uuid4
 
@@ -41,7 +41,7 @@ from synaps.utils import validate_email, validate_international_phonenumber
 
 flags.FLAGS(sys.argv)
 utils.default_flagfile()
-logging.setup()
+# logging.setup()
 FLAGS = flags.FLAGS
 
 SMTP_SERVER = FLAGS.get('smtp_server')

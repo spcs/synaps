@@ -38,7 +38,7 @@ from pandas import rolling_sum, rolling_max, rolling_min, rolling_mean
 from pandas import isnull
 
 from synaps import flags
-from synaps import log as logging
+# from synaps import log as logging
 from synaps import utils
 from synaps.db import Cassandra
 from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
@@ -48,7 +48,7 @@ from synaps import exception
 
 flags.FLAGS(sys.argv)
 utils.default_flagfile()
-logging.setup()
+# logging.setup()
 FLAGS = flags.FLAGS
 
 class MetricMonitor(object):
