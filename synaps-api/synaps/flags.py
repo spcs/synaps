@@ -111,6 +111,9 @@ core_opts = [
     cfg.ListOpt('cassandra_server_list',
                 default=['localhost:9160', ],
                 help='cassandra cluster'),
+    cfg.IntOpt('cassandra_timeout',
+               default=10, # 5 seconds
+               help='cassandra timeout'),             
     cfg.IntOpt('statistics_ttl',
                default=60 * 60 * 24 * 15, # 15 days in seconds
                help='time to live of statistics data'),
