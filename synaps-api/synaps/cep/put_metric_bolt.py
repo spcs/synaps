@@ -26,6 +26,7 @@ from uuid import UUID
 
 from synaps.cep import storm
 from synaps.db import Cassandra
+from synaps.exception import ResourceNotFound
 from synaps import flags
 from synaps import log as logging
 from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
@@ -72,19 +73,39 @@ class MetricMonitor(object):
         self.default_left_offset = FLAGS.get('left_offset')
         self.insufficient_buffer = FLAGS.get('insufficient_buffer')
 
+        metric = self.cass.get_metric(metric_key)
+        if not metric:
+            LOG.error("Metric is not loaded %s", metric_key)
+            raise ResourceNotFound()
+
+        self.project_id = metric.get('project_id')
+        self.metric_name = metric.get('name')
+        self.namespace = metric.get('namespace')
+        self.dimensions = json.loads(metric.get('dimensions'))        
+        
+        self.created_timestamp = metric.get('created_timestamp') or \
+                                 datetime.utcnow()
+        self.updated_timestamp = metric.get('updated_timestamp') or \
+                                 datetime.utcnow()
+
         self.df = self.load_statistics()
         self.alarms = self.load_alarms()
         self._reindex()
 
         self.update_left_offset(self.alarms)
         self.lastchecked = None
-
-        metric = self.cass.get_metric(metric_key)
-        self.created_timestamp = metric.get('created_timestamp') or \
-                                 datetime.utcnow()
-        self.updated_timestamp = metric.get('updated_timestamp') or \
-                                 datetime.utcnow()
-       
+    
+    
+    def __str__(self):
+        format_dict = {'namespace': self.namespace,
+                       'metric_name': self.metric_name,
+                       'dimensions': self.dimensions,
+                       'project_id': self.project_id,
+                       'metric_key': self.metric_key}
+        
+        return "MetricMonitor(%(metric_key)s:%(project_id)s:%(namespace)s:"\
+               "%(metric_name)s:%(dimensions)s)" % format_dict
+        
  
     def _reindex(self):
         self.df = self.df.reindex(index=self._get_range())
@@ -126,8 +147,8 @@ class MetricMonitor(object):
     def is_stale(self):
         elapsed = datetime.utcnow() - self.updated_timestamp
         ttl = timedelta(seconds=self.cass.statistics_ttl)
-        LOG.debug("is metric(%s)_stale? elapsed: %s ttl: %s", 
-                  str(self.metric_key), str(elapsed), str(ttl))
+        LOG.debug("is metric(%s)_stale? elapsed: %s ttl: %s", str(self), 
+                  str(elapsed), str(ttl))
         return elapsed > ttl
 
                   
@@ -138,18 +159,19 @@ class MetricMonitor(object):
         alarmkey:
             alarmkey should be UUID
         """
-        try:
+        if alarmkey in self.alarms:
             alarm = self.alarms.pop(alarmkey)
-        except KeyError:
-            LOG.debug("alarmkey %s doesn't exist", alarmkey)
-            return
-        
-        self.cass.delete_metric_alarm(alarmkey)
-        self.alarm_history_delete(alarmkey, alarm)
-        LOG.info("delete alarm %s for metric %s", str(alarmkey), 
-                 self.metric_key)
-
-        self.update_left_offset(self.alarms)        
+            self.cass.delete_metric_alarm(alarmkey)
+            self.alarm_history_delete(alarmkey, alarm)
+            LOG.info("delete alarm %s for metric %s", str(alarmkey), 
+                     self.metric_key)
+    
+            self.update_left_offset(self.alarms)        
+        else:
+            LOG.error("alarmkey %s doesn't exist", alarmkey)
+            self.cass.delete_metric_alarm(alarmkey)
+            # reload alarms
+            self.load_alarms()
         
 
     def load_statistics(self):
@@ -168,8 +190,9 @@ class MetricMonitor(object):
     
     def load_alarms(self):
         alarms = dict(self.cass.load_alarms(self.metric_key))
-        LOG.info("load_alarms %s for metric %s", str(alarms), self.metric_key)
+        LOG.info("load_alarms %s for metric %s", str(alarms), str(self))
         return alarms
+
 
     def get_metric_statistics(self, window, statistics, start=None, end=None,
                               unit=None):
@@ -277,8 +300,7 @@ class MetricMonitor(object):
             LOG.debug("ttl must be positive, ttl %s", ttl)
         self.cass.update_metric(self.metric_key, {'updated_timestamp': 
                                                   self.updated_timestamp})
-        LOG.info("metric data inserted %s, time_idx %s", self.metric_key, 
-                 time_idx)
+        LOG.info("metric data inserted %s, time_idx %s", str(self), time_idx)
 
     
     def check_alarms(self, query_time=None):
@@ -557,7 +579,6 @@ class PutMetricBolt(storm.BasicBolt):
             self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
 
         timestamp = utils.parse_strtime(message['timestamp'])
-
 
         self.metrics[metric_key].put_metric_data(metric_key,
                                                  timestamp=timestamp,
