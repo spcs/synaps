@@ -294,7 +294,7 @@ class MetricMonitor(object):
         
         ttl = self.cass.statistics_ttl - time_diff.total_seconds()
         self.updated_timestamp = utils.utcnow()
-        if ttl > 0:
+        if ttl > 0.1:
             self.cass.insert_stat(self.metric_key, stat_dict, ttl)
         else:
             LOG.debug("ttl must be positive, ttl %s", ttl)

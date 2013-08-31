@@ -140,17 +140,17 @@ public class SynapsTopology {
 		conf.setDebug(true);
 
 		if (args != null && args.length > 0) {
-			conf.setNumWorkers(20);
-			conf.setNumAckers(111);
+			conf.setNumWorkers(6);
+			conf.setNumAckers(6);
 			conf.setMaxSpoutPending(500);
-			builder.setSpout("api_spout", new ApiSpout(), 10);
+			builder.setSpout("api_spout", new ApiSpout(), 4);
 			builder.setSpout("check_spout", new CheckSpout(), 1);
-			builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 10)
+			builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 4)
 					.shuffleGrouping("api_spout");
-			builder.setBolt("putmetric_bolt", new PutMetricBolt(), 80)
+			builder.setBolt("putmetric_bolt", new PutMetricBolt(), 12)
 					.fieldsGrouping("unpack_bolt", new Fields("metric_key"))
 					.allGrouping("check_spout");
-			builder.setBolt("action_bolt", new ActionBolt(), 10)
+			builder.setBolt("action_bolt", new ActionBolt(), 4)
 					.shuffleGrouping("putmetric_bolt");
 			StormSubmitter.submitTopology("synaps" + args[0], conf,
 					builder.createTopology());

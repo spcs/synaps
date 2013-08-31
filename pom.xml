@@ -40,10 +40,10 @@
 
 
 	<build>
-		<sourceDirectory>${basedir}/src</sourceDirectory>
+		<sourceDirectory>${basedir}/javasrc</sourceDirectory>
 		<resources>
 			<resource>
-				<directory>${basedir}/multilang</directory>
+				<directory>${basedir}/javasrc</directory>
 			</resource>
 		</resources>
 		<plugins>

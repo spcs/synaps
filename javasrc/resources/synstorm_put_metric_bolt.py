@@ -16,6 +16,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from datetime import datetime
 import os
 import sys
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
@@ -23,7 +24,7 @@ possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
 if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
     sys.path.insert(0, possible_topdir)
 
-from synaps.cep.unpack_bolt import UnpackMessageBolt 
+from synaps.cep.put_metric_bolt import PutMetricBolt 
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
@@ -33,6 +34,9 @@ if __name__ == "__main__":
     flags.FLAGS(sys.argv)
     utils.default_flagfile()
     FLAGS = flags.FLAGS
-    FLAGS.set_override('log_file', 'storm-unpack-%d.log' % os.getpid())
+    timestr = datetime.utcnow().strftime("%y%m%d%H%M")
+    pid = os.getpid()
+    logfile = 'storm-putmetric-%s-%d.log' % (timestr, pid)
+    FLAGS.set_override('log_file', logfile)
     logging.setup_storm()
-    UnpackMessageBolt().run()
+    PutMetricBolt().run()
