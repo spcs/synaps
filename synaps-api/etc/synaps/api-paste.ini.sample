@@ -8,7 +8,8 @@ use = egg:Paste#urlmap
 
 [pipeline:cloudwatch_api_v1]
 #pipeline = fault_wrap log_request no_auth monitor_request authorizer cloudwatch_executor
-pipeline = fault_wrap log_request authenticate monitor_request authorizer cloudwatch_executor
+#pipeline = fault_wrap log_request authenticate monitor_request authorizer cloudwatch_executor
+pipeline = fault_wrap log_request ec2keystoneauth monitor_request authorizer cloudwatch_executor
 
 [filter:fault_wrap]
 paste.filter_factory = synaps.api.cloudwatch:FaultWrapper.factory
@@ -21,6 +22,9 @@ paste.filter_factory = synaps.api.cloudwatch:NoAuth.factory
 
 [filter:authenticate]
 paste.filter_factory = synaps.api.cloudwatch:Authenticate.factory
+
+[filter:ec2keystoneauth]
+paste.filter_factory = synaps.api.cloudwatch:EC2KeystoneAuth.factory
 
 [filter:monitor_request]
 controller = synaps.api.cloudwatch.monitor.MonitorController

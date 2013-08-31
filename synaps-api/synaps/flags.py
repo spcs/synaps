@@ -236,6 +236,9 @@ global_opts = [
     cfg.ListOpt('memcached_servers',
                 default=None,
                 help='Memcached servers or None for in process cache.'),
+    cfg.StrOpt('keystone_ec2_url',
+               default='http://localhost:5000/v2.0/ec2tokens',
+               help='Keystone EC2 token URL'),
 ]
 
 rabbitmq_opts = [

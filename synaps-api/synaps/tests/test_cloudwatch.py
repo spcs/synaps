@@ -49,7 +49,7 @@ class SynapsTestCase(unittest.TestCase):
         self.synaps = CloudWatchConnection(
             # oss key pair
             aws_access_key_id=access_key, aws_secret_access_key=secret_key,
-            is_secure=False, port=8776, path='/monitor',
+            is_secure=False, port=3776, path='/monitor',
             region=regioninfo.RegionInfo(None, 'Test Region', 'localhost'),
         )
         

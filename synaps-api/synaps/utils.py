@@ -38,7 +38,7 @@ import shutil
 import json
 import itertools
 from collections import OrderedDict
-from numpy import isnan, nan
+from xml.sax import saxutils
 
 from eventlet import greenthread
 from eventlet.green import subprocess
@@ -658,3 +658,10 @@ def strcmp_const_time(s1, s2):
 def prefix_end(buf):
     lastord = ord(buf[-1])
     return buf[:-1] + unichr(lastord + 1)
+
+def xhtml_escape(value):
+    """Escapes a string so it is valid within XML or XHTML.
+
+    """
+    return saxutils.escape(value, {'"': '&quot;', "'": '&apos;'})
+

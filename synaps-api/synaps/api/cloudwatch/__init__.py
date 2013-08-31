@@ -19,9 +19,11 @@
 
 import eventlet
 import eventlet.wsgi
+from eventlet.green import httplib
 import webob
 import webob.dec
 import json
+import urlparse
 
 from synaps import flags
 from synaps import log as logging
@@ -33,6 +35,7 @@ from synaps.api.cloudwatch import faults
 from synaps.api.cloudwatch import apirequest
 from synaps.auth import manager
 from synaps.openstack.common import cfg
+from synaps.openstack.common import jsonutils
 
 LOG = logging.getLogger(__name__)
 
@@ -135,6 +138,94 @@ class NoAuth(wsgi.Middleware):
         req.environ['synaps.context'] = ctx
         return self.application
 
+
+class EC2KeystoneAuth(wsgi.Middleware):
+    """Authenticate an EC2 request with keystone and convert to context."""
+
+    @webob.dec.wsgify(RequestClass=webob.Request)
+    def __call__(self, req):
+        request_id = context.generate_request_id()
+        signature = req.params.get('Signature')
+        if not signature:
+            msg = _("Signature not provided")
+            return faults.ec2_error_response(request_id, "Unauthorized", msg,
+                                             status=400)
+        access = req.params.get('AWSAccessKeyId')
+        if not access:
+            msg = _("Access key not provided")
+            return faults.ec2_error_response(request_id, "Unauthorized", msg,
+                                             status=400)
+
+        # Make a copy of args for authentication and signature verification.
+        auth_params = dict(req.params)
+        # Not part of authentication args
+        auth_params.pop('Signature')
+
+        cred_dict = {
+            'access': access,
+            'signature': signature,
+            'host': req.host,
+            'verb': req.method,
+            'path': req.path,
+            'params': auth_params,
+        }
+        if "ec2" in FLAGS.keystone_ec2_url:
+            creds = {'ec2Credentials': cred_dict}
+        else:
+            creds = {'auth': {'OS-KSEC2:ec2Credentials': cred_dict}}
+        creds_json = jsonutils.dumps(creds)
+        headers = {'Content-Type': 'application/json'}
+
+        o = urlparse.urlparse(FLAGS.keystone_ec2_url)
+        if o.scheme == "http":
+            conn = httplib.HTTPConnection(o.netloc)
+        else:
+            conn = httplib.HTTPSConnection(o.netloc)
+        conn.request('POST', o.path, body=creds_json, headers=headers)
+        response = conn.getresponse()
+        data = response.read()
+        if response.status != 200:
+            if response.status == 401:
+                msg = response.reason
+            else:
+                msg = _("Failure communicating with keystone")
+            return faults.ec2_error_response(request_id, "Unauthorized", msg,
+                                             status=400)
+        result = jsonutils.loads(data)
+        conn.close()
+
+        try:
+            token_id = result['access']['token']['id']
+            user_id = result['access']['user']['id']
+            project_id = result['access']['token']['tenant']['id']
+            user_name = result['access']['user'].get('name')
+            project_name = result['access']['token']['tenant'].get('name')
+            roles = [role['name'] for role
+                     in result['access']['user']['roles']]
+        except (AttributeError, KeyError) as e:
+            LOG.exception(_("Keystone failure: %s") % e)
+            msg = _("Failure communicating with keystone")
+            return faults.ec2_error_response(request_id, "Unauthorized", msg,
+                                             status=400)
+
+        remote_address = req.remote_addr
+        if FLAGS.use_forwarded_for:
+            remote_address = req.headers.get('X-Forwarded-For',
+                                             remote_address)
+
+        catalog = result['access']['serviceCatalog']
+        ctxt = context.RequestContext(user_id,
+                                      project_id,
+                                      #user_name=user_name,
+                                      #project_name=project_name,
+                                      roles=roles,
+                                      auth_token=token_id,
+                                      remote_address=remote_address)
+                                      #service_catalog=catalog)
+
+        req.environ['synaps.context'] = ctxt
+
+        return self.application
 
 
 class Authenticate(wsgi.Middleware):
