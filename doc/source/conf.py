@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # synaps documentation build configuration file, created by
 # sphinx-quickstart on Sat May  1 15:17:47 2010.
@@ -32,8 +31,8 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx',
 
 # autodoc generation is a bit aggressive and a nuisance when doing heavy text edit cycles.
 # execute "export SPHINX_DEBUG=1" in your terminal to disable
-#if not os.getenv('SPHINX_DEBUG'):
-#    extensions += ['ext.synaps_autodoc']
+if not os.getenv('SPHINX_DEBUG'):
+    extensions += ['ext.synaps_autodoc']
 
 todo_include_todos = True
 
@@ -226,12 +225,12 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_use_modindex = True
 
-latex_elements = {
-    'inputenc': '\\usepackage{kotex}',
-    'utf8extra': '',
-    'fontenc': '',
-    'fontpkg': '\\usepackage{times}',
-}
+#latex_elements = {
+#    'inputenc': '\\usepackage{kotex}',
+#    'utf8extra': '',
+#    'fontenc': '',
+#    'fontpkg': '\\usepackage{times}',
+#}
 
 
 # Example configuration for intersphinx: refer to the Python standard library.

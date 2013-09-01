@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SYNAPS_DIR='../synaps/' # include trailing slash
+SYNAPS_DIR='synaps/' # include trailing slash
 DOCS_DIR='source'
 
 modules=''

@@ -435,8 +435,10 @@ class MetricMonitor(object):
         """
         parameter example:
         
-        alarmkey: f459c0e0-f927-481f-9158-deb8abe102a2 
-        alarm: OrderedDict([('actions_enabled', False), 
+        .. code::
+ 
+          alarmkey: f459c0e0-f927-481f-9158-deb8abe102a2 
+          alarm: OrderedDict([('actions_enabled', False), 
                             ('alarm_actions', u'[]'), 
                             ('alarm_arn', u'arn:spcs:synaps:IaaS:alarm:TEST_\uc
                             54c\ub78c_02'), 
@@ -479,7 +481,7 @@ class MetricMonitor(object):
                             "recentDatapoints": [75.0, 80.0, 67.625], 
                             "queryDate": "2012-08-25T11:39:49.657449"}')
                             ]) 
-        new_state: {'stateReason': u'Threshold Crossed: 3 datapoints were not 
+          new_state: {'stateReason': u'Threshold Crossed: 3 datapoints were not 
                                      less than the threshold(2.000000). The 
                                      most recent datapoints: [75.0, 80.0, 
                                      67.625].', 
@@ -489,7 +491,7 @@ class MetricMonitor(object):
                     'statistic': u'Average', 'recentDatapoints': [75.0, 80.0, 
                     67.625], 
                     'queryDate': '2012-08-25T11:39:49.657449'}} 
-        old_state: {'stateReason': u'Insufficient Data: 1 datapoints were 
+          old_state: {'stateReason': u'Insufficient Data: 1 datapoints were 
                                     unknown.', 
                     'stateReasonData': {u'startDate': 
                     u'2012-08-25T11:37:00.000000', 

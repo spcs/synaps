@@ -34,6 +34,11 @@ FLAGS = flags.FLAGS
 
 
 class ActionBolt(storm.BasicBolt):
+    """ This bolt is one of building block of synaps topology.
+
+    It receives alarm action messages and do the actions, sending SMS or Email.
+    """
+
     BOLT_NAME = "ActionBolt"
     
     def initialize(self, stormconf, context):
@@ -64,14 +69,16 @@ class ActionBolt(storm.BasicBolt):
                                    notification_message):
         """
         update alarm history based on notification message
-        
-        notification_message = {
-            'method': "email",
-            'receivers': email_receivers,
-            'subject': message['subject'],
-            'body': message['body'],
-            'state': "ok" | "failed"
-        }
+
+        ..code::
+
+            notification_message = {
+                'method': "email",
+                'receivers': email_receivers,
+                'subject': message['subject'],
+                'body': message['body'],
+                'state': "ok" | "failed"
+            }
         """        
         item_type = 'Action'
         project_id = alarm['project_id']
@@ -101,14 +108,16 @@ class ActionBolt(storm.BasicBolt):
     def process_action(self, tup):
         """
         message example
-        
-        msg = {
-            'state': new_state['stateValue'],
-            'subject': "%s state has been changed from %s to %s" % 
-                (alarm['alarm_name'], old_state['stateValue'],
-                 new_state['stateValue']),
-            'body': new_state['stateReason']
-        }
+       
+        ..code::
+ 
+          msg = {
+              'state': new_state['stateValue'],
+              'subject': "%s state has been changed from %s to %s" % 
+                  (alarm['alarm_name'], old_state['stateValue'],
+                   new_state['stateValue']),
+              'body': new_state['stateReason']
+          }
         """        
         alarm_key = tup.values[0]
         message_buf = tup.values[1]

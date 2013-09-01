@@ -2,52 +2,34 @@
    :maxdepth: 1
 
    synaps.api.auth.rst
-   synaps.api.auth.rst
-   synaps.api.cloudwatch.apirequest.rst
    synaps.api.cloudwatch.apirequest.rst
    synaps.api.cloudwatch.cloudwatch2utils.rst
-   synaps.api.cloudwatch.cloudwatch2utils.rst
-   synaps.api.cloudwatch.faults.rst
    synaps.api.cloudwatch.faults.rst
    synaps.api.cloudwatch.monitor.rst
-   synaps.api.cloudwatch.monitor.rst
-   synaps.auth.fakeldap.rst
    synaps.auth.fakeldap.rst
    synaps.auth.ldapdriver.rst
-   synaps.auth.ldapdriver.rst
    synaps.auth.manager.rst
-   synaps.auth.manager.rst
-   synaps.auth.sdsldapdriver.rst
-   synaps.auth.sdsldapdriver.rst
    synaps.auth.signer.rst
-   synaps.auth.signer.rst
-   synaps.common.memorycache.rst
+   synaps.cep.action_bolt.rst
+   synaps.cep.api_spout.rst
+   synaps.cep.check_spout.rst
+   synaps.cep.put_metric_bolt.rst
+   synaps.cep.storm.rst
+   synaps.cep.unpack_bolt.rst
    synaps.common.memorycache.rst
    synaps.compat.flagfile.rst
-   synaps.compat.flagfile.rst
-   synaps.context.rst
    synaps.context.rst
    synaps.crypto.rst
-   synaps.crypto.rst
-   synaps.exception.rst
    synaps.exception.rst
    synaps.flags.rst
-   synaps.flags.rst
-   synaps.local.rst
    synaps.local.rst
    synaps.log.rst
-   synaps.log.rst
-   synaps.monitor.api.rst
    synaps.monitor.api.rst
    synaps.openstack.common.cfg.rst
-   synaps.openstack.common.cfg.rst
-   synaps.service.rst
+   synaps.openstack.common.jsonutils.rst
+   synaps.openstack.common.timeutils.rst
    synaps.service.rst
    synaps.tests.test_cloudwatch.rst
-   synaps.tests.test_cloudwatch.rst
-   synaps.utils.rst
    synaps.utils.rst
    synaps.version.rst
-   synaps.version.rst
-   synaps.wsgi.rst
    synaps.wsgi.rst

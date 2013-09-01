@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
 # Copyright 2010 United States Government as represented by the
@@ -38,6 +37,9 @@ LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
 
 class API(object):
+    """
+    Synaps Monitor API
+    """
     ROLLING_FUNC_MAP = {
         'Average': rolling_mean, 'Minimum': rolling_min,
         'Maximum': rolling_max, 'SampleCount': rolling_sum,
@@ -92,8 +94,7 @@ class API(object):
             namespace: string
             dimensions: dict
             period: integer
-            statistic: string (SampleCount | Average | Sum | Minimum | 
-                               Maximum)
+            statistic: string (SampleCount | Average | Sum | Minimum | Maximum)
             unit: string
         """
         alarms = self.cass.describe_alarms_for_metric(project_id, namespace,
@@ -158,7 +159,7 @@ class API(object):
                               namespace, period, start_time, statistics,
                               unit=None, dimensions=None):
         """
-        입력받은 조건에 일치하는 메트릭의 통계자료 리스트를 반환한다.
+        return metric statistics
         """
         def to_datapoint(df, idx):
             datapoint = df.ix[idx].dropna()
@@ -208,7 +209,7 @@ class API(object):
     def list_metrics(self, project_id, next_token=None, dimensions=None,
                      metric_name=None, namespace=None):
         """
-        입력받은 조건과 일치하는 메트릭의 리스트를 반환한다.
+        return list of metrics
         """
         metrics = self.cass.list_metrics(project_id, namespace, metric_name,
                                          dimensions, next_token)
@@ -263,7 +264,7 @@ class API(object):
     def put_metric_data(self, project_id, namespace, metric_name, dimensions,
                         value, unit, timestamp, is_admin=False):
         """
-        metric data 를 입력받아 MQ 에 넣고 값이 빈 dictionary 를 반환한다.        
+        put metric data
         """
         admin_namespace = FLAGS.get('admin_namespace')
         if namespace.startswith(admin_namespace) and not is_admin:

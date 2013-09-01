@@ -20,11 +20,19 @@
 import glob
 import os
 
+from setuptools.command import sdist
 from setuptools import find_packages
 from setuptools import setup
 from synaps import version
 
-synaps_cmdclass = {}
+class local_sdist(sdist.sdist):
+    """Customized sdist hook - builds the ChangeLog file from VC first."""
+    def run(self):
+        common_setup.write_git_changelog()
+        # sdist.sdist is an old style class, can't user super()
+        sdist.sdist.run(self)
+
+synaps_cmdclass = {'sdist': local_sdist}
 
 def find_data_files(destdir, srcdir):
     package_data = []
@@ -39,17 +47,17 @@ def find_data_files(destdir, srcdir):
     return package_data
 
 try: 
-    from sphinx.setup_command import BuildDoc
+    from sphinx import setup_command
 
-    class local_BuildDoc(BuildDoc):
+    class local_BuildDoc(setup_command.BuildDoc):
         def run(self):
-            for builder in ['html', 'man']:
+            for builder in ['html', 'man', 'latex']:
                 self.builder = builder
                 self.finalize_options()
-                BuildDoc.run(self)
+                setup_command.BuildDoc.run(self)
     synaps_cmdclass['build_sphinx'] = local_BuildDoc
 
-except:
+except Exception:
     pass
 
 setup(

@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
 # Copyright (c) 2012 Samsung SDS Co., LTD
@@ -280,10 +279,9 @@ class ShortCase(SynapsTestCase):
         
     def test_list_metrics(self):
         """
-        본 테스트 케이스는 list_metrics API를 검증하기 위한 것으로, 메트릭을 
-        하나 입력하고, 해당하는 메트릭이 조회되는지 여부를 확인한다.
+        put a metric data and check if it can be searched.
         """
-        # 메트릭 입력        
+        # input metric
         ret = self.synaps.put_metric_data(
             namespace=self.namespace, name=self.metric_name,
             value=55.25, unit="Percent", dimensions=self.dimensions,
@@ -291,7 +289,7 @@ class ShortCase(SynapsTestCase):
         )
         self.assertTrue(ret)
 
-        # 메트릭 조회
+        # list metric
         ret = self.synaps.list_metrics(
             dimensions=self.dimensions,
             metric_name=self.metric_name,
@@ -302,7 +300,7 @@ class ShortCase(SynapsTestCase):
     def test_list_numeric(self):
         
         try:
-            # 메트릭 네임에 숫자가 들어갈 경우 에러가 발생하는지를 검사.
+            # check when the metric name contains None value
             ret = self.synaps.list_metrics(
                 dimensions=None,
                 metric_name=None,
@@ -518,7 +516,8 @@ class ShortCase(SynapsTestCase):
         
     def test_alarm_period(self):
         
-        # 알람을 생성, MAX_START_PERIOD 를 6000 으로 증가시키는지 테스트.
+        # Create an alarm and the check if it increase the MAX_START_PERIOD to
+        # 6000
         alarm = MetricAlarm(name="Test_Alarm_Period", metric=self.metric_name,
                             namespace=self.namespace, statistic="Average",
                             comparison=">", threshold=50.0, period=6000,
@@ -528,8 +527,7 @@ class ShortCase(SynapsTestCase):
                             ok_actions=None)
         self.synaps.put_metric_alarm(alarm)
         
-        # 메트릭의 TimeStamp가 TTL 범위(15일 이내) 를 벗어난 데이터일 경우,
-        # DB 에 저장하지 않고 무시하는지 여부를 테스트.
+        # When metric with stale timestamp is inputted, it should be ignored 
         td = timedelta(days=20, seconds=1) 
         
         ret1 = self.synaps.put_metric_data(
@@ -537,9 +535,9 @@ class ShortCase(SynapsTestCase):
             value=10, unit="Percent", dimensions=self.dimensions,
             timestamp=datetime.datetime.utcnow() - td
         )
-        
-        # 메트릭의 TimeStamp가 TTL 이내이나 MAX_START_PERIOD 범위 외인 경우,
-        # DB에서 해당 time index 를 찾아와 데이터를 입력하는지를 테스트.        
+       
+        # When the timestamp of metric is in range of ttl but not in the memory,
+        # it should be read from database.
         td2 = timedelta(seconds=7200) 
     
         ret2 = self.synaps.put_metric_data(
@@ -549,9 +547,9 @@ class ShortCase(SynapsTestCase):
         )
         
         self.assertTrue(ret2)
-             
-        # TimeStamp가 현재인 메트릭 입력하여
-        # 정상적으로 DB 및 Memory에 입력되는지를 테스트. 
+        
+        # When the timestamp of metric is now, it shuld be inputted in db and 
+        # memory     
         td3 = timedelta(seconds=5400) 
         
         ret3 = self.synaps.put_metric_data(
@@ -562,13 +560,11 @@ class ShortCase(SynapsTestCase):
        
         self.assertTrue(ret3)
         
-        # 위의 알람을 지웠을 경우 MAX_START_PERIOD 가 갱신되는지를 테스트.
+        # When the alarm above is deleted, in memory window will be updated. 
         alarmnames = ["Test_Alarm_Period"]
         for alarm in alarmnames:
             self.synaps.delete_alarms(alarms=[alarm])
         
-        # MAX_START_PERIOD 가 변경된 이후 
-        # 메트릭 입력이 정상적으로 진행되는지를 테스트.
         td4 = timedelta(seconds=2000)  
         
         ret4 = self.synaps.put_metric_data(
@@ -582,13 +578,15 @@ class ShortCase(SynapsTestCase):
                 
     def test_put_metric_data(self):
         """
-        본 테스트 케이스는 put_metric_data API 및 get_metric_statistics API를 
-        검증하기 위한 것으로, 메트릭(metric1)을 하나 입력 후, `ASYNC_WAIT` 초 
-        sleep 후 통계 데이터(stat1) 요청하고 메트릭(metric2)을 하나 더 입력 후, 
-        `ASYNC_WAIT` 초 sleep 후 통계 데이터(stat2)를 다시 요청한다.
-        
-        stat1과 stat2의 SampleCount 차이는 1이 되어야하며, stat1['Sum']은 
-        metric2 value + stat2['Sum']과 같아야한다.
+        This case is for verify put_metric_data API and get_metric_statistics
+        API.
+
+        Input a metric data(metric1), after `ASYNC_WAIT` sec, get statistics
+        (stat1) and then input another metric data(metric2). And after 
+        `AYNC_WAIT` sec waiting, get another statistics data(stat2).
+
+        Now, stat1 should be bigger than stat2 by 1, and sta1['Sum'] should
+        be metric2 value + stat2['Sum'}.
         """
         metric_name = self.generate_random_name("TestMetric_")
         now = datetime.datetime.utcnow()        
@@ -596,7 +594,7 @@ class ShortCase(SynapsTestCase):
         start_time = now - datetime.timedelta(hours=0.25)
         end_time = now
 
-        # 메트릭 입력
+        # input metric data(metric1)
         ret = self.synaps.put_metric_data(
             namespace=self.namespace, name=metric_name,
             value=55.25, unit="Percent", dimensions=self.dimensions,
@@ -606,7 +604,7 @@ class ShortCase(SynapsTestCase):
 
         time.sleep(ASYNC_WAIT)
         
-        # 메트릭 입력 전 통계자료 조회
+        # get statistics data(stat1)
         before_stat = self.synaps.get_metric_statistics(
             period=300, start_time=start_time, end_time=end_time,
             metric_name=metric_name, namespace=self.namespace,
@@ -617,7 +615,7 @@ class ShortCase(SynapsTestCase):
         test_value = random.random() * 100
         
         
-        # 메트릭 입력        
+        # input metric data(metric2)
         ret = self.synaps.put_metric_data(
             namespace=self.namespace, name=metric_name,
             value=test_value, unit="Percent", dimensions=self.dimensions,
@@ -625,7 +623,7 @@ class ShortCase(SynapsTestCase):
         )
         self.assertTrue(ret)
 
-        # 메트릭 입력 후 통계자료 조회 (비동기 메시지가 처리되는 동안 대기 후)
+        # get statistics data(stat2)
         time.sleep(ASYNC_WAIT)
         after_stat = self.synaps.get_metric_statistics(
             period=300, start_time=start_time, end_time=end_time,
