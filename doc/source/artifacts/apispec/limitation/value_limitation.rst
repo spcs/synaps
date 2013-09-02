@@ -11,7 +11,7 @@ Parameters
 Following is contents of this data type.
 
 .. list-table:: 
-   :widths: 30 15 15 40
+   :widths: 20 10 10 40
    :header-rows: 1
 
    * - Name

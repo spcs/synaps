@@ -30,7 +30,7 @@ Artifacts
     artifacts/general.installation.guide.rst
     artifacts/operatormanual.rst
     artifacts/developersguide.rst
-    
+
 Indices
 -------
     

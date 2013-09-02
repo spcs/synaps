@@ -32,8 +32,8 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx',
 
 # autodoc generation is a bit aggressive and a nuisance when doing heavy text edit cycles.
 # execute "export SPHINX_DEBUG=1" in your terminal to disable
-#if not os.getenv('SPHINX_DEBUG'):
-#    extensions += ['ext.synaps_autodoc']
+if not os.getenv('SPHINX_DEBUG'):
+    extensions += ['ext.synaps_autodoc']
 
 todo_include_todos = True
 

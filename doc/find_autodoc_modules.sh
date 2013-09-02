@@ -1,10 +1,10 @@
 #!/bin/bash
 
-SYNAPS_DIR='../synaps/' # include trailing slash
+SYNAPS_DIR='synaps/' # include trailing slash
 DOCS_DIR='source'
 
 modules=''
-for x in `find ${SYNAPS_DIR} -name '*.py'`; do
+for x in `find ${SYNAPS_DIR} -name '*.py' | grep -v synaps/tests`; do
     if [ `basename ${x} .py` == "__init__" ] ; then
         continue
     fi

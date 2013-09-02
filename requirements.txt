@@ -19,3 +19,5 @@ memcache
 numpy
 mysqldb
 boto
+six
+iso8601
