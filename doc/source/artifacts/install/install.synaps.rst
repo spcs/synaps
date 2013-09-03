@@ -25,6 +25,8 @@ You will need python packages listed below.
 * pycrypto
 * pika-0.9.6
 * boto-2.5.2
+* six
+* iso8601
 
 Following is a pre-installation example for Ubuntu 12.04.
 
@@ -35,7 +37,7 @@ Following is a pre-installation example for Ubuntu 12.04.
    sudo apt-get install python-setuptools python-eventlet python-pastedeploy 
    sudo apt-get install git python-gflags python-netaddr python-memcache
    sudo apt-get install python-numpy python-webob python-ldap
-   sudo apt-get install python-mysqldb
+   sudo apt-get install python-mysqldb python-six python-iso8601
    
    # download 3rd-party packages
    mkdir /tmp/packages
@@ -141,43 +143,48 @@ Next, you'll need to create "api-paste.ini" like below for setting up the WSGI
 pipeline. 
 
 .. code-block:: bash
+
+  ##############
+  # CloudWatch #
+  ##############
+
+  [composite:cloudwatch]
+  use = egg:Paste#urlmap
+  /monitor: cloudwatch_api_v1
   
-   ##############
-   # CloudWatch #
-   ##############
-   
-   [composite:cloudwatch]
-   use = egg:Paste#urlmap
-   /monitor: cloudwatch_api_v1
-   
-   [pipeline:cloudwatch_api_v1]
-   pipeline = fault_wrap log_request no_auth monitor_request authorizer cloudwatch_executor
-   #pipeline = fault_wrap log_request authenticate monitor_request authorizer cloudwatch_executor
-   
-   [filter:fault_wrap]
-   paste.filter_factory = synaps.api.cloudwatch:FaultWrapper.factory
-   
-   [filter:log_request]
-   paste.filter_factory = synaps.api.cloudwatch:RequestLogging.factory
-   
-   [filter:no_auth]
-   paste.filter_factory = synaps.api.cloudwatch:NoAuth.factory
-   
-   [filter:authenticate]
-   paste.filter_factory = synaps.api.cloudwatch:Authenticate.factory
-   
-   [filter:monitor_request]
-   controller = synaps.api.cloudwatch.monitor.MonitorController
-   paste.filter_factory = synaps.api.cloudwatch:Requestify.factory
-   
-   [filter:authorizer]
-   paste.filter_factory = synaps.api.cloudwatch:Authorizer.factory
-   
-   [app:cloudwatch_executor]
-   paste.app_factory = synaps.api.cloudwatch:Executor.factory
+  [pipeline:cloudwatch_api_v1]
+  #  pipeline = fault_wrap log_request no_auth monitor_request authorizer cloudwatch_executor
+  #pipeline = fault_wrap log_request authenticate monitor_request authorizer cloudwatch_executor
+  pipeline = fault_wrap log_request ec2keystoneauth monitor_request authorizer cloudwatch_executor
+    
+  [filter:fault_wrap]
+  paste.filter_factory = synaps.api.cloudwatch:FaultWrapper.factory
+    
+  [filter:log_request]
+  paste.filter_factory = synaps.api.cloudwatch:RequestLogging.factory
+  
+  [filter:no_auth]
+  paste.filter_factory = synaps.api.cloudwatch:NoAuth.factory
+  
+  [filter:authenticate]
+  paste.filter_factory = synaps.api.cloudwatch:Authenticate.factory
+  
+  [filter:ec2keystoneauth]
+  paste.filter_factory = synaps.api.cloudwatch:EC2KeystoneAuth.factory
+  
+  [filter:monitor_request]
+  controller = synaps.api.cloudwatch.monitor.MonitorController
+  paste.filter_factory = synaps.api.cloudwatch:Requestify.factory
+
+  [filter:authorizer]
+  paste.filter_factory = synaps.api.cloudwatch:Authorizer.factory
+
+  [app:cloudwatch_executor]
+  paste.app_factory = synaps.api.cloudwatch:Executor.factory
 
 You need to make directory for log file. Default path is "/var/log/synaps".
 
 .. code-block:: bash
 
    sudo mkdir /var/log/synaps
+

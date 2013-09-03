@@ -20,18 +20,18 @@ This instruction describes how to install Synaps.
 Installaton Example
 -------------------
     
-Below image is an example of Synaps deployment.
+This is an example of Synaps deployment.
 
 .. image:: ../images/diagrams/SynapsDeployment.jpg
    :width: 100%
 
-For Synaps Frontend cluster(api01 ~ nn),
+For Synaps Frontend cluster(api01..nn),
 
 * :ref:`preinstall.common`
 * :ref:`install.synaps`
 * :ref:`postinstall.frontend` 
 
-For Synaps Backend cluster(synaps01 ~ nn), 
+For Synaps Backend cluster(synaps01..nn), 
 
 * :ref:`preinstall.common`
 * :ref:`install.synaps`
