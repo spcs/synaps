@@ -40,7 +40,7 @@ class ApiSpout(Spout):
             try:
                 self._connect()
             except (AMQPConnectionError, AMQPChannelError):
-                self.log("AMQP Connection Error. Retry in 3 seconds.")
+                LOG.warn("AMQP Connection Error. Retry in 3 seconds.")
                 time.sleep(3)            
             else:
                 break
