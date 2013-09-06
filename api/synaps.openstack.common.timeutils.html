@@ -1,0 +1,242 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The synaps.openstack.common.timeutils Module &mdash; synaps 2013.2.rc2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2013.2.rc2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps 2013.2.rc2 documentation" href="../index.html" />
+    <link rel="up" title="&lt;no title&gt;" href="autoindex.html" />
+    <link rel="next" title="The synaps.service Module" href="synaps.service.html" />
+    <link rel="prev" title="The synaps.openstack.common.jsonutils Module" href="synaps.openstack.common.jsonutils.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-synaps.openstack.common.timeutils">
+<span id="the-synaps-openstack-common-timeutils-module"></span><h1>The <a class="reference internal" href="#module-synaps.openstack.common.timeutils" title="synaps.openstack.common.timeutils"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.openstack.common.timeutils</span></tt></a> Module<a class="headerlink" href="#module-synaps.openstack.common.timeutils" title="Permalink to this headline">¶</a></h1>
+<p>Time related utilities and helper functions.</p>
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.advance_time_delta">
+<tt class="descname">advance_time_delta</tt><big>(</big><em>timedelta</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.advance_time_delta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Advance overridden time using a datetime.timedelta.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.advance_time_seconds">
+<tt class="descname">advance_time_seconds</tt><big>(</big><em>seconds</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.advance_time_seconds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Advance overridden time by seconds.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.clear_time_override">
+<tt class="descname">clear_time_override</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.clear_time_override" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the overridden time.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.delta_seconds">
+<tt class="descname">delta_seconds</tt><big>(</big><em>before</em>, <em>after</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.delta_seconds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the difference between two timing objects.</p>
+<p>Compute the difference in seconds between two date, time, or
+datetime objects (as a float, to microsecond resolution).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.is_newer_than">
+<tt class="descname">is_newer_than</tt><big>(</big><em>after</em>, <em>seconds</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.is_newer_than" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if after is newer than seconds.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.is_older_than">
+<tt class="descname">is_older_than</tt><big>(</big><em>before</em>, <em>seconds</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.is_older_than" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if before is older than seconds.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.is_soon">
+<tt class="descname">is_soon</tt><big>(</big><em>dt</em>, <em>window</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.is_soon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if time is going to happen in the next window seconds.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params dt:</th><td class="field-body">the time</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params window:</th><td class="field-body">minimum seconds to remain to consider the time not soon</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if expiration is within the given duration</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.iso8601_from_timestamp">
+<tt class="descname">iso8601_from_timestamp</tt><big>(</big><em>timestamp</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.iso8601_from_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a iso8601 formated date from timestamp.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.isotime">
+<tt class="descname">isotime</tt><big>(</big><em>at=None</em>, <em>subsecond=False</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.isotime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stringify time in ISO 8601 format.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.marshall_now">
+<tt class="descname">marshall_now</tt><big>(</big><em>now=None</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.marshall_now" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an rpc-safe datetime with microseconds.</p>
+<p>Note: tzinfo is stripped, but not required for relative times.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.normalize_time">
+<tt class="descname">normalize_time</tt><big>(</big><em>timestamp</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.normalize_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize time in arbitrary timezone to UTC naive object.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.parse_isotime">
+<tt class="descname">parse_isotime</tt><big>(</big><em>timestr</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.parse_isotime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse time from ISO 8601 format.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.parse_strtime">
+<tt class="descname">parse_strtime</tt><big>(</big><em>timestr</em>, <em>fmt='%Y-%m-%dT%H:%M:%S.%f'</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.parse_strtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn a formatted time back into a datetime.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.set_time_override">
+<tt class="descname">set_time_override</tt><big>(</big><em>override_time=datetime.datetime(2013</em>, <em>9</em>, <em>6</em>, <em>14</em>, <em>10</em>, <em>47</em>, <em>715005)</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.set_time_override" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrides utils.utcnow.</p>
+<p>Make it return a constant time or a list thereof, one at a time.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.strtime">
+<tt class="descname">strtime</tt><big>(</big><em>at=None</em>, <em>fmt='%Y-%m-%dT%H:%M:%S.%f'</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.strtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns formatted utcnow.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.unmarshall_time">
+<tt class="descname">unmarshall_time</tt><big>(</big><em>tyme</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.unmarshall_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unmarshall a datetime dict.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.utcnow">
+<tt class="descname">utcnow</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.utcnow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overridable version of utils.utcnow.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.timeutils.utcnow_ts">
+<tt class="descname">utcnow_ts</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.openstack.common.timeutils.utcnow_ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Timestamp version of our utcnow function.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="synaps.openstack.common.jsonutils.html"
+                                  title="previous chapter">The <tt class="docutils literal docutils literal docutils literal"><span class="pre">synaps.openstack.common.jsonutils</span></tt> Module</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="synaps.service.html"
+                                  title="next chapter">The <tt class="docutils literal"><span class="pre">synaps.service</span></tt> Module</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/api/synaps.openstack.common.timeutils.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="synaps.service.html" title="The synaps.service Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="synaps.openstack.common.jsonutils.html" title="The synaps.openstack.common.jsonutils Module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">synaps 2013.2.rc2 documentation</a> &raquo;</li>
+          <li><a href="autoindex.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Sun Sep 1 23:55:50 2013, commit 3b44714.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

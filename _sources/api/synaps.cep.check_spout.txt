@@ -1,7 +1,7 @@
-The :mod:`synaps.auth.ldapdriver` Module
+The :mod:`synaps.cep.check_spout` Module
 =========================================
 
-.. automodule:: synaps.auth.ldapdriver
+.. automodule:: synaps.cep.check_spout
   :members:
   :undoc-members:
   :show-inheritance:

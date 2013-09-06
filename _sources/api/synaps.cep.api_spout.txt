@@ -1,7 +1,7 @@
-The :mod:`synaps.auth.fakeldap` Module
+The :mod:`synaps.cep.api_spout` Module
 =======================================
 
-.. automodule:: synaps.auth.fakeldap
+.. automodule:: synaps.cep.api_spout
   :members:
   :undoc-members:
   :show-inheritance:

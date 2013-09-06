@@ -1,0 +1,7 @@
+The :mod:`synaps.openstack.common.timeutils` Module
+====================================================
+
+.. automodule:: synaps.openstack.common.timeutils
+  :members:
+  :undoc-members:
+  :show-inheritance:

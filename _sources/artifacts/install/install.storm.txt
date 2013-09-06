@@ -69,11 +69,11 @@ Install Storm as below.
 .. code-block:: bash
 
    # install storm
-   wget https://github.com/downloads/nathanmarz/storm/storm-0.8.1.zip
-   mv storm-0.8.1.zip /SW
+   wget https://dl.dropbox.com/u/133901206/storm-0.8.2.zip
+   mv storm-0.8.2.zip /SW
    cd /SW
-   unzip storm-0.8.1
-   ln -s /SW/storm-0.8.1 storm
+   unzip storm-0.8.2
+   ln -s /SW/storm-0.8.2 storm
    mkdir ~/.storm
    chmod 777 ~/.storm
    ln -s /SW/storm/bin/storm /bin/storm
@@ -143,12 +143,12 @@ to set up more slots for storm worker, you should assign more ports.
      - 6719
    
    supervisor.childopts: "-Xmx1024m -Djava.net.preferIPv4Stack=true"
+   topology.enable.message.timeouts: false
 
-then copy the file to ~/.storm directory also.
+and should make dhcp3 directory
 
 .. code-block:: bash
 
-   cp /SW/storm/conf/storm.yaml ~/.storm/
    mkdir /var/lib/dhcp3/
   
 .. NOTE::

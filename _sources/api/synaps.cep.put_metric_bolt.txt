@@ -1,0 +1,7 @@
+The :mod:`synaps.cep.put_metric_bolt` Module
+=============================================
+
+.. automodule:: synaps.cep.put_metric_bolt
+  :members:
+  :undoc-members:
+  :show-inheritance:

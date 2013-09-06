@@ -1,7 +1,7 @@
-The :mod:`synaps.exception` Module
+The :mod:`synaps.cep.storm` Module
 ===================================
 
-.. automodule:: synaps.exception
+.. automodule:: synaps.cep.storm
   :members:
   :undoc-members:
   :show-inheritance:

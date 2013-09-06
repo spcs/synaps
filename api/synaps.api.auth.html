@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>The synaps.api.auth Module &mdash; synaps 2013.1.2a-dev documentation</title>
+    <title>The synaps.api.auth Module &mdash; synaps 2013.2.rc2 documentation</title>
     
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '2013.1.2a-dev',
+        VERSION:     '2013.2.rc2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,10 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps 2013.1.2a-dev documentation" href="../index.html" /> 
+    <link rel="top" title="synaps 2013.2.rc2 documentation" href="../index.html" />
+    <link rel="up" title="&lt;no title&gt;" href="autoindex.html" />
+    <link rel="next" title="The synaps.api.cloudwatch.apirequest Module" href="synaps.api.cloudwatch.apirequest.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="autoindex.html" /> 
   </head>
   <body>
   <div id="header">
@@ -48,8 +51,23 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="the-synaps-api-auth-module">
-<h1>The <tt class="xref py py-mod docutils literal"><span class="pre">synaps.api.auth</span></tt> Module<a class="headerlink" href="#the-synaps-api-auth-module" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-synaps.api.auth">
+<span id="the-synaps-api-auth-module"></span><h1>The <a class="reference internal" href="#module-synaps.api.auth" title="synaps.api.auth"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.api.auth</span></tt></a> Module<a class="headerlink" href="#module-synaps.api.auth" title="Permalink to this headline">¶</a></h1>
+<p>Common Auth Middleware.</p>
+<dl class="class">
+<dt id="synaps.api.auth.InjectContext">
+<em class="property">class </em><tt class="descname">InjectContext</tt><big>(</big><em>context</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.api.auth.InjectContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="synaps.wsgi.html#synaps.wsgi.Middleware" title="synaps.wsgi.Middleware"><tt class="xref py py-class docutils literal"><span class="pre">synaps.wsgi.Middleware</span></tt></a></p>
+<p>Add a &#8216;synaps.context&#8217; to WSGI environ.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.api.auth.SynapsKeystoneContext">
+<em class="property">class </em><tt class="descname">SynapsKeystoneContext</tt><big>(</big><em>application</em><big>)</big><a class="headerlink" href="#synaps.api.auth.SynapsKeystoneContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="synaps.wsgi.html#synaps.wsgi.Middleware" title="synaps.wsgi.Middleware"><tt class="xref py py-class docutils literal"><span class="pre">synaps.wsgi.Middleware</span></tt></a></p>
+<p>Make a request context from keystone headers</p>
+</dd></dl>
+
 </div>
 
 
@@ -58,6 +76,12 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="autoindex.html"
+                                  title="previous chapter">&lt;no title&gt;</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="synaps.api.cloudwatch.apirequest.html"
+                                  title="next chapter">The <tt class="docutils literal"><span class="pre">synaps.api.cloudwatch.apirequest</span></tt> Module</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="../_sources/api/synaps.api.auth.txt"
@@ -89,12 +113,19 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">synaps 2013.1.2a-dev documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="synaps.api.cloudwatch.apirequest.html" title="The synaps.api.cloudwatch.apirequest Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="autoindex.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">synaps 2013.2.rc2 documentation</a> &raquo;</li>
+          <li><a href="autoindex.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Fri Mar 15 14:16:32 2013, commit 2a4e400.
+      Last updated on Sun Sep 1 23:55:50 2013, commit 3b44714.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

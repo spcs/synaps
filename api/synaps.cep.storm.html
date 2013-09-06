@@ -1,0 +1,281 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The synaps.cep.storm Module &mdash; synaps 2013.2.rc2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2013.2.rc2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps 2013.2.rc2 documentation" href="../index.html" />
+    <link rel="up" title="&lt;no title&gt;" href="autoindex.html" />
+    <link rel="next" title="The synaps.cep.unpack_bolt Module" href="synaps.cep.unpack_bolt.html" />
+    <link rel="prev" title="The synaps.cep.put_metric_bolt Module" href="synaps.cep.put_metric_bolt.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-synaps.cep.storm">
+<span id="the-synaps-cep-storm-module"></span><h1>The <a class="reference internal" href="#module-synaps.cep.storm" title="synaps.cep.storm"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.cep.storm</span></tt></a> Module<a class="headerlink" href="#module-synaps.cep.storm" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="synaps.cep.storm.BasicBolt">
+<em class="property">class </em><tt class="descname">BasicBolt</tt><a class="headerlink" href="#synaps.cep.storm.BasicBolt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="synaps.cep.storm.BasicBolt.initialize">
+<tt class="descname">initialize</tt><big>(</big><em>stormconf</em>, <em>context</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.BasicBolt.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.storm.BasicBolt.process">
+<tt class="descname">process</tt><big>(</big><em>tuple</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.BasicBolt.process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.storm.BasicBolt.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.cep.storm.BasicBolt.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.cep.storm.Bolt">
+<em class="property">class </em><tt class="descname">Bolt</tt><a class="headerlink" href="#synaps.cep.storm.Bolt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="synaps.cep.storm.Bolt.initialize">
+<tt class="descname">initialize</tt><big>(</big><em>stormconf</em>, <em>context</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.Bolt.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.storm.Bolt.process">
+<tt class="descname">process</tt><big>(</big><em>tuple</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.Bolt.process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.storm.Bolt.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.cep.storm.Bolt.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.cep.storm.Spout">
+<em class="property">class </em><tt class="descname">Spout</tt><a class="headerlink" href="#synaps.cep.storm.Spout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="synaps.cep.storm.Spout.ack">
+<tt class="descname">ack</tt><big>(</big><em>id</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.Spout.ack" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.storm.Spout.fail">
+<tt class="descname">fail</tt><big>(</big><em>id</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.Spout.fail" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.storm.Spout.initialize">
+<tt class="descname">initialize</tt><big>(</big><em>conf</em>, <em>context</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.Spout.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.storm.Spout.nextTuple">
+<tt class="descname">nextTuple</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.cep.storm.Spout.nextTuple" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.storm.Spout.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.cep.storm.Spout.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="synaps.cep.storm.Tuple">
+<em class="property">class </em><tt class="descname">Tuple</tt><big>(</big><em>id</em>, <em>component</em>, <em>stream</em>, <em>task</em>, <em>values</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.Tuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.ack">
+<tt class="descname">ack</tt><big>(</big><em>tup</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.ack" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.emit">
+<tt class="descname">emit</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.emit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.emitBolt">
+<tt class="descname">emitBolt</tt><big>(</big><em>tup</em>, <em>stream=None</em>, <em>anchors=</em><span class="optional">[</span><span class="optional">]</span>, <em>directTask=None</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.emitBolt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.emitDirect">
+<tt class="descname">emitDirect</tt><big>(</big><em>task</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.emitDirect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.emitSpout">
+<tt class="descname">emitSpout</tt><big>(</big><em>tup</em>, <em>stream=None</em>, <em>id=None</em>, <em>directTask=None</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.emitSpout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.fail">
+<tt class="descname">fail</tt><big>(</big><em>tup</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.fail" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.initComponent">
+<tt class="descname">initComponent</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.cep.storm.initComponent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.json_decode">
+<tt class="descname">json_decode</tt><big>(</big><em>x</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.json_decode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.json_encode">
+<tt class="descname">json_encode</tt><big>(</big><em>x</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.json_encode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.log">
+<tt class="descname">log</tt><big>(</big><em>msg</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.readCommand">
+<tt class="descname">readCommand</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.cep.storm.readCommand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.readMsg">
+<tt class="descname">readMsg</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.cep.storm.readMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.readTaskIds">
+<tt class="descname">readTaskIds</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.cep.storm.readTaskIds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.readTuple">
+<tt class="descname">readTuple</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.cep.storm.readTuple" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.sendMsgToParent">
+<tt class="descname">sendMsgToParent</tt><big>(</big><em>msg</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.sendMsgToParent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.sendpid">
+<tt class="descname">sendpid</tt><big>(</big><em>heartbeatdir</em><big>)</big><a class="headerlink" href="#synaps.cep.storm.sendpid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.cep.storm.sync">
+<tt class="descname">sync</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.cep.storm.sync" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="synaps.cep.put_metric_bolt.html"
+                                  title="previous chapter">The <tt class="docutils literal docutils literal docutils literal"><span class="pre">synaps.cep.put_metric_bolt</span></tt> Module</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="synaps.cep.unpack_bolt.html"
+                                  title="next chapter">The <tt class="docutils literal"><span class="pre">synaps.cep.unpack_bolt</span></tt> Module</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/api/synaps.cep.storm.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="synaps.cep.unpack_bolt.html" title="The synaps.cep.unpack_bolt Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="synaps.cep.put_metric_bolt.html" title="The synaps.cep.put_metric_bolt Module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">synaps 2013.2.rc2 documentation</a> &raquo;</li>
+          <li><a href="autoindex.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Sun Sep 1 23:55:50 2013, commit 3b44714.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

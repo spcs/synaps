@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>The synaps.api.cloudwatch.faults Module &mdash; synaps 2013.2.rc2 documentation</title>
+    <title>The synaps.openstack.common.jsonutils Module &mdash; synaps 2013.2.rc2 documentation</title>
     
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
     <link rel="top" title="synaps 2013.2.rc2 documentation" href="../index.html" />
     <link rel="up" title="&lt;no title&gt;" href="autoindex.html" />
-    <link rel="next" title="The synaps.api.cloudwatch.monitor Module" href="synaps.api.cloudwatch.monitor.html" />
-    <link rel="prev" title="The synaps.api.cloudwatch.cloudwatch2utils Module" href="synaps.api.cloudwatch.cloudwatch2utils.html" /> 
+    <link rel="next" title="The synaps.openstack.common.timeutils Module" href="synaps.openstack.common.timeutils.html" />
+    <link rel="prev" title="The synaps.openstack.common.cfg Module" href="synaps.openstack.common.cfg.html" /> 
   </head>
   <body>
   <div id="header">
@@ -51,19 +51,44 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="module-synaps.api.cloudwatch.faults">
-<span id="the-synaps-api-cloudwatch-faults-module"></span><h1>The <a class="reference internal" href="#module-synaps.api.cloudwatch.faults" title="synaps.api.cloudwatch.faults"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.api.cloudwatch.faults</span></tt></a> Module<a class="headerlink" href="#module-synaps.api.cloudwatch.faults" title="Permalink to this headline">¶</a></h1>
-<dl class="exception">
-<dt id="synaps.api.cloudwatch.faults.Fault">
-<em class="property">exception </em><tt class="descname">Fault</tt><big>(</big><em>exception</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.faults.Fault" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">webob.exc.HTTPException</span></tt></p>
-<p>Captures exception and return REST Response.</p>
-</dd></dl>
+  <div class="section" id="module-synaps.openstack.common.jsonutils">
+<span id="the-synaps-openstack-common-jsonutils-module"></span><h1>The <a class="reference internal" href="#module-synaps.openstack.common.jsonutils" title="synaps.openstack.common.jsonutils"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.openstack.common.jsonutils</span></tt></a> Module<a class="headerlink" href="#module-synaps.openstack.common.jsonutils" title="Permalink to this headline">¶</a></h1>
+<p>JSON related utilities.</p>
+<p>This module provides a few things:</p>
+<blockquote>
+<div><p>1) A handy function for getting an object down to something that can be
+JSON serialized.  See to_primitive().</p>
+<p>2) Wrappers around loads() and dumps().  The dumps() wrapper will
+automatically use to_primitive() for you if needed.</p>
+<p>3) This sets up anyjson to use the loads() and dumps() wrappers if anyjson
+is available.</p>
+</div></blockquote>
+<dl class="function">
+<dt id="synaps.openstack.common.jsonutils.dumps">
+<tt class="descname">dumps</tt><big>(</big><em>value</em>, <em>default=&lt;function to_primitive at 0x3ca4668&gt;</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.jsonutils.dumps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
-<dt id="synaps.api.cloudwatch.faults.ec2_error_response">
-<tt class="descname">ec2_error_response</tt><big>(</big><em>request_id</em>, <em>code</em>, <em>message</em>, <em>status=500</em><big>)</big><a class="headerlink" href="#synaps.api.cloudwatch.faults.ec2_error_response" title="Permalink to this definition">¶</a></dt>
-<dd><p>Helper to construct an EC2 compatible error reposne.</p>
+<dt id="synaps.openstack.common.jsonutils.load">
+<tt class="descname">load</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.jsonutils.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.jsonutils.loads">
+<tt class="descname">loads</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.jsonutils.loads" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.openstack.common.jsonutils.to_primitive">
+<tt class="descname">to_primitive</tt><big>(</big><em>value</em>, <em>convert_instances=False</em>, <em>convert_datetime=True</em>, <em>level=0</em>, <em>max_depth=3</em><big>)</big><a class="headerlink" href="#synaps.openstack.common.jsonutils.to_primitive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a complex object into primitives.</p>
+<p>Handy for JSON serialization. We can optionally handle instances,
+but since this is a recursive function, we could have cyclical
+data structures.</p>
+<p>To handle cyclical data structures we could track the actual objects
+visited in a set, but not all objects are hashable. Instead we just
+track the depth of the object inspections and don&#8217;t go too deep.</p>
+<p>Therefore, convert_instances=True is lossy ... be aware.</p>
 </dd></dl>
 
 </div>
@@ -75,14 +100,14 @@
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
             <h4>Previous topic</h4>
-            <p class="topless"><a href="synaps.api.cloudwatch.cloudwatch2utils.html"
-                                  title="previous chapter">The <tt class="docutils literal docutils literal docutils literal"><span class="pre">synaps.api.cloudwatch.cloudwatch2utils</span></tt> Module</a></p>
+            <p class="topless"><a href="synaps.openstack.common.cfg.html"
+                                  title="previous chapter">The <tt class="docutils literal docutils literal docutils literal"><span class="pre">synaps.openstack.common.cfg</span></tt> Module</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="synaps.api.cloudwatch.monitor.html"
-                                  title="next chapter">The <tt class="docutils literal"><span class="pre">synaps.api.cloudwatch.monitor</span></tt> Module</a></p>
+            <p class="topless"><a href="synaps.openstack.common.timeutils.html"
+                                  title="next chapter">The <tt class="docutils literal"><span class="pre">synaps.openstack.common.timeutils</span></tt> Module</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
-              <li><a href="../_sources/api/synaps.api.cloudwatch.faults.txt"
+              <li><a href="../_sources/api/synaps.openstack.common.jsonutils.txt"
                      rel="nofollow">Show Source</a></li>
             </ul>
           <div id="searchbox" style="display: none">
@@ -112,10 +137,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="synaps.api.cloudwatch.monitor.html" title="The synaps.api.cloudwatch.monitor Module"
+          <a href="synaps.openstack.common.timeutils.html" title="The synaps.openstack.common.timeutils Module"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="synaps.api.cloudwatch.cloudwatch2utils.html" title="The synaps.api.cloudwatch.cloudwatch2utils Module"
+          <a href="synaps.openstack.common.cfg.html" title="The synaps.openstack.common.cfg Module"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">synaps 2013.2.rc2 documentation</a> &raquo;</li>
           <li><a href="autoindex.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 

@@ -1,0 +1,187 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The synaps.cep.action_bolt Module &mdash; synaps 2013.2.rc2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/tweaks.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2013.2.rc2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps 2013.2.rc2 documentation" href="../index.html" />
+    <link rel="up" title="&lt;no title&gt;" href="autoindex.html" />
+    <link rel="next" title="The synaps.cep.api_spout Module" href="synaps.cep.api_spout.html" />
+    <link rel="prev" title="The synaps.auth.signer Module" href="synaps.auth.signer.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-synaps.cep.action_bolt">
+<span id="the-synaps-cep-action-bolt-module"></span><h1>The <a class="reference internal" href="#module-synaps.cep.action_bolt" title="synaps.cep.action_bolt"><tt class="xref py py-mod docutils literal"><span class="pre">synaps.cep.action_bolt</span></tt></a> Module<a class="headerlink" href="#module-synaps.cep.action_bolt" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="synaps.cep.action_bolt.ActionBolt">
+<em class="property">class </em><tt class="descname">ActionBolt</tt><a class="headerlink" href="#synaps.cep.action_bolt.ActionBolt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="synaps.cep.storm.html#synaps.cep.storm.BasicBolt" title="synaps.cep.storm.BasicBolt"><tt class="xref py py-class docutils literal"><span class="pre">synaps.cep.storm.BasicBolt</span></tt></a></p>
+<p>This bolt is one of building block of synaps topology.</p>
+<p>It receives alarm action messages and do the actions, sending SMS or Email.</p>
+<dl class="attribute">
+<dt id="synaps.cep.action_bolt.ActionBolt.BOLT_NAME">
+<tt class="descname">BOLT_NAME</tt><em class="property"> = 'ActionBolt'</em><a class="headerlink" href="#synaps.cep.action_bolt.ActionBolt.BOLT_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.action_bolt.ActionBolt.alarm_history_state_update">
+<tt class="descname">alarm_history_state_update</tt><big>(</big><em>alarmkey</em>, <em>alarm</em>, <em>notification_message</em><big>)</big><a class="headerlink" href="#synaps.cep.action_bolt.ActionBolt.alarm_history_state_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>update alarm history based on notification message</p>
+<p>..code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">notification_message</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;method&#39;</span><span class="p">:</span> <span class="s">&quot;email&quot;</span><span class="p">,</span>
+    <span class="s">&#39;receivers&#39;</span><span class="p">:</span> <span class="n">email_receivers</span><span class="p">,</span>
+    <span class="s">&#39;subject&#39;</span><span class="p">:</span> <span class="n">message</span><span class="p">[</span><span class="s">&#39;subject&#39;</span><span class="p">],</span>
+    <span class="s">&#39;body&#39;</span><span class="p">:</span> <span class="n">message</span><span class="p">[</span><span class="s">&#39;body&#39;</span><span class="p">],</span>
+    <span class="s">&#39;state&#39;</span><span class="p">:</span> <span class="s">&quot;ok&quot;</span> <span class="o">|</span> <span class="s">&quot;failed&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.action_bolt.ActionBolt.get_action_type">
+<tt class="descname">get_action_type</tt><big>(</big><em>action</em><big>)</big><a class="headerlink" href="#synaps.cep.action_bolt.ActionBolt.get_action_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.action_bolt.ActionBolt.initialize">
+<tt class="descname">initialize</tt><big>(</big><em>stormconf</em>, <em>context</em><big>)</big><a class="headerlink" href="#synaps.cep.action_bolt.ActionBolt.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.action_bolt.ActionBolt.process">
+<tt class="descname">process</tt><big>(</big><em>tup</em><big>)</big><a class="headerlink" href="#synaps.cep.action_bolt.ActionBolt.process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.action_bolt.ActionBolt.process_action">
+<tt class="descname">process_action</tt><big>(</big><em>tup</em><big>)</big><a class="headerlink" href="#synaps.cep.action_bolt.ActionBolt.process_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>message example</p>
+<p>..code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">msg</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;state&#39;</span><span class="p">:</span> <span class="n">new_state</span><span class="p">[</span><span class="s">&#39;stateValue&#39;</span><span class="p">],</span>
+    <span class="s">&#39;subject&#39;</span><span class="p">:</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> state has been changed from </span><span class="si">%s</span><span class="s"> to </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> 
+        <span class="p">(</span><span class="n">alarm</span><span class="p">[</span><span class="s">&#39;alarm_name&#39;</span><span class="p">],</span> <span class="n">old_state</span><span class="p">[</span><span class="s">&#39;stateValue&#39;</span><span class="p">],</span>
+         <span class="n">new_state</span><span class="p">[</span><span class="s">&#39;stateValue&#39;</span><span class="p">]),</span>
+    <span class="s">&#39;body&#39;</span><span class="p">:</span> <span class="n">new_state</span><span class="p">[</span><span class="s">&#39;stateReason&#39;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.action_bolt.ActionBolt.send_email">
+<tt class="descname">send_email</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#synaps.cep.action_bolt.ActionBolt.send_email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="synaps.cep.action_bolt.ActionBolt.send_sms">
+<tt class="descname">send_sms</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#synaps.cep.action_bolt.ActionBolt.send_sms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="synaps.auth.signer.html"
+                                  title="previous chapter">The <tt class="docutils literal docutils literal docutils literal"><span class="pre">synaps.auth.signer</span></tt> Module</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="synaps.cep.api_spout.html"
+                                  title="next chapter">The <tt class="docutils literal"><span class="pre">synaps.cep.api_spout</span></tt> Module</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/api/synaps.cep.action_bolt.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="synaps.cep.api_spout.html" title="The synaps.cep.api_spout Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="synaps.auth.signer.html" title="The synaps.auth.signer Module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">synaps 2013.2.rc2 documentation</a> &raquo;</li>
+          <li><a href="autoindex.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Sun Sep 1 23:55:50 2013, commit 3b44714.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
