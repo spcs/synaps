@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Database Model &mdash; synaps 2013.1.2a-dev documentation</title>
+    <title>Database Model &mdash; synaps 2013.2.rc2 documentation</title>
     
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '2013.1.2a-dev',
+        VERSION:     '2013.2.rc2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps 2013.1.2a-dev documentation" href="../index.html" />
+    <link rel="top" title="synaps 2013.2.rc2 documentation" href="../index.html" />
     <link rel="next" title="Application Programming Interface Specification" href="apispec.html" />
     <link rel="prev" title="Program Specification" href="programspec.html" /> 
   </head>
@@ -84,46 +84,43 @@ SuperColumnFamily(StatArchive).</p>
 added as a row.</p>
 <div class="highlight-bash"><div class="highlight"><pre>create column family AlarmHistory
   with <span class="nv">column_type</span> <span class="o">=</span> <span class="s1">&#39;Standard&#39;</span>
-  and <span class="nv">comparator</span> <span class="o">=</span> <span class="s1">&#39;BytesType&#39;</span>
+  and <span class="nv">comparator</span> <span class="o">=</span> <span class="s1">&#39;AsciiType&#39;</span>
   and <span class="nv">default_validation_class</span> <span class="o">=</span> <span class="s1">&#39;BytesType&#39;</span>
   and <span class="nv">key_validation_class</span> <span class="o">=</span> <span class="s1">&#39;LexicalUUIDType&#39;</span>
-  and <span class="nv">rows_cached</span> <span class="o">=</span> 0.0
-  and <span class="nv">row_cache_save_period</span> <span class="o">=</span> 0
-  and <span class="nv">row_cache_keys_to_save</span> <span class="o">=</span> 2147483647
-  and <span class="nv">keys_cached</span> <span class="o">=</span> 200000.0
-  and <span class="nv">key_cache_save_period</span> <span class="o">=</span> 14400
   and <span class="nv">read_repair_chance</span> <span class="o">=</span> 1.0
+  and <span class="nv">dclocal_read_repair_chance</span> <span class="o">=</span> 0.0
   and <span class="nv">gc_grace</span> <span class="o">=</span> 864000
   and <span class="nv">min_compaction_threshold</span> <span class="o">=</span> 4
   and <span class="nv">max_compaction_threshold</span> <span class="o">=</span> 32
   and <span class="nv">replicate_on_write</span> <span class="o">=</span> <span class="nb">true</span>
-<span class="nb">  </span>and <span class="nv">row_cache_provider</span> <span class="o">=</span> <span class="s1">&#39;SerializingCacheProvider&#39;</span>
-  and <span class="nv">compaction_strategy</span> <span class="o">=</span> <span class="s1">&#39;org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy&#39;</span>
+<span class="nb">  </span>and <span class="nv">compaction_strategy</span> <span class="o">=</span> <span class="s1">&#39;org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy&#39;</span>
+  and <span class="nv">caching</span> <span class="o">=</span> <span class="s1">&#39;KEYS_ONLY&#39;</span>
   and <span class="nv">column_metadata</span> <span class="o">=</span> <span class="o">[</span>
-    <span class="o">{</span>column_name : <span class="s1">&#39;616c61726d5f6b6579&#39;</span>,
-    validation_class : LexicalUUIDType,
-    index_name : <span class="s1">&#39;AlarmHistory_616c61726d5f6b6579_idx&#39;</span>,
-    index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;616c61726d5f6e616d65&#39;</span>,
-    validation_class : UTF8Type,
-    index_name : <span class="s1">&#39;AlarmHistory_616c61726d5f6e616d65_idx&#39;</span>,
-    index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;686973746f72795f64617461&#39;</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;history_summary&#39;</span>,
     validation_class : UTF8Type<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;686973746f72795f6974656d5f74797065&#39;</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;alarm_name&#39;</span>,
     validation_class : UTF8Type,
-    index_name : <span class="s1">&#39;AlarmHistory_686973746f72795f6974656d5f74797065_idx&#39;</span>,
+    index_name : <span class="s1">&#39;AlarmHistory_alarm_name_idx&#39;</span>,
     index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;686973746f72795f73756d6d617279&#39;</span>,
-    validation_class : UTF8Type<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;70726f6a6563745f6964&#39;</span>,
-    validation_class : UTF8Type,
-    index_name : <span class="s1">&#39;AlarmHistory_70726f6a6563745f6964_idx&#39;</span>,
-    index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;74696d657374616d70&#39;</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;timestamp&#39;</span>,
     validation_class : DateType,
-    index_name : <span class="s1">&#39;AlarmHistory_74696d657374616d70_idx&#39;</span>,
-    index_type : 0<span class="o">}]</span>;
+    index_name : <span class="s1">&#39;AlarmHistory_timestamp_idx&#39;</span>,
+    index_type : 0<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;history_data&#39;</span>,
+    validation_class : UTF8Type<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;history_item_type&#39;</span>,
+    validation_class : UTF8Type,
+    index_name : <span class="s1">&#39;AlarmHistory_history_item_type_idx&#39;</span>,
+    index_type : 0<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;alarm_key&#39;</span>,
+    validation_class : LexicalUUIDType,
+    index_name : <span class="s1">&#39;AlarmHistory_alarm_key_idx&#39;</span>,
+    index_type : 0<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;project_id&#39;</span>,
+    validation_class : UTF8Type,
+    index_name : <span class="s1">&#39;AlarmHistory_project_id_idx&#39;</span>,
+    index_type : 0<span class="o">}]</span>
+  and <span class="nv">compression_options</span> <span class="o">=</span> <span class="o">{</span><span class="s1">&#39;sstable_compression&#39;</span> : <span class="s1">&#39;org.apache.cassandra.io.compress.SnappyCompressor&#39;</span><span class="o">}</span>;
 </pre></div>
 </div>
 </div>
@@ -132,40 +129,45 @@ added as a row.</p>
 <p>This column failmiy represents Metric.</p>
 <div class="highlight-bash"><div class="highlight"><pre>create column family Metric
   with <span class="nv">column_type</span> <span class="o">=</span> <span class="s1">&#39;Standard&#39;</span>
-  and <span class="nv">comparator</span> <span class="o">=</span> <span class="s1">&#39;BytesType&#39;</span>
+  and <span class="nv">comparator</span> <span class="o">=</span> <span class="s1">&#39;AsciiType&#39;</span>
   and <span class="nv">default_validation_class</span> <span class="o">=</span> <span class="s1">&#39;BytesType&#39;</span>
   and <span class="nv">key_validation_class</span> <span class="o">=</span> <span class="s1">&#39;LexicalUUIDType&#39;</span>
-  and <span class="nv">rows_cached</span> <span class="o">=</span> 0.0
-  and <span class="nv">row_cache_save_period</span> <span class="o">=</span> 0
-  and <span class="nv">row_cache_keys_to_save</span> <span class="o">=</span> 2147483647
-  and <span class="nv">keys_cached</span> <span class="o">=</span> 200000.0
-  and <span class="nv">key_cache_save_period</span> <span class="o">=</span> 14400
   and <span class="nv">read_repair_chance</span> <span class="o">=</span> 1.0
+  and <span class="nv">dclocal_read_repair_chance</span> <span class="o">=</span> 0.0
   and <span class="nv">gc_grace</span> <span class="o">=</span> 864000
   and <span class="nv">min_compaction_threshold</span> <span class="o">=</span> 4
   and <span class="nv">max_compaction_threshold</span> <span class="o">=</span> 32
   and <span class="nv">replicate_on_write</span> <span class="o">=</span> <span class="nb">true</span>
-<span class="nb">  </span>and <span class="nv">row_cache_provider</span> <span class="o">=</span> <span class="s1">&#39;SerializingCacheProvider&#39;</span>
-  and <span class="nv">compaction_strategy</span> <span class="o">=</span> <span class="s1">&#39;org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy&#39;</span>
+<span class="nb">  </span>and <span class="nv">compaction_strategy</span> <span class="o">=</span> <span class="s1">&#39;org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy&#39;</span>
+  and <span class="nv">caching</span> <span class="o">=</span> <span class="s1">&#39;KEYS_ONLY&#39;</span>
   and <span class="nv">column_metadata</span> <span class="o">=</span> <span class="o">[</span>
-    <span class="o">{</span>column_name : <span class="s1">&#39;64696d656e73696f6e73&#39;</span>,
-    validation_class : UTF8Type,
-    index_name : <span class="s1">&#39;Metric_64696d656e73696f6e73_idx&#39;</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;updated_timestamp&#39;</span>,
+    validation_class : DateType,
+    index_name : <span class="s1">&#39;Metric_updated_timestamp_idx&#39;</span>,
     index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;6e616d65&#39;</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;unit&#39;</span>,
+    validation_class : UTF8Type<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;namespace&#39;</span>,
     validation_class : UTF8Type,
-    index_name : <span class="s1">&#39;Metric_6e616d65_idx&#39;</span>,
+    index_name : <span class="s1">&#39;Metric_namespace_idx&#39;</span>,
     index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;6e616d657370616365&#39;</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;dimensions&#39;</span>,
     validation_class : UTF8Type,
-    index_name : <span class="s1">&#39;Metric_6e616d657370616365_idx&#39;</span>,
+    index_name : <span class="s1">&#39;Metric_dimensions_idx&#39;</span>,
     index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;70726f6a6563745f6964&#39;</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;created_timestamp&#39;</span>,
+    validation_class : DateType,
+    index_name : <span class="s1">&#39;Metric_created_timestamp_idx&#39;</span>,
+    index_type : 0<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;name&#39;</span>,
     validation_class : UTF8Type,
-    index_name : <span class="s1">&#39;Metric_70726f6a6563745f6964_idx&#39;</span>,
+    index_name : <span class="s1">&#39;Metric_name_idx&#39;</span>,
     index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;756e6974&#39;</span>,
-    validation_class : UTF8Type<span class="o">}]</span>;
+    <span class="o">{</span>column_name : <span class="s1">&#39;project_id&#39;</span>,
+    validation_class : UTF8Type,
+    index_name : <span class="s1">&#39;Metric_project_id_idx&#39;</span>,
+    index_type : 0<span class="o">}]</span>
+  and <span class="nv">compression_options</span> <span class="o">=</span> <span class="o">{</span><span class="s1">&#39;sstable_compression&#39;</span> : <span class="s1">&#39;org.apache.cassandra.io.compress.SnappyCompressor&#39;</span><span class="o">}</span>;
 </pre></div>
 </div>
 </div>
@@ -174,84 +176,81 @@ added as a row.</p>
 <p>This column failmiy represents Metric.</p>
 <div class="highlight-bash"><div class="highlight"><pre>create column family MetricAlarm
   with <span class="nv">column_type</span> <span class="o">=</span> <span class="s1">&#39;Standard&#39;</span>
-  and <span class="nv">comparator</span> <span class="o">=</span> <span class="s1">&#39;BytesType&#39;</span>
+  and <span class="nv">comparator</span> <span class="o">=</span> <span class="s1">&#39;AsciiType&#39;</span>
   and <span class="nv">default_validation_class</span> <span class="o">=</span> <span class="s1">&#39;BytesType&#39;</span>
   and <span class="nv">key_validation_class</span> <span class="o">=</span> <span class="s1">&#39;LexicalUUIDType&#39;</span>
-  and <span class="nv">rows_cached</span> <span class="o">=</span> 0.0
-  and <span class="nv">row_cache_save_period</span> <span class="o">=</span> 0
-  and <span class="nv">row_cache_keys_to_save</span> <span class="o">=</span> 2147483647
-  and <span class="nv">keys_cached</span> <span class="o">=</span> 200000.0
-  and <span class="nv">key_cache_save_period</span> <span class="o">=</span> 14400
   and <span class="nv">read_repair_chance</span> <span class="o">=</span> 1.0
+  and <span class="nv">dclocal_read_repair_chance</span> <span class="o">=</span> 0.0
   and <span class="nv">gc_grace</span> <span class="o">=</span> 864000
   and <span class="nv">min_compaction_threshold</span> <span class="o">=</span> 4
   and <span class="nv">max_compaction_threshold</span> <span class="o">=</span> 32
   and <span class="nv">replicate_on_write</span> <span class="o">=</span> <span class="nb">true</span>
-<span class="nb">  </span>and <span class="nv">row_cache_provider</span> <span class="o">=</span> <span class="s1">&#39;SerializingCacheProvider&#39;</span>
-  and <span class="nv">compaction_strategy</span> <span class="o">=</span> <span class="s1">&#39;org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy&#39;</span>
+<span class="nb">  </span>and <span class="nv">compaction_strategy</span> <span class="o">=</span> <span class="s1">&#39;org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy&#39;</span>
+  and <span class="nv">caching</span> <span class="o">=</span> <span class="s1">&#39;KEYS_ONLY&#39;</span>
   and <span class="nv">column_metadata</span> <span class="o">=</span> <span class="o">[</span>
-    <span class="o">{</span>column_name : <span class="s1">&#39;616374696f6e735f656e61626c6564&#39;</span>,
-    validation_class : BooleanType<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;616c61726d5f616374696f6e73&#39;</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;unit&#39;</span>,
     validation_class : UTF8Type<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;616c61726d5f61726e&#39;</span>,
-    validation_class : UTF8Type<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;616c61726d5f636f6e66696775726174696f6e5f757064617465645f74696d657374616d70&#39;</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;state_updated_timestamp&#39;</span>,
     validation_class : DateType,
-    index_name : <span class="s1">&#39;MetricAlarm_616c61726d5f636f6e66696775726174696f6e5f757064617465645f74696d657374616d70_idx&#39;</span>,
+    index_name : <span class="s1">&#39;MetricAlarm_state_updated_timestamp_idx&#39;</span>,
     index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;616c61726d5f6465736372697074696f6e&#39;</span>,
-    validation_class : UTF8Type<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;616c61726d5f6e616d65&#39;</span>,
-    validation_class : UTF8Type,
-    index_name : <span class="s1">&#39;MetricAlarm_616c61726d5f6e616d65_idx&#39;</span>,
-    index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;636f6d70617269736f6e5f6f70657261746f72&#39;</span>,
-    validation_class : UTF8Type<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;64696d656e73696f6e73&#39;</span>,
-    validation_class : UTF8Type<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;6576616c756174696f6e5f706572696f6473&#39;</span>,
-    validation_class : IntegerType<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;696e73756666696369656e745f646174615f616374696f6e73&#39;</span>,
-    validation_class : UTF8Type<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;6d65747269635f6b6579&#39;</span>,
-    validation_class : LexicalUUIDType,
-    index_name : <span class="s1">&#39;MetricAlarm_6d65747269635f6b6579_idx&#39;</span>,
-    index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;6d65747269635f6e616d65&#39;</span>,
-    validation_class : UTF8Type<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;6e616d657370616365&#39;</span>,
-    validation_class : UTF8Type<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;6f6b5f616374696f6e73&#39;</span>,
-    validation_class : UTF8Type<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;706572696f64&#39;</span>,
-    validation_class : IntegerType,
-    index_name : <span class="s1">&#39;MetricAlarm_706572696f64_idx&#39;</span>,
-    index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;70726f6a6563745f6964&#39;</span>,
-    validation_class : UTF8Type,
-    index_name : <span class="s1">&#39;MetricAlarm_70726f6a6563745f6964_idx&#39;</span>,
-    index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;73746174655f726561736f6e&#39;</span>,
-    validation_class : UTF8Type<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;73746174655f726561736f6e5f64617461&#39;</span>,
-    validation_class : UTF8Type<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;73746174655f757064617465645f74696d657374616d70&#39;</span>,
-    validation_class : DateType,
-    index_name : <span class="s1">&#39;MetricAlarm_73746174655f757064617465645f74696d657374616d70_idx&#39;</span>,
-    index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;73746174655f76616c7565&#39;</span>,
-    validation_class : UTF8Type,
-    index_name : <span class="s1">&#39;MetricAlarm_73746174655f76616c7565_idx&#39;</span>,
-    index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;737461746973746963&#39;</span>,
-    validation_class : UTF8Type,
-    index_name : <span class="s1">&#39;MetricAlarm_737461746973746963_idx&#39;</span>,
-    index_type : 0<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;7468726573686f6c64&#39;</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;threshold&#39;</span>,
     validation_class : DoubleType<span class="o">}</span>,
-    <span class="o">{</span>column_name : <span class="s1">&#39;756e6974&#39;</span>,
-    validation_class : UTF8Type<span class="o">}]</span>;
+    <span class="o">{</span>column_name : <span class="s1">&#39;period&#39;</span>,
+    validation_class : IntegerType,
+    index_name : <span class="s1">&#39;MetricAlarm_period_idx&#39;</span>,
+    index_type : 0<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;comparison_operator&#39;</span>,
+    validation_class : UTF8Type<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;dimensions&#39;</span>,
+    validation_class : UTF8Type<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;evaluation_periods&#39;</span>,
+    validation_class : IntegerType<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;alarm_actions&#39;</span>,
+    validation_class : UTF8Type<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;alarm_arn&#39;</span>,
+    validation_class : UTF8Type<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;alarm_configuration_updated_timestamp&#39;</span>,
+    validation_class : DateType,
+    index_name : <span class="s1">&#39;MetricAlarm_alarm_configuration_updated_timestamp_idx&#39;</span>,
+    index_type : 0<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;state_reason_data&#39;</span>,
+    validation_class : UTF8Type<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;alarm_description&#39;</span>,
+    validation_class : UTF8Type<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;statistic&#39;</span>,
+    validation_class : UTF8Type,
+    index_name : <span class="s1">&#39;MetricAlarm_statistic_idx&#39;</span>,
+    index_type : 0<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;state_value&#39;</span>,
+    validation_class : UTF8Type,
+    index_name : <span class="s1">&#39;MetricAlarm_state_value_idx&#39;</span>,
+    index_type : 0<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;alarm_name&#39;</span>,
+    validation_class : UTF8Type,
+    index_name : <span class="s1">&#39;MetricAlarm_alarm_name_idx&#39;</span>,
+    index_type : 0<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;namespace&#39;</span>,
+    validation_class : UTF8Type<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;state_reason&#39;</span>,
+    validation_class : UTF8Type<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;metric_key&#39;</span>,
+    validation_class : LexicalUUIDType,
+    index_name : <span class="s1">&#39;MetricAlarm_metric_key_idx&#39;</span>,
+    index_type : 0<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;insufficient_data_actions&#39;</span>,
+    validation_class : UTF8Type<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;metric_name&#39;</span>,
+    validation_class : UTF8Type<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;actions_enabled&#39;</span>,
+    validation_class : BooleanType<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;project_id&#39;</span>,
+    validation_class : UTF8Type,
+    index_name : <span class="s1">&#39;MetricAlarm_project_id_idx&#39;</span>,
+    index_type : 0<span class="o">}</span>,
+    <span class="o">{</span>column_name : <span class="s1">&#39;ok_actions&#39;</span>,
+    validation_class : UTF8Type<span class="o">}]</span>
+  and <span class="nv">compression_options</span> <span class="o">=</span> <span class="o">{</span><span class="s1">&#39;sstable_compression&#39;</span> : <span class="s1">&#39;org.apache.cassandra.io.compress.SnappyCompressor&#39;</span><span class="o">}</span>;
 </pre></div>
 </div>
 </div>
@@ -266,18 +265,15 @@ MAXIMUM, MINIMUM, SAMPLECOUNT and SUM.</p>
   and <span class="nv">subcomparator</span> <span class="o">=</span> <span class="s1">&#39;DateType&#39;</span>
   and <span class="nv">default_validation_class</span> <span class="o">=</span> <span class="s1">&#39;DoubleType&#39;</span>
   and <span class="nv">key_validation_class</span> <span class="o">=</span> <span class="s1">&#39;LexicalUUIDType&#39;</span>
-  and <span class="nv">rows_cached</span> <span class="o">=</span> 0.0
-  and <span class="nv">row_cache_save_period</span> <span class="o">=</span> 0
-  and <span class="nv">row_cache_keys_to_save</span> <span class="o">=</span> 2147483647
-  and <span class="nv">keys_cached</span> <span class="o">=</span> 200000.0
-  and <span class="nv">key_cache_save_period</span> <span class="o">=</span> 14400
   and <span class="nv">read_repair_chance</span> <span class="o">=</span> 1.0
+  and <span class="nv">dclocal_read_repair_chance</span> <span class="o">=</span> 0.0
   and <span class="nv">gc_grace</span> <span class="o">=</span> 864000
   and <span class="nv">min_compaction_threshold</span> <span class="o">=</span> 4
   and <span class="nv">max_compaction_threshold</span> <span class="o">=</span> 32
   and <span class="nv">replicate_on_write</span> <span class="o">=</span> <span class="nb">true</span>
-<span class="nb">  </span>and <span class="nv">row_cache_provider</span> <span class="o">=</span> <span class="s1">&#39;SerializingCacheProvider&#39;</span>
-  and <span class="nv">compaction_strategy</span> <span class="o">=</span> <span class="s1">&#39;org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy&#39;</span>;
+<span class="nb">  </span>and <span class="nv">compaction_strategy</span> <span class="o">=</span> <span class="s1">&#39;org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy&#39;</span>
+  and <span class="nv">caching</span> <span class="o">=</span> <span class="s1">&#39;KEYS_ONLY&#39;</span>
+  and <span class="nv">compression_options</span> <span class="o">=</span> <span class="o">{</span><span class="s1">&#39;sstable_compression&#39;</span> : <span class="s1">&#39;org.apache.cassandra.io.compress.SnappyCompressor&#39;</span><span class="o">}</span>;
 </pre></div>
 </div>
 </div>
@@ -348,12 +344,12 @@ MAXIMUM, MINIMUM, SAMPLECOUNT and SUM.</p>
         <li class="right" >
           <a href="programspec.html" title="Program Specification"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">synaps 2013.1.2a-dev documentation</a> &raquo;</li> 
+        <li><a href="../index.html">synaps 2013.2.rc2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Fri Mar 15 14:16:32 2013, commit 2a4e400.
+      Last updated on Sun Sep 1 23:55:50 2013, commit 3b44714.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
