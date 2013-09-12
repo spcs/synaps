@@ -16,7 +16,6 @@
 from datetime import datetime
 import json
 import os
-import traceback
 import time
 from uuid import uuid4
 

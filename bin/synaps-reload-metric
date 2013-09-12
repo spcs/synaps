@@ -138,24 +138,31 @@ def main():
                                   is_secure=False)
 
     cass = Cassandra()
-    for k, v in cass.get_all_metrics():
-        LOG.info("reloading %s" % str(k))
-        dimensions = json.loads(v.get('dimensions')) \
-                     if v.get('dimensions') else None
+    metrics = []
+    for k, v in cass.get_all_alarms():
+        try:
+            metric_key = v.get('metric_key')
+            if metric_key in metrics:
+                LOG.info('metric %s is already loaded', metric_key)
+                continue
+            
+            LOG.info("reloading %s - %s:%s:%s:%s", 
+                     v.get('alarm_name'), v.get('project_id'), 
+                     v.get('namespace'), v.get('metric_name'), 
+                     v.get('dimensions'))
+    
+            metrics.append(metric_key)
+            dimensions = json.loads(v.get('dimensions')) \
+                         if v.get('dimensions') else None
                      
-        if v.get('namespace') == None:
-            LOG.warn("Garbage metric found")
-            cass.delete_metric(k)
-        else:
-            try:
-                synaps.put_metric_data(namespace=v.get('namespace'),
-                                       name=v.get('name'),
-                                       project_id=v.get('project_id'),
-                                       dimensions=dimensions)
-            except Exception as e:
-                LOG.error("Unknown exception occoured %s" % str(e))
-                LOG.error("error occurred while reloading metric - %s" % 
-                          str(k))
+            synaps.put_metric_data(namespace=v.get('namespace'),
+                                   name=v.get('metric_name'),
+                                   project_id=v.get('project_id'),
+                                   dimensions=dimensions)
+        except Exception as e:
+            LOG.error("Unknown exception occoured %s" % str(e))
+            LOG.error("error occurred while reloading metric - %s" % 
+                      str(k))
 
     LOG.info("all metrics are reloaded")
 

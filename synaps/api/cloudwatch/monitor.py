@@ -83,7 +83,7 @@ class MonitorController(object):
         self.check_alarm_names(alarm_names)
 
         alarm_names = utils.extract_member_list(alarm_names)
-        self.monitor_api.delete_alarms(project_id, alarm_names)
+        self.monitor_api.delete_alarms(context, project_id, alarm_names)
         return {}
 
     def describe_alarm_history(self, context, alarm_name=None, end_date=None,
@@ -225,7 +225,8 @@ class MonitorController(object):
         self.check_alarm_names(alarm_names)
 
         alarm_names = utils.extract_member_list(alarm_names)
-        self.monitor_api.set_alarm_actions(project_id, alarm_names, False)
+        self.monitor_api.set_alarm_actions(context, project_id, alarm_names, 
+                                           False)
         return {}        
     
     def enable_alarm_actions(self, context, alarm_names=None,
@@ -236,7 +237,8 @@ class MonitorController(object):
         self.check_alarm_names(alarm_names)
 
         alarm_names = utils.extract_member_list(alarm_names)
-        self.monitor_api.set_alarm_actions(project_id, alarm_names, True)
+        self.monitor_api.set_alarm_actions(context, project_id, alarm_names, 
+                                           True)
         return {}      
     
     def get_metric_statistics(self, context, end_time, metric_name,
@@ -388,7 +390,7 @@ class MonitorController(object):
             unit=unit
         )
 
-        self.monitor_api.put_metric_alarm(project_id, metricalarm)
+        self.monitor_api.put_metric_alarm(context, project_id, metricalarm)
         
         return {}
 
@@ -436,7 +438,8 @@ class MonitorController(object):
 
         for metric in metrics:
             metric_name, dimensions, value, unit, timestamp = metric
-            self.monitor_api.put_metric_data(project_id=project_id,
+            self.monitor_api.put_metric_data(context, 
+                                             project_id=project_id,
                                              namespace=namespace,
                                              metric_name=metric_name,
                                              dimensions=dimensions,
@@ -463,8 +466,9 @@ class MonitorController(object):
         self.check_state_reason_data(state_reason_data)
         self.check_state_value(state_value)
 
-        self.monitor_api.set_alarm_state(project_id, alarm_name, state_reason,
-                                         state_value, state_reason_data)
+        self.monitor_api.set_alarm_state(context, project_id, alarm_name, 
+                                         state_reason, state_value, 
+                                         state_reason_data)
         return {}
 
     def check_alarm_name(self, alarm_name):        

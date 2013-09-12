@@ -397,6 +397,10 @@ class Cassandra(object):
 
     def get_all_metrics(self):
         return self.cf_metric.get_range()
+    
+    
+    def get_all_alarms(self):
+        return self.cf_metric_alarm.get_range()
 
 
     def get_metric(self, metric_key):

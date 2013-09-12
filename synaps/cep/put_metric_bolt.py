@@ -38,6 +38,11 @@ from synaps import utils
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
 
+if FLAGS.memcached_servers:
+    import memcache
+else:
+    from synaps.common import memorycache as memcache
+
 
 class MetricMonitor(object):
     COLUMNS = Cassandra.STATISTICS
@@ -568,6 +573,7 @@ class PutMetricBolt(storm.BasicBolt):
         self.pid = os.getpid()
         self.cass = Cassandra()
         self.metrics = {}
+        self.mc = memcache.Client(FLAGS.memcached_servers, debug=0)
         
     
     def process_put_metric_data_msg(self, metric_key, message):
@@ -748,19 +754,32 @@ class PutMetricBolt(storm.BasicBolt):
             return
         
         if message_id == PUT_METRIC_DATA_MSG_ID:
-            LOG.info("process put_metric_data_msg (%s)", message)
-            self.process_put_metric_data_msg(metric_key, message)
+            # message deduplicate
+            if message_uuid:
+                mckey = "%s_message_uuid" % message_uuid
+                if not self.mc.get(mckey):
+                    # 300 seconds TTL
+                    self.mc.set(mckey, 1, 300)
+                    LOG.info("process put_metric_data_msg (%s)", message)
+                    self.process_put_metric_data_msg(metric_key, message)
+                else:
+                    LOG.info("Message duplicated. %s", message_uuid)
+                    
         elif message_id == PUT_METRIC_ALARM_MSG_ID:
             LOG.info("process put_metric_alarm_msg (%s)", message)
             self.process_put_metric_alarm_msg(metric_key, message)
+            
         elif message_id == DELETE_ALARMS_MSG_ID:
             LOG.info("process delete_alarms_msg (%s)", message)
             self.process_delete_metric_alarms_msg(metric_key, message)
+            
         elif message_id == SET_ALARM_STATE_MSG_ID:
             LOG.info("process set_alarm_state_msg (%s)", message)
             self.process_set_alarm_state_msg(metric_key, message)
+            
         elif message_id == CHECK_METRIC_ALARM_MSG_ID:
             LOG.info("process check_metric_alarm_msg (%s)", message)
             self.process_check_metric_alarms_msg()
+            
         else:
             LOG.error("unknown message")

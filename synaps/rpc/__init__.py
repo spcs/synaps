@@ -23,7 +23,7 @@ from synaps.utils import strtime
 from synaps import log as logging
 from synaps.exception import RpcInvokeException
 import uuid, time
-
+import eventlet
 import pika, json
 
 LOG = logging.getLogger(__name__)
@@ -36,6 +36,7 @@ ENABLE_ALARM_ACTIONS = 0x0004
 DELETE_ALARMS_MSG_ID = 0x0005
 SET_ALARM_STATE_MSG_ID = 0x0006
 CHECK_METRIC_ALARM_MSG_ID = 0x0010 
+
 
 def retry5_uncaught_exceptions(infunc):
     def inner_func(*args, **kwargs):
@@ -69,6 +70,7 @@ def retry5_uncaught_exceptions(infunc):
 class RemoteProcedureCall(object):
     def __init__(self):
         self.connect()
+        self.write_lock = eventlet.semaphore.Semaphore(1)
     
     def connect(self):
         host = FLAGS.get('rabbit_host')
@@ -92,6 +94,8 @@ class RemoteProcedureCall(object):
             queue_args = {"x-ha-policy" : "all" }
             self.channel.queue_declare(queue='metric_queue', durable=True,
                                        arguments=queue_args)
+            self.channel.confirm_delivery()
+
         except Exception as e:
             raise RpcInvokeException()
     
@@ -118,10 +122,15 @@ class RemoteProcedureCall(object):
         body.setdefault('message_id', message_id)
         body.setdefault('message_uuid', message_uuid)
         
-        self.channel.basic_publish(
-            exchange='', routing_key='metric_queue', body=json.dumps(body),
-            properties=pika.BasicProperties(delivery_mode=2)
-        )
-        LOG.info(_("send_msg - id(%03d), %s") % (message_id, message_uuid))
-        LOG.debug(_("send_msg - body(%s)") % str(body))
+        expiration = '60000' if message_id == PUT_METRIC_DATA_MSG_ID else None
+        delivery_mode = 1 if message_id == PUT_METRIC_DATA_MSG_ID else 2
+        
+        with self.write_lock:
+            self.channel.basic_publish(
+                exchange='', routing_key='metric_queue', body=json.dumps(body),
+                properties=pika.BasicProperties(delivery_mode=delivery_mode, 
+                                                expiration=expiration)
+            )
+        LOG.info(_("send_msg - id(%03d), %s"), message_id, message_uuid)
+        LOG.debug(_("send_msg - body(%s)"), str(body))
             

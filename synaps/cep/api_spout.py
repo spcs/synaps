@@ -64,27 +64,31 @@ class ApiSpout(Spout):
                                    arguments=queue_args)
 
     def ack(self, id):
+        delivery_tag = int(id.split(':')[-1])
+        self.channel.basic_ack(delivery_tag=delivery_tag)
         LOG.info("Acked message %s", id)
         
             
     def fail(self, id):
+        delivery_tag = int(id.split(':')[-1])
+        self.channel.basic_ack(delivery_tag=delivery_tag)
         LOG.error("Reject failed message %s", id)
         
     
     def nextTuple(self):
         try:
-            (method_frame, header_frame, body) = self.channel.basic_get(
-                queue="metric_queue", no_ack=True
-            )
+            (frame, _, body) = self.channel.basic_get(queue="metric_queue")
         except (AMQPConnectionError, AMQPChannelError):
             LOG.error("AMQP Connection or Channel Error. While get a message.")
             self.connect()
             return
 
-        if method_frame:
-            mq_msg_id = method_frame.delivery_tag
+        if frame:
             msg_body = json.loads(body)
-            msg_id, msg_uuid = msg_body['message_id'], msg_body['message_uuid']
+            msg_id = msg_body['message_id']
+            msg_req_id = ":".join((msg_body['message_uuid'], 
+                                   msg_body['context']['request_id'],
+                                   str(frame.delivery_tag)))
             message = "Start processing message in the queue - [%s:%s] %s"
-            LOG.info(message % (msg_id, msg_uuid, body))
-            emit([body], id=msg_uuid)
+            LOG.info(message, msg_id, msg_req_id, body)
+            emit([body], id=msg_req_id)

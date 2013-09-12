@@ -48,7 +48,7 @@ class API(object):
         self.cass = Cassandra()
         self.rpc = rpc.RemoteProcedureCall()
 
-    def delete_alarms(self, project_id, alarm_names):
+    def delete_alarms(self, context, project_id, alarm_names):
         alarmkeys = []
         for alarm_name in alarm_names:
             k = self.cass.get_metric_alarm_key(project_id, alarm_name)
@@ -57,7 +57,8 @@ class API(object):
                                        alarm_name)
             alarmkeys.append(str(k))
                 
-        body = {'project_id': project_id, 'alarmkeys': alarmkeys}  # UUID str  
+        body = {'project_id': project_id, 'alarmkeys': alarmkeys,
+                'context': context.to_dict()}  # UUID str  
         self.rpc.send_msg(rpc.DELETE_ALARMS_MSG_ID, body)
         LOG.info("DELETE_ALARMS_MSG sent")
         
@@ -113,7 +114,7 @@ class API(object):
         )
         return histories
     
-    def set_alarm_actions(self, project_id, alarm_names, enabled):
+    def set_alarm_actions(self, context, project_id, alarm_names, enabled):
         for alarm_name in alarm_names:
             alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
             if not alarm_key:
@@ -141,7 +142,7 @@ class API(object):
             }
             self.cass.insert_alarm_history(history_key, history_column)            
     
-    def set_alarm_state(self, project_id, alarm_name, state_reason,
+    def set_alarm_state(self, context, project_id, alarm_name, state_reason,
                         state_value, state_reason_data=None):
 
         k = self.cass.get_metric_alarm_key(project_id, alarm_name)
@@ -150,7 +151,8 @@ class API(object):
        
         body = {'project_id': project_id, 'alarm_name': alarm_name,
                 'state_reason': state_reason, 'state_value': state_value,
-                'state_reason_data': state_reason_data}   
+                'state_reason_data': state_reason_data, 
+                'context': context.to_dict()}   
         self.rpc.send_msg(rpc.SET_ALARM_STATE_MSG_ID, body)
         LOG.info("SET_ALARM_STATE_MSG sent")        
     
@@ -215,7 +217,7 @@ class API(object):
         return metrics
     
     
-    def put_metric_alarm(self, project_id, metricalarm):
+    def put_metric_alarm(self, context, project_id, metricalarm):
         """
         Send put metric alarm message to Storm 
         """
@@ -253,15 +255,15 @@ class API(object):
                                      "Delete alarm and retry.")
         
         message = {'project_id': project_id, 'metric_key': str(metric_key),
-                   'metricalarm': metricalarm}
+                   'metricalarm': metricalarm, 'context': context.to_dict()}
         self.rpc.send_msg(rpc.PUT_METRIC_ALARM_MSG_ID, message)
         LOG.info("PUT_METRIC_ALARM_MSG sent")
 
         return {}
     
     
-    def put_metric_data(self, project_id, namespace, metric_name, dimensions,
-                        value, unit, timestamp, is_admin=False):
+    def put_metric_data(self, context, project_id, namespace, metric_name, 
+                        dimensions, value, unit, timestamp, is_admin=False):
         """
         metric data 를 입력받아 MQ 에 넣고 값이 빈 dictionary 를 반환한다.        
         """
@@ -271,7 +273,8 @@ class API(object):
 
         message = {'project_id': project_id, 'namespace':namespace,
                    'metric_name': metric_name, 'dimensions': dimensions,
-                   'value':value, 'unit':unit, 'timestamp':timestamp}
+                   'value':value, 'unit':unit, 'timestamp':timestamp,
+                   'context': context.to_dict()}
         
         self.rpc.send_msg(rpc.PUT_METRIC_DATA_MSG_ID, message)
         LOG.info("PUT_METRIC_DATA_MSG sent")
