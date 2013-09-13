@@ -18,12 +18,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from eventlet.pools import TokenPool
 from synaps import flags
 from synaps.utils import strtime
 from synaps import log as logging
 from synaps.exception import RpcInvokeException
 import uuid, time
-import eventlet
 import pika, json
 
 LOG = logging.getLogger(__name__)
@@ -69,35 +69,29 @@ def retry5_uncaught_exceptions(infunc):
 
 class RemoteProcedureCall(object):
     def __init__(self):
-        self.connect()
-        self.write_lock = eventlet.semaphore.Semaphore(1)
-    
-    def connect(self):
+        self.pool = TokenPool(create=self.open_channel, max_size=1000)
+
+    def open_channel(self):
         host = FLAGS.get('rabbit_host')
         port = FLAGS.get('rabbit_port')
-        try:
-            LOG.info(_("connecting to rabbit_host %s %d") % (host, port))
+        LOG.info(_("connecting to rabbit_host %s %d") % (host, port))
 
-            self.conn = pika.BlockingConnection(
-                pika.ConnectionParameters(
-                    host=FLAGS.get('rabbit_host'),
-                    port=FLAGS.get('rabbit_port'),
-                    credentials=pika.PlainCredentials(
-                        FLAGS.get('rabbit_userid'),
-                        FLAGS.get('rabbit_password')
-                    ),
-                    virtual_host=FLAGS.get('rabbit_virtual_host'),
-                )
-            )
-            
-            self.channel = self.conn.channel()
-            queue_args = {"x-ha-policy" : "all" }
-            self.channel.queue_declare(queue='metric_queue', durable=True,
-                                       arguments=queue_args)
-            self.channel.confirm_delivery()
+        credentials=pika.PlainCredentials(FLAGS.get('rabbit_userid'),
+                                          FLAGS.get('rabbit_password'))
+        con_param = pika.ConnectionParameters(
+                        host=FLAGS.get('rabbit_host'),
+                        port=FLAGS.get('rabbit_port'), 
+                        credentials=credentials,
+                        virtual_host=FLAGS.get('rabbit_virtual_host'))
+        conn = pika.BlockingConnection(con_param)
+        
+        channel = conn.channel()
+        queue_args = {"x-ha-policy" : "all" }
+        channel.queue_declare(queue='metric_queue', durable=True,
+                              arguments=queue_args)
+        channel.confirm_delivery()
+        return channel
 
-        except Exception as e:
-            raise RpcInvokeException()
     
     @retry5_uncaught_exceptions
     def send_msg(self, message_id, body):
@@ -115,8 +109,6 @@ class RemoteProcedureCall(object):
         if type(message_id) is not int:
             raise RpcInvokeException()
         
-        if not self.conn.is_open:
-            self.connect()
 
         message_uuid = str(uuid.uuid4()) 
         body.setdefault('message_id', message_id)
@@ -124,13 +116,16 @@ class RemoteProcedureCall(object):
         
         expiration = '60000' if message_id == PUT_METRIC_DATA_MSG_ID else None
         delivery_mode = 1 if message_id == PUT_METRIC_DATA_MSG_ID else 2
+        properties=pika.BasicProperties(delivery_mode=delivery_mode, 
+                                        expiration=expiration)
         
-        with self.write_lock:
-            self.channel.basic_publish(
-                exchange='', routing_key='metric_queue', body=json.dumps(body),
-                properties=pika.BasicProperties(delivery_mode=delivery_mode, 
-                                                expiration=expiration)
-            )
+        with self.pool.item() as channel:
+            if not channel.is_open:
+                channel = self.open_channel()
+            
+            channel.basic_publish(exchange='', routing_key='metric_queue', 
+                                  body=json.dumps(body), properties=properties)
+            
         LOG.info(_("send_msg - id(%03d), %s"), message_id, message_uuid)
         LOG.debug(_("send_msg - body(%s)"), str(body))
             
