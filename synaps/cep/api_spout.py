@@ -64,14 +64,10 @@ class ApiSpout(Spout):
                                    arguments=queue_args)
 
     def ack(self, id):
-        delivery_tag = int(id.split(':')[-1])
-        self.channel.basic_ack(delivery_tag=delivery_tag)
         LOG.info("Acked message %s", id)
         
             
     def fail(self, id):
-        delivery_tag = int(id.split(':')[-1])
-        self.channel.basic_ack(delivery_tag=delivery_tag)
         LOG.error("Reject failed message %s", id)
         
     
@@ -92,3 +88,4 @@ class ApiSpout(Spout):
             message = "Start processing message in the queue - [%s:%s] %s"
             LOG.info(message, msg_id, msg_req_id, body)
             emit([body], id=msg_req_id)
+            self.channel.basic_ack(delivery_tag=frame.delivery_tag)

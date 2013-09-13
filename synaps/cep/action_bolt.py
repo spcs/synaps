@@ -27,6 +27,8 @@ from synaps import flags
 from synaps import log as logging
 from synaps import utils
 from synaps.utils import validate_email, validate_international_phonenumber
+from synaps.monitor import API
+from synaps.context import get_admin_context
 
 
 LOG = logging.getLogger(__name__)
@@ -51,6 +53,7 @@ class ActionBolt(storm.BasicBolt):
         self.sms_db = FLAGS.get('sms_database')
         self.sms_db_username = FLAGS.get('sms_db_username')
         self.sms_db_password = FLAGS.get('sms_db_password')
+        self.api = API()
     
     
     def get_action_type(self, action):
@@ -229,7 +232,8 @@ class ActionBolt(storm.BasicBolt):
                             self.sms_db_host, self.sms_db_port, self.sms_db))
         conn = db.connect(host=self.sms_db_host, port=self.sms_db_port, 
                           db=self.sms_db, user=self.sms_db_username, 
-                          passwd=self.sms_db_password, connect_timeout=30)
+                          passwd=self.sms_db_password, connect_timeout=30,
+                          charset='utf8')
         c = conn.cursor()
         for receiver in message['receivers']:
             q = build_query(receiver, message['subject'])
@@ -241,7 +245,7 @@ class ActionBolt(storm.BasicBolt):
         
     
     def send_email(self, message):
-        msg = MIMEText(message['body'])
+        msg = MIMEText(message['body'], 'plain', 'utf8')
         msg['Subject'] = message['subject']
         msg['From'] = self.mail_sender
         msg['To'] = ", ".join(message['receivers'])

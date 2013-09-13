@@ -25,93 +25,14 @@ possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
 if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
     sys.path.insert(0, possible_topdir)
 
-from boto.ec2 import regioninfo
-from boto.ec2.cloudwatch import CloudWatchConnection
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
 from synaps.db import Cassandra
+from synaps.monitor import API
+from synaps.context import get_admin_context
 from pprint import pprint
 import json
-
-# below two methods(_put_metric_data, _build_put_params) are copied from boto 
-# project and patched --https://github.com/boto/boto
-#
-# Copyright (c) 2006-2011 Mitch Garnaat http://garnaat.org/
-#
-# Permission is hereby granted, free of charge, to any person obtaining a
-# copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish, dis-
-# tribute, sublicense, and/or sell copies of the Software, and to permit
-# persons to whom the Software is furnished to do so, subject to the fol-
-# lowing conditions:
-#
-# The above copyright notice and this permission notice shall be included
-# in all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-
-# ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
-# SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-# IN THE SOFTWARE.
-#
-def _put_metric_data(self, namespace, name, value=None, timestamp=None,
-                    unit=None, dimensions=None, statistics=None,
-                    project_id=None):
-    """This is monkey_patch"""
-    params = {'Namespace': namespace}
-    if project_id:
-        params['ProjectId'] = project_id
-    self.build_put_params(params, name, value=value, timestamp=timestamp,
-        unit=unit, dimensions=dimensions, statistics=statistics)
-    return self.get_status('PutMetricData', params)    
-
-
-def _build_put_params(self, params, name, value=None, timestamp=None,
-                    unit=None, dimensions=None, statistics=None):
-    args = (name, value, unit, dimensions, statistics, timestamp)
-    length = max(map(lambda a: len(a) if isinstance(a, list) else 1, args))
-
-    def aslist(a):
-        if isinstance(a, list):
-            if len(a) != length:
-                raise Exception('Must specify equal number of elements; expected %d.' % length)
-            return a
-        return [a] * length
-
-    for index, (n, v, u, d, s, t) in enumerate(zip(*map(aslist, args))):
-        metric_data = {'MetricName': n}
-
-        if timestamp:
-            metric_data['Timestamp'] = t.isoformat()
-
-        if unit:
-            metric_data['Unit'] = u
-
-        if dimensions:
-            self.build_dimension_param(d, metric_data)
-
-        if statistics:
-            metric_data['StatisticValues.Maximum'] = s['maximum']
-            metric_data['StatisticValues.Minimum'] = s['minimum']
-            metric_data['StatisticValues.SampleCount'] = s['samplecount']
-            metric_data['StatisticValues.Sum'] = s['sum']
-            if value != None:
-                msg = 'You supplied a value and statistics for a ' + \
-                      'metric.Posting statistics and not value.'
-                boto.log.warn(msg)
-        elif value != None:
-            metric_data['Value'] = v
-
-        for key, val in metric_data.iteritems():
-            params['MetricData.member.%d.%s' % (index + 1, key)] = val
-
-
-CloudWatchConnection.put_metric_data = _put_metric_data
-CloudWatchConnection.build_put_params = _build_put_params
 
 
 flags.FLAGS(sys.argv)
@@ -119,26 +40,15 @@ utils.default_flagfile()
 logging.setup()
 FLAGS = flags.FLAGS
 
+
 def main():
     LOG = logging.getLogger()
     LOG.info("start to reload metrics")
-    synaps_internal_api_host = FLAGS.get('synaps_internal_api_host')
-    synaps_internal_api_port = FLAGS.get('synaps_internal_api_port')
-    synaps_internal_api_path = FLAGS.get('synaps_internal_api_path')
-    synaps_admin_api_key = FLAGS.get('synaps_admin_api_key')
-    synaps_admin_secret_key = FLAGS.get('synaps_admin_secret_key')
 
-    synaps_region = regioninfo.RegionInfo(None, 'SYNAPS',
-                                          synaps_internal_api_host)
-    synaps = CloudWatchConnection(synaps_admin_api_key, 
-                                  synaps_admin_secret_key,
-                                  region=synaps_region,
-                                  path=synaps_internal_api_path,
-                                  port=int(synaps_internal_api_port),
-                                  is_secure=False)
-
+    api = API()
     cass = Cassandra()
     metrics = []
+
     for k, v in cass.get_all_alarms():
         try:
             metric_key = v.get('metric_key')
@@ -154,18 +64,20 @@ def main():
             metrics.append(metric_key)
             dimensions = json.loads(v.get('dimensions')) \
                          if v.get('dimensions') else None
+                         
+            api.put_metric_data(get_admin_context(), 
+                                project_id=v.get('project_id'), 
+                                namespace=v.get('namespace'), 
+                                metric_name=v.get('metric_name'),
+                                dimensions=dimensions, value=None, unit=None, 
+                                timestamp=utils.strtime(utils.utcnow()), 
+                                is_admin=True)
                      
-            synaps.put_metric_data(namespace=v.get('namespace'),
-                                   name=v.get('metric_name'),
-                                   project_id=v.get('project_id'),
-                                   dimensions=dimensions)
         except Exception as e:
             LOG.error("Unknown exception occoured %s" % str(e))
             LOG.error("error occurred while reloading metric - %s" % 
                       str(k))
 
     LOG.info("all metrics are reloaded")
-
-
 if __name__ == "__main__":
     main()
