@@ -263,14 +263,14 @@ class API(object):
     
     
     def put_metric_data(self, context, project_id, namespace, metric_name, 
-                        dimensions, value, unit, timestamp, is_admin=False):
-        """
-        metric data 를 입력받아 MQ 에 넣고 값이 빈 dictionary 를 반환한다.        
-        """
+                        dimensions, value, unit, timestamp=None, 
+                        is_admin=False):
         admin_namespace = FLAGS.get('admin_namespace')
         if namespace.startswith(admin_namespace) and not is_admin:
             raise AdminRequired()
-
+        
+        timestamp = timestamp or utils.strtime(utils.utcnow())
+        
         message = {'project_id': project_id, 'namespace':namespace,
                    'metric_name': metric_name, 'dimensions': dimensions,
                    'value':value, 'unit':unit, 'timestamp':timestamp,

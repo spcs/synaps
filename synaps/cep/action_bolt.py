@@ -62,6 +62,36 @@ class ActionBolt(storm.BasicBolt):
         elif validate_international_phonenumber(action):
             return "SMS"
 
+
+    def meter_sms_actions(self, project_id, receivers):
+        ctxt = get_admin_context()
+        local_receivers = [r for r in receivers if r.startswith("+82")]
+        international_receivers = [r for r in receivers if not 
+                                   r.startswith("+82")]
+        
+        metric_names = ["LocalSMSActionCount", "InternationalSMSActionCount"]
+        values = [len(local_receivers), len(international_receivers)]
+        
+        self.api.put_metric_data(ctxt, project_id, namespace="SPCS/SYNAPS", 
+                                 metric_name=metric_names, dimensions={}, 
+                                 value=values, unit="Count", 
+                                 timestamp=utils.strtime(utils.utcnow()),
+                                 is_admin=True)
+        
+        LOG.audit("Meter SMS: %s %s %s", project_id, len(receivers), receivers)
+        
+
+    def meter_email_actions(self, project_id, receivers):
+        ctxt = get_admin_context()
+        self.api.put_metric_data(ctxt, project_id, namespace="SPCS/SYNAPS", 
+                                 metric_name="EmailActionCount",
+                                 dimensions={}, value=len(receivers), 
+                                 unit="Count",
+                                 timestamp=utils.strtime(utils.utcnow()), 
+                                 is_admin=True)
+        LOG.audit("Meter Email: %s %s %s", project_id, len(receivers), 
+                  receivers)
+        
     
     def alarm_history_state_update(self, alarmkey, alarm,
                                    notification_message):
@@ -156,6 +186,9 @@ class ActionBolt(storm.BasicBolt):
                     LOG.audit("SMS sent. %s", notification_message)
                     self.alarm_history_state_update(alarm_key, alarm,
                                                     notification_message)
+                    if notification_message['state'] != 'failed':
+                        self.meter_sms_actions(alarm['project_id'], 
+                                               sms_receivers)
 
             if self.enable_send_mail:            
                 email_receivers = [action for action in actions 
@@ -178,6 +211,9 @@ class ActionBolt(storm.BasicBolt):
                     LOG.audit("Email sent. %s", notification_message)
                     self.alarm_history_state_update(alarm_key, alarm,
                                                     notification_message)
+                    if notification_message['state'] != 'failed':
+                        self.meter_email_actions(alarm['project_id'], 
+                                                 email_receivers)
                     
 
     def send_sms(self, message):

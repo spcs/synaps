@@ -76,6 +76,7 @@ setup(
     scripts=['bin/synaps-syncdb',
              'bin/synaps-api-cloudwatch',
              'bin/synaps-reload-metric',
+             'bin/synaps-meter',
              ],
     setup_requires=[],
     py_modules=[]
