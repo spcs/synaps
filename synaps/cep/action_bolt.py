@@ -69,12 +69,18 @@ class ActionBolt(storm.BasicBolt):
         international_receivers = [r for r in receivers if not 
                                    r.startswith("+82")]
         
-        metric_names = ["LocalSMSActionCount", "InternationalSMSActionCount"]
-        values = [len(local_receivers), len(international_receivers)]
-        
         self.api.put_metric_data(ctxt, project_id, namespace="SPCS/SYNAPS", 
-                                 metric_name=metric_names, dimensions={}, 
-                                 value=values, unit="Count", 
+                                 metric_name="LocalSMSActionCount", 
+                                 dimensions={}, value=len(local_receivers), 
+                                 unit="Count", 
+                                 timestamp=utils.strtime(utils.utcnow()),
+                                 is_admin=True)
+
+        self.api.put_metric_data(ctxt, project_id, namespace="SPCS/SYNAPS", 
+                                 metric_name="InternationalSMSActionCount", 
+                                 dimensions={}, 
+                                 value=len(international_receivers), 
+                                 unit="Count", 
                                  timestamp=utils.strtime(utils.utcnow()),
                                  is_admin=True)
         
