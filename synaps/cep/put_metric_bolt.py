@@ -21,6 +21,7 @@ import operator
 from pandas import DataFrame, DateRange, datetools
 from pandas import rolling_sum, rolling_max, rolling_min, rolling_mean
 from pandas import isnull
+import time
 import uuid
 from uuid import UUID
 
@@ -582,7 +583,21 @@ class PutMetricBolt(storm.BasicBolt):
         """
         # Load statistics data in memory
         if metric_key not in self.metrics:
-            self.metrics[metric_key] = MetricMonitor(metric_key, self.cass)
+            max_retries = 3
+            for i in range(max_retries):
+                try:
+                    self.metrics[metric_key] = MetricMonitor(metric_key, 
+                                                             self.cass)
+                    break
+                except ResourceNotFound:
+                    if i < max_retries:
+                        LOG.warn("Metric %s is not in the database. " \
+                                 "retry... %d", metric_key, i+1)
+                        time.sleep(1)
+                    else:
+                        LOG.error("Metric %s is not in the database.", 
+                                  metric_key)
+                        return
 
         timestamp = utils.parse_strtime(message['timestamp'])
 
