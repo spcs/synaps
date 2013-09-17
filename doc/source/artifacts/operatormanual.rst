@@ -33,8 +33,10 @@ reload metric in memory
 Maintenance
 -----------
 
-How to perform minor upgrade without downtime
-'''''''''''''''''''''''''''''''''''''''''''''
+Minor upgrade without downtime
+''''''''''''''''''''''''''''''
+
+This procedure is valid when HTTP API and RPC interface is not changed.
 
 1. Upgrade Synaps pacakge for all servers
 
@@ -47,7 +49,7 @@ copy synaps-api build to all server and install the synaps-api package
 2. Restart synaps-api daemon
 
 API servers can be configured Active-Active by Load balancer. So we can 
-restart the API server side-by-side. 
+restart the API server side-by-side.
 
 .. code-block:: bash
 
@@ -55,13 +57,14 @@ restart the API server side-by-side.
 
 3. Restart synaps-storm(synaps00) topology
 
-copy synaps-storm build to nimbus server and restart the topology and then,
+Copy synaps-storm build to nimbus server and restart the topology and then,
 reload the metrics.
 
 Storm kill command takes about 30 seconds. Because it stops receiving message 
-from the queue and consume all remaining messages within the 30 seconds. 
+from the queue and consume all remaining messages in the queue within the time
+period.
 
-While the downtime of storm topology, all message are queued and can be 
+While the downtime of storm topology, all requests are queued and can be 
 processed when the storm topology is restarted.
 
 .. code-block:: bash

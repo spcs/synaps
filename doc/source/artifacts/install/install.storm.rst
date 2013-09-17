@@ -143,7 +143,6 @@ to set up more slots for storm worker, you should assign more ports.
      - 6719
    
    supervisor.childopts: "-Xmx1024m -Djava.net.preferIPv4Stack=true"
-   topology.enable.message.timeouts: false
 
 and should make dhcp3 directory
 
