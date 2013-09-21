@@ -260,11 +260,12 @@ class Cassandra(object):
             json_dim = pack_dimensions(dimensions)
             columns = {'project_id': project_id, 'namespace': namespace,
                        'name': metric_name, 'dimensions': json_dim,
-                       'unit': unit, 'updated_timestamp': datetime.utcnow(),
+                       'unit': unit or 'None', 
+                       'updated_timestamp': datetime.utcnow(),
                        'created_timestamp': datetime.utcnow()}
             
-            LOG.debug("cf_metric.insert (%s, %s)" % (key, columns))
             self.cf_metric.insert(key=key, columns=columns)
+            LOG.debug("cf_metric.insert (%s, %s)" % (key, columns))
         
         return key
 

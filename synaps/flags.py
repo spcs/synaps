@@ -257,6 +257,9 @@ rabbitmq_opts = [
     cfg.StrOpt('rabbit_virtual_host',
                default='/',
                help='the RabbitMQ virtual host'),
+    cfg.IntOpt('rabbit_read_workers',
+               default=20,
+               help='Number of workers for api spout'),
 ]
 
 reload_opts = [

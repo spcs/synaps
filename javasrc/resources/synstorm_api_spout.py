@@ -16,6 +16,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import eventlet
+eventlet.monkey_patch()
+
 from datetime import datetime
 import os
 import sys

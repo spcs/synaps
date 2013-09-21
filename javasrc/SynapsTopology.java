@@ -117,33 +117,15 @@ public class SynapsTopology {
 	 */
 	public static void main(String[] args) throws Exception {
 		TopologyBuilder builder = new TopologyBuilder();
-		// Properties properties = new Properties();
-		//
-		// properties.load(PutMetricTopology.class
-		// .getResourceAsStream("synapsstorm.properties"));
-		//
-		// String topology_name = properties.getProperty("topology_name");
-		// int n_workers =
-		// Integer.parseInt(properties.getProperty("n_workers"));
-		// int n_api_spout = Integer.parseInt(properties
-		// .getProperty("n_api_spout"));
-		// int n_check_spout = Integer.parseInt(properties
-		// .getProperty("n_check_spout"));
-		// int n_unpack_bolt = Integer.parseInt(properties
-		// .getProperty("n_unpack_bolt"));
-		// int n_putmetric_bolt = Integer.parseInt(properties
-		// .getProperty("n_putmetric_bolt"));
-		// int n_action_bolt = Integer.parseInt(properties
-		// .getProperty("n_action_bolt"));
 
 		Config conf = new Config();
-		conf.setDebug(true);
+		//conf.setDebug(true);
 
 		if (args != null && args.length > 0) {
 			conf.setNumWorkers(6);
 			conf.setNumAckers(6);
 			conf.setMaxSpoutPending(500);
-			builder.setSpout("api_spout", new ApiSpout(), 4);
+			builder.setSpout("api_spout", new ApiSpout(), 6);
 			builder.setSpout("check_spout", new CheckSpout(), 1);
 			builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 4)
 					.shuffleGrouping("api_spout");

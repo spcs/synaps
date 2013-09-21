@@ -26,7 +26,9 @@ from synaps import log as logging
 from synaps.exception import RpcInvokeException
 import uuid, time
 import pika, json
-from pika.exceptions import ConnectionClosed, AMQPConnectionError
+from pika.exceptions import (ConnectionClosed, AMQPConnectionError, 
+                             AMQPChannelError)
+
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS
@@ -85,6 +87,29 @@ class RpcConnection(object):
 class RemoteProcedureCall(object):
     def __init__(self):
         self.pool = Pool(create=RpcConnection, max_size=500)
+        
+        
+    def read_msg(self):
+        msg = 'AMQP Connection is closed %d time(s)... retrying.'
+        max_retries = 5
+        with self.pool.item() as conn:
+            for i in range(max_retries + 1):
+                try:
+                    frame, _, body = conn.channel.basic_get(
+                                                    queue='metric_queue')
+                    if frame:
+                        conn.channel.basic_ack(delivery_tag=frame.delivery_tag)
+                    return frame, body
+                
+                except (AMQPConnectionError, AMQPChannelError, 
+                        ConnectionClosed):
+                    if i < max_retries:
+                        conn.connect()
+                        LOG.warn(_(msg) % i)
+                        time.sleep(2 * i)
+                    else:
+                        raise
+
 
     def send_msg(self, message_id, body):
         """

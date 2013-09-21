@@ -13,15 +13,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import eventlet
 import json
 import os
-import pika
-from pika.exceptions import AMQPConnectionError, AMQPChannelError
-import time
-
 from synaps.cep.storm import Spout, emit
 from synaps import flags
 from synaps import log as logging
+from synaps import rpc
 
 
 LOG = logging.getLogger(__name__)
@@ -32,36 +30,23 @@ class ApiSpout(Spout):
     SPOUT_NAME = "APISpout"
     
     def initialize(self, conf, context):
-        self.pid = os.getpid()       
-        self.connect()
-    
-    def connect(self):
-        while True:
-            try:
-                self._connect()
-            except (AMQPConnectionError, AMQPChannelError):
-                LOG.warn("AMQP Connection Error. Retry in 3 seconds.")
-                time.sleep(3)            
-            else:
-                break
-    
-    def _connect(self):
-        self.conn = pika.BlockingConnection(
-            pika.ConnectionParameters(
-                host=FLAGS.get('rabbit_host'),
-                port=FLAGS.get('rabbit_port'),
-                credentials=pika.PlainCredentials(
-                    FLAGS.get('rabbit_userid'),
-                    FLAGS.get('rabbit_password')
-                ),
-                virtual_host=FLAGS.get('rabbit_virtual_host'),
-            )
-        )        
+        LOG.info("API Spout is started")
+        self.MAX_WORKERS = FLAGS.get('rabbit_read_workers')
+        self.pid = os.getpid()
+        self.worker_pool = eventlet.GreenPool(self.MAX_WORKERS)
+        self.rpc = rpc.RemoteProcedureCall()
+        self.queue = eventlet.Queue()
         
-        self.channel = self.conn.channel()
-        queue_args = {"x-ha-policy" : "all" }
-        self.channel.queue_declare(queue='metric_queue', durable=True,
-                                   arguments=queue_args)
+        
+    def read_from_queue(self):
+        while True:
+            frame, body = self.rpc.read_msg()
+            if frame:
+                self.queue.put((frame, body))
+                break
+            else:
+                eventlet.sleep(0.1)
+                                              
 
     def ack(self, id):
         LOG.info("Acked message %s", id)
@@ -72,14 +57,13 @@ class ApiSpout(Spout):
         
     
     def nextTuple(self):
-        try:
-            (frame, _, body) = self.channel.basic_get(queue="metric_queue")
-        except (AMQPConnectionError, AMQPChannelError):
-            LOG.error("AMQP Connection or Channel Error. While get a message.")
-            self.connect()
-            return
-
-        if frame:
+        if not self.worker_pool.waiting():
+            self.worker_pool.spawn_n(self.read_from_queue)
+        
+        count = 0
+        while (not self.queue.empty() and count < self.MAX_WORKERS):
+            count += 1
+            frame, body = self.queue.get()
             msg_body = json.loads(body)
             msg_id = msg_body['message_id']
             msg_req_id = ":".join((msg_body['message_uuid'], 
@@ -87,5 +71,4 @@ class ApiSpout(Spout):
                                    str(frame.delivery_tag)))
             message = "Start processing message in the queue - [%s:%s] %s"
             LOG.info(message, msg_id, msg_req_id, body)
-            emit([body], id=msg_req_id)
-            self.channel.basic_ack(delivery_tag=frame.delivery_tag)
+            emit([body], id=msg_req_id)        
