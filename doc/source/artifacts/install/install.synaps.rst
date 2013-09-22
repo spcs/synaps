@@ -104,6 +104,7 @@ Copy synaps-api build file(e.g. synaps-yy.mm.xx.tar.gz) and install it as below.
   tar xvfz synaps-yy.mm.xx.tar.gz
   cd synaps/synaps-api
   sudo python setup.py install
+  sudo cp etc/init.d/* /etc/init.d
 
 
 Configuration
@@ -153,8 +154,8 @@ pipeline.
   /monitor: cloudwatch_api_v1
   
   [pipeline:cloudwatch_api_v1]
-  #  pipeline = fault_wrap log_request no_auth monitor_request authorizer cloudwatch_executor
-  #pipeline = fault_wrap log_request authenticate monitor_request authorizer cloudwatch_executor
+  # pipeline = fault_wrap log_request no_auth monitor_request authorizer cloudwatch_executor
+  # pipeline = fault_wrap log_request authenticate monitor_request authorizer cloudwatch_executor
   pipeline = fault_wrap log_request ec2keystoneauth monitor_request authorizer cloudwatch_executor
     
   [filter:fault_wrap]

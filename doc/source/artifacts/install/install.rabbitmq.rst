@@ -54,3 +54,13 @@ To verify if the rabbitmq is running well,
    [{nodes,[{disc,['rabbit@synaps-mq02','rabbit@synaps-mq01']}]},
    {running_nodes,['rabbit@synaps-mq01','rabbit@synaps-mq02']}]
    ...done.
+
+If a rabbitmq cluster is broken, run below on a mq server to fix it.
+
+.. code-block:: bash
+
+   $ rabbitmqctl stop_app
+   $ rabbitmqctl reset
+   $ rabbitmqctl cluster rabbit@synaps-mq01 rabbit@synaps-mq02
+   $ rabbitmqctl start_app
+   $ rabbitmqctl cluster_status
