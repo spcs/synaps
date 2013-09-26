@@ -95,7 +95,7 @@ class RemoteProcedureCall(object):
         with self.pool.item() as conn:
             for i in range(max_retries + 1):
                 try:
-                    frame, _, body = conn.channel.basic_get(
+                    frame, header, body = conn.channel.basic_get(
                                                     queue='metric_queue')
                     if frame:
                         conn.channel.basic_ack(delivery_tag=frame.delivery_tag)

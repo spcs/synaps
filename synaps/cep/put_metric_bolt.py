@@ -584,15 +584,15 @@ class PutMetricBolt(storm.BasicBolt):
         # Load statistics data in memory
         if metric_key not in self.metrics:
             max_retries = 3
-            for i in range(max_retries):
+            for i in range(max_retries + 1):
                 try:
                     self.metrics[metric_key] = MetricMonitor(metric_key, 
                                                              self.cass)
                     break
                 except ResourceNotFound:
-                    if i < max_retries:
+                    if i + 1 < max_retries:
                         LOG.warn("Metric %s is not in the database. " \
-                                 "retry... %d", metric_key, i+1)
+                                 "retry... %d", metric_key, i + 1)
                         time.sleep(1)
                     else:
                         LOG.error("Metric %s is not in the database.", 
