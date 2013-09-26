@@ -60,6 +60,9 @@ log_opts = [
                default='%(asctime)s %(levelname)s %(name)s [-] %(instance)s'
                        '%(message)s',
                help='format string to use for log messages without context'),
+    cfg.StrOpt('logging_storm_format_suffix',
+               default='from (pid=%(process)d)',
+               help='data to append to log format in storm worker'),
     cfg.StrOpt('logging_debug_format_suffix',
                default='from (pid=%(process)d) %(funcName)s '
                        '%(pathname)s:%(lineno)d',
@@ -262,6 +265,29 @@ class LegacyNovaFormatter(logging.Formatter):
         return '\n'.join(formatted_lines)
 
 
+class StormFormatter(LegacyNovaFormatter):
+    def format(self, record):
+        """Uses contextstring if request_id is set, otherwise default."""
+        if 'instance' not in record.__dict__:
+            record.__dict__['instance'] = ''
+
+        if record.__dict__.get('request_id', None):
+            self._fmt = FLAGS.logging_context_format_string
+        else:
+            self._fmt = FLAGS.logging_default_format_string
+
+        if (record.levelno == logging.DEBUG and
+            FLAGS.logging_debug_format_suffix):
+            self._fmt += " " + FLAGS.logging_debug_format_suffix
+        else:
+            self._fmt += " " + FLAGS.logging_storm_format_suffix
+
+        # Cache this on the record, Logger will respect our formated copy
+        if record.exc_info:
+            record.exc_text = self.formatException(record.exc_info, record)
+        return logging.Formatter.format(self, record)
+        
+
 class PublishErrorsHandler(logging.Handler):
     def emit(self, record):
         if 'list_notifier_drivers' in FLAGS:
@@ -351,7 +377,7 @@ def setup_storm():
         if FLAGS.log_format:
             handler.setFormatter(logging.Formatter(fmt=FLAGS.log_format,
                                                    datefmt=datefmt))
-        handler.setFormatter(LegacyNovaFormatter(datefmt=datefmt))
+        handler.setFormatter(StormFormatter(datefmt=datefmt))
 
     if FLAGS.verbose or FLAGS.debug:
         synaps_root.setLevel(logging.DEBUG)

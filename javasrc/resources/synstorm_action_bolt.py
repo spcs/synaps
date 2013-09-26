@@ -34,9 +34,5 @@ if __name__ == "__main__":
     flags.FLAGS(sys.argv)
     utils.default_flagfile()
     FLAGS = flags.FLAGS
-    timestr = datetime.utcnow().strftime("%y%m%d%H%M")
-    pid = os.getpid()
-    logfile = 'storm-action-%s-%d.log' % (timestr, pid)
-    FLAGS.set_override('log_file', logfile)
     logging.setup_storm()
     ActionBolt().run()
