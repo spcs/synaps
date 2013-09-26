@@ -373,7 +373,7 @@ class MetricMonitor(object):
                         json.loads(alarm.get('reason_data', "{}"))}
         json_reason_data = json.dumps(reason_data)
 
-        if len(data) < evaluation_periods:
+        if len(data) == 0:
             if state_value != 'INSUFFICIENT_DATA':
                 template = _("Insufficient Data: %d datapoints were unknown.")
                 reason = template % (evaluation_periods - len(data))
@@ -392,15 +392,18 @@ class MetricMonitor(object):
                 LOG.audit("Alarm %s status changed to INSUFFICIENT_DATA", 
                           alarm_name)
         else:
-            crossed = reduce(operator.and_, cmp_op(data, threshold))
+            sufficient = len(data) >= evaluation_periods
+            crossed = (sufficient and 
+                       reduce(operator.and_, cmp_op(data, threshold)))
             com_op = alarm['comparison_operator']
             
             if crossed:
                 template = _("Threshold Crossed: %d datapoints were %s " + 
                              "the threshold(%f). " + 
                              "The most recent datapoints: %s.")
-                reason = template % (len(data), self.CMP_STR_MAP[com_op],
-                                     threshold, recent_datapoints)
+                reason = template % (evaluation_periods, 
+                                     self.CMP_STR_MAP[com_op], threshold, 
+                                     recent_datapoints)
                 if state_value != 'ALARM':
                     new_state = {'stateReason':reason,
                                  'stateReasonData':reason_data,
@@ -419,8 +422,9 @@ class MetricMonitor(object):
                 template = _("Threshold Crossed: %d datapoints were not %s " + 
                              "the threshold(%f). " + 
                              "The most recent datapoints: %s.")
-                reason = template % (len(data), self.CMP_STR_MAP[com_op],
-                                     threshold, recent_datapoints)
+                reason = template % (evaluation_periods, 
+                                     self.CMP_STR_MAP[com_op], threshold, 
+                                     recent_datapoints)
                 if state_value != 'OK':
                     new_state = {'stateReason':reason,
                                  'stateReasonData':reason_data,
