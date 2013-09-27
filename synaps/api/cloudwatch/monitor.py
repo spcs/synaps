@@ -30,6 +30,8 @@ from synaps import utils
 from synaps.exception import InvalidParameterValue
 from synaps import db
 
+from novaclient.exceptions import NotFound 
+
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
 
@@ -225,7 +227,7 @@ class MonitorController(object):
         self.check_alarm_names(alarm_names)
 
         alarm_names = utils.extract_member_list(alarm_names)
-        self.monitor_api.set_alarm_actions(context, project_id, alarm_names, 
+        self.monitor_api.set_alarm_actions(context, project_id, alarm_names,
                                            False)
         return {}        
     
@@ -237,7 +239,7 @@ class MonitorController(object):
         self.check_alarm_names(alarm_names)
 
         alarm_names = utils.extract_member_list(alarm_names)
-        self.monitor_api.set_alarm_actions(context, project_id, alarm_names, 
+        self.monitor_api.set_alarm_actions(context, project_id, alarm_names,
                                            True)
         return {}      
     
@@ -370,25 +372,34 @@ class MonitorController(object):
         self.check_unit(unit)
         self._validate_period(period)
         self._validate_evaluation_periods(evaluation_periods)
-        self.validate_put_metric_alarm(period, evaluation_periods)        
+        self.validate_put_metric_alarm(period, evaluation_periods)   
+        self._validate_instanceaction(ok_actions, project_id, context)
+        self._validate_instanceaction(insufficient_data_actions, project_id, 
+                                      context)
+        self._validate_instanceaction(alarm_actions, project_id, context)
         
-        metricalarm = monitor.MetricAlarm(
-            alarm_name=alarm_name,
-            comparison_operator=comparison_operator,
-            evaluation_periods=evaluation_periods,
-            metric_name=metric_name,
-            namespace=namespace,
-            period=period,
-            statistic=statistic,
-            threshold=threshold,
-            actions_enabled=actions_enabled,
-            alarm_actions=alarm_actions,
-            alarm_description=alarm_description,
-            dimensions=d,
-            insufficient_data_actions=insufficient_data_actions,
-            ok_actions=ok_actions,
-            unit=unit
-        )
+        try:
+            metricalarm = monitor.MetricAlarm(
+                alarm_name=alarm_name,
+                comparison_operator=comparison_operator,
+                evaluation_periods=evaluation_periods,
+                metric_name=metric_name,
+                namespace=namespace,
+                period=period,
+                statistic=statistic,
+                threshold=threshold,
+                actions_enabled=actions_enabled,
+                alarm_actions=alarm_actions,
+                alarm_description=alarm_description,
+                dimensions=d,
+                insufficient_data_actions=insufficient_data_actions,
+                ok_actions=ok_actions,
+                unit=unit
+            )
+        except AssertionError as e:
+            LOG.exception(e)
+            err = "Unsuitable MetricAlarm Value(%s)" % str(e)
+            raise InvalidParameterValue(err)
 
         self.monitor_api.put_metric_alarm(context, project_id, metricalarm)
         
@@ -438,7 +449,7 @@ class MonitorController(object):
 
         for metric in metrics:
             metric_name, dimensions, value, unit, timestamp = metric
-            self.monitor_api.put_metric_data(context, 
+            self.monitor_api.put_metric_data(context,
                                              project_id=project_id,
                                              namespace=namespace,
                                              metric_name=metric_name,
@@ -466,8 +477,8 @@ class MonitorController(object):
         self.check_state_reason_data(state_reason_data)
         self.check_state_value(state_value)
 
-        self.monitor_api.set_alarm_state(context, project_id, alarm_name, 
-                                         state_reason, state_value, 
+        self.monitor_api.set_alarm_state(context, project_id, alarm_name,
+                                         state_reason, state_value,
                                          state_reason_data)
         return {}
 
@@ -713,6 +724,23 @@ class MonitorController(object):
         queried_datapoints = (period_diff.total_seconds() / (int(period)))
         if queried_datapoints > max_query_datapoints:
             err = "Requested too many datapoints (%d). "\
-                  "Limitation is %s datapoints" % (queried_datapoints, 
+                  "Limitation is %s datapoints" % (queried_datapoints,
                                                    max_query_datapoints) 
             raise exception.InvalidParameterValue(err)
+        
+    def _validate_instanceaction(self, actions, project_id, context):
+        instanceactions = [action for action in actions 
+                           if utils.validate_instance_action(action)]
+        parsed = [utils.parse_instance_action(a) for a in instanceactions]
+        nc = utils.get_python_novaclient()
+        err = "Server is not found"
+        
+        for action_type, vm_uuid in parsed:
+            try:
+                server = nc.servers.get(vm_uuid)
+            except NotFound:
+                raise exception.InvalidParameterValue(err)
+
+            if not context.is_admin and server.tenant_id != project_id:
+                raise exception.InvalidParameterValue(err)
+        

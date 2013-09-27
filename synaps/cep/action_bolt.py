@@ -26,10 +26,10 @@ from synaps.db import Cassandra
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
-from synaps.utils import validate_email, validate_international_phonenumber
+from synaps.utils import (validate_email, validate_international_phonenumber,
+                          validate_instance_action, parse_instance_action)
 from synaps.monitor import API
 from synaps.context import get_admin_context
-
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
@@ -43,6 +43,7 @@ class ActionBolt(storm.BasicBolt):
         self.cass = Cassandra()
         self.enable_send_mail = FLAGS.get('enable_send_mail')
         self.enable_send_sms = FLAGS.get('enable_send_sms')
+        self.enable_instance_action = FLAGS.get('enable_instance_action')
         self.notification_server = FLAGS.get('notification_server_addr')
         self.statistics_ttl = FLAGS.get('statistics_ttl')
         self.smtp_server = FLAGS.get('smtp_server')
@@ -53,6 +54,12 @@ class ActionBolt(storm.BasicBolt):
         self.sms_db = FLAGS.get('sms_database')
         self.sms_db_username = FLAGS.get('sms_db_username')
         self.sms_db_password = FLAGS.get('sms_db_password')
+        
+        self.nova_auth_url = FLAGS.get('nova_auth_url')
+        self.nova_admin_tenant_name = FLAGS.get('admin_tenant_name')
+        self.nova_admin_user = FLAGS.get('admin_user')
+        self.nova_admin_password = FLAGS.get('admin_password')
+        
         self.api = API()
     
     
@@ -61,6 +68,8 @@ class ActionBolt(storm.BasicBolt):
             return "email"
         elif validate_international_phonenumber(action):
             return "SMS"
+        elif validate_instance_action(action):
+            return "InstanceAction"
 
 
     def meter_sms_actions(self, project_id, receivers):
@@ -98,6 +107,18 @@ class ActionBolt(storm.BasicBolt):
         LOG.audit("Meter Email: %s %s %s", project_id, len(receivers), 
                   receivers)
         
+
+    def meter_instance_actions(self, project_id, receivers):
+        ctxt = get_admin_context()
+        self.api.put_metric_data(ctxt, project_id, namespace="SPCS/SYNAPS", 
+                                 metric_name="InstanceActionCount",
+                                 dimensions={}, value=len(receivers), 
+                                 unit="Count",
+                                 timestamp=utils.strtime(utils.utcnow()), 
+                                 is_admin=True)
+        LOG.audit("Meter InstanceAction: %s %s %s", project_id, len(receivers), 
+                  receivers)
+
     
     def alarm_history_state_update(self, alarmkey, alarm,
                                    notification_message):
@@ -114,12 +135,21 @@ class ActionBolt(storm.BasicBolt):
         """        
         item_type = 'Action'
         project_id = alarm['project_id']
-        if notification_message.get('state', 'ok') == 'ok':
-            history_summary = "Message '%(subject)s' is sent via"\
-                              " %(method)s" % notification_message
-        else:
-            history_summary = "Failed to send a message '%(subject)s' via"\
-                              " %(method)s" % notification_message
+        if notification_message.get("method") in ("email", "SMS"):
+            if notification_message.get('state', 'ok') == 'ok':
+                history_summary = "Message '%(subject)s' is sent via"\
+                                  " %(method)s" % notification_message
+            else:
+                history_summary = "Failed to send a message '%(subject)s' via"\
+                                  " %(method)s" % notification_message
+        elif notification_message.get("method") in ("InstanceAction"):
+            if notification_message.get('state', 'ok') == 'ok':
+                history_summary = "%(method)s %(receivers)s is invoked." % \
+                                  notification_message
+            else:
+                history_summary = "Failed to invoke %(method)s %(receivers)s."\
+                                  % notification_message 
+            
         
         timestamp = utils.utcnow()
         
@@ -172,55 +202,98 @@ class ActionBolt(storm.BasicBolt):
         
         if actions_enabled and actions:                 
             if self.enable_send_sms:
-                sms_receivers = [action for action in actions
-                                 if self.get_action_type(action) == "SMS"]
-                 
-                notification_message = {
-                    'method': "SMS",
-                    'receivers': sms_receivers,
-                    'subject': message['subject'],
-                    'body': message['body'],
-                    'state': 'ok'
-                }
-                
-                if sms_receivers: 
-                    try:
-                        self.send_sms(notification_message)
-                    except Exception as e:
-                        notification_message['state'] = 'failed'
-                        LOG.error(e)
-                    LOG.audit("SMS sent. %s", notification_message)
-                    self.alarm_history_state_update(alarm_key, alarm,
-                                                    notification_message)
-                    if notification_message['state'] != 'failed':
-                        self.meter_sms_actions(alarm['project_id'], 
-                                               sms_receivers)
+                self.process_sms_action(alarm_key, alarm, message, actions)
+            if self.enable_send_mail:
+                self.process_email_action(alarm_key, alarm, message, actions)
+            if self.enable_instance_action:
+                self.process_instance_action(alarm_key, alarm, message, 
+                                             actions)
 
-            if self.enable_send_mail:            
-                email_receivers = [action for action in actions 
-                                   if self.get_action_type(action) == "email"]
-                 
-                notification_message = {
-                    'method': "email",
-                    'receivers': email_receivers,
-                    'subject': message['subject'],
-                    'body': message['body'],
-                    'state': 'ok'
-                }
+
+    def do_instance_action(self, alarm_key, alarm, instance_actions):
+        nc = utils.get_python_novaclient()
+        
+        for action in instance_actions:
+            action_type, vm_uuid = parse_instance_action(action)
+            server = nc.servers.get(vm_uuid)
+            
+            if action_type == "Migrate":
+                server.migrate()
+                LOG.info("instance action %s invoked for %s", action_type, 
+                         server)
+            elif action_type == "Reboot":
+                server.reboot('HARD')
+                LOG.info("instance action %s invoked for %s", action_type, 
+                         server)
+    
+
+    def process_instance_action(self, alarm_key, alarm, message, actions):
+        instance_actions = [action for action in actions 
+                            if self.get_action_type(action) == 
+                            "InstanceAction"]
+
+        instance_action_message = {'method': "InstanceAction", 
+                                   'receivers': instance_actions, 
+                                   'subject': message['subject'],
+                                   'body': message['body'], 'state': 'ok'}
+
+        if instance_actions:
+            try:
+                self.do_instance_action(alarm_key, alarm, instance_actions)
+            except Exception as e:
+                instance_action_message['state'] = 'failed'
+                LOG.exception(e)
+            LOG.audit("InstanceAction is invoked. %s", instance_action_message)
+            self.alarm_history_state_update(alarm_key, alarm,
+                                            instance_action_message)
+            if instance_action_message['state'] != 'failed':
+                self.meter_instance_actions(alarm['project_id'], 
+                                            instance_actions)
                 
-                if email_receivers:
-                    try:                
-                        self.send_email(notification_message)
-                    except Exception as e:
-                        notification_message['state'] = 'failed'
-                        LOG.error(e)
-                    LOG.audit("Email sent. %s", notification_message)
-                    self.alarm_history_state_update(alarm_key, alarm,
-                                                    notification_message)
-                    if notification_message['state'] != 'failed':
-                        self.meter_email_actions(alarm['project_id'], 
-                                                 email_receivers)
+
+    def process_email_action(self, alarm_key, alarm, message, actions):
+        email_receivers = [action for action in actions 
+                           if self.get_action_type(action) == "email"]
+         
+        notification_message = {'method': "email", 
+                                'receivers': email_receivers, 
+                                'subject': message['subject'],
+                                'body': message['body'], 'state': 'ok'}
+        
+        if email_receivers:
+            try:                
+                self.send_email(notification_message)
+            except Exception as e:
+                notification_message['state'] = 'failed'
+                LOG.exception(e)
+            LOG.audit("Email sent. %s", notification_message)
+            self.alarm_history_state_update(alarm_key, alarm,
+                                            notification_message)
+            if notification_message['state'] != 'failed':
+                self.meter_email_actions(alarm['project_id'], 
+                                         email_receivers)
+        
                     
+    def process_sms_action(self, alarm_key, alarm, message, actions):
+        sms_receivers = [action for action in actions
+                         if self.get_action_type(action) == "SMS"]
+         
+        notification_message = {'method': "SMS", 'receivers': sms_receivers,
+                                'subject': message['subject'], 
+                                'body': message['body'], 'state': 'ok'}
+        
+        if sms_receivers: 
+            try:
+                self.send_sms(notification_message)
+            except Exception as e:
+                notification_message['state'] = 'failed'
+                LOG.exception(e)
+            LOG.audit("SMS sent. %s", notification_message)
+            self.alarm_history_state_update(alarm_key, alarm,
+                                            notification_message)
+            if notification_message['state'] != 'failed':
+                self.meter_sms_actions(alarm['project_id'], 
+                                       sms_receivers)
 
     def send_sms(self, message):
         Q_LOCAL = """insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, 

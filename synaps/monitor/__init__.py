@@ -19,7 +19,8 @@
 #    under the License.
 
 from synaps.monitor.api import API
-from synaps.utils import validate_email, validate_international_phonenumber
+from synaps.utils import (validate_email, validate_international_phonenumber, 
+                          validate_instance_action)
 import json
 
 class Datapoint(object):
@@ -175,7 +176,8 @@ class MetricAlarm(object):
             assert (isinstance(actions, list))
             for a in actions:
                 assert (validate_email(a) or 
-                        validate_international_phonenumber(a))
+                        validate_international_phonenumber(a) or
+                        validate_instance_action(a))
 
         assert (isinstance(actions_enabled, bool))
         self.actions_enabled = actions_enabled

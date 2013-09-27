@@ -48,6 +48,8 @@ from synaps import exception
 from synaps import log as logging
 from synaps.openstack.common import cfg
 
+from novaclient.v1_1 import client
+
 LOG = logging.getLogger(__name__)
 ISO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 PERFECT_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
@@ -61,6 +63,9 @@ FLAGS.register_opt(
 
 RE_INTERNATIONAL_PHONENUMBER = re.compile("^\+[0-9]{7,17}$")
 RE_EMAIL = re.compile('^[_.0-9a-z-]+@([0-9a-z][0-9a-z-]+.)+[a-z]{2,4}$')
+RE_UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+RE_INSTANCE_ACTION = re.compile('^InstanceAction:(Reboot|Migrate)\((%s)\)' % 
+                                RE_UUID)
 
 UNIT_CONV_MAP = {
     'None': 1.0,
@@ -100,6 +105,20 @@ def validate_email(email):
     except TypeError:
         ret = False
     return ret
+
+
+def validate_instance_action(instance_action):
+    try:
+        ret = RE_INSTANCE_ACTION.match(instance_action) is not None
+    except TypeError:
+        ret = False
+    return ret
+
+
+def parse_instance_action(instance_action):
+    mobj = RE_INSTANCE_ACTION.match(instance_action)
+    return mobj.groups() if mobj else None 
+
 
 def validate_international_phonenumber(number):
     """
@@ -665,3 +684,10 @@ def xhtml_escape(value):
     """
     return saxutils.escape(value, {'"': '&quot;', "'": '&apos;'})
 
+def get_python_novaclient():
+    nc = client.Client(FLAGS.get('admin_user'), 
+                       FLAGS.get('admin_password'), 
+                       FLAGS.get('admin_tenant_name'), 
+                       auth_url=FLAGS.get('nova_auth_url'),
+                       endpoint_type='internalURL')
+    return nc

@@ -262,8 +262,27 @@ rabbitmq_opts = [
                help='Number of workers for api spout'),
 ]
 
+instance_action_opts = [
+    cfg.BoolOpt('enable_instance_action',
+                default=True,
+                help='flag for instance action'),
+    cfg.StrOpt('nova_auth_url',
+                default='http://localhost:35357/v2.0',
+                help='keystone host'),
+    cfg.StrOpt('admin_tenant_name',
+                default="service",
+                help='admin tenant name'),                        
+    cfg.StrOpt('admin_user',
+                default="nova",
+                help='admin user name'),                        
+    cfg.StrOpt('admin_password',
+                default="password",
+                help='admin password name'),                        
+]
+
 FLAGS.register_cli_opts(log_opts)
 FLAGS.register_cli_opts(core_opts)
 FLAGS.register_cli_opts(debug_opts)
 FLAGS.register_opts(global_opts)
 FLAGS.register_opts(rabbitmq_opts)
+FLAGS.register_opts(instance_action_opts)

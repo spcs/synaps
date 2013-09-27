@@ -34,6 +34,12 @@ Following is list of parameters for this action.
        
        Refer to International Telecommunication Union ITU-T Rec. E.123 (02/2001)
 
+       Two types of InstanceAction is also available. Following the action 
+       prefix(InstanceAction:Reboot or InstanceAction:Migrate), instance UUID 
+       must be specified in parenthesis. 
+       ex) InstanceAction:Migrate(2f4a97eb-1234-9876-8d19-54aacabbdc88)
+
+
        Data type: String
      - No
    * - AlarmDescription	
@@ -98,6 +104,11 @@ Following is list of parameters for this action.
               
        refer to International Telecommunication Union ITU-T Rec. E.123 (02/2001)
 
+       Two types of InstanceAction is also available. Following the action 
+       prefix(InstanceAction:Reboot or InstanceAction:Migrate), instance UUID 
+       must be specified in parenthesis. 
+       ex) InstanceAction:Migrate(2f4a97eb-1234-9876-8d19-54aacabbdc88)
+
        Data type: String
      - No
    * - MetricName
@@ -129,6 +140,11 @@ Following is list of parameters for this action.
        this value.
               
        refer to International Telecommunication Union ITU-T Rec. E.123 (02/2001)
+
+       Two types of InstanceAction is also available. Following the action 
+       prefix(InstanceAction:Reboot or InstanceAction:Migrate), instance UUID 
+       must be specified in parenthesis. 
+       ex) InstanceAction:Migrate(2f4a97eb-1234-9876-8d19-54aacabbdc88)
 
        Data type: String
      - No
