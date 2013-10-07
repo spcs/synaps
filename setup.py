@@ -77,6 +77,7 @@ setup(
              'bin/synaps-api-cloudwatch',
              'bin/synaps-reload-metric',
              'bin/synaps-meter',
+             'bin/synaps-stress',
              ],
     setup_requires=[],
     py_modules=[]
