@@ -213,20 +213,10 @@ class MetricMonitor(object):
         return DataFrame(ret_dict)
 
     
-    def put_alarm(self, project_id, metricalarm):
-        alarm_name = metricalarm.get('alarm_name')
-        alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
-        if alarm_key:
-            ret = self.cass.get_metric_alarm(alarm_key)
-            if ret:
-                self.alarms[alarm_key] = ret
-                LOG.debug("alarm key is [%s]", alarm_key)
-                self.update_left_offset(self.alarms)
-            else:
-                LOG.warn("alarm key [%s] is found, but alarm is not found.",
-                         alarm_key)
-        else:
-            LOG.warn("no alarm key [%s]", alarm_key)        
+    def put_alarm(self, alarm_key, metricalarm):
+        self.alarms[alarm_key] = metricalarm
+        self.update_left_offset(self.alarms)
+        LOG.info("Alarm %s is loaded in memory.", metricalarm['alarm_name'])
 
         
     def put_metric_data(self, metric_key, timestamp, value, unit=None):
@@ -693,7 +683,7 @@ class PutMetricBolt(storm.BasicBolt):
         LOG.info("metric alarm inserted: %s %s", alarm_key, metricalarm)       
                 
         # load metric in memory     
-        self.metrics[metric_key].put_alarm(project_id, metricalarm)
+        self.metrics[metric_key].put_alarm(alarm_key, metricalarm)
        
 
     def process_delete_metric_alarms_msg(self, metric_key, message):
