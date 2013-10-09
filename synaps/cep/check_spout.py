@@ -33,6 +33,8 @@ FLAGS = flags.FLAGS
 class CheckSpout(Spout):
     SPOUT_NAME = "CheckSpout"
     lastchecked = 0
+    check_counter = 0
+    warmup_period = 3
     
     def initialize(self, conf, context):
         self.pid = os.getpid()
@@ -58,10 +60,16 @@ class CheckSpout(Spout):
         now = self.get_now()
         
         if self.lastchecked != now:
+            self.check_counter += 1
+            if self.check_counter <= self.warmup_period:
+                LOG.info("warming up. skipping evaluation. counter: %d", 
+                         self.check_counter)
+                return
             self.lastchecked = now
             id = "periodic_%s" % str(uuid4())
             body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID})
-            LOG.info("Periodic monitoring message sent [%s] %s", id, body)
+            LOG.info("Periodic monitoring message sent [%s] %s. counter: %d", 
+                     id, body, self.check_counter)
             emit([None, body], id=id)
         else:
             time.sleep(1)
