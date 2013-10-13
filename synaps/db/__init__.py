@@ -248,8 +248,11 @@ class Cassandra(object):
     def get_metric_key_or_create(self, project_id, namespace, metric_name,
                                  dimensions, unit='None'):
         # get metric key
-        key = self.get_metric_key(project_id, namespace, metric_name,
-                                  dimensions)
+        try:
+            key = self.get_metric_key(project_id, namespace, metric_name,
+                                      dimensions)
+        except Exception as e:
+            LOG.exception(e)
         
         # or create metric
         if not key:
