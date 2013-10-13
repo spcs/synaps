@@ -691,3 +691,15 @@ def get_python_novaclient():
                        auth_url=FLAGS.get('nova_auth_url'),
                        endpoint_type='internalURL')
     return nc
+
+
+def generate_metric_key(project_id, namespace, metric_name, dimensions):
+    if type(dimensions) is not str:
+        dimensions = pack_dimensions(dimensions)
+    elements = map(repr, [project_id, namespace, metric_name, dimensions])
+    metric_str = " /SEP/ ".join(elements)
+    return uuid.uuid5(uuid.NAMESPACE_OID, metric_str)
+
+
+def pack_dimensions(dimensions):
+    return json.dumps(OrderedDict(sorted(dimensions.items())))

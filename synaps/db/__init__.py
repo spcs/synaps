@@ -35,9 +35,6 @@ LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
 
 
-def pack_dimensions(dimensions):
-    return json.dumps(OrderedDict(sorted(dimensions.items())))
-
 class Cassandra(object):
     STATISTICS = ["Sum", "SampleCount", "Average", "Minimum", "Maximum"]
     
@@ -231,7 +228,7 @@ class Cassandra(object):
 
             
     def get_metric_key(self, project_id, namespace, metric_name, dimensions):
-        dimensions = pack_dimensions(dimensions)
+        dimensions = utils.pack_dimensions(dimensions)
         expr_list = [
             pycassa.create_index_expression("project_id", project_id),
             pycassa.create_index_expression("name", metric_name),
@@ -254,18 +251,19 @@ class Cassandra(object):
         key = self.get_metric_key(project_id, namespace, metric_name,
                                   dimensions)
         
-        # or create metric 
+        # or create metric
         if not key:
-            key = uuid.uuid4()
-            json_dim = pack_dimensions(dimensions)
+            json_dim = utils.pack_dimensions(dimensions)
+            key = utils.generate_metric_key(project_id, namespace, metric_name, 
+                                            dimensions)
             columns = {'project_id': project_id, 'namespace': namespace,
                        'name': metric_name, 'dimensions': json_dim,
-                       'unit': unit or 'None', 
+                       'unit': unit or 'None',
                        'updated_timestamp': datetime.utcnow(),
                        'created_timestamp': datetime.utcnow()}
             
             self.cf_metric.insert(key=key, columns=columns)
-            LOG.debug("cf_metric.insert (%s, %s)" % (key, columns))
+            LOG.info("New metric is created (%s, %s)" % (key, columns))
         
         return key
 
@@ -282,9 +280,9 @@ class Cassandra(object):
                                                  column_finish=column_end,
                                                  column_count=count)
             except pycassa.NotFoundException:
-                LOG.info("not found data - %s %s %s %s" % (key, super_column,
-                                                           column_start,
-                                                           column_end))
+                LOG.debug("data not found - %s %s %s %s" % (key, super_column,
+                                                            column_start,
+                                                            column_end))
             
             return stat
         
@@ -383,7 +381,7 @@ class Cassandra(object):
             expr_list.append(expr)
             
         if dimensions:
-            packed_dimensions = pack_dimensions(dimensions)
+            packed_dimensions = utils.pack_dimensions(dimensions)
             expr = pycassa.create_index_expression("dimensions",
                                                    packed_dimensions)
             expr_list.append(expr)

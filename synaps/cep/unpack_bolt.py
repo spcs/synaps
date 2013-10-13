@@ -15,7 +15,6 @@
 
 
 import json
-import md5
 import os
 from uuid import UUID
 
@@ -23,15 +22,18 @@ from synaps import flags
 from synaps.cep import storm
 from synaps.db import Cassandra
 from synaps import log as logging
+from synaps import utils
 from synaps.rpc import (PUT_METRIC_DATA_MSG_ID, PUT_METRIC_ALARM_MSG_ID,
                         DELETE_ALARMS_MSG_ID, SET_ALARM_STATE_MSG_ID)
-
-
-threshhold = 10000
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS
 
+if FLAGS.memcached_servers:
+    import memcache
+else:
+    from synaps.common import memorycache as memcache
+    
 
 class UnpackMessageBolt(storm.BasicBolt):
     BOLT_NAME = "UnpackMessageBolt"
@@ -40,25 +42,28 @@ class UnpackMessageBolt(storm.BasicBolt):
         self.pid = os.getpid()
         self.cass = Cassandra()
         self.key_dict = {}
+        self.mc = memcache.Client(FLAGS.memcached_servers, debug=0)
     
                 
     def get_metric_key(self, message):
-        memory_key = md5.md5(str((message['project_id'],
-                                  message['namespace'],
-                                  message['metric_name'],
-                                  message['dimensions']))).digest()
+        project_id = message['project_id']
+        namespace = message['namespace']
+        metric_name = message['metric_name']
+        dimensions = message['dimensions']
+        unit = message['unit']
         
-        if memory_key not in self.key_dict:
-            if len(self.key_dict) > threshhold:
-                self.key_dict.popitem()
-            
-            self.key_dict[memory_key] = self.cass.get_metric_key_or_create(
-                 message['project_id'], message['namespace'],
-                 message['metric_name'], message['dimensions'],
-                 message['unit']
-            )
-            
-        return self.key_dict[memory_key]
+        key = utils.generate_metric_key(project_id, namespace, metric_name, 
+                                        dimensions)
+        memory_key = "metric_%s" % str(key)
+        metric_key = self.mc.get(memory_key)
+        
+        if not metric_key:
+            metric_key = self.cass.get_metric_key_or_create(project_id, 
+                                    namespace, metric_name, dimensions, unit)
+            self.mc.set(memory_key, metric_key, 3000)
+
+        return metric_key
+    
     
     def get_alarm_metric_key(self, alarmkey):
         alarm = self.cass.get_metric_alarm(alarmkey)
@@ -107,4 +112,3 @@ class UnpackMessageBolt(storm.BasicBolt):
                 alarm = self.cass.get_metric_alarm(alarm_key)
                 metric_key = str(alarm['metric_key'])
                 storm.emit([metric_key, json.dumps(message)])
-
