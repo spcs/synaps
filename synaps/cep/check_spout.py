@@ -45,8 +45,9 @@ class CheckSpout(Spout):
 
 
     def ack(self, id):
+        self.check_counter += 1
         LOG.info("Acked message %s", id)
-        
+
             
     def fail(self, id):
         LOG.error("Reject failed message %s", id)
@@ -60,16 +61,15 @@ class CheckSpout(Spout):
         now = self.get_now()
         
         if self.lastchecked != now:
-            self.check_counter += 1
-            if self.check_counter <= self.warmup_period:
-                LOG.info("warming up. skipping evaluation. counter: %d", 
-                         self.check_counter)
-                return
             self.lastchecked = now
-            id = "periodic_%s" % str(uuid4())
-            body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID})
-            LOG.info("Periodic monitoring message sent [%s] %s. counter: %d", 
-                     id, body, self.check_counter)
-            emit([None, body], id=id)
+            
+            ready_to_evaluate = self.check_counter >= self.warmup_period
+            msg_id = "periodic_%s" % str(uuid4())
+            body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID,
+                               'ready_to_evalute': ready_to_evaluate})
+            emit([None, body], id=msg_id)
+            LOG.info("Periodic monitoring message sent[%s]%s. counter: %d",
+                     msg_id, body, self.check_counter)
+            
         else:
             time.sleep(1)

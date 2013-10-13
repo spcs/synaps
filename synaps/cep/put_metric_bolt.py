@@ -153,7 +153,7 @@ class MetricMonitor(object):
     def is_stale(self):
         elapsed = datetime.utcnow() - self.updated_timestamp
         ttl = timedelta(seconds=self.cass.statistics_ttl)
-        LOG.debug("is metric(%s)_stale? elapsed: %s ttl: %s", str(self), 
+        LOG.debug("is metric(%s)_stale? elapsed: %s ttl: %s", str(self),
                   str(elapsed), str(ttl))
         return elapsed > ttl
 
@@ -169,7 +169,7 @@ class MetricMonitor(object):
             alarm = self.alarms.pop(alarmkey)
             self.cass.delete_metric_alarm(alarmkey)
             self.alarm_history_delete(alarmkey, alarm)
-            LOG.info("delete alarm %s for metric %s", str(alarmkey), 
+            LOG.info("delete alarm %s for metric %s", str(alarmkey),
                      self.metric_key)
     
             self.update_left_offset(self.alarms)        
@@ -260,7 +260,7 @@ class MetricMonitor(object):
                 if v == None: v = float('nan')                    
                  
         except KeyError:
-            stat = self.cass.get_metric_statistics_for_key(metric_key, 
+            stat = self.cass.get_metric_statistics_for_key(metric_key,
                                                            time_idx)
             stat = get_stats(stat)
 
@@ -379,7 +379,7 @@ class MetricMonitor(object):
                                                 new_state, old_state)
                 self.do_alarm_action(alarmkey, alarm, new_state, old_state,
                                      query_date)
-                LOG.audit("Alarm %s status changed to INSUFFICIENT_DATA", 
+                LOG.audit("Alarm %s status changed to INSUFFICIENT_DATA",
                           alarm_name)
         else:
             sufficient = len(data) >= evaluation_periods
@@ -391,8 +391,8 @@ class MetricMonitor(object):
                 template = _("Threshold Crossed: %d datapoints were %s " + 
                              "the threshold(%f). " + 
                              "The most recent datapoints: %s.")
-                reason = template % (evaluation_periods, 
-                                     self.CMP_STR_MAP[com_op], threshold, 
+                reason = template % (evaluation_periods,
+                                     self.CMP_STR_MAP[com_op], threshold,
                                      recent_datapoints)
                 if state_value != 'ALARM':
                     new_state = {'stateReason':reason,
@@ -412,8 +412,8 @@ class MetricMonitor(object):
                 template = _("Threshold Crossed: %d datapoints were not %s " + 
                              "the threshold(%f). " + 
                              "The most recent datapoints: %s.")
-                reason = template % (evaluation_periods, 
-                                     self.CMP_STR_MAP[com_op], threshold, 
+                reason = template % (evaluation_periods,
+                                     self.CMP_STR_MAP[com_op], threshold,
                                      recent_datapoints)
                 if state_value != 'OK':
                     new_state = {'stateReason':reason,
@@ -580,7 +580,7 @@ class PutMetricBolt(storm.BasicBolt):
             max_retries = 3
             for i in range(max_retries + 1):
                 try:
-                    self.metrics[metric_key] = MetricMonitor(metric_key, 
+                    self.metrics[metric_key] = MetricMonitor(metric_key,
                                                              self.cass)
                     break
                 except ResourceNotFound:
@@ -589,7 +589,7 @@ class PutMetricBolt(storm.BasicBolt):
                                  "retry... %d", metric_key, i + 1)
                         time.sleep(1)
                     else:
-                        LOG.error("Metric %s is not in the database.", 
+                        LOG.error("Metric %s is not in the database.",
                                   metric_key)
                         return
 
@@ -639,7 +639,7 @@ class PutMetricBolt(storm.BasicBolt):
         history_type = 'Update' if alarm_key else 'Create'
         if history_type == 'Update':
             original_alarm = self.cass.get_metric_alarm(alarm_key)
-            for dict_key in ['state_updated_timestamp', 'state_reason', 
+            for dict_key in ['state_updated_timestamp', 'state_reason',
                              'state_reason_data', 'state_value']:
                 metricalarm[dict_key] = original_alarm[dict_key]
             history_data = json.dumps({
@@ -661,7 +661,7 @@ class PutMetricBolt(storm.BasicBolt):
             })
             summary = "Alarm %s created" % metricalarm['alarm_name']
 
-        for dict_key in ['state_updated_timestamp', 
+        for dict_key in ['state_updated_timestamp',
                          'alarm_configuration_updated_timestamp']:
             metricalarm[dict_key] = utils.str_to_timestamp(
                                                         metricalarm[dict_key])
@@ -710,7 +710,7 @@ class PutMetricBolt(storm.BasicBolt):
             try:
                 metricalarm = metric.alarms[alarm_key]
             except KeyError:
-                LOG.warn("alarm key [%s] is found, but alarm is not found.", 
+                LOG.warn("alarm key [%s] is found, but alarm is not found.",
                          alarm_key)
                 return            
         else:
@@ -730,14 +730,18 @@ class PutMetricBolt(storm.BasicBolt):
         self.cass.put_metric_alarm(alarm_key, alarm_columns)
         
         
-    def process_check_metric_alarms_msg(self):
+    def process_check_metric_alarms_msg(self, message):
         query_time = datetime.utcnow()
         stale_metrics = []
+        
+        ready_to_evaluate = message.get('ready_to_evaluate')
 
         for key, metric in self.metrics.iteritems():
-            if metric.is_stale():
+            is_stale = metric.is_stale()
+            if is_stale:
                 stale_metrics.append(key)
-            metric.check_alarms(query_time)
+            if not is_stale and ready_to_evaluate:
+                metric.check_alarms(query_time)
 
         for key in stale_metrics:
             try:
@@ -745,7 +749,7 @@ class PutMetricBolt(storm.BasicBolt):
                 metric.delete()
                 LOG.audit("Stale metric(%s) is deleted", str(key))
             except KeyError:
-                LOG.error("KeyError occured when delete stale metric(%s)", 
+                LOG.error("KeyError occured when delete stale metric(%s)",
                           str(key))
 
 
@@ -758,7 +762,7 @@ class PutMetricBolt(storm.BasicBolt):
         try:
             metric_key = UUID(tup.values[0]) if tup.values[0] else None
         except ValueError:
-            LOG.error("badly formed hexadecimal UUID string - %s", 
+            LOG.error("badly formed hexadecimal UUID string - %s",
                       tup.values[0])
             return
         
@@ -788,7 +792,7 @@ class PutMetricBolt(storm.BasicBolt):
             
         elif message_id == CHECK_METRIC_ALARM_MSG_ID:
             LOG.info("process check_metric_alarm_msg (%s)", message)
-            self.process_check_metric_alarms_msg()
+            self.process_check_metric_alarms_msg(message)
             
         else:
             LOG.error("unknown message")
