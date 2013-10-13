@@ -18,42 +18,38 @@
 
 import time
 import datetime
+from datetime import timedelta
 import uuid
 import unittest
 import sys
 import os
+import random 
+
+from boto.ec2.cloudwatch.alarm import MetricAlarm
+from boto.exception import BotoServerError
 
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir, os.pardir))
 if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
     sys.path.insert(0, possible_topdir)
 
-from boto.ec2 import regioninfo
-from boto.ec2.cloudwatch import CloudWatchConnection
-from boto.ec2.cloudwatch.alarm import MetricAlarm
-from boto.exception import BotoServerError
-import random 
 from synaps import flags
 from synaps import utils
-from datetime import timedelta
+from synaps import log as logging
 
-flags.FLAGS(['-flagfile', '/etc/synaps/synaps.conf'])
+flags.FLAGS(sys.argv)
 FLAGS = flags.FLAGS
+
+from synaps.tests import get_cloudwatch_client
+logging.setup()
 
 ASYNC_WAIT = 3
 
+
 class SynapsTestCase(unittest.TestCase):
     def setUp(self):
-        access_key = 'changeme'
-        secret_key = 'changeme'
-        self.synaps = CloudWatchConnection(
-            # oss key pair
-            aws_access_key_id=access_key, aws_secret_access_key=secret_key,
-            is_secure=False, port=3776, path='/monitor',
-            region=regioninfo.RegionInfo(None, 'Test Region', 'localhost'),
-        )
-        
-        self.namespace = "SPCS/SYNAPSTEST"
+        self.synaps = get_cloudwatch_client()
+        self.namespace = "SYNAPSTEST"
         self.metric_name = "test_metric"
         self.dimensions = {'instance_name':'test instance'}
         
@@ -62,6 +58,7 @@ class SynapsTestCase(unittest.TestCase):
 
     def generate_random_name(self, prefix=""):
         return prefix + str(uuid.uuid4())
+
         
 class ShortCase(SynapsTestCase):
     def test_delete_alarms(self):

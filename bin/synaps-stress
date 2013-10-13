@@ -35,24 +35,10 @@ from synaps.openstack.common import cfg
 from synaps import flags
 from synaps import log as logging
 from synaps import utils
+from synaps.tests import get_cloudwatch_client
 
 
 stress_cli_opts = [
-    cfg.StrOpt('test_access_key',
-                default='changeme',
-                help='Synaps API access key for test'),
-    cfg.StrOpt('test_secret_key',
-               default='changeme',
-               help='Synaps API secret key for test'),
-    cfg.StrOpt('test_synaps_ip',
-               default='127.0.0.1',
-               help='Synaps API IP address for test'),
-    cfg.StrOpt('test_synaps_path',
-               default='/monitor',
-               help='Synaps API service path for test'),
-    cfg.IntOpt('test_synaps_port',
-               default=3776,
-               help='Synaps API service port for test'),
     cfg.IntOpt('stress_interval',
                default=55,
                help='Stress test interval'),
@@ -78,17 +64,7 @@ LOG = logging.getLogger()
 TESTSTART = datetime.utcnow().replace(second=0, microsecond=0)
 TESTCASE = "STRESS/" + datetime.now().strftime("%Y%m%d%H%M")
 
-def _get_cw():
-    region = regioninfo.RegionInfo(None, 'Test', FLAGS.get('test_synaps_ip'))
-    return CloudWatchConnection(
-                aws_access_key_id=FLAGS.get('test_access_key'),
-                aws_secret_access_key=FLAGS.get('test_secret_key'),
-                is_secure=False,
-                port=FLAGS.get('test_synaps_port'),
-                path=FLAGS.get('test_synaps_path'),
-                region=region)
-
-CW = _get_cw()
+CW = get_cloudwatch_client()
     
 def _put_metric(cw, instance_id):
     n = FLAGS.get('stress_metrics_per_instance')
