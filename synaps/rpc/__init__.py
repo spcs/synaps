@@ -47,7 +47,8 @@ class RpcConnection(object):
 
     CONN_LOCK = semaphore.Semaphore()
 
-    def __init__(self):
+    def __init__(self, confirm_delivery=False):
+        self.confirm_delivery = confirm_delivery
         self.connect()
 
     def connect(self):
@@ -74,6 +75,8 @@ class RpcConnection(object):
                     self.channel.queue_declare(queue='metric_queue', 
                                                durable=True,
                                                arguments=queue_args)
+                    if self.confirm_delivery:
+                        self.channel.confirm_delivery()
                     return
 
                 except AMQPConnectionError:
@@ -86,13 +89,15 @@ class RpcConnection(object):
 
 class RemoteProcedureCall(object):
     def __init__(self):
-        self.pool = Pool(create=RpcConnection, max_size=500)
+        alarm_rpc_connection = lambda : RpcConnection(True)
+        self.metric_pool = Pool(create=RpcConnection, max_size=500)
+        self.alarm_pool = Pool(create=alarm_rpc_connection, max_size=20)
         
         
     def read_msg(self):
         msg = 'AMQP Connection is closed %d time(s)... retrying.'
         max_retries = 5
-        with self.pool.item() as conn:
+        with self.metric_pool.item() as conn:
             for i in range(max_retries + 1):
                 try:
                     frame, header, body = conn.channel.basic_get(
@@ -122,10 +127,12 @@ class RemoteProcedureCall(object):
             
         """
 
-        def publish(body, properties):
+        def publish(body, properties, use_metric_pool=True):
             msg = 'AMQP Connection is closed %d time(s)... retrying.'
             max_retries = 5
-            with self.pool.item() as conn:
+            mq_pool = self.metric_pool if use_metric_pool else self.alarm_pool
+            
+            with mq_pool.item() as conn:
                 for i in range(max_retries + 1):
                     try:
                         return conn.channel.basic_publish(exchange='',
@@ -148,7 +155,8 @@ class RemoteProcedureCall(object):
         body.setdefault('message_uuid', message_uuid)
         
         properties=pika.BasicProperties(delivery_mode=2)
-        publish(json.dumps(body), properties)
+        use_metric_pool = (message_id == PUT_METRIC_DATA_MSG_ID)
+        publish(json.dumps(body), properties, use_metric_pool)
             
         LOG.info(_("send_msg - id(%03d), %s"), message_id, message_uuid)
         LOG.debug(_("send_msg - body(%s)"), str(body))

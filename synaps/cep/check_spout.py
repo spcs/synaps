@@ -66,7 +66,7 @@ class CheckSpout(Spout):
             ready_to_evaluate = self.check_counter >= self.warmup_period
             msg_id = "periodic_%s" % str(uuid4())
             body = json.dumps({'message_id': CHECK_METRIC_ALARM_MSG_ID,
-                               'ready_to_evalute': ready_to_evaluate})
+                               'ready_to_evaluate': ready_to_evaluate})
             emit([None, body], id=msg_id)
             LOG.info("Periodic monitoring message sent[%s]%s. counter: %d",
                      msg_id, body, self.check_counter)

@@ -740,7 +740,7 @@ class PutMetricBolt(storm.BasicBolt):
             is_stale = metric.is_stale()
             if is_stale:
                 stale_metrics.append(key)
-            if not is_stale and ready_to_evaluate:
+            if (not is_stale) and ready_to_evaluate:
                 metric.check_alarms(query_time)
 
         for key in stale_metrics:
