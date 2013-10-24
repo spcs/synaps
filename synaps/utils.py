@@ -71,30 +71,30 @@ UNIT_CONV_MAP = {
     'None': 1.0,
     'Seconds': 1.0,
     'Bytes':1.0,
-    'Bytes/Second':1.0, # std: Bytes/Second
+    'Bytes/Second':1.0,  # std: Bytes/Second
     'Percent': 1.0,
     'Count': 1.0,
     'Count/Second': 1.0,
-    'Microseconds': 10.0 ** (-6), # std: Seconds
-    'Milliseconds': 10.0 ** (-3), # std: Seconds
-    'Kilobytes':2.0 ** 10, # std: Bytes
-    'Megabytes':2.0 ** 20, # std: Bytes
-    'Gigabytes':2.0 ** 30, # std: Bytes
-    'Terabytes':2.0 ** 40, # std: Bytes
-    'Bits':2.0 ** (-3), # std: Bytes
-    'Kilobits':2.0 ** 7, # std: Bytes
-    'Megabits':2.0 ** 17, # std: Bytes
-    'Gigabits':2.0 ** 27, # std: Bytes
-    'Terabits':2.0 ** 37, # std: Bytes
-    'Kilobytes/Second':10.0 ** 3, # std: Bytes/Second
-    'Megabytes/Second':10.0 ** 6, # std: Bytes/Second
-    'Gigabytes/Second':10.0 ** 9, # std: Bytes/Second
-    'Terabytes/Second':10.0 ** 12, # std: Bytes/Second
-    'Bits/Second':2.0 ** (-3), # std: Bytes/Second
-    'Kilobits/Second':2.0 ** 7, # std: Bytes/Second
-    'Megabits/Second':2.0 ** 17, # std: Bytes/Second
-    'Gigabits/Second':2.0 ** 27, # std: Bytes/Second
-    'Terabits/Second':2.0 ** 37, # std: Bytes/Second
+    'Microseconds': 10.0 ** (-6),  # std: Seconds
+    'Milliseconds': 10.0 ** (-3),  # std: Seconds
+    'Kilobytes':2.0 ** 10,  # std: Bytes
+    'Megabytes':2.0 ** 20,  # std: Bytes
+    'Gigabytes':2.0 ** 30,  # std: Bytes
+    'Terabytes':2.0 ** 40,  # std: Bytes
+    'Bits':2.0 ** (-3),  # std: Bytes
+    'Kilobits':2.0 ** 7,  # std: Bytes
+    'Megabits':2.0 ** 17,  # std: Bytes
+    'Gigabits':2.0 ** 27,  # std: Bytes
+    'Terabits':2.0 ** 37,  # std: Bytes
+    'Kilobytes/Second':10.0 ** 3,  # std: Bytes/Second
+    'Megabytes/Second':10.0 ** 6,  # std: Bytes/Second
+    'Gigabytes/Second':10.0 ** 9,  # std: Bytes/Second
+    'Terabytes/Second':10.0 ** 12,  # std: Bytes/Second
+    'Bits/Second':2.0 ** (-3),  # std: Bytes/Second
+    'Kilobits/Second':2.0 ** 7,  # std: Bytes/Second
+    'Megabits/Second':2.0 ** 17,  # std: Bytes/Second
+    'Gigabits/Second':2.0 ** 27,  # std: Bytes/Second
+    'Terabits/Second':2.0 ** 37,  # std: Bytes/Second
 }
 
 UNITS = UNIT_CONV_MAP.keys()
@@ -281,8 +281,8 @@ def strtime(at=None, fmt=PERFECT_TIME_FORMAT):
 
 def strtime_trunk(at=None):
     """Returns formatted utcnow."""
-    strt = strtime(at,PERFECT_TIME_FORMAT_Z)
-    return strt[:-5]+"Z"
+    strt = strtime(at, PERFECT_TIME_FORMAT_Z)
+    return strt[:-5] + "Z"
 
 def to_ascii(utf8):
     if isinstance(utf8, unicode):
@@ -511,7 +511,7 @@ def execute(*cmd, **kwargs):
         attempts -= 1
         try:
             LOG.debug(_('Running cmd (subprocess): %s'), ' '.join(cmd))
-            _PIPE = -1 #(subprocess.PIPE)  # pylint: disable=E1101
+            _PIPE = -1  # (subprocess.PIPE)  # pylint: disable=E1101
             obj = subprocess.Popen(cmd,
                                    stdin=_PIPE,
                                    stdout=_PIPE,
@@ -685,11 +685,11 @@ def xhtml_escape(value):
     return saxutils.escape(value, {'"': '&quot;', "'": '&apos;'})
 
 def get_python_novaclient():
-    nc = client.Client(FLAGS.get('admin_user'), 
-                       FLAGS.get('admin_password'), 
-                       FLAGS.get('admin_tenant_name'), 
+    nc = client.Client(FLAGS.get('admin_user'),
+                       FLAGS.get('admin_password'),
+                       FLAGS.get('admin_tenant_name'),
                        auth_url=FLAGS.get('nova_auth_url'),
-                       endpoint_type='internalURL')
+                       endpoint_type='internalURL', no_cache=True)
     return nc
 
 
