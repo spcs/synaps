@@ -280,9 +280,47 @@ instance_action_opts = [
                 help='admin password name'),                        
 ]
 
+stress_cli_opts = [
+    cfg.IntOpt('stress_interval',
+               default=55,
+               help='Stress test interval'),
+    cfg.IntOpt('stress_times',
+               default=10,
+               help='Number of stress test set'),
+    cfg.IntOpt('stress_n_instances',
+               default=100,
+               help='Number of instances for stress test'),
+    cfg.IntOpt('stress_metrics_per_instance',
+               default=12,
+               help='Number of metrics per instance for stress test'),
+    cfg.BoolOpt('stress_backfill',
+                default=False,
+                help='backfill the metric data'),
+]
+
+test_cli_opts = [
+    cfg.StrOpt('test_access_key',
+                default='changeme',
+                help='Synaps API access key for test'),
+    cfg.StrOpt('test_secret_key',
+               default='changeme',
+               help='Synaps API secret key for test'),
+    cfg.StrOpt('test_synaps_ip',
+               default='127.0.0.1',
+               help='Synaps API IP address for test'),
+    cfg.StrOpt('test_synaps_path',
+               default='/monitor',
+               help='Synaps API service path for test'),
+    cfg.IntOpt('test_synaps_port',
+               default=3776,
+               help='Synaps API service port for test'),
+]
+
 FLAGS.register_cli_opts(log_opts)
 FLAGS.register_cli_opts(core_opts)
 FLAGS.register_cli_opts(debug_opts)
+FLAGS.register_cli_opts(test_cli_opts)
+FLAGS.register_cli_opts(stress_cli_opts)
 FLAGS.register_opts(global_opts)
 FLAGS.register_opts(rabbitmq_opts)
 FLAGS.register_opts(instance_action_opts)

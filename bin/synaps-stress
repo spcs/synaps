@@ -26,42 +26,28 @@ possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
 if os.path.exists(os.path.join(possible_topdir, "synaps", "__init__.py")):
     sys.path.insert(0, possible_topdir)
 
-from boto.ec2 import regioninfo
-from boto.ec2.cloudwatch import CloudWatchConnection
 from datetime import datetime, timedelta
 import time
+import cProfile, pstats, StringIO
 
-from synaps.openstack.common import cfg
 from synaps import flags
 from synaps import log as logging
+from synaps.openstack.common import cfg
 from synaps import utils
 from synaps.tests import get_cloudwatch_client
 
 
-stress_cli_opts = [
-    cfg.IntOpt('stress_interval',
-               default=55,
-               help='Stress test interval'),
-    cfg.IntOpt('stress_times',
-               default=10,
-               help='Number of stress test set'),
-    cfg.IntOpt('stress_n_instances',
-               default=100,
-               help='Number of instances for stress test'),
-    cfg.IntOpt('stress_metrics_per_instance',
-               default=12,
-               help='Number of metrics per instance for stress test'),
-]
-
 FLAGS = flags.FLAGS
-FLAGS.register_cli_opts(stress_cli_opts)
 flags.FLAGS(sys.argv)
-
 utils.default_flagfile()
 logging.setup()
 LOG = logging.getLogger()
 
 TESTSTART = datetime.utcnow().replace(second=0, microsecond=0)
+if FLAGS.get('stress_backfill'):
+    duration = FLAGS.get('stress_interval') * FLAGS.get('stress_times')
+    TESTSTART = TESTSTART - (timedelta(seconds=duration))
+
 TESTCASE = "STRESS/" + datetime.now().strftime("%Y%m%d%H%M")
 
 CW = get_cloudwatch_client()
@@ -101,19 +87,22 @@ def check_metrics(instance_id):
         ret = CW.get_metric_statistics(period, start_time, end_time,
                                        metric_name, namespace, statistics,
                                        dimensions, unit)
+        
+        metric_repr = "<Metric-%s-%s-%s>" % (namespace, metric_name,
+                                             dimensions)
         # check number of datapoints
         count = 0
         for dp in ret:
             count += dp.get('SampleCount')
         if count != times:
-            LOG.error("data loss? %s", ret)
+            LOG.error("%s data loss? %s", metric_repr, ret)
             ret_value = False
             
         # check sufficient data in time
         ts = [dp.get('Timestamp') for dp in ret]
         ts_interval = set(map(lambda x, y: y - x, ts[:-1], ts[1:]))
-        if ts_interval != set([timedelta(seconds=60)]):
-            LOG.error("data out of time? %s", ret)
+        if ts_interval and ts_interval != set([timedelta(seconds=60)]):
+            LOG.error("%s data in long interval %s", metric_repr, ret)
             ret_value = False
 
         LOG.debug("check - %s", ret)
@@ -124,20 +113,35 @@ def check_metrics(instance_id):
 def put_metrics(instance_id):
     return _put_metric(CW, instance_id)
 
+def main():
+    def get_now():
+        stress_interval = FLAGS.get('stress_interval') 
+        stress_times = FLAGS.get('stress_times')
+        stress_backfill = FLAGS.get('stress_backfill')
+        now = time.time() - stress_interval * stress_times
+        
+        while True:
+            if stress_backfill:
+                yield now
+                now += stress_interval
+            else:
+                yield time.time()
     
-
-if __name__ == "__main__":
     LOG.info("start test %s", TESTCASE)
+    for k in FLAGS:
+        LOG.info("Flags %s: %s", k, FLAGS.get(k))
+        
     n_instances = FLAGS.get('stress_n_instances')
     
     # put metric data
     worker_pool = eventlet.GreenPool()
     instances = ["instance-%08d" % i for i in range(n_instances)]
+    timer = get_now()
     
     iter_count = 0
     timestamp = 0
     while iter_count < FLAGS.get('stress_times'):
-        now = time.time()
+        now = timer.next()
         if now - timestamp > FLAGS.get('stress_interval'):
             iter_count += 1
             timestamp = now
@@ -152,17 +156,28 @@ if __name__ == "__main__":
                      sum(deltas) / len(deltas), min(deltas), max(deltas))
         else:
             time.sleep(1)
-    
+
     # wait for data sync
     LOG.info("waiting for data sync")
     time.sleep(60)
     
     LOG.info("start to check statistics")
     # check metric data
-    for instance_id, ret in worker_pool.imap(check_metrics, instances):
-        if ret:
-            LOG.debug("%s OK", instance_id)
-        else:
-            LOG.error("%s data loss?", instance_id)
+    for instance_id, ret_value in worker_pool.imap(check_metrics, instances):
+        pass
 
     LOG.info("end test %s", TESTCASE)
+
+
+if __name__ == "__main__":
+    pr = cProfile.Profile()
+    pr.enable()
+    # run test
+    main()
+    pr.disable()
+
+    # parse profile data     
+    s_io = StringIO.StringIO()
+    ps = pstats.Stats(pr, stream=s_io).sort_stats('module')
+    ps.print_stats()
+    LOG.info("Profile Result:\n%s", s_io.getvalue())    
