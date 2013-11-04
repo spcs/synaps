@@ -39,26 +39,47 @@ flags.FLAGS(sys.argv)
 utils.default_flagfile()
 logging.setup()
 FLAGS = flags.FLAGS
+LOG = logging.getLogger()
 
 
-def main():
-    LOG = logging.getLogger()
-    LOG.info("start to meter metrics and alarms")
-
-    api = API()
-    cass = Cassandra()
+def meter_metrics(cass):    
+    # Count all metrics
+    total_metric_meter = {}
     custom_metric_meter = {}
     default_metric_meter = {}
-    alarm_meter = {}
+    metrics_hash_meter = {}
+    namespace_hash_meter = {}
     
     for k, v in cass.get_all_metrics():
+        # Load metric
         try:
             project_id = v.get('project_id')
             namespace = v.get('namespace')
+            metricname = v.get('name')
+            metric_hash = (project_id, namespace, metricname)
+            namespace_hash = (project_id, namespace)
             LOG.debug("metering metric %s", k)
         except:
             LOG.exception("Unknown error occured")
 
+        # increase Metric Name Hash count
+        if metrics_hash_meter.has_key(metric_hash):
+            metrics_hash_meter[metric_hash] += 1
+        else:
+            metrics_hash_meter[metric_hash] = 1
+
+        # increase Namespace Hash count
+        if namespace_hash_meter.has_key(namespace_hash):
+            namespace_hash_meter[namespace_hash] += 1
+        else:
+            namespace_hash_meter[namespace_hash] = 1
+
+        # increase Per-Project metric count
+        if project_id in total_metric_meter:
+            total_metric_meter[project_id] += 1
+        else:
+            total_metric_meter[project_id] = 1
+            
         if namespace.startswith("SPCS/"):
             if project_id in default_metric_meter:
                 default_metric_meter[project_id] += 1
@@ -69,7 +90,13 @@ def main():
                 custom_metric_meter[project_id] += 1
             else:
                 custom_metric_meter[project_id] = 1
-            
+    
+    return (total_metric_meter, custom_metric_meter, default_metric_meter,
+            metrics_hash_meter, namespace_hash_meter)
+
+
+def meter_alarms(cass):
+    alarm_meter = {}
     for k, v in cass.get_all_alarms():
         try:
             project_id = v.get('project_id')
@@ -81,24 +108,75 @@ def main():
             alarm_meter[project_id] += 1
         else:
             alarm_meter[project_id] = 1
+    
+    return alarm_meter
 
+
+def put_metric_meter(api, custom_metric_meter, default_metric_meter,
+                     alarm_meter, total_metric_meter):
     projects = set(custom_metric_meter.keys() + default_metric_meter.keys() + 
-                   alarm_meter.keys())
-    metric_names = ["DefaultMetricCount", "CustomMetricCount", "AlarmCount"]
-    meters = [default_metric_meter, custom_metric_meter, alarm_meter]
+                   alarm_meter.keys() + total_metric_meter.keys())
+    metric_names = ["DefaultMetricCount", "CustomMetricCount", "AlarmCount",
+                    "MetricCount"]
+    meters = [default_metric_meter, custom_metric_meter, alarm_meter,
+              total_metric_meter]
      
     for metric_name, meter in zip(metric_names, meters):    
         for project in meter:
-            api.put_metric_data(get_admin_context(), project_id=project, 
-                                namespace="SPCS/SYNAPS", 
+            api.put_metric_data(get_admin_context(), project_id=project,
+                                namespace="SPCS/SYNAPS",
                                 metric_name=metric_name,
-                                dimensions={}, 
-                                value=meter.get(project), 
-                                unit="Count", 
-                                timestamp=utils.strtime(utils.utcnow()), 
+                                dimensions={},
+                                value=meter.get(project),
+                                unit="Count",
+                                timestamp=utils.strtime(utils.utcnow()),
                                 is_admin=True)
 
+    
+def put_metrics_hash_meter(api, metrics_hash_meter):
+    for (project_id, namespace, name), value in metrics_hash_meter.iteritems():
+        api.put_metric_data(get_admin_context(), project_id=project_id,
+                            namespace="SPCS/SYNAPS",
+                            metric_name="MetricCount",
+                            dimensions={"namespace": namespace,
+                                        "metricName": name},
+                            value=value, unit="Count",
+                            timestamp=utils.strtime(utils.utcnow()),
+                            is_admin=True)    
+
+
+def put_namespace_hash_meter(api, namespace_hash_meter):
+    for (project_id, namespace), value in namespace_hash_meter.iteritems():
+        api.put_metric_data(get_admin_context(), project_id=project_id,
+                            namespace="SPCS/SYNAPS",
+                            metric_name="MetricCount",
+                            dimensions={"namespace": namespace},
+                            value=value, unit="Count",
+                            timestamp=utils.strtime(utils.utcnow()),
+                            is_admin=True)
+
+
+def main():
+    LOG.info("start to meter metrics and alarms")
+
+    api = API()
+    cass = Cassandra()
+    
+    # Count all metrics
+    (total_metric_meter, custom_metric_meter, default_metric_meter,
+     metrics_hash_meter, namespace_hash_meter) = meter_metrics(cass)
+    
+    # Count all alarms
+    alarm_meter = meter_alarms(cass)
+
+    # Put metrics/alarms meter data
+    put_metric_meter(api, custom_metric_meter, default_metric_meter,
+                     alarm_meter, total_metric_meter)
+    put_metrics_hash_meter(api, metrics_hash_meter)
+    put_namespace_hash_meter(api, namespace_hash_meter)
+
     LOG.info("all metrics and alarms are metered.")
+
     
 if __name__ == "__main__":
     main()
