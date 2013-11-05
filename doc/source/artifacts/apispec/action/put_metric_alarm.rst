@@ -7,6 +7,9 @@ Description
 -----------
 Create or update Alarm for Metric.
 
+The number of alarms is limited to 5,000 per project and 30 per metric by 
+default. 
+
 Parameters
 ----------
 
