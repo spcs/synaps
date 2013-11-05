@@ -296,5 +296,5 @@ class API(object):
         
         self.rpc.send_msg(rpc.PUT_METRIC_DATA_MSG_ID, message)
         LOG.info("PUT_METRIC_DATA_MSG sent")
-            
+
         return {}

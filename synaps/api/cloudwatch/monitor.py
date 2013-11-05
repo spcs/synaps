@@ -77,12 +77,13 @@ class MonitorController(object):
 
     def __str__(self):
         return 'MonitorController'
-
+    
     def delete_alarms(self, context, alarm_names, project_id=None):
         if not (project_id and context.is_admin):
             project_id = context.project_id
 
         self.check_alarm_names(alarm_names)
+        self._check_admin_alarm(alarm_names, context.is_admin)
 
         alarm_names = utils.extract_member_list(alarm_names)
         self.monitor_api.delete_alarms(context, project_id, alarm_names)
@@ -225,7 +226,8 @@ class MonitorController(object):
             project_id = context.project_id
         
         self.check_alarm_names(alarm_names)
-
+        self._check_admin_alarm(alarm_names, context.is_admin)
+        
         alarm_names = utils.extract_member_list(alarm_names)
         self.monitor_api.set_alarm_actions(context, project_id, alarm_names,
                                            False)
@@ -237,6 +239,7 @@ class MonitorController(object):
             project_id = context.project_id
         
         self.check_alarm_names(alarm_names)
+        self._check_admin_alarm(alarm_names, context.is_admin)
 
         alarm_names = utils.extract_member_list(alarm_names)
         self.monitor_api.set_alarm_actions(context, project_id, alarm_names,
@@ -365,6 +368,7 @@ class MonitorController(object):
         
         self.check_alarm_description(alarm_description)
         self.check_alarm_name(alarm_name)
+        self._check_admin_alarm([alarm_name], context.is_admin)
         self.check_comparison_operator(comparison_operator)
         self.check_dimensions(dimensions)
         self.check_metric_name(metric_name)
@@ -475,6 +479,7 @@ class MonitorController(object):
             project_id = context.project_id
         
         self.check_alarm_name(alarm_name)
+        self._check_admin_alarm([alarm_name], context.is_admin)
         self.check_state_reason(state_reason)
         self.check_state_reason_data(state_reason_data)
         self.check_state_value(state_value)
@@ -746,3 +751,12 @@ class MonitorController(object):
             if not context.is_admin and server.tenant_id != project_id:
                 raise exception.InvalidParameterValue(err)
         
+    def _check_admin_alarm(self, alarms, is_admin):
+        if isinstance(alarms, (str, unicode)):
+            alarms = [alarms]
+        
+        for alarm in alarms:
+            if alarm.startswith("SPCS/") and not is_admin:
+                raise exception.AdminRequired() 
+                
+

@@ -21,6 +21,7 @@ Following is list of parameters for this action.
      - Mandatory
    * - AlarmNames.member.N
      - List of Alarm name to activate action.
+       Only Admin can call this action for the alarms that starts with "SPCS/".
 
        Data type: String list
 

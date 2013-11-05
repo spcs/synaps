@@ -24,6 +24,7 @@ Following is list of parameters for this action.
      - Mandatory
    * - AlarmNames.member.N
      - List of alarm name to delete 
+       Only Admin can call this action for the alarms that starts with "SPCS/".
 
        Data type: String list
 
