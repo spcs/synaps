@@ -187,4 +187,21 @@ Errors
 
 Following is list of errors for this action.
 
+.. list-table:: 
+   :widths: 20 50 10
+   :header-rows: 1
+   
+   * - Error
+     - Description
+     - HTTP Status Code
+   * - InvalidParameterValue
+     - Invalid value of input parameter.
+     - 400
+   * - ProjectAlarmQuotaExceeded
+     - Too many alarms for this project
+     - 403
+   * - MetricAlarmQuotaExceeded
+     - Too many alarms for this metric
+     - 403
+     
 see also :ref:`common_errors` 
