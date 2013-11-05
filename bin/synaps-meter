@@ -100,14 +100,16 @@ def meter_alarms(cass):
     for k, v in cass.get_all_alarms():
         try:
             project_id = v.get('project_id')
+            alarm_name = v.get('alarm_name')
             LOG.debug("metering alarm %s", k)
         except:
-            LOG.exception("Unknown error occured")
-            
-        if project_id in alarm_meter:
-            alarm_meter[project_id] += 1
-        else:
-            alarm_meter[project_id] = 1
+            LOG.exception("Unknown error occurred")
+
+        if not alarm_name.startswith("SPCS/"):            
+            if project_id in alarm_meter:
+                alarm_meter[project_id] += 1
+            else:
+                alarm_meter[project_id] = 1
     
     return alarm_meter
 

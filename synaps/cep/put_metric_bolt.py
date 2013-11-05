@@ -749,7 +749,7 @@ class PutMetricBolt(storm.BasicBolt):
                 metric.delete()
                 LOG.audit("Stale metric(%s) is deleted", str(key))
             except KeyError:
-                LOG.error("KeyError occured when delete stale metric(%s)",
+                LOG.error("KeyError occurred when delete stale metric(%s)",
                           str(key))
 
 
