@@ -201,8 +201,14 @@ core_opts = [
                help='admin namespace'),
     cfg.IntOpt('insufficient_buffer',
                default=3,
-               help='time buffer to declare insufficient data(in minutes)')
-    ]
+               help='time buffer to declare insufficient data(in minutes)'),
+    cfg.IntOpt('alarm_quota_per_project',
+               default=5000,
+               help='per project alarm quota'),
+    cfg.IntOpt('alarm_quota_per_metric',
+               default=30,
+               help='per metric alarm quota'),
+]
 
 debug_opts = []
 

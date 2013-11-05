@@ -182,10 +182,23 @@ class NotAuthorized(SynapsException):
     code = 403
 
 
+class QuotaExceeded(SynapsException):
+    message = _("Quota exceeded")
+    code = 403
+
+class ProjectAlarmQuotaExceeded(QuotaExceeded):
+    message = _("Too many alarms for this project")
+    pass
+
+class MetricAlarmQuotaExceeded(QuotaExceeded):
+    message = _("Too many alarms for this metric")
+    pass
+
+
 class AdminRequired(NotAuthorized):
     message = _("User does not have admin privileges")
     code = 403
-    
+
 
 class Invalid(SynapsException):
     message = _("Unacceptable parameters.")

@@ -32,7 +32,8 @@ from synaps.db import Cassandra
 from synaps import rpc
 from synaps import utils
 from synaps.exception import (AdminRequired, InvalidRequest, ResourceNotFound,
-                              InvalidParameterValue)
+                              InvalidParameterValue, ProjectAlarmQuotaExceeded,
+                              MetricAlarmQuotaExceeded)
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
@@ -151,7 +152,7 @@ class API(object):
        
         body = {'project_id': project_id, 'alarm_name': alarm_name,
                 'state_reason': state_reason, 'state_value': state_value,
-                'state_reason_data': state_reason_data, 
+                'state_reason_data': state_reason_data,
                 'context': context.to_dict()}   
         self.rpc.send_msg(rpc.SET_ALARM_STATE_MSG_ID, body)
         LOG.info("SET_ALARM_STATE_MSG sent")        
@@ -224,27 +225,26 @@ class API(object):
         now = utils.utcnow()
         metricalarm = metricalarm.to_columns()
         alarm_name = metricalarm['alarm_name']
+        namespace = metricalarm['namespace']
+        metric_name = metricalarm['metric_name']
+        dimensions = json.loads(metricalarm['dimensions'])
         
         # check if we have metric in database
-        metric_key = self.cass.get_metric_key_or_create(
-            project_id=project_id,
-            namespace=metricalarm['namespace'],
-            metric_name=metricalarm['metric_name'],
-            dimensions=json.loads(metricalarm['dimensions']),
-            unit=metricalarm['unit'],
-        )
+        metric_key = self.cass.get_metric_key_or_create(project_id=project_id,
+            namespace=namespace, metric_name=metric_name,
+            dimensions=dimensions, unit=metricalarm['unit'])
         
         update_data = {
             'project_id': project_id,
             'metric_key': str(metric_key),
-            'alarm_arn': "arn:spcs:synaps:%s:alarm:%s" % (project_id, 
+            'alarm_arn': "arn:spcs:synaps:%s:alarm:%s" % (project_id,
                                                           alarm_name),
             'alarm_configuration_updated_timestamp': utils.strtime(now)
         }
         metricalarm.update(update_data)
         
         # check if metric is changed 
-        alarm_key = self.cass.get_metric_alarm_key(project_id=project_id, 
+        alarm_key = self.cass.get_metric_alarm_key(project_id=project_id,
                                                    alarm_name=alarm_name)
         
         if alarm_key:            
@@ -253,6 +253,24 @@ class API(object):
                 str(metricalarm['metric_key'])):
                 raise InvalidRequest("Metric cannot be changed. "
                                      "Delete alarm and retry.")
+        else:
+            # If alarm is newly added, check quotas
+            # check alarm quota per project
+            project_quota = FLAGS.get('alarm_quota_per_project')
+            alarms_in_project = self.cass.get_alarm_count(project_id)
+            if alarms_in_project >= project_quota:
+                LOG.info("Too many alarms(%d) in the project %s",
+                         alarms_in_project, project_id)
+                raise ProjectAlarmQuotaExceeded()
+            
+            # check alarm quota per metric  
+            metric_quota = FLAGS.get('alarm_quota_per_metric')
+            alarms_per_metric = self.cass.get_alarms_per_metric_count(
+                            project_id, namespace, metric_name, dimensions)
+            if alarms_per_metric >= metric_quota:
+                LOG.info("Too many alarms(%d) for this metric",
+                         alarms_per_metric)
+                raise MetricAlarmQuotaExceeded()
         
         message = {'project_id': project_id, 'metric_key': str(metric_key),
                    'metricalarm': metricalarm, 'context': context.to_dict()}
@@ -262,8 +280,8 @@ class API(object):
         return {}
     
     
-    def put_metric_data(self, context, project_id, namespace, metric_name, 
-                        dimensions, value, unit, timestamp=None, 
+    def put_metric_data(self, context, project_id, namespace, metric_name,
+                        dimensions, value, unit, timestamp=None,
                         is_admin=False):
         admin_namespace = FLAGS.get('admin_namespace')
         if namespace.startswith(admin_namespace) and not is_admin:

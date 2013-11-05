@@ -339,6 +339,7 @@ class MonitorController(object):
         
         return {'ListMetricsResult': list_metrics_result}
 
+
     def put_metric_alarm(self, context, alarm_name, comparison_operator,
                          evaluation_periods, metric_name, namespace, period,
                          statistic, threshold, alarm_actions=[],
@@ -374,7 +375,7 @@ class MonitorController(object):
         self._validate_evaluation_periods(evaluation_periods)
         self.validate_put_metric_alarm(period, evaluation_periods)   
         self._validate_instanceaction(ok_actions, project_id, context)
-        self._validate_instanceaction(insufficient_data_actions, project_id, 
+        self._validate_instanceaction(insufficient_data_actions, project_id,
                                       context)
         self._validate_instanceaction(alarm_actions, project_id, context)
         
@@ -404,6 +405,7 @@ class MonitorController(object):
         self.monitor_api.put_metric_alarm(context, project_id, metricalarm)
         
         return {}
+
 
     def put_metric_data(self, context, namespace, metric_data,
                         project_id=None):

@@ -40,7 +40,7 @@ class Cassandra(object):
     
     def __init__(self, keyspace=None):
         self.statistics_ttl = FLAGS.get('statistics_ttl')
-        self.ARCHIVE = map(lambda x: int(x) * 60, 
+        self.ARCHIVE = map(lambda x: int(x) * 60,
                            FLAGS.get('statistics_archives'))
         if not keyspace:
             keyspace = FLAGS.get("cassandra_keyspace", "synaps_test")
@@ -54,10 +54,15 @@ class Cassandra(object):
         self.scf_stat_archive = pycassa.ColumnFamily(self.pool, 'StatArchive')
         self.cf_metric_alarm = pycassa.ColumnFamily(self.pool, 'MetricAlarm')
         self.cf_alarm_history = pycassa.ColumnFamily(self.pool, 'AlarmHistory')
+        self.cf_alarm_counter = pycassa.ColumnFamily(self.pool, 'AlarmCounter')
         
-    def delete_metric_alarm(self, alarm_key):
+    def delete_metric_alarm(self, alarm_key, project_id=None):
         try:
+            if not project_id:
+                alarm = self.cf_metric_alarm.get(alarm_key)
+                project_id = alarm.get('project_id')
             self.cf_metric_alarm.remove(alarm_key)
+            self.cf_alarm_counter.add(project_id, 'alarm_counter', -1)
         except pycassa.NotFoundException:
             LOG.info(_("alarm key %s is not deleted" % alarm_key))
     
@@ -72,7 +77,16 @@ class Cassandra(object):
             items = self.cf_metric_alarm.get_indexed_slices(index_clause)
             
             for k, v in items:
-                yield k, v            
+                yield k, v
+
+    
+    def get_alarm_by_name(self, project_id, alarm_name):
+        alarms = list(self._describe_alarms_by_names(project_id, [alarm_name]))
+        if alarms:
+            return alarms[0]
+        else:
+            return None
+        
 
     def describe_alarms(self, project_id, action_prefix=None,
                         alarm_name_prefix=None, alarm_names=None,
@@ -144,6 +158,15 @@ class Cassandra(object):
         index_clause = pycassa.create_index_clause(expr_list)
         items = self.cf_metric_alarm.get_indexed_slices(index_clause)
         return items
+
+
+    def get_alarms_per_metric_count(self, project_id, namespace, metric_name,
+                                    dimensions=None):
+        alarms = self.describe_alarms_for_metric(project_id, namespace, 
+                                                 metric_name, dimensions)
+        return sum(1 for a in alarms)
+        
+
 
     def describe_alarm_history(self, project_id, alarm_name=None,
                                end_date=None, history_item_type=None,
@@ -218,7 +241,8 @@ class Cassandra(object):
             index_clause = pycassa.create_index_clause(expr_list)
             items = self.cf_metric_alarm.get_indexed_slices(index_clause)
             for k, v in items:
-                self.cf_metric_alarm.remove(k)
+                project_id = v.get('project_id')
+                self.delete_metric_alarm(k, project_id)
             self.scf_stat_archive.remove(key)
             self.cf_metric.remove(key)
             LOG.debug("metric is deleted(%s)" % str(key))
@@ -258,7 +282,7 @@ class Cassandra(object):
         # or create metric
         if not key:
             json_dim = utils.pack_dimensions(dimensions)
-            key = utils.generate_metric_key(project_id, namespace, metric_name, 
+            key = utils.generate_metric_key(project_id, namespace, metric_name,
                                             dimensions)
             columns = {'project_id': project_id, 'namespace': namespace,
                        'name': metric_name, 'dimensions': json_dim,
@@ -465,8 +489,10 @@ class Cassandra(object):
         """
         update MetricAlarm CF
         """
-        LOG.debug("cf_metric_alarm.insert (%s, %s)" % (alarm_key, metricalarm)) 
+        LOG.debug("cf_metric_alarm.insert (%s, %s)" % (alarm_key, metricalarm))
+        project_id = metricalarm.get('project_id') 
         self.cf_metric_alarm.insert(key=alarm_key, columns=metricalarm)
+        self.cf_alarm_counter.add(project_id, 'alarm_counter', 1)
         return alarm_key
         
     def restructed_stats(self, stat):
@@ -484,6 +510,34 @@ class Cassandra(object):
             ret.append((timestamp, get_stat(timestamp)))
 
         return ret
+
+    
+    def reset_alarm_counter(self):
+        counter = {}
+        for k, v in self.cf_metric_alarm.get_range():
+            project_id = v.get('project_id')
+            if counter.has_key(project_id):
+                counter[project_id] += 1
+            else:
+                counter[project_id] = 1
+        
+        # reset counter
+        for k in counter:
+            self.cf_alarm_counter.remove_counter(k, 'alarm_counter')
+        
+        rows = {k: {'alarm_counter': v} for k, v in counter.iteritems()}
+        self.cf_alarm_counter.batch_insert(rows)
+        
+        
+    def get_alarm_count(self, project_id):
+        try:
+            counter = self.cf_alarm_counter.get(project_id)
+        except:
+            return 0
+        
+        return counter.get('alarm_counter', 0)
+        
+
 
     @staticmethod
     def syncdb(keyspace=None):
@@ -670,4 +724,10 @@ class Cassandra(object):
                                  column='timestamp',
                                  value_type=types.DateType())            
                         
+        if 'AlarmCounter' not in column_families.keys():
+            manager.create_column_family(keyspace=keyspace,
+                        name='AlarmCounter',
+                        default_validation_class=pycassa.COUNTER_COLUMN_TYPE,
+                        key_validation_class=pycassa.UTF8_TYPE)
+        
         LOG.info(_("cassandra syncdb has finished"))
