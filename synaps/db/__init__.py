@@ -162,7 +162,7 @@ class Cassandra(object):
 
     def get_alarms_per_metric_count(self, project_id, namespace, metric_name,
                                     dimensions=None):
-        alarms = self.describe_alarms_for_metric(project_id, namespace, 
+        alarms = self.describe_alarms_for_metric(project_id, namespace,
                                                  metric_name, dimensions)
         return sum(1 for a in alarms)
         
@@ -378,26 +378,97 @@ class Cassandra(object):
         self.cf_metric_alarm.insert(alarmkey, state_info)
         LOG.debug("cf_metric_alarm.insert (%s, %s)" % (str(alarmkey),
                                                        str(state_info)))
-
+        
     def list_metrics(self, project_id, namespace=None, metric_name=None,
                      dimensions=None, next_token=""):
+
+        def parse_filter(filter_dict):
+            if not filter_dict:
+                return None
+            
+            full_filter, name_filter, value_filter = [], [], []
+            
+            for k, v in filter_dict.iteritems():
+                k, v = str(k), str(v)
+                if k and v:
+                    full_filter.append((k, v))
+                elif k and not v:
+                    name_filter.append(k)
+                elif not k and v:
+                    value_filter.append(v)
+                else:
+                    msg = "Invalid dimension filter - both name and value "\
+                          "can not be empty."
+                    raise exception.InvalidRequest(msg)
+            
+            return full_filter, name_filter, value_filter        
+        
+        filters = parse_filter(dimensions)
+        LOG.info("parse filter: %s", filters)
+        
+        ret = []
+        skip_first = False
+        while True: 
+            metrics, new_next_token, next_skip_first = self._list_metrics(
+                    project_id, namespace, metric_name, filters, next_token)
+            
+            if skip_first and metrics:
+                ret = ret + metrics[1:]
+            else:
+                ret = ret + metrics
+                
+            skip_first = next_skip_first
+
+            if len(ret) > 500:
+                last_key, last_value = ret[500]
+                next_token = str(last_key) 
+                break
+            elif new_next_token == next_token:
+                next_token = None
+                break
+            else:
+                next_token = new_next_token
+
+        LOG.info("next token: %s", next_token)
+        return ret[:500], next_token
+        
+
+    def _list_metrics(self, project_id, namespace=None, metric_name=None,
+                      filters=None, next_token=""):
         def to_dict(v):
             return {'project_id': v['project_id'],
                     'dimensions': json.loads(v['dimensions']),
                     'name': v['name'],
-                    'namespace': v['namespace']}
-        
-        def check_dimension(item):
-            if isinstance(dimensions, dict): 
-                def to_set(d):
-                    return set(d.items())
-                    
-                l_set = to_set(dimensions)
-                r_set = to_set(json.loads(item['dimensions']))
-                return l_set.issubset(r_set)
+                    'namespace': v['namespace']}        
+
+                        
+        def apply_filter(metric, filters):
+            if not filters:
+                return True
+
+            dimensions = metric.get('dimensions')
+            dimensions = json.loads(dimensions) if dimensions else {}
+            full_filter, name_filter, value_filter = filters
+            
+            if full_filter:
+                if not set(full_filter).issubset(set(dimensions.items())):
+                    return False
+            
+            if name_filter:
+                if set(dimensions.keys()) != set(name_filter):
+                    return False
+                
+            if value_filter:
+                for v_in_dim in dimensions.values():
+                    for v in value_filter:
+                        if v in v_in_dim:
+                            return True
+                return False
             return True
+        
 
         next_token = uuid.UUID(next_token) if next_token else ''
+        
         expr_list = [pycassa.create_index_expression("project_id",
                                                      project_id), ]
         if namespace:
@@ -407,19 +478,23 @@ class Cassandra(object):
         if metric_name:
             expr = pycassa.create_index_expression("name", metric_name)
             expr_list.append(expr)
-            
-        if dimensions:
-            packed_dimensions = utils.pack_dimensions(dimensions)
-            expr = pycassa.create_index_expression("dimensions",
-                                                   packed_dimensions)
-            expr_list.append(expr)
-            
-        index_clause = pycassa.create_index_clause(expr_list,
-                                                   start_key=next_token,
-                                                   count=501)
-        items = self.cf_metric.get_indexed_slices(index_clause)
-        metrics = ((k, to_dict(v)) for k, v in items)
-        return metrics
+        
+        index_clause = pycassa.create_index_clause(expr_list, count=501,
+                                                   start_key=next_token)
+        items = self.cf_metric.get_indexed_slices(index_clause,
+                                                  column_count=100)
+        last_token = None
+        metrics = []
+        for key, value in items:
+            new_next_token = key
+            if value and apply_filter(value, filters):
+                last_token = key
+                metrics.append((key, to_dict(value)))
+                
+        skip_first = last_token and last_token == new_next_token
+
+        LOG.info("%s %s %s", next_token, new_next_token, last_token)
+        return metrics, str(new_next_token), skip_first 
 
 
     def get_all_metrics(self):

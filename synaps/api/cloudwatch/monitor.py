@@ -316,29 +316,19 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         dimensions = utils.extract_member_dict(dimensions)
-        self.check_dimensions(dimensions)
+        self._check_dimension_filter(dimensions)
         self.check_metric_name(metric_name)
         self.check_namespace(namespace)  
         self.check_next_token(next_token)
 
-        metrics = self.monitor_api.list_metrics(project_id, next_token,
-                                                dimensions, metric_name,
-                                                namespace)
+        metrics, next_token = self.monitor_api.list_metrics(project_id, 
+                            next_token, dimensions, metric_name, namespace)
        
-        ret_list = []
-        for i, (k, v) in enumerate(metrics):
-            if i >= 500:
-                ret_next_token = k
-                break
-            ret_list.append(to_aws_metric((k, v)))
-        else:
-            ret_next_token = None
-            
         metrics = map(to_aws_metric, metrics)
-        
-        list_metrics_result = {'Metrics': ret_list}
-        if ret_next_token:
-            list_metrics_result['NextToken'] = str(ret_next_token)
+
+        list_metrics_result = {'Metrics': metrics}
+        if next_token:
+            list_metrics_result['NextToken'] = next_token
         
         return {'ListMetricsResult': list_metrics_result}
 
@@ -559,7 +549,13 @@ class MonitorController(object):
             
         return True   
 
-
+    
+    def _check_dimension_filter(self, dimensions):
+        if dimensions and (not (0 <= len(dimensions) <= 10)):
+            err = "The length of Dimensions is 0~10."
+            raise exception.InvalidParameterValue(err)
+        
+        return True 
     
     def check_dimensions(self, dimensions):
         if dimensions and (not (0 <= len(dimensions) <= 10)):

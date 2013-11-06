@@ -211,8 +211,9 @@ class API(object):
     def list_metrics(self, project_id, next_token=None, dimensions=None,
                      metric_name=None, namespace=None):
         """
-        입력받은 조건과 일치하는 메트릭의 리스트를 반환한다.
+        List Metrics
         """
+        
         metrics = self.cass.list_metrics(project_id, namespace, metric_name,
                                          dimensions, next_token)
         return metrics
