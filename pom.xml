@@ -3,7 +3,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>synaps</groupId>
 	<artifactId>synaps-storm</artifactId>
-	<version>2013.2.rc2</version>
+	<version>2013.2.1</version>
 	<packaging>jar</packaging>
 	<name>synaps-storm</name>
 	<url>https://github.com/spcs/synaps</url>

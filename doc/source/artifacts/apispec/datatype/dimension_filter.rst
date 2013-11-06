@@ -12,6 +12,13 @@ Contents
 
 Following is contents of this data type.
 
+There are three types of dimension filter.
+
+* Full Filters: Matches metrics with its dimensions contains all of the filters
+* Name Filters: Matches metrics with its dimensions schema 
+* Value Filters: Matches metrics with its dimensions at least one of value 
+                 contains the filters
+
 .. list-table:: 
    :widths: 30 50
    :header-rows: 1
@@ -21,12 +28,12 @@ Following is contents of this data type.
    * - Name
      - Name of the dimension that matches.
 
-       Data tyoe: String
+       Data type: String
 
-       Length limitation: 1 ~ 255 bytes
+       Length limitation: 0 ~ 255 bytes
    * - Value
      - Value of the dimension that matches.
      
-       Data tyoe: String
+       Data type: String
 
-       Length limitation: 1 ~ 255 bytes   
+       Length limitation: 0 ~ 255 bytes   
