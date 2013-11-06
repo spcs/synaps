@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Operational Manual &mdash; synaps 2013.2.rc2 documentation</title>
+    <title>Operational Manual &mdash; synaps 2013.2.1-dev documentation</title>
     
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '2013.2.rc2',
+        VERSION:     '2013.2.1-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps 2013.2.rc2 documentation" href="../index.html" />
+    <link rel="top" title="synaps 2013.2.1-dev documentation" href="../index.html" />
     <link rel="next" title="Developer’s Guide" href="developersguide.html" />
     <link rel="prev" title="Post-installation Synaps frontend" href="install/postinstall.frontend.html" /> 
   </head>
@@ -56,7 +56,7 @@
 <div class="section" id="starting-service-procedure">
 <h2>Starting Service Procedure<a class="headerlink" href="#starting-service-procedure" title="Permalink to this headline">¶</a></h2>
 <p>start storm topology</p>
-<div class="highlight-bash"><div class="highlight"><pre>sudo storm jar /SW/storm/synaps-storm.jar com.spcs.synaps.PutMetricTopology 00
+<div class="highlight-bash"><div class="highlight"><pre>sudo storm jar /SW/storm/synaps-storm.jar SynapsTopology 00
 </pre></div>
 </div>
 <p>start synaps api</p>
@@ -70,7 +70,40 @@
 </div>
 <div class="section" id="maintenance">
 <h2>Maintenance<a class="headerlink" href="#maintenance" title="Permalink to this headline">¶</a></h2>
-<p>TBD</p>
+<div class="section" id="minor-upgrade-without-downtime">
+<h3>Minor upgrade without downtime<a class="headerlink" href="#minor-upgrade-without-downtime" title="Permalink to this headline">¶</a></h3>
+<p>This procedure is valid when HTTP API and RPC interface is not changed.</p>
+<ol class="arabic simple">
+<li>Upgrade Synaps pacakge for all servers</li>
+</ol>
+<p>copy synaps-api build to all server and install the synaps-api package</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo pip install -U synaps-yyyy.xxxx.tar.gz
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li>Restart synaps-api daemon</li>
+</ol>
+<p>API servers can be configured Active-Active by Load balancer. So we can
+restart the API server side-by-side.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo service synaps-api restart
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li>Restart synaps-storm(synaps00) topology</li>
+</ol>
+<p>Copy synaps-storm build to nimbus server and restart the topology and then,
+reload the metrics.</p>
+<p>Storm kill command takes about 30 seconds. Because it stops receiving message
+from the queue and consume all remaining messages in the queue within the time
+period.</p>
+<p>While the downtime of storm topology, all requests are queued and can be
+processed when the storm topology is restarted.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo /SW/storm/bin/storm <span class="nb">kill </span>synaps00
+sudo /SW/storm/bin/storm jar /SW/storm/synaps-storm.jar SynapsTopology 00
+sudo synaps-reload-metric
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 
@@ -84,7 +117,10 @@
             <ul>
 <li><a class="reference internal" href="#">Operational Manual</a><ul>
 <li><a class="reference internal" href="#starting-service-procedure">Starting Service Procedure</a></li>
-<li><a class="reference internal" href="#maintenance">Maintenance</a></li>
+<li><a class="reference internal" href="#maintenance">Maintenance</a><ul>
+<li><a class="reference internal" href="#minor-upgrade-without-downtime">Minor upgrade without downtime</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -132,12 +168,12 @@
         <li class="right" >
           <a href="install/postinstall.frontend.html" title="Post-installation Synaps frontend"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">synaps 2013.2.rc2 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">synaps 2013.2.1-dev documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Sun Sep 1 23:55:50 2013, commit 3b44714.
+      Last updated on Wed Nov 6 15:29:32 2013, commit 8d59e7a.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>The synaps.cep.put_metric_bolt Module &mdash; synaps 2013.2.rc2 documentation</title>
+    <title>The synaps.cep.put_metric_bolt Module &mdash; synaps 2013.2.1-dev documentation</title>
     
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '2013.2.rc2',
+        VERSION:     '2013.2.1-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps 2013.2.rc2 documentation" href="../index.html" />
+    <link rel="top" title="synaps 2013.2.1-dev documentation" href="../index.html" />
     <link rel="up" title="&lt;no title&gt;" href="autoindex.html" />
     <link rel="next" title="The synaps.cep.storm Module" href="synaps.cep.storm.html" />
     <link rel="prev" title="The synaps.cep.check_spout Module" href="synaps.cep.check_spout.html" /> 
@@ -74,7 +74,7 @@
 
 <dl class="attribute">
 <dt id="synaps.cep.put_metric_bolt.MetricMonitor.ROLLING_FUNC_MAP">
-<tt class="descname">ROLLING_FUNC_MAP</tt><em class="property"> = {'SampleCount': &lt;function roll_sum at 0x455db18&gt;, 'Average': &lt;function roll_mean at 0x455db90&gt;, 'Minimum': &lt;function roll_min at 0x455daa0&gt;, 'Maximum': &lt;function roll_max at 0x455da28&gt;, 'Sum': &lt;function roll_sum at 0x455db18&gt;}</em><a class="headerlink" href="#synaps.cep.put_metric_bolt.MetricMonitor.ROLLING_FUNC_MAP" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">ROLLING_FUNC_MAP</tt><em class="property"> = {'SampleCount': &lt;function roll_sum at 0x4d42578&gt;, 'Average': &lt;function roll_mean at 0x4d425f0&gt;, 'Minimum': &lt;function roll_min at 0x4d42500&gt;, 'Maximum': &lt;function roll_max at 0x4d42488&gt;, 'Sum': &lt;function roll_sum at 0x4d42578&gt;}</em><a class="headerlink" href="#synaps.cep.put_metric_bolt.MetricMonitor.ROLLING_FUNC_MAP" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -111,70 +111,78 @@
 <dt id="synaps.cep.put_metric_bolt.MetricMonitor.do_alarm_action">
 <tt class="descname">do_alarm_action</tt><big>(</big><em>alarmkey</em>, <em>alarm</em>, <em>new_state</em>, <em>old_state</em>, <em>query_date</em><big>)</big><a class="headerlink" href="#synaps.cep.put_metric_bolt.MetricMonitor.do_alarm_action" title="Permalink to this definition">¶</a></dt>
 <dd><p>parameter example:</p>
-<div class="code highlight-python"><pre>alarmkey: f459c0e0-f927-481f-9158-deb8abe102a2 
-alarm: OrderedDict([('actions_enabled', False), 
-                  ('alarm_actions', u'[]'), 
-                  ('alarm_arn', u'arn:spcs:synaps:IaaS:alarm:TEST_\uc
-                  54c\ub78c_02'), 
-                  ('alarm_configuration_updated_timestamp', datetime.
-                  datetime(2012, 8, 25, 10, 51, 38, 469000)), 
-                  ('alarm_description', u''), 
-                  ('alarm_name', u'TEST_\uc54c\ub78c_02'), 
-                  ('comparison_operator', u'LessThanThreshold'), 
-                  ('dimensions', u'{"instance_name": "test instance"}
-                  '), 
-                  ('evaluation_periods', 2), 
-                  ('insufficient_data_actions', u'[]'), 
-                  ('metric_key', UUID('96f19ec9-673b-4237-ae66-1bfde5
-                  26595c')), 
-                  ('metric_name', u'test_metric'), 
-                  ('namespace', u'SPCS/SYNAPSTEST'), 
-                  ('ok_actions', u'[]'), 
-                  ('period', 300), 
-                  ('project_id', u'IaaS'), 
-                  ('state_reason', u'Threshold Crossed: 2 datapoints 
-                  were not less than the threshold(2.000000). The 
-                  most recent datapoints: [55.25, 55.25].'), 
-                  ('state_reason_data', u'{"startDate": "2012-08-25T
-                  10:30:00.000000", "period": 300, "threshold": 2.0, 
-                  "version": "1.0", "statistic": "Average", "recentD
-                  atapoints": [55.25, 55.25], "queryDate": "2012-08-
-                  25T10:32:24.671991"}'), 
-                  ('state_updated_timestamp', datetime.datetime(2012,
-                   8, 25, 11, 39, 49, 657449)), 
-                  ('state_value', 'OK'), 
-                  ('statistic', u'Average'), 
-                  ('threshold', 2.0), 
-                  ('unit', u'Percent'), 
-                  ('reason', u'Threshold Crossed: 3 datapoints were 
-                  not less than the threshold(2.000000). The most 
-                  recent datapoints: [75.0, 80.0, 67.625].'), 
-                  ('reason_data', '{"startDate": "2012-08-25T11:37:00
-                  .000000", "period": 300, "threshold": 2.0, 
-                  "version": "1.0", "statistic": "Average", 
-                  "recentDatapoints": [75.0, 80.0, 67.625], 
-                  "queryDate": "2012-08-25T11:39:49.657449"}')
-                  ]) 
-new_state: {'stateReason': u'Threshold Crossed: 3 datapoints were not 
-                           less than the threshold(2.000000). The 
-                           most recent datapoints: [75.0, 80.0, 
-                           67.625].', 
-          'stateValue': 'OK', 
-          'stateReasonData': {'startDate': '2012-08-25T11:37:00', 
-          'period': 300, 'threshold': 2.0, 'version': '1.0', 
-          'statistic': u'Average', 'recentDatapoints': [75.0, 80.0, 
-          67.625], 
-          'queryDate': '2012-08-25T11:39:49.657449'}} 
-old_state: {'stateReason': u'Insufficient Data: 1 datapoints were 
-                          unknown.', 
-          'stateReasonData': {u'startDate': 
-          u'2012-08-25T11:37:00.000000', 
-          u'period': 300, u'recentDatapoints': [55.25], 
-          u'version': u'1.0', 
-          u'statistic': u'Average', u'threshold': 2.0, 
-          u'queryDate': u'2012-08-25T11:39:26.261056'}, 
-          'stateValue': 'INSUFFICIENT_DATA'}</pre>
-</div>
+<p>alarmkey: f459c0e0-f927-481f-9158-deb8abe102a2 
+alarm: OrderedDict([(&#8216;actions_enabled&#8217;, False),</p>
+<blockquote>
+<div><p>(&#8216;alarm_actions&#8217;, u&#8217;[]&#8217;), 
+(&#8216;alarm_arn&#8217;, u&#8217;<a href="#id1"><span class="problematic" id="id2">arn:spcs:synaps:IaaS:alarm:TEST_</span></a>uc
+54cub78c_02&#8217;), 
+(&#8216;alarm_configuration_updated_timestamp&#8217;, datetime.
+datetime(2012, 8, 25, 10, 51, 38, 469000)), 
+(&#8216;alarm_description&#8217;, u&#8217;&#8216;), 
+(&#8216;alarm_name&#8217;, u&#8217;<a href="#id3"><span class="problematic" id="id4">TEST_</span></a>uc54cub78c_02&#8217;), 
+(&#8216;comparison_operator&#8217;, u&#8217;LessThanThreshold&#8217;), 
+(&#8216;dimensions&#8217;, u&#8217;{&#8220;instance_name&#8221;: &#8220;test instance&#8221;}
+&#8216;), 
+(&#8216;evaluation_periods&#8217;, 2), 
+(&#8216;insufficient_data_actions&#8217;, u&#8217;[]&#8217;), 
+(&#8216;metric_key&#8217;, UUID(&#8216;96f19ec9-673b-4237-ae66-1bfde5
+26595c&#8217;)), 
+(&#8216;metric_name&#8217;, u&#8217;test_metric&#8217;), 
+(&#8216;namespace&#8217;, u&#8217;SPCS/SYNAPSTEST&#8217;), 
+(&#8216;ok_actions&#8217;, u&#8217;[]&#8217;), 
+(&#8216;period&#8217;, 300), 
+(&#8216;project_id&#8217;, u&#8217;IaaS&#8217;), 
+(&#8216;state_reason&#8217;, u&#8217;Threshold Crossed: 2 datapoints 
+were not less than the threshold(2.000000). The 
+most recent datapoints: [55.25, 55.25].&#8217;), 
+(&#8216;state_reason_data&#8217;, u&#8217;{&#8220;startDate&#8221;: &#8220;2012-08-25T
+10:30:00.000000&#8221;, &#8220;period&#8221;: 300, &#8220;threshold&#8221;: 2.0, 
+&#8220;version&#8221;: &#8220;1.0&#8221;, &#8220;statistic&#8221;: &#8220;Average&#8221;, &#8220;recentD
+atapoints&#8221;: [55.25, 55.25], &#8220;queryDate&#8221;: &#8220;2012-08-
+25T10:32:24.671991&#8221;}&#8217;), 
+(&#8216;state_updated_timestamp&#8217;, datetime.datetime(2012,</p>
+<blockquote>
+<div>8, 25, 11, 39, 49, 657449)),</div></blockquote>
+<p>(&#8216;state_value&#8217;, &#8216;OK&#8217;), 
+(&#8216;statistic&#8217;, u&#8217;Average&#8217;), 
+(&#8216;threshold&#8217;, 2.0), 
+(&#8216;unit&#8217;, u&#8217;Percent&#8217;), 
+(&#8216;reason&#8217;, u&#8217;Threshold Crossed: 3 datapoints were 
+not less than the threshold(2.000000). The most 
+recent datapoints: [75.0, 80.0, 67.625].&#8217;), 
+(&#8216;reason_data&#8217;, &#8216;{&#8220;startDate&#8221;: &#8220;2012-08-25T11:37:00
+.000000&#8221;, &#8220;period&#8221;: 300, &#8220;threshold&#8221;: 2.0, 
+&#8220;version&#8221;: &#8220;1.0&#8221;, &#8220;statistic&#8221;: &#8220;Average&#8221;, 
+&#8220;recentDatapoints&#8221;: [75.0, 80.0, 67.625], 
+&#8220;queryDate&#8221;: &#8220;2012-08-25T11:39:49.657449&#8221;}&#8217;)
+])</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>new_state: {&#8216;stateReason&#8217;: u&#8217;Threshold Crossed: 3 datapoints were not </dt>
+<dd><blockquote class="first">
+<div>less than the threshold(2.000000). The 
+most recent datapoints: [75.0, 80.0, 
+67.625].&#8217;,</div></blockquote>
+<p class="last">&#8216;stateValue&#8217;: &#8216;OK&#8217;, 
+&#8216;stateReasonData&#8217;: {&#8216;startDate&#8217;: &#8216;2012-08-25T11:37:00&#8217;, 
+&#8216;period&#8217;: 300, &#8216;threshold&#8217;: 2.0, &#8216;version&#8217;: &#8216;1.0&#8217;, 
+&#8216;statistic&#8217;: u&#8217;Average&#8217;, &#8216;recentDatapoints&#8217;: [75.0, 80.0, 
+67.625], 
+&#8216;queryDate&#8217;: &#8216;2012-08-25T11:39:49.657449&#8217;}}</p>
+</dd>
+<dt>old_state: {&#8216;stateReason&#8217;: u&#8217;Insufficient Data: 1 datapoints were </dt>
+<dd><blockquote class="first">
+<div>unknown.&#8217;,</div></blockquote>
+<p class="last">&#8216;stateReasonData&#8217;: {u&#8217;startDate&#8217;: 
+u&#8216;2012-08-25T11:37:00.000000&#8217;, 
+u&#8217;period&#8217;: 300, u&#8217;recentDatapoints&#8217;: [55.25], 
+u&#8217;version&#8217;: u&#8216;1.0&#8217;, 
+u&#8217;statistic&#8217;: u&#8217;Average&#8217;, u&#8217;threshold&#8217;: 2.0, 
+u&#8217;queryDate&#8217;: u&#8216;2012-08-25T11:39:26.261056&#8217;}, 
+&#8216;stateValue&#8217;: &#8216;INSUFFICIENT_DATA&#8217;}</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -199,7 +207,7 @@ old_state: {'stateReason': u'Insufficient Data: 1 datapoints were
 
 <dl class="method">
 <dt id="synaps.cep.put_metric_bolt.MetricMonitor.put_alarm">
-<tt class="descname">put_alarm</tt><big>(</big><em>project_id</em>, <em>metricalarm</em><big>)</big><a class="headerlink" href="#synaps.cep.put_metric_bolt.MetricMonitor.put_alarm" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">put_alarm</tt><big>(</big><em>alarm_key</em>, <em>metricalarm</em><big>)</big><a class="headerlink" href="#synaps.cep.put_metric_bolt.MetricMonitor.put_alarm" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -240,7 +248,7 @@ old_state: {'stateReason': u'Insufficient Data: 1 datapoints were
 
 <dl class="method">
 <dt id="synaps.cep.put_metric_bolt.PutMetricBolt.process_check_metric_alarms_msg">
-<tt class="descname">process_check_metric_alarms_msg</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.cep.put_metric_bolt.PutMetricBolt.process_check_metric_alarms_msg" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">process_check_metric_alarms_msg</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#synaps.cep.put_metric_bolt.PutMetricBolt.process_check_metric_alarms_msg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -276,7 +284,7 @@ old_state: {'stateReason': u'Insufficient Data: 1 datapoints were
         <div class="sphinxsidebarwrapper">
             <h4>Previous topic</h4>
             <p class="topless"><a href="synaps.cep.check_spout.html"
-                                  title="previous chapter">The <tt class="docutils literal docutils literal docutils literal"><span class="pre">synaps.cep.check_spout</span></tt> Module</a></p>
+                                  title="previous chapter">The <tt class="docutils literal"><span class="pre">synaps.cep.check_spout</span></tt> Module</a></p>
             <h4>Next topic</h4>
             <p class="topless"><a href="synaps.cep.storm.html"
                                   title="next chapter">The <tt class="docutils literal"><span class="pre">synaps.cep.storm</span></tt> Module</a></p>
@@ -317,13 +325,14 @@ old_state: {'stateReason': u'Insufficient Data: 1 datapoints were
         <li class="right" >
           <a href="synaps.cep.check_spout.html" title="The synaps.cep.check_spout Module"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">synaps 2013.2.rc2 documentation</a> &raquo;</li>
+        <li><a href="../index.html">synaps 2013.2.1-dev documentation</a> &raquo;</li>
+          <li><a href="../artifacts/developersguide.html" >Developer&#8217;s Guide</a> &raquo;</li>
           <li><a href="autoindex.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Sun Sep 1 23:55:50 2013, commit 3b44714.
+      Last updated on Wed Nov 6 15:29:32 2013, commit 8d59e7a.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

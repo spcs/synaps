@@ -21,7 +21,8 @@ Following is list of parameters for this action.
      - Description
      - Mandatory
    * - AlarmName
-     - name of Alarm. It should be unique in user's all alarm. 
+     - name of Alarm. It should be unique in user's all alarm.
+       Only Admin can call this action for the alarms that starts with "SPCS/". 
 
        Data type: String
 

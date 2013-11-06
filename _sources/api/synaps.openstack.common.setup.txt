@@ -1,0 +1,7 @@
+The :mod:`synaps.openstack.common.setup` Module
+================================================
+
+.. automodule:: synaps.openstack.common.setup
+  :members:
+  :undoc-members:
+  :show-inheritance:

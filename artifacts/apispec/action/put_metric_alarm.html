@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>PutMetricAlarm &mdash; synaps 2013.2.rc2 documentation</title>
+    <title>PutMetricAlarm &mdash; synaps 2013.2.1-dev documentation</title>
     
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '2013.2.rc2',
+        VERSION:     '2013.2.1-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps 2013.2.rc2 documentation" href="../../../index.html" />
+    <link rel="top" title="synaps 2013.2.1-dev documentation" href="../../../index.html" />
     <link rel="up" title="User API Specification" href="../user.api.html" />
     <link rel="next" title="PutMetricData" href="put_metric_data.html" />
     <link rel="prev" title="ListMetrics" href="list_metrics.html" /> 
@@ -56,6 +56,8 @@
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p>Create or update Alarm for Metric.</p>
+<p>The number of alarms is limited to 5,000 per project and 30 per metric by
+default.</p>
 </div>
 <div class="section" id="parameters">
 <h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
@@ -85,6 +87,10 @@ the Alarm.</p>
 Country code and other phone number should be divided by space(&#8216; &#8216;).
 only +, [0-9], space(&#8216; &#8216;) are allowed in international phone number.</p>
 <p>Refer to International Telecommunication Union ITU-T Rec. E.123 (02/2001)</p>
+<p>Two types of InstanceAction is also available. Following the action
+prefix(InstanceAction:Reboot or InstanceAction:Migrate), instance UUID
+must be specified in parenthesis.
+ex) InstanceAction:Migrate(2f4a97eb-1234-9876-8d19-54aacabbdc88)</p>
 <p class="last">Data type: String</p>
 </td>
 <td>No</td>
@@ -98,7 +104,8 @@ only +, [0-9], space(&#8216; &#8216;) are allowed in international phone number.
 <td>No</td>
 </tr>
 <tr class="row-odd"><td>AlarmName</td>
-<td><p class="first">name of Alarm. It should be unique in user&#8217;s all alarm.</p>
+<td><p class="first">name of Alarm. It should be unique in user&#8217;s all alarm.
+Only Admin can call this action for the alarms that starts with &#8220;SPCS/&#8221;.</p>
 <p>Data type: String</p>
 <p>Length limitation: 1 ~ 255 bytes</p>
 <p class="last">Type limitation: Value consisting of only numbers can not be used.</p>
@@ -153,6 +160,10 @@ of the International phone number.</p>
 divided by space(&#8216; &#8216;). only can +, [0-9], space(&#8216; &#8216;) are available in
 this value.</p>
 <p>refer to International Telecommunication Union ITU-T Rec. E.123 (02/2001)</p>
+<p>Two types of InstanceAction is also available. Following the action
+prefix(InstanceAction:Reboot or InstanceAction:Migrate), instance UUID
+must be specified in parenthesis.
+ex) InstanceAction:Migrate(2f4a97eb-1234-9876-8d19-54aacabbdc88)</p>
 <p class="last">Data type: String</p>
 </td>
 <td>No</td>
@@ -182,6 +193,10 @@ of the International phone number.</p>
 divided by space(&#8216; &#8216;). only can +, [0-9], space(&#8216; &#8216;) are available in
 this value.</p>
 <p>refer to International Telecommunication Union ITU-T Rec. E.123 (02/2001)</p>
+<p>Two types of InstanceAction is also available. Following the action
+prefix(InstanceAction:Reboot or InstanceAction:Migrate), instance UUID
+must be specified in parenthesis.
+ex) InstanceAction:Migrate(2f4a97eb-1234-9876-8d19-54aacabbdc88)</p>
 <p class="last">Data type: String</p>
 </td>
 <td>No</td>
@@ -225,6 +240,33 @@ Count/Second | None</p>
 <div class="section" id="errors">
 <h2>Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h2>
 <p>Following is list of errors for this action.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="63%" />
+<col width="13%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Error</th>
+<th class="head">Description</th>
+<th class="head">HTTP Status Code</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>InvalidParameterValue</td>
+<td>Invalid value of input parameter.</td>
+<td>400</td>
+</tr>
+<tr class="row-odd"><td>ProjectAlarmQuotaExceeded</td>
+<td>Too many alarms for this project</td>
+<td>403</td>
+</tr>
+<tr class="row-even"><td>MetricAlarmQuotaExceeded</td>
+<td>Too many alarms for this metric</td>
+<td>403</td>
+</tr>
+</tbody>
+</table>
 <p>see also <a class="reference internal" href="../common/common_errors.html#common-errors"><em>Common Errors</em></a></p>
 </div>
 </div>
@@ -288,14 +330,14 @@ Count/Second | None</p>
         <li class="right" >
           <a href="list_metrics.html" title="ListMetrics"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../../index.html">synaps 2013.2.rc2 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">synaps 2013.2.1-dev documentation</a> &raquo;</li>
           <li><a href="../../apispec.html" >Application Programming Interface Specification</a> &raquo;</li>
           <li><a href="../user.api.html" accesskey="U">User API Specification</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Sun Sep 1 23:55:50 2013, commit 3b44714.
+      Last updated on Wed Nov 6 15:29:32 2013, commit 8d59e7a.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

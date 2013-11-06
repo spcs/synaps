@@ -44,3 +44,12 @@ Now you can run testcase to check your Synaps running OK
 .. code-block:: bash
 
   ~/git/synaps/synaps-api/synaps/tests$ python test_cloudwatch.py
+
+Module Index
+============
+
+.. toctree::
+    :maxdepth: 1
+
+    ../api/autoindex.rst
+

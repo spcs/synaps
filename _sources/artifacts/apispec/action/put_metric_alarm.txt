@@ -7,6 +7,9 @@ Description
 -----------
 Create or update Alarm for Metric.
 
+The number of alarms is limited to 5,000 per project and 30 per metric by 
+default. 
+
 Parameters
 ----------
 
@@ -34,6 +37,12 @@ Following is list of parameters for this action.
        
        Refer to International Telecommunication Union ITU-T Rec. E.123 (02/2001)
 
+       Two types of InstanceAction is also available. Following the action 
+       prefix(InstanceAction:Reboot or InstanceAction:Migrate), instance UUID 
+       must be specified in parenthesis. 
+       ex) InstanceAction:Migrate(2f4a97eb-1234-9876-8d19-54aacabbdc88)
+
+
        Data type: String
      - No
    * - AlarmDescription	
@@ -47,6 +56,7 @@ Following is list of parameters for this action.
      - No
    * - AlarmName
      - name of Alarm. It should be unique in user's all alarm. 
+       Only Admin can call this action for the alarms that starts with "SPCS/".
 
        Data type: String
 
@@ -98,6 +108,11 @@ Following is list of parameters for this action.
               
        refer to International Telecommunication Union ITU-T Rec. E.123 (02/2001)
 
+       Two types of InstanceAction is also available. Following the action 
+       prefix(InstanceAction:Reboot or InstanceAction:Migrate), instance UUID 
+       must be specified in parenthesis. 
+       ex) InstanceAction:Migrate(2f4a97eb-1234-9876-8d19-54aacabbdc88)
+
        Data type: String
      - No
    * - MetricName
@@ -129,6 +144,11 @@ Following is list of parameters for this action.
        this value.
               
        refer to International Telecommunication Union ITU-T Rec. E.123 (02/2001)
+
+       Two types of InstanceAction is also available. Following the action 
+       prefix(InstanceAction:Reboot or InstanceAction:Migrate), instance UUID 
+       must be specified in parenthesis. 
+       ex) InstanceAction:Migrate(2f4a97eb-1234-9876-8d19-54aacabbdc88)
 
        Data type: String
      - No
@@ -171,4 +191,21 @@ Errors
 
 Following is list of errors for this action.
 
+.. list-table:: 
+   :widths: 20 50 10
+   :header-rows: 1
+   
+   * - Error
+     - Description
+     - HTTP Status Code
+   * - InvalidParameterValue
+     - Invalid value of input parameter.
+     - 400
+   * - ProjectAlarmQuotaExceeded
+     - Too many alarms for this project
+     - 403
+   * - MetricAlarmQuotaExceeded
+     - Too many alarms for this metric
+     - 403
+     
 see also :ref:`common_errors` 

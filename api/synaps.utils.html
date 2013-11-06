@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>The synaps.utils Module &mdash; synaps 2013.2.rc2 documentation</title>
+    <title>The synaps.utils Module &mdash; synaps 2013.2.1-dev documentation</title>
     
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '2013.2.rc2',
+        VERSION:     '2013.2.1-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,10 +26,10 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps 2013.2.rc2 documentation" href="../index.html" />
+    <link rel="top" title="synaps 2013.2.1-dev documentation" href="../index.html" />
     <link rel="up" title="&lt;no title&gt;" href="autoindex.html" />
     <link rel="next" title="The synaps.version Module" href="synaps.version.html" />
-    <link rel="prev" title="The synaps.tests.test_cloudwatch Module" href="synaps.tests.test_cloudwatch.html" /> 
+    <link rel="prev" title="The synaps.service Module" href="synaps.service.html" /> 
   </head>
   <body>
   <div id="header">
@@ -183,6 +183,16 @@ in the root_helper FLAG.</div></blockquote>
 <dd></dd></dl>
 
 <dl class="function">
+<dt id="synaps.utils.generate_metric_key">
+<tt class="descname">generate_metric_key</tt><big>(</big><em>project_id</em>, <em>namespace</em>, <em>metric_name</em>, <em>dimensions</em><big>)</big><a class="headerlink" href="#synaps.utils.generate_metric_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.get_python_novaclient">
+<tt class="descname">get_python_novaclient</tt><big>(</big><big>)</big><a class="headerlink" href="#synaps.utils.get_python_novaclient" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="synaps.utils.import_class">
 <tt class="descname">import_class</tt><big>(</big><em>import_str</em><big>)</big><a class="headerlink" href="#synaps.utils.import_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a class from a string including module and class.</p>
@@ -215,6 +225,16 @@ Example: &#8216;nova.api.ec2.cloud:nova.notifier.api.notify_decorator&#8217;</p>
 <p>name - name of the function
 function - object of the function</p>
 </dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.pack_dimensions">
+<tt class="descname">pack_dimensions</tt><big>(</big><em>dimensions</em><big>)</big><a class="headerlink" href="#synaps.utils.pack_dimensions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="synaps.utils.parse_instance_action">
+<tt class="descname">parse_instance_action</tt><big>(</big><em>instance_action</em><big>)</big><a class="headerlink" href="#synaps.utils.parse_instance_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="synaps.utils.parse_server_string">
@@ -333,6 +353,11 @@ track the depth of the object inspections and don&#8217;t go too deep.</p>
 <dd></dd></dl>
 
 <dl class="function">
+<dt id="synaps.utils.validate_instance_action">
+<tt class="descname">validate_instance_action</tt><big>(</big><em>instance_action</em><big>)</big><a class="headerlink" href="#synaps.utils.validate_instance_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="synaps.utils.validate_international_phonenumber">
 <tt class="descname">validate_international_phonenumber</tt><big>(</big><em>number</em><big>)</big><a class="headerlink" href="#synaps.utils.validate_international_phonenumber" title="Permalink to this definition">¶</a></dt>
 <dd><p>International Telecommunication Union ITU-T Rec. E.123 (02/2001)</p>
@@ -355,8 +380,8 @@ and web addresses</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
             <h4>Previous topic</h4>
-            <p class="topless"><a href="synaps.tests.test_cloudwatch.html"
-                                  title="previous chapter">The <tt class="docutils literal docutils literal docutils literal"><span class="pre">synaps.tests.test_cloudwatch</span></tt> Module</a></p>
+            <p class="topless"><a href="synaps.service.html"
+                                  title="previous chapter">The <tt class="docutils literal"><span class="pre">synaps.service</span></tt> Module</a></p>
             <h4>Next topic</h4>
             <p class="topless"><a href="synaps.version.html"
                                   title="next chapter">The <tt class="docutils literal"><span class="pre">synaps.version</span></tt> Module</a></p>
@@ -395,15 +420,16 @@ and web addresses</p>
           <a href="synaps.version.html" title="The synaps.version Module"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="synaps.tests.test_cloudwatch.html" title="The synaps.tests.test_cloudwatch Module"
+          <a href="synaps.service.html" title="The synaps.service Module"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">synaps 2013.2.rc2 documentation</a> &raquo;</li>
+        <li><a href="../index.html">synaps 2013.2.1-dev documentation</a> &raquo;</li>
+          <li><a href="../artifacts/developersguide.html" >Developer&#8217;s Guide</a> &raquo;</li>
           <li><a href="autoindex.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Sun Sep 1 23:55:50 2013, commit 3b44714.
+      Last updated on Wed Nov 6 15:29:32 2013, commit 8d59e7a.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

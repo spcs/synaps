@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Synaps &mdash; synaps 2013.2.rc2 documentation</title>
+    <title>Synaps &mdash; synaps 2013.2.1-dev documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '2013.2.rc2',
+        VERSION:     '2013.2.1-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps 2013.2.rc2 documentation" href="#" />
+    <link rel="top" title="synaps 2013.2.1-dev documentation" href="#" />
     <link rel="next" title="Program Specification" href="artifacts/programspec.html" /> 
   </head>
   <body>
@@ -148,7 +148,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="artifacts/operatormanual.html">Operational Manual</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="artifacts/operatormanual.html#starting-service-procedure">Starting Service Procedure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/operatormanual.html#maintenance">Maintenance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/operatormanual.html#maintenance">Maintenance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/operatormanual.html#minor-upgrade-without-downtime">Minor upgrade without downtime</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="artifacts/developersguide.html">Developer&#8217;s Guide</a><ul>
@@ -162,45 +165,41 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/developersguide.html#module-index">Module Index</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.api.auth.html">The <tt class="docutils literal"><span class="pre">synaps.api.auth</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.api.cloudwatch.apirequest.html">The <tt class="docutils literal"><span class="pre">synaps.api.cloudwatch.apirequest</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.api.cloudwatch.cloudwatch2utils.html">The <tt class="docutils literal"><span class="pre">synaps.api.cloudwatch.cloudwatch2utils</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.api.cloudwatch.faults.html">The <tt class="docutils literal"><span class="pre">synaps.api.cloudwatch.faults</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.api.cloudwatch.monitor.html">The <tt class="docutils literal"><span class="pre">synaps.api.cloudwatch.monitor</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.auth.fakeldap.html">The <tt class="docutils literal"><span class="pre">synaps.auth.fakeldap</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.auth.ldapdriver.html">The <tt class="docutils literal"><span class="pre">synaps.auth.ldapdriver</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.auth.manager.html">The <tt class="docutils literal"><span class="pre">synaps.auth.manager</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.auth.signer.html">The <tt class="docutils literal"><span class="pre">synaps.auth.signer</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.cep.action_bolt.html">The <tt class="docutils literal"><span class="pre">synaps.cep.action_bolt</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.cep.api_spout.html">The <tt class="docutils literal"><span class="pre">synaps.cep.api_spout</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.cep.check_spout.html">The <tt class="docutils literal"><span class="pre">synaps.cep.check_spout</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.cep.put_metric_bolt.html">The <tt class="docutils literal"><span class="pre">synaps.cep.put_metric_bolt</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.cep.storm.html">The <tt class="docutils literal"><span class="pre">synaps.cep.storm</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.cep.unpack_bolt.html">The <tt class="docutils literal"><span class="pre">synaps.cep.unpack_bolt</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.common.memorycache.html">The <tt class="docutils literal"><span class="pre">synaps.common.memorycache</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.compat.flagfile.html">The <tt class="docutils literal"><span class="pre">synaps.compat.flagfile</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.context.html">The <tt class="docutils literal"><span class="pre">synaps.context</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.crypto.html">The <tt class="docutils literal"><span class="pre">synaps.crypto</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.exception.html">The <tt class="docutils literal"><span class="pre">synaps.exception</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.flags.html">The <tt class="docutils literal"><span class="pre">synaps.flags</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.local.html">The <tt class="docutils literal"><span class="pre">synaps.local</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.log.html">The <tt class="docutils literal"><span class="pre">synaps.log</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.monitor.api.html">The <tt class="docutils literal"><span class="pre">synaps.monitor.api</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.openstack.common.cfg.html">The <tt class="docutils literal"><span class="pre">synaps.openstack.common.cfg</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.openstack.common.jsonutils.html">The <tt class="docutils literal"><span class="pre">synaps.openstack.common.jsonutils</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.openstack.common.setup.html">The <tt class="docutils literal"><span class="pre">synaps.openstack.common.setup</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.openstack.common.timeutils.html">The <tt class="docutils literal"><span class="pre">synaps.openstack.common.timeutils</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.service.html">The <tt class="docutils literal"><span class="pre">synaps.service</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.utils.html">The <tt class="docutils literal"><span class="pre">synaps.utils</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.version.html">The <tt class="docutils literal"><span class="pre">synaps.version</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synaps.wsgi.html">The <tt class="docutils literal"><span class="pre">synaps.wsgi</span></tt> Module</a></li>
 </ul>
-</div>
-</div>
-<div class="section" id="module-reference">
-<h2>Module Reference<a class="headerlink" href="#module-reference" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.api.auth.html">The <tt class="docutils literal"><span class="pre">synaps.api.auth</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.api.cloudwatch.apirequest.html">The <tt class="docutils literal"><span class="pre">synaps.api.cloudwatch.apirequest</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.api.cloudwatch.cloudwatch2utils.html">The <tt class="docutils literal"><span class="pre">synaps.api.cloudwatch.cloudwatch2utils</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.api.cloudwatch.faults.html">The <tt class="docutils literal"><span class="pre">synaps.api.cloudwatch.faults</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.api.cloudwatch.monitor.html">The <tt class="docutils literal"><span class="pre">synaps.api.cloudwatch.monitor</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.auth.fakeldap.html">The <tt class="docutils literal"><span class="pre">synaps.auth.fakeldap</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.auth.ldapdriver.html">The <tt class="docutils literal"><span class="pre">synaps.auth.ldapdriver</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.auth.manager.html">The <tt class="docutils literal"><span class="pre">synaps.auth.manager</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.auth.signer.html">The <tt class="docutils literal"><span class="pre">synaps.auth.signer</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.cep.action_bolt.html">The <tt class="docutils literal"><span class="pre">synaps.cep.action_bolt</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.cep.api_spout.html">The <tt class="docutils literal"><span class="pre">synaps.cep.api_spout</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.cep.check_spout.html">The <tt class="docutils literal"><span class="pre">synaps.cep.check_spout</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.cep.put_metric_bolt.html">The <tt class="docutils literal"><span class="pre">synaps.cep.put_metric_bolt</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.cep.storm.html">The <tt class="docutils literal"><span class="pre">synaps.cep.storm</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.cep.unpack_bolt.html">The <tt class="docutils literal"><span class="pre">synaps.cep.unpack_bolt</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.common.memorycache.html">The <tt class="docutils literal"><span class="pre">synaps.common.memorycache</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.compat.flagfile.html">The <tt class="docutils literal"><span class="pre">synaps.compat.flagfile</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.context.html">The <tt class="docutils literal"><span class="pre">synaps.context</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.crypto.html">The <tt class="docutils literal"><span class="pre">synaps.crypto</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.exception.html">The <tt class="docutils literal"><span class="pre">synaps.exception</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.flags.html">The <tt class="docutils literal"><span class="pre">synaps.flags</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.local.html">The <tt class="docutils literal"><span class="pre">synaps.local</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.log.html">The <tt class="docutils literal"><span class="pre">synaps.log</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.monitor.api.html">The <tt class="docutils literal"><span class="pre">synaps.monitor.api</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.openstack.common.cfg.html">The <tt class="docutils literal"><span class="pre">synaps.openstack.common.cfg</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.openstack.common.jsonutils.html">The <tt class="docutils literal"><span class="pre">synaps.openstack.common.jsonutils</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.openstack.common.timeutils.html">The <tt class="docutils literal"><span class="pre">synaps.openstack.common.timeutils</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.service.html">The <tt class="docutils literal"><span class="pre">synaps.service</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.tests.test_cloudwatch.html">The <tt class="docutils literal"><span class="pre">synaps.tests.test_cloudwatch</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.utils.html">The <tt class="docutils literal"><span class="pre">synaps.utils</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.version.html">The <tt class="docutils literal"><span class="pre">synaps.version</span></tt> Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/synaps.wsgi.html">The <tt class="docutils literal"><span class="pre">synaps.wsgi</span></tt> Module</a></li>
+</li>
 </ul>
 </div>
 </div>
@@ -225,9 +224,6 @@
 <li><a class="reference internal" href="#">Synaps</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#artifacts">Artifacts</a><ul>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-reference">Module Reference</a><ul>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices">Indices</a></li>
@@ -272,12 +268,12 @@
         <li class="right" >
           <a href="artifacts/programspec.html" title="Program Specification"
              accesskey="N">next</a> |</li>
-        <li><a href="#">synaps 2013.2.rc2 documentation</a> &raquo;</li> 
+        <li><a href="#">synaps 2013.2.1-dev documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Sun Sep 1 23:55:50 2013, commit 3b44714.
+      Last updated on Wed Nov 6 15:29:32 2013, commit 8d59e7a.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

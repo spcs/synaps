@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Install RabbitMQ Example &mdash; synaps 2013.2.rc2 documentation</title>
+    <title>Install RabbitMQ Example &mdash; synaps 2013.2.1-dev documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '2013.2.rc2',
+        VERSION:     '2013.2.1-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
-    <link rel="top" title="synaps 2013.2.rc2 documentation" href="../../index.html" />
+    <link rel="top" title="synaps 2013.2.1-dev documentation" href="../../index.html" />
     <link rel="up" title="Installation Guide" href="../general.installation.guide.html" />
     <link rel="next" title="Post-installation Synaps backend" href="postinstall.backend.html" />
     <link rel="prev" title="Install Storm Example" href="install.storm.html" /> 
@@ -92,6 +92,14 @@ Cluster status of node <span class="s1">&#39;rabbit@synaps-mq02&#39;</span> ...
 ...done.
 </pre></div>
 </div>
+<p>If a rabbitmq cluster is broken, run below on a mq server to fix it.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>rabbitmqctl stop_app
+<span class="nv">$ </span>rabbitmqctl reset
+<span class="nv">$ </span>rabbitmqctl cluster rabbit@synaps-mq01 rabbit@synaps-mq02
+<span class="nv">$ </span>rabbitmqctl start_app
+<span class="nv">$ </span>rabbitmqctl cluster_status
+</pre></div>
+</div>
 </div>
 
 
@@ -143,13 +151,13 @@ Cluster status of node <span class="s1">&#39;rabbit@synaps-mq02&#39;</span> ...
         <li class="right" >
           <a href="install.storm.html" title="Install Storm Example"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">synaps 2013.2.rc2 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">synaps 2013.2.1-dev documentation</a> &raquo;</li>
           <li><a href="../general.installation.guide.html" accesskey="U">Installation Guide</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Sun Sep 1 23:55:50 2013, commit 3b44714.
+      Last updated on Wed Nov 6 15:29:32 2013, commit 8d59e7a.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

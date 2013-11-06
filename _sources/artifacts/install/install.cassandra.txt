@@ -9,10 +9,11 @@ http://cassandra.apache.org/
 Download cassandra and unzip the tarball.
 
 .. code-block:: bash
-
-   tar xvfz apache-cassandra-1.0.8-bin.tar.gz
-   mv apache-cassandra-1.0.8 /DB/synaps/cassandra-1.0.8
-   ln -s /DB/synaps/cassandra-1.0.8 /DB/synaps/cassandra
+ 
+   wget http://www.apache.org/dyn/closer.cgi?path=/cassandra/1.1.12/apache-cassandra-1.1.12-bin.tar.gz
+   tar xvfz apache-cassandra-1.1.12-bin.tar.gz
+   mv apache-cassandra-1.1.12 /DB/synaps/apache-cassandra-1.1.12
+   ln -s /DB/synaps/apache-cassandra-1.1.12 /DB/synaps/cassandra
 
 To config cassandra, edit configuration file as below. The default config file
 path is "/DB/synaps/cassandra/conf/cassandra.yaml"
@@ -51,3 +52,12 @@ path is "/DB/synaps/cassandra/conf/cassandra.yaml"
    listen_address: (Local_HostName)
    
    rpc_address: 0.0.0.0
+
+And tune the JVM option by editing env file as below. 
+"/DB/synaps/cassandra/conf/cassandra-env.sh"
+
+
+.. code-block:: bash
+  
+  JVM_OPTS="$JVM_OPTS -Xss250k"
+
