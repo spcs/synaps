@@ -82,10 +82,10 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
 
+        alarm_names = utils.extract_member_list(alarm_names)
+
         self.check_alarm_names(alarm_names)
         self._check_admin_alarm(alarm_names, context.is_admin)
-
-        alarm_names = utils.extract_member_list(alarm_names)
         self.monitor_api.delete_alarms(context, project_id, alarm_names)
         return {}
 
@@ -224,11 +224,11 @@ class MonitorController(object):
                               project_id=None):
         if not (project_id and context.is_admin):
             project_id = context.project_id
-        
+
+        alarm_names = utils.extract_member_list(alarm_names)
         self.check_alarm_names(alarm_names)
         self._check_admin_alarm(alarm_names, context.is_admin)
         
-        alarm_names = utils.extract_member_list(alarm_names)
         self.monitor_api.set_alarm_actions(context, project_id, alarm_names,
                                            False)
         return {}        
@@ -238,10 +238,10 @@ class MonitorController(object):
         if not (project_id and context.is_admin):
             project_id = context.project_id
         
+        alarm_names = utils.extract_member_list(alarm_names)
         self.check_alarm_names(alarm_names)
         self._check_admin_alarm(alarm_names, context.is_admin)
 
-        alarm_names = utils.extract_member_list(alarm_names)
         self.monitor_api.set_alarm_actions(context, project_id, alarm_names,
                                            True)
         return {}      
