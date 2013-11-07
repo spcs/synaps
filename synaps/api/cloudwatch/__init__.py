@@ -234,12 +234,15 @@ class Authenticate(wsgi.Middleware):
 
     @webob.dec.wsgify(RequestClass=webob.Request)
     def __call__(self, req):
+        request_id = context.generate_request_id()
         # Read request signature and access id.
         try:
             signature = req.params['Signature']
             access = req.params['AWSAccessKeyId']
         except KeyError:
-            raise webob.exc.HTTPBadRequest()
+            msg = _("Access key or signature not provided")
+            return faults.ec2_error_response(request_id, "Unauthorized", msg,
+                                             status=400)
 
         # Make a copy of args for authentication and signature verification.
         auth_params = dict(req.params)
@@ -260,7 +263,9 @@ class Authenticate(wsgi.Middleware):
         except (exception.ResourceNotFound, exception.NotAuthorized,
                 exception.InvalidSignature) as ex:
             LOG.audit(_("Authentication Failure: %s"), unicode(ex))
-            raise webob.exc.HTTPForbidden()
+            msg = _("Authentication Failure")
+            return faults.ec2_error_response(request_id, "Unauthorized", msg,
+                                             status=400)
 
         # Authenticated!
         remote_address = req.remote_addr
