@@ -283,10 +283,11 @@ class AlarmTest(SynapsTestCase):
         # put 10 alarms 
         prefix = "AlarmsToBeDescribed"
         alarmnames = [self.generate_random_name(prefix) for i in range(10)]
+        metric_name = self.generate_random_name("metricname-")
                 
         for alarmname in alarmnames:
             alarm = MetricAlarm(name=alarmname,
-                metric=self.metric_name, namespace=self.namespace,
+                metric=metric_name, namespace=self.namespace,
                 statistic="Average", comparison="<", threshold=2.0,
                 period=300, evaluation_periods=2, unit="Percent",
                 description=None, dimensions=self.dimensions,
@@ -368,7 +369,8 @@ class AlarmTest(SynapsTestCase):
 
     @attr(type=['gate'])
     def test_put_alarm_with_period(self):
-        alarm = MetricAlarm(name="Test_Alarm_Period", metric=self.metric_name,
+        alarmname = self.generate_random_name("Test_Alarm_Period")
+        alarm = MetricAlarm(name=alarmname, metric=self.metric_name,
                             namespace=self.namespace, statistic="Average",
                             comparison=">", threshold=50.0, period=6000,
                             evaluation_periods=2, unit="Percent",
@@ -406,9 +408,7 @@ class AlarmTest(SynapsTestCase):
        
         self.assertTrue(ret3)
         
-        alarmnames = ["Test_Alarm_Period"]
-        for alarm in alarmnames:
-            self.synaps.delete_alarms(alarms=[alarm])
+        self.synaps.delete_alarms(alarms=[alarmname])
         
         td4 = timedelta(seconds=2000)  
         

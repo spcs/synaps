@@ -468,6 +468,7 @@ class Cassandra(object):
         
 
         next_token = uuid.UUID(next_token) if next_token else ''
+        new_next_token = None
         
         expr_list = [pycassa.create_index_expression("project_id",
                                                      project_id), ]

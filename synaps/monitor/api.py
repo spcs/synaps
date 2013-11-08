@@ -124,7 +124,8 @@ class API(object):
         
         for alarm_name in alarm_names:
             alarm_key = self.cass.get_metric_alarm_key(project_id, alarm_name)
-            history_data = {'actions_enabled':enabled}
+            history_data = {'actions_enabled':enabled,
+                            'project_id': project_id}
             self.cass.put_metric_alarm(alarm_key, history_data)
             
             if enabled:

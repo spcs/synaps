@@ -640,7 +640,7 @@ class PutMetricBolt(storm.BasicBolt):
         if history_type == 'Update':
             original_alarm = self.cass.get_metric_alarm(alarm_key)
             for dict_key in ['state_updated_timestamp', 'state_reason',
-                             'state_reason_data', 'state_value']:
+                             'state_reason_data', 'state_value', 'project_id']:
                 metricalarm[dict_key] = original_alarm[dict_key]
             history_data = json.dumps({
                 'updatedAlarm':metricalarm_for_json(metricalarm),
@@ -654,7 +654,8 @@ class PutMetricBolt(storm.BasicBolt):
             metricalarm.update({'state_updated_timestamp': utils.utcnow(),
                                 'state_reason': state_reason,
                                 'state_reason_data': json.dumps({}),
-                                'state_value': "INSUFFICIENT_DATA"})
+                                'state_value': "INSUFFICIENT_DATA",
+                                'project_id': project_id})
             history_data = json.dumps({
                 'createdAlarm': metricalarm_for_json(metricalarm),
                 'type':history_type, 'version': '1.0'
@@ -726,6 +727,8 @@ class PutMetricBolt(storm.BasicBolt):
                          'state_value':message.get('state_value')}
         if state_reason_data:
             alarm_columns['state_reason_data'] = state_reason_data
+            
+        alarm_columns['project_id'] = project_id
         
         self.cass.put_metric_alarm(alarm_key, alarm_columns)
         

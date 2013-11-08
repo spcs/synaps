@@ -29,6 +29,7 @@ import backtype.storm.utils.Utils;
 
 import java.util.Map;
 import java.util.Properties;
+import java.io.*;
 
 public class SynapsTopology {
 	public static class ApiSpout extends ShellSpout implements IRichSpout {
@@ -119,39 +120,46 @@ public class SynapsTopology {
 		TopologyBuilder builder = new TopologyBuilder();
 
 		Config conf = new Config();
-		//conf.setDebug(true);
+		Properties props = new Properties();
 
-		if (args != null && args.length > 0) {
-			conf.setNumWorkers(6);
-			conf.setNumAckers(6);
-			conf.setMaxSpoutPending(500);
-			builder.setSpout("api_spout", new ApiSpout(), 6);
-			builder.setSpout("check_spout", new CheckSpout(), 1);
-			builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 4)
-					.shuffleGrouping("api_spout");
-			builder.setBolt("putmetric_bolt", new PutMetricBolt(), 12)
-					.fieldsGrouping("unpack_bolt", new Fields("metric_key"))
-					.allGrouping("check_spout");
-			builder.setBolt("action_bolt", new ActionBolt(), 4)
-					.shuffleGrouping("putmetric_bolt");
-			StormSubmitter.submitTopology("synaps" + args[0], conf,
-					builder.createTopology());
+		// load configuration
+		File configFile = new File("/etc/synaps/synaps.conf");
+		if (!configFile.canRead()) {
+			props.load(new StringReader(""));
 		} else {
-			builder.setSpout("api_spout", new ApiSpout(), 2);
-			builder.setSpout("check_spout", new CheckSpout(), 1);
-			builder.setBolt("unpack_bolt", new UnpackMessageBolt(), 2)
-					.shuffleGrouping("api_spout");
-			builder.setBolt("putmetric_bolt", new PutMetricBolt(), 4)
-					.fieldsGrouping("unpack_bolt", new Fields("metric_key"))
-					.allGrouping("check_spout");
-			builder.setBolt("action_bolt", new ActionBolt(), 2)
-					.shuffleGrouping("putmetric_bolt");
-			LocalCluster cluster = new LocalCluster();
-			cluster.submitTopology("metric", conf, builder.createTopology());
-			Utils.sleep(30 * 60 * 1000); // 30 min
-			cluster.killTopology("metric");
-			Utils.sleep(10 * 1000); // 10 sec
-			cluster.shutdown();
+			FileInputStream fin = new FileInputStream(configFile);
+			props.load(new BufferedInputStream(fin));
+			fin.close();
 		}
+
+		int numWorkers = Integer
+				.parseInt(props.getProperty("num_workers", "6"));
+		int numAckers = Integer.parseInt(props.getProperty("num_ackers", "6"));
+		int parallelismApiSpout = Integer.parseInt(props.getProperty(
+				"parallelism_api_spout", "20"));
+		int parallelismCheckSpout = Integer.parseInt(props.getProperty(
+				"parallelism_check_spout", "1"));
+		int parallelismUnpackBolt = Integer.parseInt(props.getProperty(
+				"parallelism_unpack_bolt", "20"));
+		int parallelismApiBolt = Integer.parseInt(props.getProperty(
+				"parallelism_api_bolt", "90"));
+		int parallelismActionBolt = Integer.parseInt(props.getProperty(
+				"parallelism_action_bolt", "8"));
+
+		// submit topology
+		conf.setNumWorkers(numWorkers);
+		conf.setNumAckers(numAckers);
+		builder.setSpout("api_spout", new ApiSpout(), parallelismApiSpout);
+		builder.setSpout("check_spout", new CheckSpout(), parallelismCheckSpout);
+		builder.setBolt("unpack_bolt", new UnpackMessageBolt(),
+				parallelismUnpackBolt).shuffleGrouping("api_spout");
+		builder.setBolt("putmetric_bolt", new PutMetricBolt(),
+				parallelismApiBolt)
+				.fieldsGrouping("unpack_bolt", new Fields("metric_key"))
+				.allGrouping("check_spout");
+		builder.setBolt("action_bolt", new ActionBolt(), parallelismActionBolt)
+				.shuffleGrouping("putmetric_bolt");
+		StormSubmitter.submitTopology("synaps00", conf,
+				builder.createTopology());
 	}
 }
