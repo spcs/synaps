@@ -9,47 +9,74 @@ Program Specification
 Synaps is a cloud monitoring system that collects metric data, provides 
 statistics data, monitors and notifies based on user defined alarms.
 
-It supports users to collect and monitor their default metrics (eg. 
-CPUUtilization, DiskReadOps, DiskWriteOps, DiskReadBytes, DiskWriteBytes,
-NetworkReadBytes and NetworkWriteBytes) and their own custom metrics also. 
+Requirements
+------------
 
-It is used to monitor tenant's applications and services on the OpenStack are 
-working well. If CPUUtiliztion of an instance running their service is greater 
-than the threshold they have been set, they can be notified.
+It should provide an interface for another services in the cloud to put their
+metric data of user resources such as VM instances, software load-balancers, 
+RDS instances, Hadoop batch jobs, etc. And using that interface, users also can
+put their own metric data that service provider doesn't provide.
 
-Synaps is linear scalable so that it might be suitable for deploying on the 
-virtual machines as a SaaS(software as a service).
+It should aggregate all metric data into time frames of 1 minute, and should
+provide interfaces to retrieve metric list and statistics data so that users 
+can utilize metric data of their resources in the cloud.
+
+Users can create alarms that contains evaluation criteria, periods and alarm
+actions. It should evaluate alarms periodically and invoke actions, such as
+sending email, SMS or rebooting or migrating a VM instance when its status is 
+changed.
+
+Users can describe histories of alarms so that they can know the information 
+about the alarm creation, transition of its status and histories of alarm 
+actions.
 
 Program Architecture
 --------------------
 
-Synaps API is frontend of the system. It uses RabbitMQ for asynchronous 
-processing requested messages. And the messages are passed to Synaps Strom.
+If there are 1,000 VM instances in your cloud, and 10 metrics per instance are
+inputed to the Synaps, it should process 10,000 metrics in a minute. And if 
+your cloud runs well, you would have more VMs. So it should be distributed and 
+scalable.
 
-Synaps Storm is a topology implementation which is aimed to run on the Twitter
-Storm, real-time distributed stream processing system. Synaps Storm is based on 
-the message driven architecture. Most of the messages are came from RabbitMQ.
-It notifies using Notification Queue. Any other notification system can  
-interoperate with the queue.
+Synaps API is frontend of the system. Keystone can be integrated for 
+authentication as well as LDAP. It uses RabbitMQ for asynchronous messaging. 
 
-Both Synaps API and Storm programs are use Cassandra no-sql database to store 
-persistent data.   
+Synaps topology runs on the Twitter Storm, the real-time distributed stream 
+processing system. Storm manages distributing workers in the topology and 
+handles failed workers.
 
-Following is Architecture of Synaps.
+The topology pulls messages from the queue, aggregates metric data and 
+evaluates alarms in-memory, and write the result into Cassandra database. So 
+that it helps reducing read operations that cost a lot. It invokes actions when 
+the status of alarm has been changed. It can be integrated with mail server and 
+SMS agents to send notifications to user-specified contact list and Nova API to 
+reboot or migrate specified VMs.
 
- .. image:: ../images/diagrams/SynapsSystemOverview.jpg
+Cassandra no-sql database is used for storing persistent data which is 
+massively fast for writing operation and provides good availability and 
+scalability. Deploying Cassandra and synaps-topology together can be a good 
+choice for performance. 
+
+Each component of Synaps is linear scalable. 
+
+.. figure:: ../images/diagrams/SynapsSystemOverview.jpg
+   :width: 100%
+   
+   Synaps Architecture Overview
+      
+
+Synaps provides AWS CloudWatch compatible API so that users can use the SDKs
+for AWS CW for Synaps also. Internally, it can be integrated with your agent
+for your cloud services so that users can monitor their resource in the cloud.   
+
+For example, VMMON which can get information from VM Hyperisor via libvirt APIs
+and Nova API and put metric data to Synaps so that users can utilize the data. 
+But such agents are not in the scope of Synaps project.
+
+.. figure:: ../images/diagrams/IntegratedSystemOverview.jpg
    :width: 100%
 
-Following is an example of an integrated system.
-
-Externally, Synaps interoperates with agents which inputs metric data 
-periodically, such as VMMON which can get information from VM Hyperisor with 
-libvirt library and Nova API, and custom agent also.
-
-Synaps Notification is a program to send E-mail or SMS. 
-
- .. image:: ../images/diagrams/IntegratedSystemOverview.jpg
-   :width: 100%
+   Synaps Integration Example
 
 
 Program: Synaps API

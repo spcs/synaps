@@ -54,37 +54,59 @@
 <h1>Program Specification<a class="headerlink" href="#program-specification" title="Permalink to this headline">¶</a></h1>
 <p>Synaps is a cloud monitoring system that collects metric data, provides
 statistics data, monitors and notifies based on user defined alarms.</p>
-<p>It supports users to collect and monitor their default metrics (eg.
-CPUUtilization, DiskReadOps, DiskWriteOps, DiskReadBytes, DiskWriteBytes,
-NetworkReadBytes and NetworkWriteBytes) and their own custom metrics also.</p>
-<p>It is used to monitor tenant&#8217;s applications and services on the OpenStack are
-working well. If CPUUtiliztion of an instance running their service is greater
-than the threshold they have been set, they can be notified.</p>
-<p>Synaps is linear scalable so that it might be suitable for deploying on the
-virtual machines as a SaaS(software as a service).</p>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>It should provide an interface for another services in the cloud to put their
+metric data of user resources such as VM instances, software load-balancers,
+RDS instances, Hadoop batch jobs, etc. And using that interface, users also can
+put their own metric data that service provider doesn&#8217;t provide.</p>
+<p>It should aggregate all metric data into time frames of 1 minute, and should
+provide interfaces to retrieve metric list and statistics data so that users
+can utilize metric data of their resources in the cloud.</p>
+<p>Users can create alarms that contains evaluation criteria, periods and alarm
+actions. It should evaluate alarms periodically and invoke actions, such as
+sending email, SMS or rebooting or migrating a VM instance when its status is
+changed.</p>
+<p>Users can describe histories of alarms so that they can know the information
+about the alarm creation, transition of its status and histories of alarm
+actions.</p>
+</div>
 <div class="section" id="program-architecture">
 <h2>Program Architecture<a class="headerlink" href="#program-architecture" title="Permalink to this headline">¶</a></h2>
-<p>Synaps API is frontend of the system. It uses RabbitMQ for asynchronous
-processing requested messages. And the messages are passed to Synaps Strom.</p>
-<p>Synaps Storm is a topology implementation which is aimed to run on the Twitter
-Storm, real-time distributed stream processing system. Synaps Storm is based on
-the message driven architecture. Most of the messages are came from RabbitMQ.
-It notifies using Notification Queue. Any other notification system can
-interoperate with the queue.</p>
-<p>Both Synaps API and Storm programs are use Cassandra no-sql database to store
-persistent data.</p>
-<p>Following is Architecture of Synaps.</p>
-<blockquote>
-<div><img alt="../_images/SynapsSystemOverview.jpg" src="../_images/SynapsSystemOverview.jpg" style="width: 100%;" />
-</div></blockquote>
-<p>Following is an example of an integrated system.</p>
-<p>Externally, Synaps interoperates with agents which inputs metric data
-periodically, such as VMMON which can get information from VM Hyperisor with
-libvirt library and Nova API, and custom agent also.</p>
-<p>Synaps Notification is a program to send E-mail or SMS.</p>
-<blockquote>
-<div><img alt="../_images/IntegratedSystemOverview.jpg" src="../_images/IntegratedSystemOverview.jpg" style="width: 100%;" />
-</div></blockquote>
+<p>If there are 1,000 VM instances in your cloud, and 10 metrics per instance are
+inputed to the Synaps, it should process 10,000 metrics in a minute. And if
+your cloud runs well, you would have more VMs. So it should be distributed and
+scalable.</p>
+<p>Synaps API is frontend of the system. Keystone can be integrated for
+authentication as well as LDAP. It uses RabbitMQ for asynchronous messaging.</p>
+<p>Synaps topology runs on the Twitter Storm, the real-time distributed stream
+processing system. Storm manages distributing workers in the topology and
+handles failed workers.</p>
+<p>The topology pulls messages from the queue, aggregates metric data and
+evaluates alarms in-memory, and write the result into Cassandra database. So
+that it helps reducing read operations that cost a lot. It invokes actions when
+the status of alarm has been changed. It can be integrated with mail server and
+SMS agents to send notifications to user-specified contact list and Nova API to
+reboot or migrate specified VMs.</p>
+<p>Cassandra no-sql database is used for storing persistent data which is
+massively fast for writing operation and provides good availability and
+scalability. Deploying Cassandra and synaps-topology together can be a good
+choice for performance.</p>
+<p>Each component of Synaps is linear scalable.</p>
+<div class="figure">
+<img alt="../_images/SynapsSystemOverview.jpg" src="../_images/SynapsSystemOverview.jpg" style="width: 100%;" />
+<p class="caption">Synaps Architecture Overview</p>
+</div>
+<p>Synaps provides AWS CloudWatch compatible API so that users can use the SDKs
+for AWS CW for Synaps also. Internally, it can be integrated with your agent
+for your cloud services so that users can monitor their resource in the cloud.</p>
+<p>For example, VMMON which can get information from VM Hyperisor via libvirt APIs
+and Nova API and put metric data to Synaps so that users can utilize the data.
+But such agents are not in the scope of Synaps project.</p>
+<div class="figure">
+<img alt="../_images/IntegratedSystemOverview.jpg" src="../_images/IntegratedSystemOverview.jpg" style="width: 100%;" />
+<p class="caption">Synaps Integration Example</p>
+</div>
 </div>
 <div class="section" id="program-synaps-api">
 <h2>Program: Synaps API<a class="headerlink" href="#program-synaps-api" title="Permalink to this headline">¶</a></h2>
@@ -170,6 +192,7 @@ recently PutMetricData message processing.</p>
             <h3><a href="../index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference internal" href="#">Program Specification</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
 <li><a class="reference internal" href="#program-architecture">Program Architecture</a></li>
 <li><a class="reference internal" href="#program-synaps-api">Program: Synaps API</a><ul>
 <li><a class="reference internal" href="#asynchrous-request-processing">Asynchrous request processing</a></li>
@@ -234,7 +257,7 @@ recently PutMetricData message processing.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Wed Nov 6 15:29:32 2013, commit 8d59e7a.
+      Last updated on Mon Nov 11 00:37:45 2013, commit c6dad5f.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
