@@ -169,7 +169,9 @@ dt:hover > a.headerlink {
 }
 
 div.body p.caption {
-    text-align: inherit;
+    text-align: center;
+    font-style: italic;
+    font-size: 0.8em;
 }
 
 div.body td {
