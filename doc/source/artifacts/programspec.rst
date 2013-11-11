@@ -6,30 +6,6 @@
 Program Specification
 =====================
 
-Synaps is a cloud monitoring system that collects metric data, provides 
-statistics data, monitors and notifies based on user defined alarms.
-
-Requirements
-------------
-
-It should provide an interface for another services in the cloud to put their
-metric data of user resources such as VM instances, software load-balancers, 
-RDS instances, Hadoop batch jobs, etc. And using that interface, users also can
-put their own metric data that service provider doesn't provide.
-
-It should aggregate all metric data into time frames of 1 minute, and should
-provide interfaces to retrieve metric list and statistics data so that users 
-can utilize metric data of their resources in the cloud.
-
-Users can create alarms that contains evaluation criteria, periods and alarm
-actions. It should evaluate alarms periodically and invoke actions, such as
-sending email, SMS or rebooting or migrating a VM instance when its status is 
-changed.
-
-Users can describe histories of alarms so that they can know the information 
-about the alarm creation, transition of its status and histories of alarm 
-actions.
-
 Program Architecture
 --------------------
 
@@ -66,8 +42,11 @@ Each component of Synaps is linear scalable.
       
 
 Synaps provides AWS CloudWatch compatible API so that users can use the SDKs
-for AWS CW for Synaps also. Internally, it can be integrated with your agent
-for your cloud services so that users can monitor their resource in the cloud.   
+for AWS CW for Synaps also. Boto, AWS CLI and AWS SDK for Java can be used
+to call Synaps API. 
+
+Internally, it can be integrated with agent which inputs your metrics of your 
+cloud services so that users can monitor their resource in the cloud.   
 
 For example, VMMON which can get information from VM Hyperisor via libvirt APIs
 and Nova API and put metric data to Synaps so that users can utilize the data. 
@@ -79,57 +58,61 @@ But such agents are not in the scope of Synaps project.
    Synaps Integration Example
 
 
-Program: Synaps API
--------------------
+Synaps API description
+----------------------
 
-Synaps API is WSGI based Web Server which provides AWS CloudWatch compatible 
+Synaps API is WSGI based web server which provides AWS CloudWatch compatible 
 API.
 
-Asynchrous request processing
-+++++++++++++++++++++++++++++
+Asynchronous request processing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Requests below are processed asynchrously. 
+Actions below are processed asynchronously. 
 
 * DeleteAlarms
 * PutMetricAlarm
 * PutMetricData
+* DisableAlarmActions
+* EnableAlarmActions
+* SetAlarmState
 
-For example,
-  
- .. image:: ../images/diagrams/SynapsAPI-PutMetricData.jpg
+.. figure:: ../images/diagrams/SynapsAPI-PutMetricData.jpg
    :width: 100%
-   
-   
-Synchrous request processing
-++++++++++++++++++++++++++++
 
-Requests below are processed synchrously.
+   Example of asynchronous message processing
+   
+Synchronous request processing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Actions below are processed synchronously.
       
 * DescribeAlarmHistory
 * DescribeAlarms
 * DescribeAlarmsForMetric
-* DisableAlarmActions
-* EnableAlarmActions
 * GetMetricStatistics
 * ListMetrics
-* SetAlarmState
 
 For example,
 
- .. image:: ../images/diagrams/SynapsAPI-GetMetricStatistics.jpg
+.. figure:: ../images/diagrams/SynapsAPI-GetMetricStatistics.jpg
    :width: 100%
+   
+   Example of synchronous message processing
 
-Program: Synaps Storm
----------------------
 
-Synaps Storm is a topology implementation which is aimed to run on the Twitter 
-Storm, real-time distributed stream processing system.  
+Synaps topology description
+---------------------------
 
- .. image:: ../images/diagrams/SynapsStorm-Topology.jpg
+Synaps topology is aimed to run on the Twitter Storm, real-time distributed 
+stream processing system.   
+
+ .. figure:: ../images/diagrams/SynapsStorm-Topology.jpg
    :width: 100%
+   
+   Synaps topology for Storm
 
 PutMetricData message processing
-++++++++++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This function is the most important part of Synaps. When the PutMetricData 
 message is received via RabbitMQ message queue, it reads its in-memory sliding 
@@ -137,25 +120,31 @@ windows or database to aggregate its datapoints and evalutate status of
 its alarms. If the status is changed, it sends action message to notification 
 queue.
    
- .. image:: ../images/diagrams/SynapsStorm-PutMetricData.jpg
+.. figure:: ../images/diagrams/SynapsStorm-PutMetricData.jpg
    :width: 100%
+   
+   Synaps topology - PutMetricData
 
 PutMetricAlarm message processing
-+++++++++++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When the PutMetricAlarm message is received via RabbitMQ message queue, it
 find its metric and update its in-memory alarm data and update it into 
 database. 
    
- .. image:: ../images/diagrams/SynapsStormPutMetricAlarm.jpg
+.. figure:: ../images/diagrams/SynapsStormPutMetricAlarm.jpg
    :width: 100%
+   
+   Synaps topology - PutMetricAlarm
 
 PeriodicMonitoring message processing
-+++++++++++++++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 'check_spout' generates PeriodicMonitoring message every 1 minute. When this is
 generated, it checks their whole alarms if they are not evaluated alarms 
 recently PutMetricData message processing.
 
- .. image:: ../images/diagrams/SynapsStormPeriodicMonitoring.jpg
+.. figure:: ../images/diagrams/SynapsStormPeriodicMonitoring.jpg
    :width: 100%
+
+   Synaps topology - PeriodicMonitoring
