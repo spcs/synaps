@@ -421,7 +421,7 @@ class Cassandra(object):
 
             if len(ret) > 500:
                 last_key, last_value = ret[500]
-                next_token = str(last_key) 
+                next_token = str(last_key) if last_key else None
                 break
             elif new_next_token == next_token:
                 next_token = None
@@ -495,7 +495,10 @@ class Cassandra(object):
         skip_first = last_token and last_token == new_next_token
 
         LOG.info("%s %s %s", next_token, new_next_token, last_token)
-        return metrics, str(new_next_token), skip_first 
+        
+        new_next_token = str(new_next_token) if new_next_token \
+                         else new_next_token
+        return metrics, new_next_token, skip_first 
 
 
     def get_all_metrics(self):
