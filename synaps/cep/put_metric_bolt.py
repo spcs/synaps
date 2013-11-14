@@ -21,6 +21,7 @@ import operator
 from pandas import DataFrame, DateRange, datetools
 from pandas import rolling_sum, rolling_max, rolling_min, rolling_mean
 from pandas import isnull
+import pycassa
 import time
 import uuid
 from uuid import UUID
@@ -185,7 +186,12 @@ class MetricMonitor(object):
         start = now_idx - timedelta(seconds=self.left_offset)
         end = now_idx + timedelta(seconds=self.right_offset)
         
-        stat = self.cass.load_statistics(self.metric_key, start, end)
+        for i in range(5):
+            try:
+                stat = self.cass.load_statistics(self.metric_key, start, end)
+            except pycassa.MaximumRetryException:
+                continue
+            break
         
         if stat:
             df = DataFrame(stat, index=self._get_range())
