@@ -35,9 +35,9 @@ def ec2_error_response(request_id, code, message, status=500):
     resp.status = status
     resp.headers['Content-Type'] = 'text/xml'
     resp.body = str('<?xml version="1.0"?>\n'
-                    '<Response><Errors><Error><Code>%s</Code>'
-                    '<Message>%s</Message></Error></Errors>'
-                    '<RequestID>%s</RequestID></Response>' %
+                    '<ErrorResponse xmlns="http://monitoring.amazonaws.com/doc/2010-08-01/">'
+                    '<Error><Code>%s</Code><Message>%s</Message></Error>'
+                    '<RequestId>%s</RequestId></ErrorResponse>' %
                     (utils.xhtml_escape(utils.utf8(code)),
                      utils.xhtml_escape(utils.utf8(message)),
                      utils.xhtml_escape(utils.utf8(request_id))))
