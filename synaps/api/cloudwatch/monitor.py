@@ -321,7 +321,7 @@ class MonitorController(object):
         self.check_namespace(namespace)  
         self.check_next_token(next_token)
 
-        metrics, next_token = self.monitor_api.list_metrics(project_id, 
+        metrics, next_token = self.monitor_api.list_metrics(project_id,
                             next_token, dimensions, metric_name, namespace)
        
         metrics = map(to_aws_metric, metrics)
@@ -414,6 +414,8 @@ class MonitorController(object):
             except KeyError:
                 err = "Unsuitable Dimensions Value - %s" % str(dimensions_)
                 raise InvalidParameterValue(err)
+            
+            self.check_dimensions(dimensions)
         
             metric_name = metric.get('metric_name')
             unit = metric.get('unit', 'None')
@@ -478,20 +480,29 @@ class MonitorController(object):
                                          state_reason, state_value,
                                          state_reason_data)
         return {}
-
-    def check_alarm_name(self, alarm_name):        
-
-        if unicode(alarm_name) and unicode(alarm_name) != u"None":
-            try:
-                if (not (0 < len(alarm_name) <= 255)):
-                    err = "The length of Alarm name is 1~255."
-                    raise exception.InvalidParameterValue(err)
-                
-            except TypeError:
-                err = "Alarm name should not be consist only of numbers. "
+    
+    def _check_ascii(self, v, name, min_length=1, max_length=255):
+        if isinstance(v, str) or isinstance(v, unicode):
+            if not (min_length <= len(v) <= max_length):
+                err = "%s length should be in %d ~ %d" % (name, min_length,
+                                                          max_length)
                 raise exception.InvalidParameterValue(err)
-        
-        return True 
+            if name == u"None":
+                err = "'None' can't be %s" % (name)
+                raise exception.InvalidParameterValue(err)
+            try:
+                str(v)
+            except UnicodeEncodeError:
+                err = "%s should be in ascii characters" % (name)
+                raise exception.InvalidParameterValue(err)
+                
+        elif isinstance(v, int) or isinstance(v, float):
+            err = "%s should not be in numeric form" % (name)
+            raise exception.InvalidParameterValue(err)
+            
+            
+    def check_alarm_name(self, alarm_name):        
+        self._check_ascii(alarm_name, "Alarm name")
     
     def check_alarm_names(self, alarm_names):
         if alarm_names:
@@ -505,7 +516,8 @@ class MonitorController(object):
     def check_history_item_type(self, history_item_type):
         
         history_item_sample = ['ConfigurationUpdate', 'StateUpdate', 'Action']
-        if history_item_type and (history_item_type not in history_item_sample):
+        if history_item_type and (history_item_type not in 
+                                  history_item_sample):
             err = "Unsuitable History Item Type Value"
             raise exception.InvalidParameterValue(err)
         
@@ -513,38 +525,19 @@ class MonitorController(object):
 
     
     def check_action_prefix(self, action_prefix):
-    
-        if unicode(action_prefix) and unicode(action_prefix) != u"None":
-            try:
-                if (not (0 < len(action_prefix) <= 1024)):
-                    err = "The length of Action Prefix is 1~1024."
-                    raise exception.InvalidParameterValue(err)
-                
-            except TypeError:
-                err = "Action Prefix should not be consist only of numbers. "
-                raise exception.InvalidParameterValue(err)
-        
+        self._check_ascii(action_prefix, "Action prefix")
         return True
      
     def check_alarm_name_prefix(self, alarm_name_prefix):
-    
-        if unicode(alarm_name_prefix) and unicode(alarm_name_prefix) != u"None":
-            try:
-                if (not (0 < len(alarm_name_prefix) <= 255)):
-                    err = "The length of Alarm Name Prefix is 1~255."
-                    raise exception.InvalidParameterValue(err)
-                
-            except TypeError:
-                err = "Alarm Name Prefix should not be consist only of numbers. "
-                raise exception.InvalidParameterValue(err)
-        
+        self._check_ascii(alarm_name_prefix, "Alarm name prefix")
         return True
 
     
     def check_state_value(self, state_value):
         state_value_sample = ['OK', 'ALARM', 'INSUFFICIENT_DATA']
         if state_value and (state_value not in state_value_sample):
-            err = "Unsuitable State Value"
+            err_template = "State value should be one of %s, not %s"
+            err = err_template % (state_value_sample, state_value)
             raise exception.InvalidParameterValue(err)
             
         return True   
@@ -562,34 +555,18 @@ class MonitorController(object):
             err = "The length of Dimensions is 0~10."
             raise exception.InvalidParameterValue(err)
         
+        for k, v in dimensions.iteritems():
+            self._check_ascii(k, "dimension name")
+            self._check_ascii(v, "dimension value")
+        
         return True 
     
     def check_metric_name(self, metric_name):
-        
-        if unicode(metric_name) and unicode(metric_name) != u"None":
-            try:
-                if (not (0 < len(metric_name) <= 255)):
-                    err = "The length of Metric Name is 1~255."
-                    raise exception.InvalidParameterValue(err)
-                
-            except TypeError:
-                err = "Metric Name should not be consist only of numbers. " + unicode(metric_name) + " " + u"None"
-                raise exception.InvalidParameterValue(err)
-        
+        self._check_ascii(metric_name, "Metric name")
         return True 
     
     def check_namespace(self, namespace):
-
-        if unicode(namespace) and unicode(namespace) != u"None":
-            try:
-                if (not (0 < len(namespace) <= 255)):
-                    err = "The length of Namespace is 1~255."
-                    raise exception.InvalidParameterValue(err)
-                
-            except TypeError:
-                err = "Namespace should not be consist only of numbers. "
-                raise exception.InvalidParameterValue(err)
-        
+        self._check_ascii(namespace, "Namespace")
         return True 
     
     def check_next_token(self, next_token):
@@ -608,7 +585,8 @@ class MonitorController(object):
     def check_statistic(self, statistic):
         statistic_sample = db.Cassandra.STATISTICS
         if statistic and (statistic not in statistic_sample):
-            err = "Unsuitable Statistic Value %s" % statistic
+            err_template = "Statistic value should be in %s not %s" 
+            err = err_template % (statistic_sample, statistic)
             raise exception.InvalidParameterValue(err)
         
         return True 
@@ -619,11 +597,8 @@ class MonitorController(object):
             if (not (0 < len(statistics) <= 5)):
                 err = "The length of Namespace is 1~5."
                 raise exception.InvalidParameterValue(err)
-            else:
-                for statistic in statistics:
-                    if statistic and (statistic not in statistic_sample):
-                        err = "Unsuitable Statistic Value %s" % str(statistic)
-                        raise exception.InvalidParameterValue(err)
+            for statistic in statistics:
+                self.check_statistic(statistic)
         
         return True
                     
@@ -636,17 +611,7 @@ class MonitorController(object):
         return True
     
     def check_alarm_description(self, alarm_description):
-
-        if unicode(alarm_description) and unicode(alarm_description) != u"None":
-            try:
-                if (not (0 < len(alarm_description) <= 255)):
-                    err = "The length of Alarm Description is 1~255."
-                    raise exception.InvalidParameterValue(err)
-                
-            except TypeError:
-                err = "Alarm Description should not be consist only of numbers. "
-                raise exception.InvalidParameterValue(err)
-        
+        self._check_ascii(alarm_description, "Alarm description", min_length=0)
         return True      
        
     def check_comparison_operator(self, comparison_operator):
@@ -656,38 +621,19 @@ class MonitorController(object):
                                       'LessThanOrEqualToThreshold']
         if comparison_operator and (comparison_operator not in 
                                     comparison_operator_sample):
-            err = "Unsuitable Comparison Operator Value"
+            err = "Unsuitable comparison operator value"
             raise exception.InvalidParameterValue(err)
         
         return True    
     
     def check_state_reason(self, state_reason):
-  
-    
-        if unicode(state_reason) and unicode(state_reason) != u"None":
-            try:
-                if (not (0 < len(state_reason) <= 1023)):
-                    err = "The length of State Reason is 1~1023."
-                    raise exception.InvalidParameterValue(err)
-                
-            except TypeError:
-                err = "State Reason should not be consist only of numbers. " + str(state_reason)
-                raise exception.InvalidParameterValue(err)
-        
+        self._check_ascii(state_reason, "State reason", min_length=0,
+                          max_length=1024)
         return True      
         
     def check_state_reason_data(self, state_reason_data):
-    
-        if unicode(state_reason_data) and unicode(state_reason_data) != u"None":
-            try:
-                if (not (0 < len(state_reason_data) <= 4000)):
-                    err = "The length of State Reason Data is 1~4000."
-                    raise exception.InvalidParameterValue(err)
-                
-            except TypeError:
-                err = "State Reason Data should not be consist only of numbers. " + str(state_reason_data)
-                raise exception.InvalidParameterValue(err)
-        
+        self._check_ascii(state_reason_data, "State reason data", min_length=0,
+                          max_length=4000)
         return True 
     
     def _validate_period(self, period):

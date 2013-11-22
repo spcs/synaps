@@ -86,13 +86,14 @@ def dict_from_dotted_str(items):
     """
     args = {}
     for key, value in items:
+        raw_key = key
         parts = key.split(".")
         key = str(camelcase_to_underscore(parts[0]))
         if isinstance(value, str) or isinstance(value, unicode):
-            # NOTE(vish): Automatically convert strings back
-            #             into their respective values
-            value = _try_convert(value)
-
+            if not raw_key.startswith("Dimensions"):
+                # NOTE(vish): Automatically convert strings back
+                #             into their respective values
+                value = _try_convert(value)
             if len(parts) > 1:
                 d = args.get(key, {})
                 args[key] = d

@@ -389,7 +389,7 @@ class Cassandra(object):
             full_filter, name_filter, value_filter = [], [], []
             
             for k, v in filter_dict.iteritems():
-                k, v = str(k), str(v)
+                k, v = utils.utf8(k), utils.utf8(v)
                 if k and v:
                     full_filter.append((k, v))
                 elif k and not v:
@@ -461,7 +461,7 @@ class Cassandra(object):
             if value_filter:
                 for v_in_dim in dimensions.values():
                     for v in value_filter:
-                        if v in v_in_dim:
+                        if v in utils.utf8(v_in_dim):
                             return True
                 return False
             return True

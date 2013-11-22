@@ -464,7 +464,7 @@ class AlarmTest(SynapsTestCase):
         self.synaps.delete_alarms(alarms=[alarmname])
         
 
-    @attr(type=['gate'])
+    @attr(type=['gate', 'negative'])
     def test_put_alarm_with_utf8_name(self):
         prefix = u"TEST_\uc54c\ub78c_02"
         alarm_names = map(self.generate_random_name, [prefix])
@@ -476,17 +476,9 @@ class AlarmTest(SynapsTestCase):
                 description=None, dimensions=self.dimensions,
                 alarm_actions=None, insufficient_data_actions=None,
                 ok_actions=None)
-            self.synaps.put_metric_alarm(alarm)    
-        
-        time.sleep(ASYNC_WAIT)
-        
-        alarms = self.synaps.describe_alarms(alarm_name_prefix=prefix)
-        
-        for a in alarms:
-            self.assertTrue(a.name.startswith(prefix),
-                            msg="%s %s" % (a.name, prefix))
-            
-        self.synaps.delete_alarms(alarm_names)
+            self.assertRaises(BotoServerError, self.synaps.put_metric_alarm, 
+                              alarm)
+
         
 class AlarmHistoryTest(SynapsTestCase):
     @attr(type=['gate'])        
