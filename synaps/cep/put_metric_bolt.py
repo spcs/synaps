@@ -95,7 +95,7 @@ class MetricMonitor(object):
         self.updated_timestamp = metric.get('updated_timestamp') or \
                                  datetime.utcnow()
 
-        self.df = self.load_statistics()
+        self.df = self.load_statistics(bypass_db=True)
         self.alarms = self.load_alarms()
         self._reindex()
 
@@ -181,17 +181,19 @@ class MetricMonitor(object):
             self.load_alarms()
         
 
-    def load_statistics(self):
+    def load_statistics(self, bypass_db=False):
         now_idx = datetime.utcnow().replace(second=0, microsecond=0)
         start = now_idx - timedelta(seconds=self.left_offset)
         end = now_idx + timedelta(seconds=self.right_offset)
+        stat = None
         
-        for i in range(5):
-            try:
-                stat = self.cass.load_statistics(self.metric_key, start, end)
-            except pycassa.MaximumRetryException:
-                continue
-            break
+        if bypass_db:
+            return DataFrame(columns=self.COLUMNS, index=self._get_range())
+            
+        try:
+            stat = self.cass.load_statistics(self.metric_key, start, end)
+        except pycassa.MaximumRetryException as e:
+            LOG.exception(e)
         
         if stat:
             df = DataFrame(stat, index=self._get_range())
