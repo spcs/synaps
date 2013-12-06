@@ -10,6 +10,17 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+        <repositories>
+                <repository>
+                          <id>clojars.org</id>
+                          <url>http://clojars.org/repo</url>
+                </repository>
+                
+                <repository>
+                        <id>twitter4j</id>
+                        <url>http://twitter4j.org/maven2</url>
+                </repository>                
+        </repositories>
 	<dependencies>
 		<dependency>
 			<groupId>storm</groupId>
