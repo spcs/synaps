@@ -615,12 +615,13 @@ class PutMetricBolt(storm.BasicBolt):
             return key
 
         def metricalarm_for_json(metricalarm):
+            cut = metricalarm.get('alarm_configuration_updated_timestamp')
+            
             alarm_for_json = {
                 'actionEnabled': metricalarm.get('actions_enabled', False),
                 'alarmActions': metricalarm.get('alarm_actions', []),
                 'alarmArn': metricalarm.get('alarm_arn'),
-                'alarmConfigurationUpdatedTimestamp': 
-                      metricalarm.get('alarm_configuration_updated_timestamp'),
+                'alarmConfigurationUpdatedTimestamp': utils.strtime(cut),
                 'alarmDescription': metricalarm.get('alarm_description'),
                 'alarmName': metricalarm.get('alarm_name'),
                 'comparisonOperator': metricalarm.get('comparison_operator'),
@@ -645,11 +646,13 @@ class PutMetricBolt(storm.BasicBolt):
         # build metricalarm column, alarmhistory column 
         alarm_key = get_alarm_key(project_id, metricalarm['alarm_name'])
         history_type = 'Update' if alarm_key else 'Create'
+        now = utils.utcnow()
         if history_type == 'Update':
             original_alarm = self.cass.get_metric_alarm(alarm_key)
             for dict_key in ['state_updated_timestamp', 'state_reason',
                              'state_reason_data', 'state_value', 'project_id']:
                 metricalarm[dict_key] = original_alarm[dict_key]
+            metricalarm['alarm_configuration_updated_timestamp'] = now
             history_data = json.dumps({
                 'updatedAlarm':metricalarm_for_json(metricalarm),
                 'type':history_type,
@@ -659,7 +662,8 @@ class PutMetricBolt(storm.BasicBolt):
         else:
             alarm_key = uuid.uuid4()
             state_reason = "Unchecked: Initial alarm creation"
-            metricalarm.update({'state_updated_timestamp': utils.utcnow(),
+            metricalarm.update({'state_updated_timestamp': now,
+                                'alarm_configuration_updated_timestamp': now,
                                 'state_reason': state_reason,
                                 'state_reason_data': json.dumps({}),
                                 'state_value': "INSUFFICIENT_DATA",
@@ -670,10 +674,6 @@ class PutMetricBolt(storm.BasicBolt):
             })
             summary = "Alarm %s created" % metricalarm['alarm_name']
 
-        for dict_key in ['state_updated_timestamp',
-                         'alarm_configuration_updated_timestamp']:
-            metricalarm[dict_key] = utils.str_to_timestamp(
-                                                        metricalarm[dict_key])
         metricalarm['metric_key'] = metric_key
         
         history_key = uuid.uuid4()
