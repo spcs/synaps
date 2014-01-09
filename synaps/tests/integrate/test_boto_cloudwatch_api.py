@@ -166,7 +166,7 @@ class MetricTest(SynapsTestCase):
                       datetime.timedelta(seconds=ttl))
 
         # put metric at 'now - ttl' and get nothing
-        kwargs = {'namespace': self.namespace, 'name': name_stale, 
+        kwargs = {'namespace': self.namespace, 'name': name_stale,
                   'value': 10.0, 'timestamp': stale_time}
         self.assertRaises(BotoServerError, self.synaps.put_metric_data,
                           **kwargs)
@@ -348,6 +348,10 @@ class AlarmTest(SynapsTestCase):
             self.assertSetEqual(set(alarm_actions), set(a.alarm_actions))
             self.assertSetEqual(set(insufficient_data_actions),
                                 set(a.insufficient_data_actions))
+            last_updated = datetime.datetime.strptime(a.last_updated, 
+                                                      "%Y-%m-%dT%H:%M:%S.%fZ")
+            self.assertTrue(datetime.datetime.utcnow() - last_updated < 
+                            datetime.timedelta(seconds=60))
             
         self.synaps.delete_alarms([alarmname])
 
@@ -436,7 +440,7 @@ class AlarmTest(SynapsTestCase):
                 ok_actions=None)
             self.synaps.put_metric_alarm(alarm)
 
-        self.synaps.describe_alarms_for_metric(namespace=self.namespace, 
+        self.synaps.describe_alarms_for_metric(namespace=self.namespace,
             metric_name=self.metric_name, dimensions=self.dimensions)
         
         self.synaps.delete_alarms(alarmnames)
@@ -476,7 +480,7 @@ class AlarmTest(SynapsTestCase):
                 description=None, dimensions=self.dimensions,
                 alarm_actions=None, insufficient_data_actions=None,
                 ok_actions=None)
-            self.assertRaises(BotoServerError, self.synaps.put_metric_alarm, 
+            self.assertRaises(BotoServerError, self.synaps.put_metric_alarm,
                               alarm)
 
         
@@ -709,17 +713,17 @@ class AlarmActionsTest(SynapsTestCase):
         )
 
         for s in stats:
-            self.synaps.put_metric_data(namespace=self.namespace, 
-                                        name=self.metric_name, 
-                                        value= -s["Sum"], 
-                                        timestamp=s['Timestamp'], 
-                                        unit=s["Unit"], 
+            self.synaps.put_metric_data(namespace=self.namespace,
+                                        name=self.metric_name,
+                                        value= -s["Sum"],
+                                        timestamp=s['Timestamp'],
+                                        unit=s["Unit"],
                                         dimensions=self.dimensions)
         
         for i in range(n):
-            self.synaps.put_metric_data(namespace=self.namespace, 
-                                        name=self.metric_name, value=i * 10, 
-                                        unit="Percent", 
+            self.synaps.put_metric_data(namespace=self.namespace,
+                                        name=self.metric_name, value=i * 10,
+                                        unit="Percent",
                                         dimensions=self.dimensions,
                                         timestamp=start_time + i * minute)
         
