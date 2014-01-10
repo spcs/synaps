@@ -33,7 +33,8 @@ from synaps import rpc
 from synaps import utils
 from synaps.exception import (AdminRequired, InvalidRequest, ResourceNotFound,
                               InvalidParameterValue, ProjectAlarmQuotaExceeded,
-                              MetricAlarmQuotaExceeded)
+                              MetricAlarmQuotaExceeded, 
+                              InvalidNotificationGroup)
 
 LOG = logging.getLogger(__name__)
 FLAGS = flags.FLAGS    
@@ -224,7 +225,18 @@ class API(object):
         """
         Send put metric alarm message to Storm 
         """
+        def _validate_actions(alarm):
+            for actions in (alarm.ok_actions, alarm.insufficient_data_actions, 
+                            alarm.alarm_actions):
+                for action in actions:
+                    if utils.validate_groupnotification_action(action):
+                        group = utils.parse_groupnotification_action(action)
+                        if not self.cass.get_notification_group(group):
+                            raise InvalidNotificationGroup()
+                                            
+        
         now = utils.utcnow()
+        _validate_actions(metricalarm)
         metricalarm = metricalarm.to_columns()
         alarm_name = metricalarm['alarm_name']
         namespace = metricalarm['namespace']

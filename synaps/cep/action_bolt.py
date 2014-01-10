@@ -27,7 +27,9 @@ from synaps import flags
 from synaps import log as logging
 from synaps import utils
 from synaps.utils import (validate_email, validate_international_phonenumber,
-                          validate_instance_action, parse_instance_action)
+                          validate_instance_action, parse_instance_action, 
+                          validate_groupnotification_action, 
+                          parse_groupnotification_action)
 from synaps.monitor import API
 from synaps.context import get_admin_context
 
@@ -70,6 +72,8 @@ class ActionBolt(storm.BasicBolt):
             return "SMS"
         elif validate_instance_action(action):
             return "InstanceAction"
+        elif validate_groupnotification_action(action):
+            return "GroupNotificationAction"
 
 
     def meter_sms_actions(self, project_id, receivers):
@@ -179,6 +183,17 @@ class ActionBolt(storm.BasicBolt):
             'body': new_state['stateReason']
         }
         """        
+        def convert_group_notification(actions):
+            ret = []
+            for ac in actions:
+                if validate_groupnotification_action(ac):
+                    groupname = parse_groupnotification_action(ac)
+                    new_actions = self.cass.get_notification_group(groupname)
+                    ret += list(new_actions)
+                else:
+                    ret.append(ac)
+            return ret
+            
         alarm_key = tup.values[0]
         message_buf = tup.values[1]
         message = json.loads(message_buf)
@@ -199,6 +214,8 @@ class ActionBolt(storm.BasicBolt):
             actions = json.loads(alarm['insufficient_data_actions'])
         elif message['state'] == 'ALARM':
             actions = json.loads(alarm['alarm_actions'])
+            
+        actions = convert_group_notification(actions)
         
         if actions_enabled and actions:                 
             if self.enable_send_sms:
@@ -252,8 +269,8 @@ class ActionBolt(storm.BasicBolt):
                 
 
     def process_email_action(self, alarm_key, alarm, message, actions):
-        email_receivers = [action for action in actions 
-                           if self.get_action_type(action) == "email"]
+        email_receivers = list(set([action for action in actions 
+                               if self.get_action_type(action) == "email"]))
          
         notification_message = {'method': "email", 
                                 'receivers': email_receivers, 
@@ -275,8 +292,8 @@ class ActionBolt(storm.BasicBolt):
         
                     
     def process_sms_action(self, alarm_key, alarm, message, actions):
-        sms_receivers = [action for action in actions
-                         if self.get_action_type(action) == "SMS"]
+        sms_receivers = list(set([action for action in actions
+                             if self.get_action_type(action) == "SMS"]))
          
         notification_message = {'method': "SMS", 'receivers': sms_receivers,
                                 'subject': message['subject'], 

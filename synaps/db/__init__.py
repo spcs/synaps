@@ -53,8 +53,12 @@ class Cassandra(object):
         self.cf_metric = pycassa.ColumnFamily(self.pool, 'Metric')
         self.scf_stat_archive = pycassa.ColumnFamily(self.pool, 'StatArchive')
         self.cf_metric_alarm = pycassa.ColumnFamily(self.pool, 'MetricAlarm')
-        self.cf_alarm_history = pycassa.ColumnFamily(self.pool, 'AlarmHistory')
-        self.cf_alarm_counter = pycassa.ColumnFamily(self.pool, 'AlarmCounter')
+        self.cf_alarm_history = pycassa.ColumnFamily(self.pool, 
+                                                     'AlarmHistory')
+        self.cf_alarm_counter = pycassa.ColumnFamily(self.pool, 
+                                                     'AlarmCounter')
+        self.cf_notification_group = pycassa.ColumnFamily(self.pool, 
+                                                     'NotificationGroup')
         
     def delete_metric_alarm(self, alarm_key, project_id=None):
         try:
@@ -615,9 +619,16 @@ class Cassandra(object):
             return 0
         
         return counter.get('alarm_counter', 0)
-        
 
 
+    def get_notification_group(self, name):
+        try:
+            values = self.cf_notification_group.get(name)
+        except:
+            return []
+        return values.keys()
+    
+    
     @staticmethod
     def syncdb(keyspace=None):
         """
@@ -808,5 +819,12 @@ class Cassandra(object):
                         name='AlarmCounter',
                         default_validation_class=pycassa.COUNTER_COLUMN_TYPE,
                         key_validation_class=pycassa.UTF8_TYPE)
+
+        if 'NotificationGroup' not in column_families.keys():
+            manager.create_column_family(keyspace=keyspace,
+                        name='NotificationGroup',
+                        key_validation_class=pycassa.UTF8_TYPE,
+                        comparator_type=pycassa.UTF8_TYPE,
+                        default_validation_class=pycassa.UTF8_TYPE)
         
         LOG.info(_("cassandra syncdb has finished"))

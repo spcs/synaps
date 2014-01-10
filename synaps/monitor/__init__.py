@@ -20,7 +20,8 @@
 
 from synaps.monitor.api import API
 from synaps.utils import (validate_email, validate_international_phonenumber, 
-                          validate_instance_action)
+                           validate_instance_action, 
+                           validate_groupnotification_action)
 import json
 
 class Datapoint(object):
@@ -177,8 +178,9 @@ class MetricAlarm(object):
             for a in actions:
                 assert (validate_email(a) or 
                         validate_international_phonenumber(a) or
-                        validate_instance_action(a))
-
+                        validate_instance_action(a) or
+                        validate_groupnotification_action(a))
+                
         assert (isinstance(actions_enabled, bool))
         self.actions_enabled = actions_enabled
 

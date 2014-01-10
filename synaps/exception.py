@@ -205,6 +205,12 @@ class Invalid(SynapsException):
     code = 400
 
 
+class InvalidNotificationGroup(Invalid):
+    message = _("Invalid notification group. " 
+                "To register or modify notification group, "
+                "contact administrator")
+
+
 class InvalidKeypair(Invalid):
     message = _("Keypair data is invalid")
 

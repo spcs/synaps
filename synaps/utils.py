@@ -66,6 +66,7 @@ RE_EMAIL = re.compile('^[_.0-9a-z-]+@([0-9a-z][0-9a-z-]+.)+[a-z]{2,4}$')
 RE_UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 RE_INSTANCE_ACTION = re.compile('^InstanceAction:(Reboot|Migrate)\((%s)\)' % 
                                 RE_UUID)
+RE_GROUPNOTIFICATION_ACTION = re.compile('^NotifyTo\((.{3,60})\)')
 
 UNIT_CONV_MAP = {
     'None': 1.0,
@@ -115,9 +116,22 @@ def validate_instance_action(instance_action):
     return ret
 
 
+def validate_groupnotification_action(action):
+    try:
+        ret = RE_GROUPNOTIFICATION_ACTION.match(action) is not None
+    except TypeError:
+        ret = False
+    return ret
+
+
 def parse_instance_action(instance_action):
     mobj = RE_INSTANCE_ACTION.match(instance_action)
     return mobj.groups() if mobj else None 
+
+
+def parse_groupnotification_action(action):
+    mobj = RE_GROUPNOTIFICATION_ACTION.match(action)
+    return mobj.groups()[-1] if mobj else None
 
 
 def validate_international_phonenumber(number):
