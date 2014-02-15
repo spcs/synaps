@@ -52,199 +52,201 @@
             
   <div class="section" id="synaps-sdk-user-guide">
 <span id="usermanual"></span><h1>Synaps SDK User Guide<a class="headerlink" href="#synaps-sdk-user-guide" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="configure-credentials">
-<h2>Configure Credentials<a class="headerlink" href="#configure-credentials" title="Permalink to this headline">¶</a></h2>
-<p>Put your credentials on SpcsCredentials.properties file.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">accessKey</span> <span class="o">=</span> df6ad231-23f9-4622-810c-acd6ae3e9e67
-<span class="nv">secretKey</span> <span class="o">=</span> c142f025-aa84-4cc3-a97e-12bf86c561dc
+<div class="section" id="java-example">
+<h2>Java Example<a class="headerlink" href="#java-example" title="Permalink to this headline">¶</a></h2>
+<p>Put your credentials on SpcsCredentials.properties file. Compile and run the
+code.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">accessKey</span> <span class="o">=</span> your-access-key
+<span class="nv">secretKey</span> <span class="o">=</span> your-secret-key
 </pre></div>
 </div>
-<p>You can initiate CloudWatch object as below.</p>
-<div class="highlight-java"><div class="highlight"><pre><span class="n">AmazonCloudWatch</span> <span class="n">cw</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AmazonCloudWatchClient</span><span class="o">(</span>
-  <span class="k">new</span> <span class="nf">PropertiesCredentials</span><span class="o">(</span>
-    <span class="n">Synaps_Sample</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getResourceAsStream</span><span class="o">(</span><span class="s">&quot;SpcsCredentials.properties&quot;</span><span class="o">)</span>
-  <span class="o">)</span>
-<span class="o">);</span>
-<span class="n">cw</span><span class="o">.</span><span class="na">setEndpoint</span><span class="o">(</span><span class="s">&quot;http://182.194.1.163:8773/monitor/&quot;</span><span class="o">);</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="listmetrics-example">
-<h2>ListMetrics Example<a class="headerlink" href="#listmetrics-example" title="Permalink to this headline">¶</a></h2>
-<p>Following code is an example for using <a class="reference internal" href="apispec/action/list_metrics.html#list-metrics"><em>ListMetrics</em></a>.</p>
-<div class="highlight-java"><div class="highlight"><pre><span class="n">ListMetricsRequest</span> <span class="n">LM</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ListMetricsRequest</span><span class="o">();</span>
-<span class="n">ListMetricsResult</span> <span class="n">LMR</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">listMetrics</span><span class="o">(</span><span class="n">LM</span><span class="o">);</span>
-<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">LMR</span><span class="o">.</span><span class="na">getMetrics</span><span class="o">());</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="putmetricdata-example">
-<h2>PutMetricData Example<a class="headerlink" href="#putmetricdata-example" title="Permalink to this headline">¶</a></h2>
-<p>Following code is an example for using <a class="reference internal" href="apispec/action/put_metric_data.html#put-metric-data"><em>PutMetricData</em></a>.</p>
-<p>It puts specific metric data value (30) for every second in a time frame (from
-2012-06-28 14:00 to 17:00).</p>
-<div class="highlight-java"><div class="highlight"><pre><span class="n">Dimension</span> <span class="n">dm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dimension</span><span class="o">();</span>
-<span class="n">dm</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&quot;DName&quot;</span><span class="o">);</span>
-<span class="n">dm</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="s">&quot;DValue&quot;</span><span class="o">);</span>
-<span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Dimension</span><span class="o">&gt;</span> <span class="n">dm_list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Dimension</span><span class="o">&gt;();</span>
-<span class="n">dm_list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">dm</span><span class="o">);</span>
-<span class="kt">double</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">=</span><span class="mi">9</span><span class="o">;</span><span class="n">k</span><span class="o">&lt;</span><span class="mi">13</span><span class="o">;</span><span class="n">k</span><span class="o">++){</span>
-   <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">60</span><span class="o">;</span><span class="n">i</span><span class="o">++){</span>
-       <span class="c1">//create MetricDatum</span>
-       <span class="n">MetricDatum</span> <span class="n">MDT</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MetricDatum</span><span class="o">();</span>
-       <span class="n">MDT</span><span class="o">.</span><span class="na">setMetricName</span><span class="o">(</span><span class="s">&quot;MetricName&quot;</span><span class="o">);</span>
-       <span class="n">MDT</span><span class="o">.</span><span class="na">setDimensions</span><span class="o">(</span><span class="n">dm_list</span><span class="o">);</span>
-       <span class="n">value</span> <span class="o">=</span> <span class="mi">30</span><span class="o">;</span>
-       <span class="n">MDT</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
-       <span class="n">MDT</span><span class="o">.</span><span class="na">setUnit</span><span class="o">(</span><span class="s">&quot;Count&quot;</span><span class="o">);</span>
-       <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;deprecation&quot;</span><span class="o">)</span>
-       <span class="n">Date</span> <span class="n">InputTime</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">(</span><span class="mi">112</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">28</span><span class="o">,</span><span class="mi">5</span><span class="o">+</span><span class="n">k</span><span class="o">,</span><span class="n">i</span><span class="o">);</span>
-       <span class="n">MDT</span><span class="o">.</span><span class="na">setTimestamp</span><span class="o">(</span><span class="n">InputTime</span><span class="o">);</span>
-       <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Data Input Time : &quot;</span> <span class="o">+</span> <span class="n">InputTime</span> <span class="o">+</span> <span class="s">&quot;, value :&quot;</span> <span class="o">+</span> <span class="n">value</span><span class="o">);</span>
+<div class="highlight-java"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Calendar</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Date</span><span class="o">;</span>
 
-       <span class="c1">//create MetricDatum List</span>
-       <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">MetricDatum</span><span class="o">&gt;</span> <span class="n">MDT_list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">MetricDatum</span><span class="o">&gt;();</span>
-       <span class="n">MDT_list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">MDT</span><span class="o">);</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.auth.PropertiesCredentials</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.AmazonCloudWatch</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.AmazonCloudWatchClient</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.AlarmHistoryItem</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.DescribeAlarmHistoryRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.DescribeAlarmHistoryResult</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.DescribeAlarmsRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.DescribeAlarmsResult</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.Dimension</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.DimensionFilter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.ListMetricsRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.ListMetricsResult</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.Metric</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.MetricAlarm</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.MetricDatum</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.cloudwatch.model.PutMetricDataRequest</span><span class="o">;</span>
 
-       <span class="c1">//create PutMetricDataRequest</span>
-       <span class="n">PutMetricDataRequest</span> <span class="n">PDR</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PutMetricDataRequest</span><span class="o">();</span>
-       <span class="n">PDR</span><span class="o">.</span><span class="na">setMetricData</span><span class="o">(</span><span class="n">MDT_list</span><span class="o">);</span>
-       <span class="n">PDR</span><span class="o">.</span><span class="na">setNamespace</span><span class="o">(</span><span class="s">&quot;NameSpace&quot;</span><span class="o">);</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CWSample</span> <span class="o">{</span>
+        <span class="kd">private</span> <span class="n">AmazonCloudWatch</span> <span class="n">cw</span><span class="o">;</span>
 
-       <span class="c1">//execute putMetricData</span>
-       <span class="n">cw</span><span class="o">.</span><span class="na">putMetricData</span><span class="o">(</span><span class="n">PDR</span><span class="o">);</span>
-   <span class="o">}</span>
+        <span class="n">CWSample</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+                <span class="n">cw</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AmazonCloudWatchClient</span><span class="o">(</span><span class="k">new</span> <span class="n">PropertiesCredentials</span><span class="o">(</span>
+                                <span class="n">CWSample</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getResourceAsStream</span><span class="o">(</span><span class="s">&quot;CWSample.properties&quot;</span><span class="o">)));</span>
+                <span class="n">cw</span><span class="o">.</span><span class="na">setEndpoint</span><span class="o">(</span><span class="s">&quot;http://synaps.endpoint:3776/monitor/&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="kt">void</span> <span class="nf">examListMetrics</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">ListMetricsRequest</span> <span class="n">req</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ListMetricsRequest</span><span class="o">();</span>
+                <span class="n">String</span> <span class="n">nexttoken</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                <span class="n">req</span><span class="o">.</span><span class="na">setNextToken</span><span class="o">(</span><span class="n">nexttoken</span><span class="o">);</span>
+                <span class="c1">// req.setMetricName(&quot;CPUUtilization&quot;);</span>
+
+                <span class="k">do</span> <span class="o">{</span>
+                        <span class="n">req</span><span class="o">.</span><span class="na">setNextToken</span><span class="o">(</span><span class="n">nexttoken</span><span class="o">);</span>
+                        <span class="n">ListMetricsResult</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">listMetrics</span><span class="o">(</span><span class="n">req</span><span class="o">);</span>
+                        <span class="n">nexttoken</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="na">getNextToken</span><span class="o">();</span>
+
+                        <span class="k">for</span> <span class="o">(</span><span class="n">Metric</span> <span class="n">m</span> <span class="o">:</span> <span class="n">ret</span><span class="o">.</span><span class="na">getMetrics</span><span class="o">())</span> <span class="o">{</span>
+                                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;  Metric: &quot;</span> <span class="o">+</span> <span class="n">m</span><span class="o">);</span>
+                        <span class="o">}</span>
+                <span class="o">}</span> <span class="k">while</span> <span class="o">(</span><span class="n">nexttoken</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="kt">void</span> <span class="nf">examDescribeAlarms</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">DescribeAlarmsRequest</span> <span class="n">req</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DescribeAlarmsRequest</span><span class="o">();</span>
+                <span class="n">String</span> <span class="n">nexttoken</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                <span class="kt">int</span> <span class="n">items_per_page</span> <span class="o">=</span> <span class="mi">100</span><span class="o">;</span>
+
+                <span class="n">req</span><span class="o">.</span><span class="na">setMaxRecords</span><span class="o">(</span><span class="n">items_per_page</span><span class="o">);</span>
+
+                <span class="k">do</span> <span class="o">{</span>
+                        <span class="n">req</span><span class="o">.</span><span class="na">setNextToken</span><span class="o">(</span><span class="n">nexttoken</span><span class="o">);</span>
+                        <span class="n">DescribeAlarmsResult</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">describeAlarms</span><span class="o">(</span><span class="n">req</span><span class="o">);</span>
+                        <span class="n">nexttoken</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="na">getNextToken</span><span class="o">();</span>
+                        <span class="k">for</span> <span class="o">(</span><span class="n">MetricAlarm</span> <span class="n">a</span> <span class="o">:</span> <span class="n">ret</span><span class="o">.</span><span class="na">getMetricAlarms</span><span class="o">())</span> <span class="o">{</span>
+                                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;  Alarm: &quot;</span> <span class="o">+</span> <span class="n">a</span><span class="o">);</span>
+                        <span class="o">}</span>
+                <span class="o">}</span> <span class="k">while</span> <span class="o">(</span><span class="n">nexttoken</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="kt">void</span> <span class="nf">examPutMetricData</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">PutMetricDataRequest</span> <span class="n">req</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PutMetricDataRequest</span><span class="o">();</span>
+                <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Dimension</span><span class="o">&gt;</span> <span class="n">dimensions1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Dimension</span><span class="o">&gt;();</span>
+                <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Dimension</span><span class="o">&gt;</span> <span class="n">dimensions2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Dimension</span><span class="o">&gt;();</span>
+                <span class="n">Dimension</span> <span class="n">dim1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dimension</span><span class="o">();</span>
+                <span class="n">Dimension</span> <span class="n">dim2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dimension</span><span class="o">();</span>
+                <span class="n">MetricDatum</span> <span class="n">datum1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MetricDatum</span><span class="o">();</span>
+                <span class="n">MetricDatum</span> <span class="n">datum2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MetricDatum</span><span class="o">();</span>
+                <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">MetricDatum</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">MetricDatum</span><span class="o">&gt;();</span>
+
+                <span class="n">dim1</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&quot;instanceId&quot;</span><span class="o">);</span>
+                <span class="n">dim1</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="s">&quot;instance-00000112&quot;</span><span class="o">);</span>
+                <span class="n">dim2</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&quot;swlbId&quot;</span><span class="o">);</span>
+                <span class="n">dim2</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="s">&quot;swlb-12345&quot;</span><span class="o">);</span>
+
+                <span class="n">dimensions1</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">dim1</span><span class="o">);</span>
+                <span class="n">dimensions2</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">dim2</span><span class="o">);</span>
+
+                <span class="n">datum1</span><span class="o">.</span><span class="na">setMetricName</span><span class="o">(</span><span class="s">&quot;DiskUsage&quot;</span><span class="o">);</span>
+                <span class="n">datum1</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="mf">10.2</span><span class="o">);</span>
+                <span class="n">datum1</span><span class="o">.</span><span class="na">setDimensions</span><span class="o">(</span><span class="n">dimensions1</span><span class="o">);</span>
+
+                <span class="n">datum2</span><span class="o">.</span><span class="na">setMetricName</span><span class="o">(</span><span class="s">&quot;RequestsPerSecond&quot;</span><span class="o">);</span>
+                <span class="n">datum2</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="mf">1000.0</span><span class="o">);</span>
+                <span class="n">datum2</span><span class="o">.</span><span class="na">setDimensions</span><span class="o">(</span><span class="n">dimensions2</span><span class="o">);</span>
+
+                <span class="n">data</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">datum1</span><span class="o">);</span>
+                <span class="n">data</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">datum2</span><span class="o">);</span>
+
+                <span class="n">req</span><span class="o">.</span><span class="na">setMetricData</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+                <span class="n">req</span><span class="o">.</span><span class="na">setNamespace</span><span class="o">(</span><span class="s">&quot;SYNAPSDEMO/2013&quot;</span><span class="o">);</span>
+
+                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot; PutMetricData Req: &quot;</span> <span class="o">+</span> <span class="n">req</span><span class="o">);</span>
+                <span class="n">cw</span><span class="o">.</span><span class="na">putMetricData</span><span class="o">(</span><span class="n">req</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="kt">void</span> <span class="nf">examGetMetricStatistics</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">GetMetricStatisticsRequest</span> <span class="n">req</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GetMetricStatisticsRequest</span><span class="o">();</span>
+                <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Dimension</span><span class="o">&gt;</span> <span class="n">dimensions</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Dimension</span><span class="o">&gt;();</span>
+                <span class="n">Dimension</span> <span class="n">dim</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dimension</span><span class="o">();</span>
+                <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">statistics</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
+
+                <span class="n">Calendar</span> <span class="n">startCal</span> <span class="o">=</span> <span class="n">Calendar</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+                <span class="n">startCal</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">Calendar</span><span class="o">.</span><span class="na">DATE</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+                <span class="n">Date</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">startCal</span><span class="o">.</span><span class="na">getTime</span><span class="o">();</span>
+
+                <span class="n">Calendar</span> <span class="n">endCal</span> <span class="o">=</span> <span class="n">Calendar</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+                <span class="n">Date</span> <span class="n">endTime</span> <span class="o">=</span> <span class="n">endCal</span><span class="o">.</span><span class="na">getTime</span><span class="o">();</span>
+
+                <span class="n">dim</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&quot;instanceId&quot;</span><span class="o">);</span>
+                <span class="n">dim</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="s">&quot;instance-000059b3&quot;</span><span class="o">);</span>
+                <span class="n">dimensions</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">dim</span><span class="o">);</span>
+
+                <span class="n">statistics</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;Average&quot;</span><span class="o">);</span>
+                <span class="n">statistics</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;Minimum&quot;</span><span class="o">);</span>
+                <span class="n">statistics</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;Maximum&quot;</span><span class="o">);</span>
+
+                <span class="n">req</span><span class="o">.</span><span class="na">setNamespace</span><span class="o">(</span><span class="s">&quot;SPCS/NOVA&quot;</span><span class="o">);</span>
+                <span class="n">req</span><span class="o">.</span><span class="na">setMetricName</span><span class="o">(</span><span class="s">&quot;CPUUtilization&quot;</span><span class="o">);</span>
+                <span class="n">req</span><span class="o">.</span><span class="na">setDimensions</span><span class="o">(</span><span class="n">dimensions</span><span class="o">);</span>
+                <span class="n">req</span><span class="o">.</span><span class="na">setStartTime</span><span class="o">(</span><span class="n">startTime</span><span class="o">);</span>
+                <span class="n">req</span><span class="o">.</span><span class="na">setEndTime</span><span class="o">(</span><span class="n">endTime</span><span class="o">);</span>
+                <span class="n">req</span><span class="o">.</span><span class="na">setStatistics</span><span class="o">(</span><span class="n">statistics</span><span class="o">);</span>
+                <span class="n">req</span><span class="o">.</span><span class="na">setPeriod</span><span class="o">(</span><span class="mi">60</span><span class="o">);</span>
+
+                <span class="n">GetMetricStatisticsResult</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">getMetricStatistics</span><span class="o">(</span><span class="n">req</span><span class="o">);</span>
+                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ret</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="kt">void</span> <span class="nf">examPutMetricAlarm</span><span class="o">()</span> <span class="o">{</span>
+        <span class="o">}</span>
+
+        <span class="kt">void</span> <span class="nf">examDescribeAlarmsForMetric</span><span class="o">()</span> <span class="o">{</span>
+
+        <span class="o">}</span>
+
+        <span class="kt">void</span> <span class="nf">examSetAlarmState</span><span class="o">()</span> <span class="o">{</span>
+
+        <span class="o">}</span>
+
+        <span class="kt">void</span> <span class="nf">examDisableAlarmActions</span><span class="o">()</span> <span class="o">{</span>
+
+        <span class="o">}</span>
+
+        <span class="kt">void</span> <span class="nf">examEnableAlarmActions</span><span class="o">()</span> <span class="o">{</span>
+
+        <span class="o">}</span>
+
+        <span class="kt">void</span> <span class="nf">examDescribeAlarmHistory</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">DescribeAlarmHistoryRequest</span> <span class="n">req</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DescribeAlarmHistoryRequest</span><span class="o">();</span>
+                <span class="n">String</span> <span class="n">nexttoken</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+                <span class="n">req</span><span class="o">.</span><span class="na">setMaxRecords</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+
+                <span class="k">do</span> <span class="o">{</span>
+                        <span class="n">req</span><span class="o">.</span><span class="na">setNextToken</span><span class="o">(</span><span class="n">nexttoken</span><span class="o">);</span>
+                        <span class="n">DescribeAlarmHistoryResult</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">describeAlarmHistory</span><span class="o">(</span><span class="n">req</span><span class="o">);</span>
+                        <span class="n">nexttoken</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="na">getNextToken</span><span class="o">();</span>
+                        <span class="k">for</span> <span class="o">(</span><span class="n">AlarmHistoryItem</span> <span class="n">h</span> <span class="o">:</span> <span class="n">ret</span><span class="o">.</span><span class="na">getAlarmHistoryItems</span><span class="o">())</span> <span class="o">{</span>
+                                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;  History: &quot;</span> <span class="o">+</span> <span class="n">h</span><span class="o">);</span>
+                        <span class="o">}</span>
+
+                <span class="o">}</span> <span class="k">while</span> <span class="o">(</span><span class="n">nexttoken</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+                <span class="n">CWSample</span> <span class="n">cwsample</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CWSample</span><span class="o">();</span>
+
+                <span class="n">cwsample</span><span class="o">.</span><span class="na">examListMetrics</span><span class="o">();</span>
+                <span class="n">cwsample</span><span class="o">.</span><span class="na">examDescribeAlarms</span><span class="o">();</span>
+                <span class="n">cwsample</span><span class="o">.</span><span class="na">examPutMetricData</span><span class="o">();</span>
+                <span class="n">cwsample</span><span class="o">.</span><span class="na">examGetMetricStatistics</span><span class="o">();</span>
+                <span class="n">cwsample</span><span class="o">.</span><span class="na">examPutMetricAlarm</span><span class="o">();</span>
+                <span class="n">cwsample</span><span class="o">.</span><span class="na">examDescribeAlarmsForMetric</span><span class="o">();</span>
+                <span class="n">cwsample</span><span class="o">.</span><span class="na">examSetAlarmState</span><span class="o">();</span>
+                <span class="n">cwsample</span><span class="o">.</span><span class="na">examDisableAlarmActions</span><span class="o">();</span>
+                <span class="n">cwsample</span><span class="o">.</span><span class="na">examEnableAlarmActions</span><span class="o">();</span>
+                <span class="n">cwsample</span><span class="o">.</span><span class="na">examDescribeAlarmHistory</span><span class="o">();</span>
+        <span class="o">}</span>
 <span class="o">}</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="getmetricstatistics-example">
-<h2>GetMetricStatistics Example<a class="headerlink" href="#getmetricstatistics-example" title="Permalink to this headline">¶</a></h2>
-<p>Following code is an example for using <a class="reference internal" href="apispec/action/get_metric_statistics.html#get-metric-statistics"><em>GetMetricStatistics</em></a>.</p>
-<p>It retreives CPUUtilization statistics of instance-0000000f (average, maximum,
-minimum and sample count) in the time frame from 2010-07-05 10:00 to 2010-07-05
-11:00.</p>
-<div class="highlight-java"><div class="highlight"><pre><span class="c1">//create Dimension</span>
-<span class="n">Dimension</span> <span class="n">dm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dimension</span><span class="o">();</span>
-<span class="n">dm</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&quot;instanceId&quot;</span><span class="o">);</span>
-<span class="n">dm</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="s">&quot;instance-0000000f&quot;</span><span class="o">);</span>
-<span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Dimension</span><span class="o">&gt;</span> <span class="n">dm_list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Dimension</span><span class="o">&gt;();</span>
-<span class="n">dm_list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">dm</span><span class="o">);</span>
-
-<span class="c1">//create GetMetricStatisticsRequest</span>
-<span class="n">GetMetricStatisticsRequest</span> <span class="n">MSR</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GetMetricStatisticsRequest</span><span class="o">();</span>
-<span class="n">MSR</span><span class="o">.</span><span class="na">setDimensions</span><span class="o">(</span><span class="n">dm_list</span><span class="o">);</span>
-<span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;deprecation&quot;</span><span class="o">)</span>
-<span class="n">Date</span> <span class="n">StartTime</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">(</span><span class="mi">112</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">10</span><span class="o">,</span><span class="mi">00</span><span class="o">);</span>
-<span class="n">MSR</span><span class="o">.</span><span class="na">setStartTime</span><span class="o">(</span><span class="n">StartTime</span><span class="o">);</span>
-<span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;deprecation&quot;</span><span class="o">)</span>
-<span class="n">Date</span> <span class="n">EndTime</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">(</span><span class="mi">112</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">11</span><span class="o">,</span><span class="mi">00</span><span class="o">);</span>
-<span class="n">MSR</span><span class="o">.</span><span class="na">setEndTime</span><span class="o">(</span><span class="n">EndTime</span><span class="o">);</span>
-<span class="n">MSR</span><span class="o">.</span><span class="na">setMetricName</span><span class="o">(</span><span class="s">&quot;CPUUtilization&quot;</span><span class="o">);</span>
-<span class="n">MSR</span><span class="o">.</span><span class="na">setNamespace</span><span class="o">(</span><span class="s">&quot;SPCS/NOVA&quot;</span><span class="o">);</span>
-<span class="n">MSR</span><span class="o">.</span><span class="na">setPeriod</span><span class="o">(</span><span class="mi">180</span><span class="o">);</span>
-<span class="n">MSR</span><span class="o">.</span><span class="na">setUnit</span><span class="o">(</span><span class="s">&quot;Percent&quot;</span><span class="o">);</span>
-<span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">Stat</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
-<span class="n">Stat</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;SampleCount&quot;</span><span class="o">);</span>
-<span class="n">Stat</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;Average&quot;</span><span class="o">);</span>
-<span class="n">Stat</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;Maximum&quot;</span><span class="o">);</span>
-<span class="n">Stat</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;Minimum&quot;</span><span class="o">);</span>
-<span class="n">MSR</span><span class="o">.</span><span class="na">setStatistics</span><span class="o">(</span><span class="n">Stat</span><span class="o">);</span>
-
-<span class="c1">//create GetMetricStatisticsResult</span>
-<span class="n">GetMetricStatisticsResult</span> <span class="n">GS</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">getMetricStatistics</span><span class="o">(</span><span class="n">MSR</span><span class="o">);</span>
-<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">GS</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
-<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">GS</span><span class="o">.</span><span class="na">getDatapoints</span><span class="o">());</span>
-</pre></div>
-</div>
-<p>The result is described below.</p>
-<div class="highlight-java"><div class="highlight"><pre><span class="n">CPUUtilization</span>
-<span class="o">[{</span><span class="nl">Timestamp:</span> <span class="n">Thu</span> <span class="n">Jul</span> <span class="mi">05</span> <span class="mi">10</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="n">KST</span> <span class="mi">2012</span><span class="o">,</span> <span class="nl">SampleCount:</span> <span class="mf">4.0</span><span class="o">,</span>
-  <span class="nl">Average:</span> <span class="mf">0.180585700935</span><span class="o">,</span> <span class="nl">Minimum:</span> <span class="mf">0.175029014291</span><span class="o">,</span>
-  <span class="nl">Maximum:</span> <span class="mf">0.183364138812</span><span class="o">,</span> <span class="nl">Unit:</span> <span class="n">Percent</span><span class="o">,</span> <span class="o">},</span>
- <span class="o">{</span><span class="nl">Timestamp:</span> <span class="n">Thu</span> <span class="n">Jul</span> <span class="mi">05</span> <span class="mi">10</span><span class="o">:</span><span class="mi">01</span><span class="o">:</span><span class="mi">00</span> <span class="n">KST</span> <span class="mi">2012</span><span class="o">,</span> <span class="nl">SampleCount:</span> <span class="mf">3.0</span><span class="o">,</span>
-  <span class="nl">Average:</span> <span class="mf">0.175029103639</span><span class="o">,</span> <span class="nl">Minimum:</span> <span class="mf">0.166694235063</span><span class="o">,</span>
-  <span class="nl">Maximum:</span> <span class="mf">0.183364061564</span><span class="o">,</span> <span class="nl">Unit:</span> <span class="n">Percent</span><span class="o">,</span> <span class="o">},</span>
- <span class="o">{</span><span class="nl">Timestamp:</span> <span class="n">Thu</span> <span class="n">Jul</span> <span class="mi">05</span> <span class="mi">10</span><span class="o">:</span><span class="mi">02</span><span class="o">:</span><span class="mi">00</span> <span class="n">KST</span> <span class="mi">2012</span><span class="o">,</span> <span class="nl">SampleCount:</span> <span class="mf">3.0</span><span class="o">,</span>
-  <span class="nl">Average:</span> <span class="mf">0.175029257371</span><span class="o">,</span> <span class="nl">Minimum:</span> <span class="mf">0.166694235063</span><span class="o">,</span>
-  <span class="nl">Maximum:</span> <span class="mf">0.183364061564</span><span class="o">,</span> <span class="nl">Unit:</span> <span class="n">Percent</span><span class="o">,</span> <span class="o">},</span>
- <span class="o">{</span><span class="nl">Timestamp:</span> <span class="n">Thu</span> <span class="n">Jul</span> <span class="mi">05</span> <span class="mi">10</span><span class="o">:</span><span class="mi">03</span><span class="o">:</span><span class="mi">00</span> <span class="n">KST</span> <span class="mi">2012</span><span class="o">,</span> <span class="nl">SampleCount:</span> <span class="mf">2.0</span><span class="o">,</span>
-  <span class="nl">Average:</span> <span class="mf">0.170861855275</span><span class="o">,</span> <span class="nl">Minimum:</span> <span class="mf">0.166694235063</span><span class="o">,</span>
-  <span class="nl">Maximum:</span> <span class="mf">0.175029475487</span><span class="o">,</span> <span class="nl">Unit:</span> <span class="n">Percent</span><span class="o">,</span> <span class="o">},</span>
- <span class="o">{</span><span class="nl">Timestamp:</span> <span class="n">Thu</span> <span class="n">Jul</span> <span class="mi">05</span> <span class="mi">10</span><span class="o">:</span><span class="mi">04</span><span class="o">:</span><span class="mi">00</span> <span class="n">KST</span> <span class="mi">2012</span><span class="o">,</span> <span class="nl">SampleCount:</span> <span class="mf">1.0</span><span class="o">,</span>
-  <span class="nl">Average:</span> <span class="mf">0.175029475487</span><span class="o">,</span> <span class="nl">Minimum:</span> <span class="mf">0.175029475487</span><span class="o">,</span>
-  <span class="nl">Maximum:</span> <span class="mf">0.175029475487</span><span class="o">,</span> <span class="nl">Unit:</span> <span class="n">Percent</span><span class="o">,</span> <span class="o">},</span>
- <span class="o">{</span><span class="nl">Timestamp:</span> <span class="n">Thu</span> <span class="n">Jul</span> <span class="mi">05</span> <span class="mi">10</span><span class="o">:</span><span class="mi">05</span><span class="o">:</span><span class="mi">00</span> <span class="n">KST</span> <span class="mi">2012</span><span class="o">,</span> <span class="nl">SampleCount:</span> <span class="mf">0.0</span><span class="o">,</span> <span class="nl">Unit:</span> <span class="n">Count</span><span class="o">,</span> <span class="o">},</span>
- <span class="o">{</span><span class="nl">Timestamp:</span> <span class="n">Thu</span> <span class="n">Jul</span> <span class="mi">05</span> <span class="mi">10</span><span class="o">:</span><span class="mi">06</span><span class="o">:</span><span class="mi">00</span> <span class="n">KST</span> <span class="mi">2012</span><span class="o">,</span> <span class="nl">SampleCount:</span> <span class="mf">1.0</span><span class="o">,</span>
-  <span class="nl">Average:</span> <span class="mf">0.197889178604</span><span class="o">,</span> <span class="nl">Minimum:</span> <span class="mf">0.197889178604</span><span class="o">,</span>
-  <span class="nl">Maximum:</span> <span class="mf">0.197889178604</span><span class="o">,</span> <span class="nl">Unit:</span> <span class="n">Percent</span><span class="o">,</span> <span class="o">},</span> <span class="o">...</span> <span class="o">]</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="deletealarms-example">
-<h2>DeleteAlarms Example<a class="headerlink" href="#deletealarms-example" title="Permalink to this headline">¶</a></h2>
-<p>Following code is an example for using <a class="reference internal" href="apispec/action/delete_alarms.html#delete-alarms"><em>DeleteAlarms</em></a>.</p>
-<div class="highlight-java"><div class="highlight"><pre><span class="n">DeleteAlarmsRequest</span> <span class="n">DAR</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DeleteAlarmsRequest</span><span class="o">();</span>
-<span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">DARList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
-<span class="n">DARList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;AlarmName&quot;</span><span class="o">);</span>
-<span class="n">DAR</span><span class="o">.</span><span class="na">setAlarmNames</span><span class="o">(</span><span class="n">DARList</span><span class="o">);</span>
-<span class="n">cw</span><span class="o">.</span><span class="na">deleteAlarms</span><span class="o">(</span><span class="n">DAR</span><span class="o">);</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="describealarms-example">
-<h2>DescribeAlarms Example<a class="headerlink" href="#describealarms-example" title="Permalink to this headline">¶</a></h2>
-<p>Following code is an example for using <a class="reference internal" href="apispec/action/describe_alarm_history.html#describe-alarm-history"><em>DescribeAlarmHistory</em></a></p>
-<div class="highlight-java"><div class="highlight"><pre><span class="n">DescribeAlarmsResult</span> <span class="n">DAR</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">describeAlarms</span><span class="o">();</span>
-<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">DAR</span><span class="o">);</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="describealarmsformetric-example">
-<h2>DescribeAlarmsForMetric Example<a class="headerlink" href="#describealarmsformetric-example" title="Permalink to this headline">¶</a></h2>
-<p>Following code is an example for using <a class="reference internal" href="apispec/action/describe_alarms_for_metric.html#describe-alarms-for-metric"><em>DescribeAlarmsForMetric</em></a></p>
-<div class="highlight-java"><div class="highlight"><pre><span class="n">DescribeAlarmsForMetricRequest</span> <span class="n">DAFMR</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DescribeAlarmsForMetricRequest</span><span class="o">();</span>
-<span class="n">DAFMR</span><span class="o">.</span><span class="na">setMetricName</span><span class="o">(</span><span class="s">&quot;MetricName&quot;</span><span class="o">);</span>
-<span class="n">DAFMR</span><span class="o">.</span><span class="na">setNamespace</span><span class="o">(</span><span class="s">&quot;NameSpace&quot;</span><span class="o">);</span>
-<span class="n">DescribeAlarmsForMetricResult</span> <span class="n">DAR</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">describeAlarmsForMetric</span><span class="o">(</span><span class="n">DAFMR</span><span class="o">);</span>
-<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">DAR</span><span class="o">.</span><span class="na">getMetricAlarms</span><span class="o">());</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="putmetricalarm-example">
-<h2>PutMetricAlarm Example<a class="headerlink" href="#putmetricalarm-example" title="Permalink to this headline">¶</a></h2>
-<p>Following code is an example for using <a class="reference internal" href="apispec/action/put_metric_alarm.html#put-metric-alarm"><em>PutMetricAlarm</em></a></p>
-<div class="highlight-java"><div class="highlight"><pre><span class="n">PutMetricAlarmRequest</span> <span class="n">PMAR</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PutMetricAlarmRequest</span><span class="o">();</span>
-<span class="n">PMAR</span><span class="o">.</span><span class="na">setAlarmName</span><span class="o">(</span><span class="s">&quot;AlarmName&quot;</span><span class="o">);</span>
-<span class="n">PMAR</span><span class="o">.</span><span class="na">setComparisonOperator</span><span class="o">(</span><span class="s">&quot;GreaterThanThreshold&quot;</span><span class="o">);</span>
-<span class="n">PMAR</span><span class="o">.</span><span class="na">setEvaluationPeriods</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
-<span class="n">PMAR</span><span class="o">.</span><span class="na">setMetricName</span><span class="o">(</span><span class="s">&quot;MetricName&quot;</span><span class="o">);</span>
-<span class="n">PMAR</span><span class="o">.</span><span class="na">setNamespace</span><span class="o">(</span><span class="s">&quot;NameSpace&quot;</span><span class="o">);</span>
-<span class="n">PMAR</span><span class="o">.</span><span class="na">setPeriod</span><span class="o">(</span><span class="mi">60</span><span class="o">);</span>
-<span class="n">PMAR</span><span class="o">.</span><span class="na">setStatistic</span><span class="o">(</span><span class="s">&quot;SampleCount&quot;</span><span class="o">);</span>
-<span class="n">PMAR</span><span class="o">.</span><span class="na">setThreshold</span><span class="o">(</span><span class="mf">300.0</span><span class="o">);</span>
-<span class="n">cw</span><span class="o">.</span><span class="na">putMetricAlarm</span><span class="o">(</span><span class="n">PMAR</span><span class="o">);</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="setalarmstate-example">
-<h2>SetAlarmState Example<a class="headerlink" href="#setalarmstate-example" title="Permalink to this headline">¶</a></h2>
-<p>TBD</p>
-</div>
-<div class="section" id="disablealarmactions-example">
-<h2>DisableAlarmActions Example<a class="headerlink" href="#disablealarmactions-example" title="Permalink to this headline">¶</a></h2>
-<p>TBD</p>
-</div>
-<div class="section" id="enablealarmactions-example">
-<h2>EnableAlarmActions Example<a class="headerlink" href="#enablealarmactions-example" title="Permalink to this headline">¶</a></h2>
-<p>TBD</p>
-</div>
-<div class="section" id="describealarmhistory-example">
-<h2>DescribeAlarmHistory Example<a class="headerlink" href="#describealarmhistory-example" title="Permalink to this headline">¶</a></h2>
-<p>Following code is an example for using <a class="reference internal" href="apispec/action/describe_alarm_history.html#describe-alarm-history"><em>DescribeAlarmHistory</em></a></p>
-<div class="highlight-java"><div class="highlight"><pre><span class="n">DescribeAlarmHistoryResult</span> <span class="n">DAHR</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">describeAlarmHistory</span><span class="o">();</span>
-<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">DAHR</span><span class="o">);</span>
 </pre></div>
 </div>
 </div>
@@ -259,18 +261,7 @@ minimum and sample count) in the time frame from 2010-07-05 10:00 to 2010-07-05
             <h3><a href="../index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference internal" href="#">Synaps SDK User Guide</a><ul>
-<li><a class="reference internal" href="#configure-credentials">Configure Credentials</a></li>
-<li><a class="reference internal" href="#listmetrics-example">ListMetrics Example</a></li>
-<li><a class="reference internal" href="#putmetricdata-example">PutMetricData Example</a></li>
-<li><a class="reference internal" href="#getmetricstatistics-example">GetMetricStatistics Example</a></li>
-<li><a class="reference internal" href="#deletealarms-example">DeleteAlarms Example</a></li>
-<li><a class="reference internal" href="#describealarms-example">DescribeAlarms Example</a></li>
-<li><a class="reference internal" href="#describealarmsformetric-example">DescribeAlarmsForMetric Example</a></li>
-<li><a class="reference internal" href="#putmetricalarm-example">PutMetricAlarm Example</a></li>
-<li><a class="reference internal" href="#setalarmstate-example">SetAlarmState Example</a></li>
-<li><a class="reference internal" href="#disablealarmactions-example">DisableAlarmActions Example</a></li>
-<li><a class="reference internal" href="#enablealarmactions-example">EnableAlarmActions Example</a></li>
-<li><a class="reference internal" href="#describealarmhistory-example">DescribeAlarmHistory Example</a></li>
+<li><a class="reference internal" href="#java-example">Java Example</a></li>
 </ul>
 </li>
 </ul>
@@ -323,7 +314,7 @@ minimum and sample count) in the time frame from 2010-07-05 10:00 to 2010-07-05
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Mon Nov 11 00:37:45 2013, commit c6dad5f.
+      Last updated on Fri Dec 6 13:25:31 2013, commit 208956d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

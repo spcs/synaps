@@ -53,26 +53,43 @@
 <h1>Synaps<a class="headerlink" href="#synaps" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>Synaps is a cloud monitoring system.</p>
+<p>Synaps is a cloud monitoring system that collects metric data, provides
+statistics data, monitors and notifies based on user defined alarms.</p>
 <ul class="simple">
 <li>Linear scalable</li>
-<li>AWS CloudWatch API Compatible</li>
+<li>AWS CloudWatch API compatible</li>
 <li>Real-time monitoring system</li>
 </ul>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>It should provide an interface for another services in the cloud to put their
+metric data of user resources such as VM instances, software load-balancers,
+RDS instances, Hadoop batch jobs, etc. And using that interface, users also can
+put their own metric data that service provider doesn&#8217;t provide.</p>
+<p>It should aggregate all metric data into time frames of 1 minute, and should
+provide interfaces to retrieve metric list and statistics data so that users
+can utilize metric data of their resources in the cloud.</p>
+<p>Users can create alarms that contains evaluation criteria, periods and alarm
+actions. It should evaluate alarms periodically and when the threshold is
+crossed, it should invoke actions, such as sending email, SMS or rebooting or
+migrating a VM instance as described in the alarm.</p>
+<p>Users can also describe histories of alarms so that they can know the
+information about the alarm creation, transition of its status and histories of
+alarm actions.</p>
 </div>
 <div class="section" id="artifacts">
 <h2>Artifacts<a class="headerlink" href="#artifacts" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="artifacts/programspec.html">Program Specification</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/programspec.html#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="artifacts/programspec.html#program-architecture">Program Architecture</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/programspec.html#program-synaps-api">Program: Synaps API</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/programspec.html#asynchrous-request-processing">Asynchrous request processing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/programspec.html#synchrous-request-processing">Synchrous request processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/programspec.html#synaps-api-description">Synaps API description</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/programspec.html#asynchronous-request-processing">Asynchronous request processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/programspec.html#synchronous-request-processing">Synchronous request processing</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/programspec.html#program-synaps-storm">Program: Synaps Storm</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/programspec.html#synaps-topology-description">Synaps topology description</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="artifacts/programspec.html#putmetricdata-message-processing">PutMetricData message processing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifacts/programspec.html#putmetricalarm-message-processing">PutMetricAlarm message processing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifacts/programspec.html#periodicmonitoring-message-processing">PeriodicMonitoring message processing</a></li>
@@ -108,18 +125,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="artifacts/usermanual.html">Synaps SDK User Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#configure-credentials">Configure Credentials</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#listmetrics-example">ListMetrics Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#putmetricdata-example">PutMetricData Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#getmetricstatistics-example">GetMetricStatistics Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#deletealarms-example">DeleteAlarms Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#describealarms-example">DescribeAlarms Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#describealarmsformetric-example">DescribeAlarmsForMetric Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#putmetricalarm-example">PutMetricAlarm Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#setalarmstate-example">SetAlarmState Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#disablealarmactions-example">DisableAlarmActions Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#enablealarmactions-example">EnableAlarmActions Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#describealarmhistory-example">DescribeAlarmHistory Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/usermanual.html#java-example">Java Example</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="artifacts/build.guide.html">Build Guide</a></li>
@@ -147,12 +153,22 @@
 <li class="toctree-l2"><a class="reference internal" href="artifacts/general.installation.guide.html#installaton-example">Installaton Example</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="artifacts/operatormanual.html">Operational Manual</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/operatormanual.html#starting-service-procedure">Starting Service Procedure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="artifacts/operatormanual.html#maintenance">Maintenance</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="artifacts/operatormanual.html#minor-upgrade-without-downtime">Minor upgrade without downtime</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts/operatormanual.html">Operations Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/ops/cli.guide.html">Command line interface Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/ops/cli.guide.html#aws-cli">AWS CLI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/ops/cli.guide.html#cwutil-boto-guide">cwutil(boto) Guide</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/ops/synaps.guide.html">Synaps API and topology</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/ops/synaps.guide.html#synaps-api">Synaps API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/ops/synaps.guide.html#synaps-topology">Synaps topology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/ops/synaps.guide.html#minor-upgrade-procedure">Minor upgrade procedure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifacts/ops/synaps.guide.html#logs">Logs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/ops/rabbitmq.guide.html">RabbitMQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/ops/cassandra.guide.html">Apache Cassandra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="artifacts/ops/storm.guide.html">Twitter Storm</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="artifacts/developersguide.html">Developer&#8217;s Guide</a><ul>
@@ -224,6 +240,7 @@
             <ul>
 <li><a class="reference internal" href="#">Synaps</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
 <li><a class="reference internal" href="#artifacts">Artifacts</a><ul>
 </ul>
 </li>
@@ -274,7 +291,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Mon Nov 11 00:37:45 2013, commit c6dad5f.
+      Last updated on Fri Dec 6 13:25:31 2013, commit 208956d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

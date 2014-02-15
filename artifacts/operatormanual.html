@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Operational Manual &mdash; synaps 2013.2.1-dev documentation</title>
+    <title>Operations Guide &mdash; synaps 2013.2.1-dev documentation</title>
     
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -27,7 +27,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/jquery.tweet.js"></script>
     <link rel="top" title="synaps 2013.2.1-dev documentation" href="../index.html" />
-    <link rel="next" title="Developer’s Guide" href="developersguide.html" />
+    <link rel="next" title="Command line interface Guide" href="ops/cli.guide.html" />
     <link rel="prev" title="Post-installation Synaps frontend" href="install/postinstall.frontend.html" /> 
   </head>
   <body>
@@ -50,60 +50,26 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="operational-manual">
-<h1>Operational Manual<a class="headerlink" href="#operational-manual" title="Permalink to this headline">¶</a></h1>
-<p>This manual describes tips for operation.</p>
-<div class="section" id="starting-service-procedure">
-<h2>Starting Service Procedure<a class="headerlink" href="#starting-service-procedure" title="Permalink to this headline">¶</a></h2>
-<p>start storm topology</p>
-<div class="highlight-bash"><div class="highlight"><pre>sudo storm jar /SW/storm/synaps-storm.jar SynapsTopology 00
-</pre></div>
-</div>
-<p>start synaps api</p>
-<div class="highlight-bash"><div class="highlight"><pre>sudo service synaps-api start
-</pre></div>
-</div>
-<p>reload metric in memory</p>
-<div class="highlight-bash"><div class="highlight"><pre>sudo synaps-reload-metric
-</pre></div>
-</div>
-</div>
-<div class="section" id="maintenance">
-<h2>Maintenance<a class="headerlink" href="#maintenance" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="minor-upgrade-without-downtime">
-<h3>Minor upgrade without downtime<a class="headerlink" href="#minor-upgrade-without-downtime" title="Permalink to this headline">¶</a></h3>
-<p>This procedure is valid when HTTP API and RPC interface is not changed.</p>
-<ol class="arabic simple">
-<li>Upgrade Synaps pacakge for all servers</li>
-</ol>
-<p>copy synaps-api build to all server and install the synaps-api package</p>
-<div class="highlight-bash"><div class="highlight"><pre>sudo pip install -U synaps-yyyy.xxxx.tar.gz
-</pre></div>
-</div>
-<ol class="arabic simple" start="2">
-<li>Restart synaps-api daemon</li>
-</ol>
-<p>API servers can be configured Active-Active by Load balancer. So we can
-restart the API server side-by-side.</p>
-<div class="highlight-bash"><div class="highlight"><pre>sudo service synaps-api restart
-</pre></div>
-</div>
-<ol class="arabic simple" start="3">
-<li>Restart synaps-storm(synaps00) topology</li>
-</ol>
-<p>Copy synaps-storm build to nimbus server and restart the topology and then,
-reload the metrics.</p>
-<p>Storm kill command takes about 30 seconds. Because it stops receiving message
-from the queue and consume all remaining messages in the queue within the time
-period.</p>
-<p>While the downtime of storm topology, all requests are queued and can be
-processed when the storm topology is restarted.</p>
-<div class="highlight-bash"><div class="highlight"><pre>sudo /SW/storm/bin/storm <span class="nb">kill </span>synaps00
-sudo /SW/storm/bin/storm jar /SW/storm/synaps-storm.jar SynapsTopology 00
-sudo synaps-reload-metric
-</pre></div>
-</div>
-</div>
+  <div class="section" id="operations-guide">
+<h1>Operations Guide<a class="headerlink" href="#operations-guide" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ops/cli.guide.html">Command line interface Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ops/cli.guide.html#aws-cli">AWS CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ops/cli.guide.html#cwutil-boto-guide">cwutil(boto) Guide</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ops/synaps.guide.html">Synaps API and topology</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ops/synaps.guide.html#synaps-api">Synaps API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ops/synaps.guide.html#synaps-topology">Synaps topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ops/synaps.guide.html#minor-upgrade-procedure">Minor upgrade procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ops/synaps.guide.html#logs">Logs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ops/rabbitmq.guide.html">RabbitMQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ops/cassandra.guide.html">Apache Cassandra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ops/storm.guide.html">Twitter Storm</a></li>
+</ul>
 </div>
 </div>
 
@@ -113,24 +79,12 @@ sudo synaps-reload-metric
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-            <h3><a href="../index.html">Table Of Contents</a></h3>
-            <ul>
-<li><a class="reference internal" href="#">Operational Manual</a><ul>
-<li><a class="reference internal" href="#starting-service-procedure">Starting Service Procedure</a></li>
-<li><a class="reference internal" href="#maintenance">Maintenance</a><ul>
-<li><a class="reference internal" href="#minor-upgrade-without-downtime">Minor upgrade without downtime</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
             <h4>Previous topic</h4>
             <p class="topless"><a href="install/postinstall.frontend.html"
                                   title="previous chapter">Post-installation Synaps frontend</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="developersguide.html"
-                                  title="next chapter">Developer&#8217;s Guide</a></p>
+            <p class="topless"><a href="ops/cli.guide.html"
+                                  title="next chapter">Command line interface Guide</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="../_sources/artifacts/operatormanual.txt"
@@ -163,7 +117,7 @@ sudo synaps-reload-metric
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="developersguide.html" title="Developer’s Guide"
+          <a href="ops/cli.guide.html" title="Command line interface Guide"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="install/postinstall.frontend.html" title="Post-installation Synaps frontend"
@@ -173,7 +127,7 @@ sudo synaps-reload-metric
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Mon Nov 11 00:37:45 2013, commit c6dad5f.
+      Last updated on Fri Dec 6 13:25:31 2013, commit 208956d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

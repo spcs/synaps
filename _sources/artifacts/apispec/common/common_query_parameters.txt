@@ -5,6 +5,8 @@ Common Query Parameters
 
 It describes common query parameters for all API actions.
 
+All string value should be in ascii character.
+
 .. list-table:: 
    :widths: 20 50 10
    :header-rows: 1

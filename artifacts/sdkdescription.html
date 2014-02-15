@@ -57,25 +57,30 @@
 <h2>User SDK<a class="headerlink" href="#user-sdk" title="Permalink to this headline">¶</a></h2>
 <p>Synaps provides AWS CloudWatch compatible APIs so that users can use AWS
 CloudWatch SDKs. Synaps does not provide Synaps-specialized SDK for users.</p>
-<ul class="simple">
-<li>Java SDK: Synaps is compatible with AWS SDK for Java (ver 1.3.12). But, it
+<ul>
+<li><p class="first">Java SDK: Synaps is compatible with AWS SDK for Java (ver 1.3.12). But, it
 doesn&#8217;t support more recent version. Synaps does not supports AWS Signature
-v4 yet. see <a class="reference external" href="http://aws.amazon.com/sdkforjava/">http://aws.amazon.com/sdkforjava/</a></li>
-<li>Python SDK: Synaps is compatible with AWS SDK for Python, Boto. (tested with
-ver 2.5.2) see <a class="reference external" href="https://github.com/boto/boto">https://github.com/boto/boto</a></li>
+v4 yet. see <a class="reference external" href="https://github.com/aws/aws-sdk-java">https://github.com/aws/aws-sdk-java</a></p>
+<p>To use more recent version of AWS SDK for Java, use SPCS branch that
+works with Signature v2 module. see <a class="reference external" href="https://github.com/spcs/aws-sdk-java">https://github.com/spcs/aws-sdk-java</a></p>
+</li>
+<li><p class="first">Python SDK: Synaps is compatible with AWS SDK for Python, Boto.
+see <a class="reference external" href="https://github.com/boto/boto">https://github.com/boto/boto</a></p>
+</li>
 </ul>
 </div>
 <div class="section" id="admin-sdk">
 <h2>Admin SDK<a class="headerlink" href="#admin-sdk" title="Permalink to this headline">¶</a></h2>
-<p>Synaps has its own SDK which is spined off from AWS SDK for Java (v1.3.12) to
-call admin APIs. If a user who does not have novaadmin role calls Synaps APIs,
-he (or she) will get 400 error message.</p>
+<p>Synaps has its own SDK which is a spin-off of AWS SDK for Java (v1.3.12) to
+call admin APIs. If a user who does not have synapsadmin or novaadmin role
+calls Synaps APIs, he (or she) will get 400 error message.</p>
 <p>Administrators can</p>
 <ul class="simple">
 <li>pass ProjectId parameter for every APIs, so that they can access data in any
 project.</li>
-<li>put metric data which have their namespace start with reserved word for thier
+<li>put metric data which have their namespace start with reserved word for their
 services (e.g. &#8220;OPENSTACK/&#8221; or &#8220;SPCS/&#8221;). see <a class="reference internal" href="apispec/action/put_metric_data.html#put-metric-data"><em>PutMetricData</em></a>.</li>
+<li>put alarm which have their name start with reserved word for their services.</li>
 </ul>
 </div>
 </div>
@@ -143,7 +148,7 @@ services (e.g. &#8220;OPENSTACK/&#8221; or &#8220;SPCS/&#8221;). see <a class="r
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Mon Nov 11 00:37:45 2013, commit c6dad5f.
+      Last updated on Fri Dec 6 13:25:31 2013, commit 208956d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

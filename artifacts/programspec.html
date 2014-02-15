@@ -52,25 +52,6 @@
             
   <div class="section" id="program-specification">
 <h1>Program Specification<a class="headerlink" href="#program-specification" title="Permalink to this headline">¶</a></h1>
-<p>Synaps is a cloud monitoring system that collects metric data, provides
-statistics data, monitors and notifies based on user defined alarms.</p>
-<div class="section" id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p>It should provide an interface for another services in the cloud to put their
-metric data of user resources such as VM instances, software load-balancers,
-RDS instances, Hadoop batch jobs, etc. And using that interface, users also can
-put their own metric data that service provider doesn&#8217;t provide.</p>
-<p>It should aggregate all metric data into time frames of 1 minute, and should
-provide interfaces to retrieve metric list and statistics data so that users
-can utilize metric data of their resources in the cloud.</p>
-<p>Users can create alarms that contains evaluation criteria, periods and alarm
-actions. It should evaluate alarms periodically and invoke actions, such as
-sending email, SMS or rebooting or migrating a VM instance when its status is
-changed.</p>
-<p>Users can describe histories of alarms so that they can know the information
-about the alarm creation, transition of its status and histories of alarm
-actions.</p>
-</div>
 <div class="section" id="program-architecture">
 <h2>Program Architecture<a class="headerlink" href="#program-architecture" title="Permalink to this headline">¶</a></h2>
 <p>If there are 1,000 VM instances in your cloud, and 10 metrics per instance are
@@ -98,8 +79,10 @@ choice for performance.</p>
 <p class="caption">Synaps Architecture Overview</p>
 </div>
 <p>Synaps provides AWS CloudWatch compatible API so that users can use the SDKs
-for AWS CW for Synaps also. Internally, it can be integrated with your agent
-for your cloud services so that users can monitor their resource in the cloud.</p>
+for AWS CW for Synaps also. Boto, AWS CLI and AWS SDK for Java can be used
+to call Synaps API.</p>
+<p>Internally, it can be integrated with agent which inputs your metrics of your
+cloud services so that users can monitor their resource in the cloud.</p>
 <p>For example, VMMON which can get information from VM Hyperisor via libvirt APIs
 and Nova API and put metric data to Synaps so that users can utilize the data.
 But such agents are not in the scope of Synaps project.</p>
@@ -108,48 +91,52 @@ But such agents are not in the scope of Synaps project.</p>
 <p class="caption">Synaps Integration Example</p>
 </div>
 </div>
-<div class="section" id="program-synaps-api">
-<h2>Program: Synaps API<a class="headerlink" href="#program-synaps-api" title="Permalink to this headline">¶</a></h2>
-<p>Synaps API is WSGI based Web Server which provides AWS CloudWatch compatible
+<div class="section" id="synaps-api-description">
+<h2>Synaps API description<a class="headerlink" href="#synaps-api-description" title="Permalink to this headline">¶</a></h2>
+<p>Synaps API is WSGI based web server which provides AWS CloudWatch compatible
 API.</p>
-<div class="section" id="asynchrous-request-processing">
-<h3>Asynchrous request processing<a class="headerlink" href="#asynchrous-request-processing" title="Permalink to this headline">¶</a></h3>
-<p>Requests below are processed asynchrously.</p>
+<div class="section" id="asynchronous-request-processing">
+<h3>Asynchronous request processing<a class="headerlink" href="#asynchronous-request-processing" title="Permalink to this headline">¶</a></h3>
+<p>Actions below are processed asynchronously.</p>
 <ul class="simple">
 <li>DeleteAlarms</li>
 <li>PutMetricAlarm</li>
 <li>PutMetricData</li>
+<li>DisableAlarmActions</li>
+<li>EnableAlarmActions</li>
+<li>SetAlarmState</li>
 </ul>
-<p>For example,</p>
-<blockquote>
-<div><img alt="../_images/SynapsAPI-PutMetricData.jpg" src="../_images/SynapsAPI-PutMetricData.jpg" style="width: 100%;" />
-</div></blockquote>
+<div class="figure">
+<img alt="../_images/SynapsAPI-PutMetricData.jpg" src="../_images/SynapsAPI-PutMetricData.jpg" style="width: 100%;" />
+<p class="caption">Example of asynchronous message processing</p>
 </div>
-<div class="section" id="synchrous-request-processing">
-<h3>Synchrous request processing<a class="headerlink" href="#synchrous-request-processing" title="Permalink to this headline">¶</a></h3>
-<p>Requests below are processed synchrously.</p>
+</div>
+<div class="section" id="synchronous-request-processing">
+<h3>Synchronous request processing<a class="headerlink" href="#synchronous-request-processing" title="Permalink to this headline">¶</a></h3>
+<p>Actions below are processed synchronously.</p>
 <ul class="simple">
 <li>DescribeAlarmHistory</li>
 <li>DescribeAlarms</li>
 <li>DescribeAlarmsForMetric</li>
-<li>DisableAlarmActions</li>
-<li>EnableAlarmActions</li>
 <li>GetMetricStatistics</li>
 <li>ListMetrics</li>
-<li>SetAlarmState</li>
 </ul>
 <p>For example,</p>
-<blockquote>
-<div><img alt="../_images/SynapsAPI-GetMetricStatistics.jpg" src="../_images/SynapsAPI-GetMetricStatistics.jpg" style="width: 100%;" />
-</div></blockquote>
+<div class="figure">
+<img alt="../_images/SynapsAPI-GetMetricStatistics.jpg" src="../_images/SynapsAPI-GetMetricStatistics.jpg" style="width: 100%;" />
+<p class="caption">Example of synchronous message processing</p>
 </div>
 </div>
-<div class="section" id="program-synaps-storm">
-<h2>Program: Synaps Storm<a class="headerlink" href="#program-synaps-storm" title="Permalink to this headline">¶</a></h2>
-<p>Synaps Storm is a topology implementation which is aimed to run on the Twitter
-Storm, real-time distributed stream processing system.</p>
+</div>
+<div class="section" id="synaps-topology-description">
+<h2>Synaps topology description<a class="headerlink" href="#synaps-topology-description" title="Permalink to this headline">¶</a></h2>
+<p>Synaps topology is aimed to run on the Twitter Storm, real-time distributed
+stream processing system.</p>
 <blockquote>
-<div><img alt="../_images/SynapsStorm-Topology.jpg" src="../_images/SynapsStorm-Topology.jpg" style="width: 100%;" />
+<div><div class="figure">
+<img alt="../_images/SynapsStorm-Topology.jpg" src="../_images/SynapsStorm-Topology.jpg" style="width: 100%;" />
+<p class="caption">Synaps topology for Storm</p>
+</div>
 </div></blockquote>
 <div class="section" id="putmetricdata-message-processing">
 <h3>PutMetricData message processing<a class="headerlink" href="#putmetricdata-message-processing" title="Permalink to this headline">¶</a></h3>
@@ -158,27 +145,30 @@ message is received via RabbitMQ message queue, it reads its in-memory sliding
 windows or database to aggregate its datapoints and evalutate status of
 its alarms. If the status is changed, it sends action message to notification
 queue.</p>
-<blockquote>
-<div><img alt="../_images/SynapsStorm-PutMetricData.jpg" src="../_images/SynapsStorm-PutMetricData.jpg" style="width: 100%;" />
-</div></blockquote>
+<div class="figure">
+<img alt="../_images/SynapsStorm-PutMetricData.jpg" src="../_images/SynapsStorm-PutMetricData.jpg" style="width: 100%;" />
+<p class="caption">Synaps topology - PutMetricData</p>
+</div>
 </div>
 <div class="section" id="putmetricalarm-message-processing">
 <h3>PutMetricAlarm message processing<a class="headerlink" href="#putmetricalarm-message-processing" title="Permalink to this headline">¶</a></h3>
 <p>When the PutMetricAlarm message is received via RabbitMQ message queue, it
 find its metric and update its in-memory alarm data and update it into
 database.</p>
-<blockquote>
-<div><img alt="../_images/SynapsStormPutMetricAlarm.jpg" src="../_images/SynapsStormPutMetricAlarm.jpg" style="width: 100%;" />
-</div></blockquote>
+<div class="figure">
+<img alt="../_images/SynapsStormPutMetricAlarm.jpg" src="../_images/SynapsStormPutMetricAlarm.jpg" style="width: 100%;" />
+<p class="caption">Synaps topology - PutMetricAlarm</p>
+</div>
 </div>
 <div class="section" id="periodicmonitoring-message-processing">
 <h3>PeriodicMonitoring message processing<a class="headerlink" href="#periodicmonitoring-message-processing" title="Permalink to this headline">¶</a></h3>
 <p>&#8216;check_spout&#8217; generates PeriodicMonitoring message every 1 minute. When this is
 generated, it checks their whole alarms if they are not evaluated alarms
 recently PutMetricData message processing.</p>
-<blockquote>
-<div><img alt="../_images/SynapsStormPeriodicMonitoring.jpg" src="../_images/SynapsStormPeriodicMonitoring.jpg" style="width: 100%;" />
-</div></blockquote>
+<div class="figure">
+<img alt="../_images/SynapsStormPeriodicMonitoring.jpg" src="../_images/SynapsStormPeriodicMonitoring.jpg" style="width: 100%;" />
+<p class="caption">Synaps topology - PeriodicMonitoring</p>
+</div>
 </div>
 </div>
 </div>
@@ -192,14 +182,13 @@ recently PutMetricData message processing.</p>
             <h3><a href="../index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference internal" href="#">Program Specification</a><ul>
-<li><a class="reference internal" href="#requirements">Requirements</a></li>
 <li><a class="reference internal" href="#program-architecture">Program Architecture</a></li>
-<li><a class="reference internal" href="#program-synaps-api">Program: Synaps API</a><ul>
-<li><a class="reference internal" href="#asynchrous-request-processing">Asynchrous request processing</a></li>
-<li><a class="reference internal" href="#synchrous-request-processing">Synchrous request processing</a></li>
+<li><a class="reference internal" href="#synaps-api-description">Synaps API description</a><ul>
+<li><a class="reference internal" href="#asynchronous-request-processing">Asynchronous request processing</a></li>
+<li><a class="reference internal" href="#synchronous-request-processing">Synchronous request processing</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#program-synaps-storm">Program: Synaps Storm</a><ul>
+<li><a class="reference internal" href="#synaps-topology-description">Synaps topology description</a><ul>
 <li><a class="reference internal" href="#putmetricdata-message-processing">PutMetricData message processing</a></li>
 <li><a class="reference internal" href="#putmetricalarm-message-processing">PutMetricAlarm message processing</a></li>
 <li><a class="reference internal" href="#periodicmonitoring-message-processing">PeriodicMonitoring message processing</a></li>
@@ -257,7 +246,7 @@ recently PutMetricData message processing.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2012-present, Samsung SDS.
-      Last updated on Mon Nov 11 00:37:45 2013, commit c6dad5f.
+      Last updated on Fri Dec 6 13:25:31 2013, commit 208956d.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
