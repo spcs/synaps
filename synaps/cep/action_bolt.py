@@ -313,23 +313,29 @@ class ActionBolt(storm.BasicBolt):
                                        sms_receivers)
 
     def send_sms(self, message):
-        Q_LOCAL = """insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, 
-        MESSAGE) values (now()+0, '%d','%s','%s','%s')
+        Q_LOCAL = """insert into MMS_SEND(REG_TIME, MSG_SEQ, MSG_KEY, 
+        RECEIVER, SENDER, SUBJECT, MESSAGE) 
+        values (now()+0, '%d', '%d', '%s', '%s', '%s', '%s')
         """
+        
         Q_NAT = """insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, 
         MESSAGE, NAT_CODE) values (now()+0, '%d','%s','%s','%s', %d)
         """
     
-        def build_query(receiver, subject):
+        def build_query(receiver, message):
             nat, local_no = parse_number(receiver)
+            subject = message['subject']
+            body = message['body']
             # random integer for msg_key
             msg_key = randint(1, 10 ** 15)
-            if len(subject) > 80:
-                subject = subject[:77] + "..."
             
             if nat == None:
-                ret = Q_LOCAL % (msg_key, local_no, self.sms_sender, subject)
+                ret = Q_LOCAL % (msg_key, msg_key, local_no, self.sms_sender, 
+                                 subject, body)
             else:
+                if len(subject) > 80:
+                    subject = subject[:77] + "..."
+                    
                 ret = Q_NAT % (msg_key, local_no, self.sms_sender, subject, 
                                nat)
             return ret
@@ -368,7 +374,7 @@ class ActionBolt(storm.BasicBolt):
                           charset='utf8')
         c = conn.cursor()
         for receiver in message['receivers']:
-            q = build_query(receiver, message['subject'])
+            q = build_query(receiver, message)
             c.execute(q)
         
         c.close()
