@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from cgi import escape
 from email.mime.text import MIMEText
 import os
 import json
@@ -27,8 +28,8 @@ from synaps import flags
 from synaps import log as logging
 from synaps import utils
 from synaps.utils import (validate_email, validate_international_phonenumber,
-                          validate_instance_action, parse_instance_action, 
-                          validate_groupnotification_action, 
+                          validate_instance_action, parse_instance_action,
+                          validate_groupnotification_action,
                           parse_groupnotification_action)
 from synaps.monitor import API
 from synaps.context import get_admin_context
@@ -62,6 +63,11 @@ class ActionBolt(storm.BasicBolt):
         self.nova_admin_user = FLAGS.get('admin_user')
         self.nova_admin_password = FLAGS.get('admin_password')
         
+        self.region = FLAGS.get('region')
+        self.lms_template = FLAGS.get('lms_template')
+        self.email_body_template = FLAGS.get('email_body_template')
+        self.email_subject_template = FLAGS.get('email_subject_template')
+        
         self.api = API()
     
     
@@ -82,18 +88,18 @@ class ActionBolt(storm.BasicBolt):
         international_receivers = [r for r in receivers if not 
                                    r.startswith("+82")]
         
-        self.api.put_metric_data(ctxt, project_id, namespace="SPCS/SYNAPS", 
-                                 metric_name="LocalSMSActionCount", 
-                                 dimensions={}, value=len(local_receivers), 
-                                 unit="Count", 
+        self.api.put_metric_data(ctxt, project_id, namespace="SPCS/SYNAPS",
+                                 metric_name="LocalSMSActionCount",
+                                 dimensions={}, value=len(local_receivers),
+                                 unit="Count",
                                  timestamp=utils.strtime(utils.utcnow()),
                                  is_admin=True)
 
-        self.api.put_metric_data(ctxt, project_id, namespace="SPCS/SYNAPS", 
-                                 metric_name="InternationalSMSActionCount", 
-                                 dimensions={}, 
-                                 value=len(international_receivers), 
-                                 unit="Count", 
+        self.api.put_metric_data(ctxt, project_id, namespace="SPCS/SYNAPS",
+                                 metric_name="InternationalSMSActionCount",
+                                 dimensions={},
+                                 value=len(international_receivers),
+                                 unit="Count",
                                  timestamp=utils.strtime(utils.utcnow()),
                                  is_admin=True)
         
@@ -102,25 +108,25 @@ class ActionBolt(storm.BasicBolt):
 
     def meter_email_actions(self, project_id, receivers):
         ctxt = get_admin_context()
-        self.api.put_metric_data(ctxt, project_id, namespace="SPCS/SYNAPS", 
+        self.api.put_metric_data(ctxt, project_id, namespace="SPCS/SYNAPS",
                                  metric_name="EmailActionCount",
-                                 dimensions={}, value=len(receivers), 
+                                 dimensions={}, value=len(receivers),
                                  unit="Count",
-                                 timestamp=utils.strtime(utils.utcnow()), 
+                                 timestamp=utils.strtime(utils.utcnow()),
                                  is_admin=True)
-        LOG.audit("Meter Email: %s %s %s", project_id, len(receivers), 
+        LOG.audit("Meter Email: %s %s %s", project_id, len(receivers),
                   receivers)
         
 
     def meter_instance_actions(self, project_id, receivers):
         ctxt = get_admin_context()
-        self.api.put_metric_data(ctxt, project_id, namespace="SPCS/SYNAPS", 
+        self.api.put_metric_data(ctxt, project_id, namespace="SPCS/SYNAPS",
                                  metric_name="InstanceActionCount",
-                                 dimensions={}, value=len(receivers), 
+                                 dimensions={}, value=len(receivers),
                                  unit="Count",
-                                 timestamp=utils.strtime(utils.utcnow()), 
+                                 timestamp=utils.strtime(utils.utcnow()),
                                  is_admin=True)
-        LOG.audit("Meter InstanceAction: %s %s %s", project_id, len(receivers), 
+        LOG.audit("Meter InstanceAction: %s %s %s", project_id, len(receivers),
                   receivers)
 
     
@@ -166,7 +172,7 @@ class ActionBolt(storm.BasicBolt):
                   'history_summary':history_summary,
                   'timestamp':timestamp}
         
-        self.cass.insert_alarm_history(history_key, column, 
+        self.cass.insert_alarm_history(history_key, column,
                                        ttl=self.statistics_ttl)
         LOG.info("History updated. %s", history_summary)
         
@@ -223,7 +229,7 @@ class ActionBolt(storm.BasicBolt):
             if self.enable_send_mail:
                 self.process_email_action(alarm_key, alarm, message, actions)
             if self.enable_instance_action:
-                self.process_instance_action(alarm_key, alarm, message, 
+                self.process_instance_action(alarm_key, alarm, message,
                                              actions)
 
 
@@ -240,7 +246,7 @@ class ActionBolt(storm.BasicBolt):
                          server)
             elif action_type == "Reboot":
                 server.reboot('HARD')
-                LOG.info("instance action %s invoked for %s", action_type, 
+                LOG.info("instance action %s invoked for %s", action_type,
                          server)
     
 
@@ -249,8 +255,8 @@ class ActionBolt(storm.BasicBolt):
                             if self.get_action_type(action) == 
                             "InstanceAction"]
 
-        instance_action_message = {'method': "InstanceAction", 
-                                   'receivers': instance_actions, 
+        instance_action_message = {'method': "InstanceAction",
+                                   'receivers': instance_actions,
                                    'subject': message['subject'],
                                    'body': message['body'], 'state': 'ok'}
 
@@ -264,7 +270,7 @@ class ActionBolt(storm.BasicBolt):
             self.alarm_history_state_update(alarm_key, alarm,
                                             instance_action_message)
             if instance_action_message['state'] != 'failed':
-                self.meter_instance_actions(alarm['project_id'], 
+                self.meter_instance_actions(alarm['project_id'],
                                             instance_actions)
                 
 
@@ -272,10 +278,12 @@ class ActionBolt(storm.BasicBolt):
         email_receivers = list(set([action for action in actions 
                                if self.get_action_type(action) == "email"]))
          
-        notification_message = {'method': "email", 
-                                'receivers': email_receivers, 
+        notification_message = {'method': "email",
+                                'receivers': email_receivers,
                                 'subject': message['subject'],
-                                'body': message['body'], 'state': 'ok'}
+                                'body': message['body'], 'state': 'ok',
+                                'alarm_description': 
+                                    message['alarm_description']}
         
         if email_receivers:
             try:                
@@ -287,7 +295,7 @@ class ActionBolt(storm.BasicBolt):
             self.alarm_history_state_update(alarm_key, alarm,
                                             notification_message)
             if notification_message['state'] != 'failed':
-                self.meter_email_actions(alarm['project_id'], 
+                self.meter_email_actions(alarm['project_id'],
                                          email_receivers)
         
                     
@@ -296,8 +304,10 @@ class ActionBolt(storm.BasicBolt):
                              if self.get_action_type(action) == "SMS"]))
          
         notification_message = {'method': "SMS", 'receivers': sms_receivers,
-                                'subject': message['subject'], 
-                                'body': message['body'], 'state': 'ok'}
+                                'subject': message['subject'],
+                                'body': message['body'], 'state': 'ok',
+                                'alarm_description': 
+                                    message['alarm_description']}
         
         if sms_receivers: 
             try:
@@ -309,36 +319,43 @@ class ActionBolt(storm.BasicBolt):
             self.alarm_history_state_update(alarm_key, alarm,
                                             notification_message)
             if notification_message['state'] != 'failed':
-                self.meter_sms_actions(alarm['project_id'], 
+                self.meter_sms_actions(alarm['project_id'],
                                        sms_receivers)
 
     def send_sms(self, message):
         Q_LOCAL = """insert into MMS_SEND(REG_TIME, MSG_SEQ, MSG_KEY, 
         RECEIVER, SENDER, SUBJECT, MESSAGE) 
-        values (now()+0, '%d', '%d', '%s', '%s', '%s', '%s')
+        values (now()+0, %s, %s, %s, %s, %s, %s)
         """
         
         Q_NAT = """insert into SMS_SEND(REG_TIME, MSG_KEY, RECEIVER, SENDER, 
-        MESSAGE, NAT_CODE) values (now()+0, '%d','%s','%s','%s', %d)
+        MESSAGE, NAT_CODE) values (now()+0, %s, %s, %s, %s, %s)
         """
     
         def build_query(receiver, message):
             nat, local_no = parse_number(receiver)
             subject = message['subject']
             body = message['body']
+            description = message['alarm_description']
             # random integer for msg_key
             msg_key = randint(1, 10 ** 15)
             
             if nat == None:
-                ret = Q_LOCAL % (msg_key, msg_key, local_no, self.sms_sender, 
-                                 subject, body)
+                message = self.lms_template % {'region': self.region,
+                                               'subject': subject, 
+                                               'reason': body,
+                                               'description': description}
+                ret = Q_LOCAL
+                params = (msg_key, msg_key, local_no, self.sms_sender, subject,
+                          message)
             else:
                 if len(subject) > 80:
                     subject = subject[:77] + "..."
                     
-                ret = Q_NAT % (msg_key, local_no, self.sms_sender, subject, 
-                               nat)
-            return ret
+                ret = Q_NAT
+                params = (msg_key, local_no, self.sms_sender, subject, nat)
+                
+            return ret, params
             
         def parse_number(no):
             nat, local_no = no.split(' ', 1)
@@ -363,19 +380,20 @@ class ActionBolt(storm.BasicBolt):
         #     'receivers': [u'+82 1093145616'],
         #     'method': 'SMS',
         #     'subject': u'AlarmActionTest state has been changed from OK to
-        #                  ALARM at 2012-08-28T10:17:50.494902'}
+        #                  ALARM at 2012-08-28T10:17:50.494902',
+        #     'alarm_description': u''}
         #
     
         LOG.debug("Connect to mysql db %s@%s:%s %s" % (self.sms_db_username,
                             self.sms_db_host, self.sms_db_port, self.sms_db))
-        conn = db.connect(host=self.sms_db_host, port=self.sms_db_port, 
-                          db=self.sms_db, user=self.sms_db_username, 
+        conn = db.connect(host=self.sms_db_host, port=self.sms_db_port,
+                          db=self.sms_db, user=self.sms_db_username,
                           passwd=self.sms_db_password, connect_timeout=30,
                           charset='utf8')
         c = conn.cursor()
         for receiver in message['receivers']:
-            q = build_query(receiver, message)
-            c.execute(q)
+            q, params = build_query(receiver, message)
+            c.execute(q, params)
         
         c.close()
         conn.commit()
@@ -383,8 +401,13 @@ class ActionBolt(storm.BasicBolt):
         
     
     def send_email(self, message):
-        msg = MIMEText(message['body'], 'plain', 'utf8')
-        msg['Subject'] = message['subject']
+        msg_dict = {'region': escape(self.region),
+                    'reason': escape(message['body']),
+                    'subject': escape(message['subject']),
+                    'description': escape(message['alarm_description'])}
+        body = body = self.email_body_template % msg_dict
+        msg = MIMEText(body, 'html', 'utf8')
+        msg['Subject'] = self.email_subject_template % msg_dict
         msg['From'] = self.mail_sender
         msg['To'] = ", ".join(message['receivers'])
         

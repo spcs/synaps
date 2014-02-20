@@ -514,7 +514,8 @@ class MetricMonitor(object):
                 (alarm['alarm_name'], old_state['stateValue'],
                  new_state['stateValue'], query_date),
             'body': "%s at %s" % (new_state['stateReason'], query_date),
-            'query_date': query_date
+            'query_date': query_date,
+            'alarm_description': alarm['alarm_description'],
         }
         LOG.info("emit to Alarm Action: %s %s", alarmkey, msg) 
         storm.emit([str(alarmkey), json.dumps(msg)])   

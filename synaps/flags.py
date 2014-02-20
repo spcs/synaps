@@ -181,6 +181,19 @@ core_opts = [
     cfg.StrOpt('sms_db_password',
                default='synaps',
                help='Default SMS database password'),
+    cfg.StrOpt('lms_template',
+               default="[SPCS Synaps(%(region)s)] %(subject)s\n\n"\
+                       "REASON: %(reason)s\n\n"\
+                       "DESCRIPTION: %(description)s",
+               help='Default LMS template'),
+    cfg.StrOpt('email_subject_template',
+               default="[SPCS Synaps(%(region)s)] %(subject)s",
+               help='Default email subject template'),             
+    cfg.StrOpt('email_body_template',
+               default="<p><b>[SPCS Synaps(%(region)s)]</b> %(subject)s</p>"\
+                       "<p><b>REASON:</b> %(reason)s</p>"\
+                       "<p><b>DESCRIPTION:</b> %(description)s</p>",
+               help='Default email body template'),
     cfg.BoolOpt('enable_send_sms',
                 default=True,
                 help='flag for sms send'),
@@ -208,6 +221,9 @@ core_opts = [
     cfg.IntOpt('alarm_quota_per_metric',
                default=30,
                help='per metric alarm quota'),
+    cfg.StrOpt('region',
+               default='REGION-1',
+               help='region name'),
 ]
 
 debug_opts = []
