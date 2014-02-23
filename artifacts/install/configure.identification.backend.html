@@ -1,0 +1,232 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configure Identification Backend Guide &mdash; synaps 2013.2.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/tweaks.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2013.2.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.tweet.js"></script>
+    <link rel="top" title="synaps 2013.2.3 documentation" href="../../index.html" />
+    <link rel="up" title="Installation Guide" href="../general.installation.guide.html" />
+    <link rel="next" title="Operations Guide" href="../operatormanual.html" />
+    <link rel="prev" title="Post-installation Synaps frontend" href="postinstall.frontend.html" /> 
+  </head>
+  <body>
+  <div id="header">
+    <h1 id="logo"><a href="http://www.openstack.org/">OpenStack</a></h1>
+    <ul id="navigation">
+      <li><a href="http://www.openstack.org/" title="Go to the Home page" class="link">Home</a></li>
+      <li><a href="http://www.openstack.org/projects/" title="Go to the OpenStack Projects page">Projects</a></li>
+      <li><a href="http://www.openstack.org/user-stories/" title="Go to the User Stories page" class="link">User Stories</a></li>
+      <li><a href="http://www.openstack.org/community/" title="Go to the Community page" class="link">Community</a></li>
+      <li><a href="http://www.openstack.org/blog/" title="Go to the OpenStack Blog">Blog</a></li>
+      <li><a href="http://wiki.openstack.org/" title="Go to the OpenStack Wiki">Wiki</a></li>
+      <li><a href="http://docs.openstack.org/" title="Go to OpenStack Documentation" class="current">Documentation</a></li>
+    </ul>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configure-identification-backend-guide">
+<h1>Configure Identification Backend Guide<a class="headerlink" href="#configure-identification-backend-guide" title="Permalink to this headline">¶</a></h1>
+<p>Synaps includes three types of filters for authentication in the WSGI
+application pipeline.</p>
+<ul class="simple">
+<li>no_auth: No authentication. With this filter, the access key of a request is
+tenant ID.</li>
+<li>ec2keystoneauth: Use Openstack Keystone for authentication. This is default
+authentication filter.</li>
+<li>authenticate: Use <cite>synaps.auth.manager.AuthManager</cite> for authentication.
+Synaps includes LdapDriver for AuthManager backend. Or, you can build your
+own custom driver for your identification system.</li>
+</ul>
+<p>You can configure your api-paste.ini file to select filter.</p>
+<div class="section" id="no-auth-filter">
+<h2>no_auth filter<a class="headerlink" href="#no-auth-filter" title="Permalink to this headline">¶</a></h2>
+<p>api-paste.ini</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>pipeline:cloudwatch_api_v1<span class="o">]</span>
+<span class="nv">pipeline</span> <span class="o">=</span> fault_wrap log_request no_auth monitor_request authorizer cloudwatch_executor
+</pre></div>
+</div>
+</div>
+<div class="section" id="ec2keystoneauth-filter">
+<h2>ec2keystoneauth filter<a class="headerlink" href="#ec2keystoneauth-filter" title="Permalink to this headline">¶</a></h2>
+<p>To use ec2keystoneauth filter, you need to configure api-paste.ini and
+synaps.conf also. This filter is default.</p>
+<p>api-paste.ini</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>pipeline:cloudwatch_api_v1<span class="o">]</span>
+<span class="nv">pipeline</span> <span class="o">=</span> fault_wrap log_request ec2keystoneauth monitor_request authorizer cloudwatch_executor
+</pre></div>
+</div>
+<p>synaps.conf</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">keystone_ec2_url</span><span class="o">=</span>http://keystone.endpointurl:5000/v2.0/ec2tokens
+</pre></div>
+</div>
+</div>
+<div class="section" id="authenticate-filter">
+<h2>authenticate filter<a class="headerlink" href="#authenticate-filter" title="Permalink to this headline">¶</a></h2>
+<p>While Synaps is OpenStack related project, it is designed with loosely coupled
+architecture with other OpenStack projects. If you want to use Synaps as a
+standalone service without any OpenStack component, use this filter. This
+filter supports LDAP backend.</p>
+<p>To use authenticate filter, you need to configure api-paste.ini and synaps.conf
+also.</p>
+<p>api-paste.ini</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>pipeline:cloudwatch_api_v1<span class="o">]</span>
+<span class="nv">pipeline</span> <span class="o">=</span> fault_wrap log_request authenticate monitor_request authorizer cloudwatch_executor
+</pre></div>
+</div>
+<p>synaps.conf</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">auth_driver</span><span class="o">=</span>synaps.auth.ldapdriver.LdapDriver
+<span class="nv">ldap_url</span><span class="o">=</span>ldap://ldapurl:port
+<span class="nv">ldap_password</span><span class="o">=</span>changeme
+<span class="nv">ldap_user_dn</span><span class="o">=</span><span class="nv">cn</span><span class="o">=</span>Manager,dc<span class="o">=</span>example,dc<span class="o">=</span>com
+</pre></div>
+</div>
+<p>Synaps provides working LDAP schema and initial installation script for
+openldap. You can start with this example script to connect your own LDAP.
+To install ldap for Synaps, use the script. (It works for Ubuntu)</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Be careful running this script. It will scrub all users.</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>git clone https://github.com/spcs/synaps
+<span class="nv">$ </span><span class="nb">cd </span>synaps/synaps/etc/auth_setup
+<span class="nv">$ </span>sudo ./slap.sh
+</pre></div>
+</div>
+<p>And then, user management is not scope of Synaps. You can create user and
+project with LDAP management tools. And, there is an example script for create
+user and project. Following script will create an user, create project and set
+the user as a manager of &#8220;prjname&#8221; project.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">possible_topdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                                <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">possible_topdir</span><span class="p">,</span> <span class="s">&quot;synaps&quot;</span><span class="p">,</span> <span class="s">&quot;__init__.py&quot;</span><span class="p">)):</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">possible_topdir</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">synaps</span> <span class="kn">import</span> <span class="n">flags</span>
+<span class="kn">from</span> <span class="nn">synaps</span> <span class="kn">import</span> <span class="n">log</span> <span class="k">as</span> <span class="n">logging</span>
+<span class="kn">from</span> <span class="nn">synaps</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">synaps.auth.manager</span> <span class="kn">import</span> <span class="n">AuthManager</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">flags</span><span class="o">.</span><span class="n">FLAGS</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">default_flagfile</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+    <span class="n">auth</span> <span class="o">=</span> <span class="n">AuthManager</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+         <span class="n">auth</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span><span class="s">&quot;username&quot;</span><span class="p">,</span> <span class="s">&quot;access&quot;</span><span class="p">,</span> <span class="s">&quot;secret&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+         <span class="n">auth</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="s">&quot;prjname&quot;</span><span class="p">,</span> <span class="s">&quot;username&quot;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When your Synaps instance is using this filter, users should use composite
+string as an access key in form of accesskey:projectid so that Synaps can
+distinguish the project of user. Without projectid, Synaps will assume the
+user name and project id is identical.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">Configure Identification Backend Guide</a><ul>
+<li><a class="reference internal" href="#no-auth-filter">no_auth filter</a></li>
+<li><a class="reference internal" href="#ec2keystoneauth-filter">ec2keystoneauth filter</a></li>
+<li><a class="reference internal" href="#authenticate-filter">authenticate filter</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="postinstall.frontend.html"
+                                  title="previous chapter">Post-installation Synaps frontend</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="../operatormanual.html"
+                                  title="next chapter">Operations Guide</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/artifacts/install/configure.identification.backend.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../operatormanual.html" title="Operations Guide"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="postinstall.frontend.html" title="Post-installation Synaps frontend"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">synaps 2013.2.3 documentation</a> &raquo;</li>
+          <li><a href="../general.installation.guide.html" accesskey="U">Installation Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-present, Samsung SDS.
+      Last updated on Sun Feb 23 22:17:34 2014, commit e8daf4b.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

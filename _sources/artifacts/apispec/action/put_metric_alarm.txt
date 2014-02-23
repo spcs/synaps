@@ -41,7 +41,12 @@ Following is list of parameters for this action.
        prefix(InstanceAction:Reboot or InstanceAction:Migrate), instance UUID 
        must be specified in parenthesis. 
        ex) InstanceAction:Migrate(2f4a97eb-1234-9876-8d19-54aacabbdc88)
-
+       
+       To notify to pre-defined group, use GroupNotificationAction. Following
+       the action prefix(NotifyTo), Group name should be specified in 
+       parenthesis. To register or update notification group, contact 
+       administrator.
+       ex) NotifyTo(SYNAPS ADMIN)
 
        Data type: String
      - No
@@ -112,7 +117,13 @@ Following is list of parameters for this action.
        prefix(InstanceAction:Reboot or InstanceAction:Migrate), instance UUID 
        must be specified in parenthesis. 
        ex) InstanceAction:Migrate(2f4a97eb-1234-9876-8d19-54aacabbdc88)
-
+       
+       To notify to pre-defined group, use GroupNotificationAction. Following
+       the action prefix(NotifyTo), Group name should be specified in 
+       parenthesis. To register or update notification group, contact 
+       administrator.
+       ex) NotifyTo(SYNAPS ADMIN)
+       
        Data type: String
      - No
    * - MetricName
@@ -149,7 +160,13 @@ Following is list of parameters for this action.
        prefix(InstanceAction:Reboot or InstanceAction:Migrate), instance UUID 
        must be specified in parenthesis. 
        ex) InstanceAction:Migrate(2f4a97eb-1234-9876-8d19-54aacabbdc88)
-
+       
+       To notify to pre-defined group, use GroupNotificationAction. Following
+       the action prefix(NotifyTo), Group name should be specified in 
+       parenthesis. To register or update notification group, contact 
+       administrator.
+       ex) NotifyTo(SYNAPS ADMIN)
+       
        Data type: String
      - No
    * - Period
@@ -201,11 +218,13 @@ Following is list of errors for this action.
    * - InvalidParameterValue
      - Invalid value of input parameter.
      - 400
+   * - InvalidNotificationGroup
+     - Invalid notification group
+     - 400     
    * - ProjectAlarmQuotaExceeded
      - Too many alarms for this project
      - 403
    * - MetricAlarmQuotaExceeded
      - Too many alarms for this metric
      - 403
-     
 see also :ref:`common_errors` 

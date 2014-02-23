@@ -15,6 +15,7 @@ This instruction describes how to install Synaps.
     install/install.rabbitmq.rst    
     install/postinstall.backend.rst
     install/postinstall.frontend.rst
+    install/configure.identification.backend.rst
     
 
 Installaton Example
