@@ -1,0 +1,51 @@
+#
+# Person object for Synaps
+# inetorgperson with extra attributes
+# Schema version: 2
+# Authors: Vishvananda Ishaya <vishvananda@gmail.com>
+#          Ryan Lane <rlane@wikimedia.org>
+#          June Yi <gochist@gmail.com>
+#
+#
+
+# using internet experimental oid arc as per BP64 3.1
+objectidentifier synapsSchema 1.3.6.1.3.1.666.666
+objectidentifier synapsAttrs synapsSchema:3
+objectidentifier synapsOCs synapsSchema:4
+
+attributetype (
+    synapsAttrs:1
+    NAME 'accessKey'
+    DESC 'Key for accessing data'
+    EQUALITY caseIgnoreMatch
+    SUBSTR caseIgnoreSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+    SINGLE-VALUE
+    )
+
+attributetype (
+    synapsAttrs:2
+    NAME 'secretKey'
+    DESC 'Secret key'
+    EQUALITY caseIgnoreMatch
+    SUBSTR caseIgnoreSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+    SINGLE-VALUE
+    )
+
+attributetype (
+    synapsAttrs:4
+    NAME 'isSynapsAdmin'
+    DESC 'Is user an synaps administrator?'
+    EQUALITY booleanMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+    SINGLE-VALUE
+    )
+
+objectClass (
+    synapsOCs:1
+    NAME 'synapsUser'
+    DESC 'access and secret keys'
+    AUXILIARY
+    MAY  ( accessKey $ secretKey $ isSynapsAdmin)
+    )

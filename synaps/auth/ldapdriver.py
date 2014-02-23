@@ -167,7 +167,7 @@ class LdapDriver(object):
     """
 
     project_pattern = '(owner=*)'
-    isadmin_attribute = 'isNovaAdmin'
+    isadmin_attribute = 'isSynapsAdmin'
     project_attribute = 'owner'
     project_objectclass = 'groupOfNames'
     conn = None

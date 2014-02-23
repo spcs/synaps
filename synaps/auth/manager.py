@@ -138,11 +138,9 @@ class User(AuthBase):
       The 'password' for EC2 authenticatoin
     ``admin``
       ???
-    ``project``
-      ???
     """
 
-    def __init__(self, id, name, access, secret, admin, project):
+    def __init__(self, id, name, access, secret, admin):
         AuthBase.__init__(self)
         assert isinstance(id, basestring)
         self.id = id
@@ -150,7 +148,6 @@ class User(AuthBase):
         self.access = access
         self.secret = secret
         self.admin = admin
-        self.project = project
 
     def is_superuser(self):
         return AuthManager().is_superuser(self)
@@ -301,7 +298,7 @@ class AuthManager(object):
         #             logic to find a default project for user
         if project_id == '':
             LOG.debug(_("Using project name = user name (%s)"), user.name)
-            project_id = user.project
+            project_id = user.name
 
         project = self.get_project(project_id)
         if project is None:
