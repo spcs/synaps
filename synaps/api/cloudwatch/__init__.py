@@ -24,6 +24,7 @@ import webob
 import webob.dec
 import json
 import urlparse
+import hashlib
 
 from synaps import flags
 from synaps import log as logging
@@ -232,22 +233,71 @@ class Authenticate(wsgi.Middleware):
     """Authenticate an CloudWatch request and add 'synaps.context' to
     WSGI environ."""
 
+    def _get_signature(self, req):
+        """
+        Extract the signature from the request, this can be a get/post
+        variable or for v4 also in a header called 'Authorization'
+        - params['Signature'] == version 0,1,2,3
+        - params['X-Amz-Signature'] == version 4
+        - header 'Authorization' == version 4
+        """
+        sig = req.params.get('Signature') or req.params.get('X-Amz-Signature')
+        if sig is None and 'Authorization' in req.headers:
+            auth_str = req.headers['Authorization']
+            sig = auth_str.partition("Signature=")[2].split(',')[0]
+
+        return sig
+    
+    def _get_access(self, req):
+        """
+        Extract the access key identifier, for v 0/1/2/3 this is passed
+        as the AccessKeyId parameter, for version4 it is either and
+        X-Amz-Credential parameter or a Credential= field in the
+        'Authorization' header string
+        """
+        access = req.params.get('AWSAccessKeyId')
+        if access is None:
+            cred_param = req.params.get('X-Amz-Credential')
+            if cred_param:
+                access = cred_param.split("/")[0]
+
+        if access is None and 'Authorization' in req.headers:
+            auth_str = req.headers['Authorization']
+            cred_str = auth_str.partition("Credential=")[2].split(',')[0]
+            access = cred_str.split("/")[0]
+
+        return access
+    
     @webob.dec.wsgify(RequestClass=webob.Request)
     def __call__(self, req):
         request_id = context.generate_request_id()
         # Read request signature and access id.
-        try:
-            signature = req.params['Signature']
-            access = req.params['AWSAccessKeyId']
-        except KeyError:
+        signature = self._get_signature(req)
+        access = self._get_access(req)
+        
+        if not (signature or access): 
             msg = _("Access key or signature not provided")
             return faults.ec2_error_response(request_id, "Unauthorized", msg,
                                              status=400)
 
         # Make a copy of args for authentication and signature verification.
-        auth_params = dict(req.params)
+        auth_params = dict(req.GET)
         # Not part of authentication args
-        auth_params.pop('Signature')
+        auth_params.pop('Signature', None)
+        
+        # Authenticate the request.
+        # AWS v4 authentication requires a hash of the body
+        body_hash = hashlib.sha256(req.body).hexdigest()
+        creds = {'ec2Credentials': {'access': access,
+                                    'signature': signature,
+                                    'host': req.host,
+                                    'verb': req.method,
+                                    'path': req.path,
+                                    'params': auth_params,
+                                    'headers': req.headers,
+                                    'body_hash': body_hash
+                                    }}
+        LOG.debug("creds: %s", creds)
 
         # Authenticate the request.
         authman = manager.AuthManager()
@@ -258,7 +308,9 @@ class Authenticate(wsgi.Middleware):
                     auth_params,
                     req.method,
                     req.host,
-                    req.path)
+                    req.path,
+                    headers=req.headers,
+                    body_hash=body_hash)
         # Be explicit for what exceptions are 403, the rest bubble as 500
         except (exception.ResourceNotFound, exception.NotAuthorized,
                 exception.InvalidSignature) as ex:
@@ -299,14 +351,14 @@ class Requestify(wsgi.Middleware):
             # Raise KeyError if omitted
             action = req.params['Action']
             # Fix bug lp:720157 for older (version 1) clients
-            version = req.params['SignatureVersion']
-            if int(version) == 1:
+            version = req.params.get('SignatureVersion', None)
+            if version and int(version) == 1:
                 non_args.remove('SignatureMethod')
                 if 'SignatureMethod' in args:
-                    args.pop('SignatureMethod')
+                    args.pop('SignatureMethod', None)
             for non_arg in non_args:
                 # Remove, but raise KeyError if omitted
-                args.pop(non_arg)
+                args.pop(non_arg, None)
         except KeyError, e:
             raise webob.exc.HTTPBadRequest()
 

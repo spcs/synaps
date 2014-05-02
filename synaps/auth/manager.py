@@ -252,7 +252,7 @@ class AuthManager(object):
 
     def authenticate(self, access, signature, params, verb='GET',
                      server_string='127.0.0.1:8773', path='/',
-                     check_type='cloudwatch', headers=None):
+                     check_type='cloudwatch', headers=None, body_hash=''):
         """Authenticates AWS request using access key and signature
 
         If the project is not specified, attempts to authenticate to
@@ -320,8 +320,10 @@ class AuthManager(object):
         if check_type == 'cloudwatch':
             # NOTE(vish): hmac can't handle unicode, so encode ensures that
             #             secret isn't unicode
-            expected_signature = signer.Signer(user.secret.encode()).generate(
-                    params, verb, server_string, path)
+            credentials = {'params': params, 'verb': verb, 'host': server_string,
+                           'path': path, 'headers': headers, 'body_hash': body_hash}
+            expected_signature = signer.Ec2Signer(user.secret.encode()).generate(
+                    credentials)
             LOG.debug(_('user.secret: %s'), user.secret)
             LOG.debug(_('expected_signature: %s'), expected_signature)
             LOG.debug(_('signature: %s'), signature)
@@ -329,9 +331,10 @@ class AuthManager(object):
                 (addr_str, port_str) = utils.parse_server_string(server_string)
                 # If the given server_string contains port num, try without it.
                 if port_str != '':
-                    host_only_signature = signer.Signer(
-                        user.secret.encode()).generate(params, verb,
-                                                       addr_str, path)
+                    credentials = {'params': params, 'verb': verb, 'host': addr_str,
+                           'path': path, 'headers': headers, 'body_hash': body_hash}
+                    host_only_signature = signer.Ec2Signer(
+                        user.secret.encode()).generate(credentials)
                     LOG.debug(_('host_only_signature: %s'),
                               host_only_signature)
                     if utils.strcmp_const_time(signature, host_only_signature):
